@@ -166,7 +166,7 @@ I do not know the file extension limits for this system.
 
 There is no bios for this system
 <br><br>
-<h2>PlayStation<h2>
+<h2>PlayStation</h2>
 
 Code example
 
