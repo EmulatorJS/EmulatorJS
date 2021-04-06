@@ -4,6 +4,8 @@ A javascript emulator for nes, snes, and more!
 
 <h1>Where did I get this?</h1>
 <p>So I found this website called <a href=https://www.emulatorjs.com/>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
+<p>EMULATOR JS PEOPLE if you see this and do not want it up just make an issue and I will take it down.</p>
+
 
 <h1>IF YOU WOULD LIKE ANOTHER SYSTEM</h1>
 <p>Check if the system is on <a href=https://www.emulatorjs.com/>emulatorjs.com</a>. If it is then open an issue asking for the system you would like to emulate.</p>
