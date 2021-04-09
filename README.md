@@ -29,6 +29,8 @@ If you have questions, ask me and I will clarify (use the issues tab)
 
 Just so you know - You DO NOT NEED the bios for most games / systems, even if it is listed.
 
+Roms can be zipped into .zip archive or .7z archive
+
 <h1>Supported systems!</h1>
 <h2>NES / Famicom</h2>
 
