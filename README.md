@@ -48,6 +48,7 @@ Code example
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'nes';
     EJS_lightgun = false; // Lightgun
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -75,6 +76,7 @@ Code Example
     EJS_core = 'snes';
     EJS_mouse = false; // SNES Mouse
     EJS_multitap = false; // SNES Multitap
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -104,6 +106,7 @@ Code Example
     EJS_player = '#game';
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'n64';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -124,6 +127,7 @@ Code example
     EJS_biosUrl = '';
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'gb';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -146,6 +150,7 @@ Code example
     EJS_biosUrl = '';
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'gba';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -169,6 +174,7 @@ Code example
     EJS_player = '#game';
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'nds';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -190,6 +196,7 @@ Code example
     EJS_biosUrl = ''; // Url to Bios file
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'psx';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
@@ -222,6 +229,7 @@ Code example
     EJS_player = '#game';
     EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'vb';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
 <script src="loader.js"></script>
 ```
