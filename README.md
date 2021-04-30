@@ -50,7 +50,7 @@ Code example
     EJS_lightgun = false; // Lightgun
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 Your rom MUST have one of the following extensions
 
@@ -78,7 +78,7 @@ Code Example
     EJS_multitap = false; // SNES Multitap
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 Your rom MUST have one of the following extensions
 
@@ -108,7 +108,7 @@ Code Example
     EJS_core = 'n64';
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 I do not know the file extension limits for this system. I know the `.z64` roms work.
 
@@ -129,7 +129,7 @@ Code example
     EJS_core = 'gb';
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 
 I do not know the file extension limits for this system.
@@ -152,7 +152,7 @@ Code example
     EJS_core = 'gba';
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 
 I do not know the file extension limits for this system.
@@ -176,7 +176,7 @@ Code example
     EJS_core = 'nds';
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 
 I do not know the file extension limits for this system.
@@ -198,7 +198,7 @@ Code example
     EJS_core = 'psx';
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 Your rom MUST have one of the following extensions
 
@@ -231,7 +231,7 @@ Code example
     EJS_core = 'vb';
     EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!! Must end with /
 </script>
-<script src="loader.js"></script>
+<script src="data/loader.js"></script>
 ```
 
 I do not know the file extension limits for this system.
