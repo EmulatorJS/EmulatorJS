@@ -11,7 +11,7 @@ The BEST emulator on the internet. No ads and self hosted!
 <p>So I found this website called <a href=https://www.emulatorjs.com/>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
 <p>EMULATOR JS PEOPLE - I looked everywhere and found no terms of service on your site.</p>
 
-<p>The emulator is illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
+<p>The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
 
 
 <h1>IF YOU WOULD LIKE ANOTHER SYSTEM</h1>
