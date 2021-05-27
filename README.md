@@ -24,10 +24,6 @@ Download this repository (Code > Download as zip) then Extract the contents
 
 <p>MUST HOST ON WEB SERVER!! (I use <a href='https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en'>Web Server for Chrome</a> but you are welcome to use what you like)</p>
 
-All of the paths are relative, all files MUST stay where they are
-
-The html that has the emulator embedded in it MUST be in the same directory as all of the files. I tried to not do this but there were very big incompatibilities.
-
 If you have questions, ask me and I will clarify (use the issues tab)
 
 Just so you know - You DO NOT NEED the bios for most games / systems, even if it is listed. For some systems, the bios is REQUIRED
