@@ -132,6 +132,7 @@ Code example
 I do not know the file extension limits for this system.
 
 You can find the Game Boy BIOS by looking up the md5 sum which is `32fbbd84168d3482956eb3c5051637f5`
+
 You can find the Game Boy Color BIOS by looking up the md5 sum which is `dbfce9db9deaa2567f6a84fde55f9680`
 <br><br>
 <h2>Nintendo Game Boy Advance</h2>
@@ -155,8 +156,11 @@ Code example
 I do not know the file extension limits for this system.
 
 You can find the Game Boy Advance BIOS by looking up the md5 sum which is `	a860e8c0b6d573d191e4ec7db1b1e4f6`
+
 You can find the Game Boy BIOS by looking up the md5 sum which is `	32fbbd84168d3482956eb3c5051637f5`
+
 You can find the Game Boy Color BIOS by looking up the md5 sum which is `dbfce9db9deaa2567f6a84fde55f9680`
+
 You can find the Super Game Boy BIOS by looking up the md5 sum which is `d574d4f9c12f305074798f54c091a8b4`
 <br><br>
 <h2>Nintendo DS</h2>
@@ -211,7 +215,9 @@ Your rom MUST have one of the following extensions
 .ccd
 ```
 You can find the PlayStation 1 JP BIOS by looking up the md5 sum which is `8dd7d5296a650fac7319bce665a6a53c`
+
 You can find the PlayStation 1 US BIOS by looking up the md5 sum which is `490f666e1afb15b7362b406ed1cea246`
+
 You can find the PlayStation 1 EU BIOS by looking up the md5 sum which is `32736f17079d0b2b7024407c39bd3050`
 <br><br>
 <h2>Virtual Boy</h2>
@@ -276,7 +282,9 @@ Code example
 I do not know the file extension limits for this system.
 
 You can find the MegaCD EU BIOS by looking up the md5 sum which is `e66fa1dc5820d254611fdcdba0662372`
+
 You can find the SegaCD US BIOS by looking up the md5 sum which is `854b9150240a198070150e4566ae1290`
+
 You can find the MegaCD EU BIOS by looking up the md5 sum which is `278a9397d192149e84e820ac621a8edd`
 <br><br>
 <h2>Atari Lynx</h2>
@@ -350,15 +358,25 @@ Your rom MUST have one of the following extensions
 ```
 
 Panasonic FZ-1	`f47264dd47fe30f73ab3c010015c155b`
+
 Panasonic FZ-10	`51f2f43ae2f3508a14d9f56597e2d3ce`
+
 Panasonic FZ-10	`1477bda80dc33731a65468c1f5bcbee9`
+
 Panasonic FZ-10-E `a48e6746bd7edec0f40cff078f0bb19f`
+
 Panasonic FZ-10-E `cf11bbb5a16d7af9875cca9de9a15e09`
+
 Goldstar GDO-101M	`8639fd5e549bd6238cfee79e3e749114`
+
 Sanyo IMP-21J TRY	`35fa1a1ebaaeea286dc5cd15487c13ea`
+
 Shootout At Old Tucson	`8970fc987ab89a7f64da9f8a8c4333ff`
+
 Panasonic FZ-1 Kanji ROM	`b8dc97f778a6245c58e064b0312e8281`
+
 Panasonic FZ-10JA Kanji ROM	`428577250f43edc902ea239c50d2240d`
+
 Panasonic FZ-1J Kanji ROM	`c23fb5d5e6bb1c240d02cf968972be37`
 <br><br>
 <h2>Sega 32X</h2>
@@ -553,5 +571,7 @@ Use only FBA v0.2.97.42 ROMs set
 Important! all roms must use the same name at support list with extension .zip
 
 neogeo.zip	Required for Neo Geo Games	        `410c65b2debdf4f2dac9ea2b23aa496e`
+
 pgm.zip	    Required for IGS Games	            `653e991a39e867354d090c3394157d1c`
+
 isgsm.zip	ISG Selection Master Type 2006 BIOS	`4a56d56e2219c5e2b006b66a4263c01c`
