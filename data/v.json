@@ -183,7 +183,7 @@
         "wasm": 0
     },
     "segaSaturn": {
-        "version":"2",
+        "version":"3",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
@@ -204,11 +204,18 @@
         "wasm": 0
     },
     "nds": {
-        "version":"7",
+        "version":"9",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
         "wasm": 1
+    },
+    "3do": {
+        "version":"1",
+        "netplay": 1,
+        "state": 1,
+        "asmjs": 1,
+        "wasm": 0
     },
     "sega32x": {
         "version":"2",
@@ -223,5 +230,19 @@
         "state": 1,
         "asmjs": 1,
         "wasm": 0
+    },
+    "mame": {
+        "version":"3",
+        "netplay": 0,
+        "state": 0,
+        "asmjs": 0,
+        "wasm": 1
+    },
+    "vbanext": {
+        "version":"1",
+        "netplay": 0,
+        "state": 1,
+        "asmjs": 1,
+        "wasm": 1
     }
 }
