@@ -232,7 +232,7 @@
         "wasm": 0
     },
     "mame": {
-        "version":"3",
+        "version":"4",
         "netplay": 0,
         "state": 0,
         "asmjs": 0,
