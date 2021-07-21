@@ -1,4 +1,7 @@
-	var path2Send = EJS_pathtodata
+if (! EJS_pathtodata) {
+	EJS_pathtodata = './'
+}
+var path2Send = EJS_pathtodata
 	var finpath = window.location.pathname.split('/').pop();
 	var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
 	var split3 = finalpath.split('/')
