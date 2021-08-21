@@ -1,4 +1,16 @@
-if (! EJS_pathtodata) {
+fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
+	if (response.ok) {
+		response.text().then(body => {
+			var version = JSON.parse(body);
+			var usingVersion = '0.4.23';
+			if (usingVersion != version.current_version) {
+				console.log('Using emulatorjs version ' + usingVersion + ' but the newest version is ' + version.current_version);
+			};
+		});
+	};
+});
+
+if (! window.EJS_pathtodata) {
 	EJS_pathtodata = './'
 }
 var path2Send = EJS_pathtodata
