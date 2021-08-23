@@ -24,7 +24,7 @@ for (var i=0; i<split3.length; i++) {
 		split1.push(split3[i])
 	}
 }
-if (! path2Send.startsWith('/') && path2Send.split('://').length != 1 && path2Send.split('http:').length != 1 && path2Send.split('https:').length != 1) {
+if (! path2Send.startsWith('/') && path2Send.split('://').length == 1 && path2Send.split('http:').length == 1 && path2Send.split('https:').length == 1) {
 	for (var w=0; w<split2.length; w++) {
 		if (split2[w] == '' || split2[w] == '.') {
 		} else if (split2[w] == '..') {
