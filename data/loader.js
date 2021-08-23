@@ -42,10 +42,9 @@ var path2Send = EJS_pathtodata
 		if (!path2Send.endsWith('/')) {
 			path2Send = path2Send+'/'
 		}
-		
+		path2Send = window.location.protocol + '//' + window.location.host + path2Send
+		EJS_pathtodata = path2Send
     }
-	path2Send = window.location.protocol + '//' + window.location.host + path2Send
-	EJS_pathtodata = path2Send
 	console.log('Path to data is set to ' + EJS_pathtodata)
 
 
