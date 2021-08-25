@@ -3,6 +3,8 @@
 A javascript emulator for nes, snes, and more!
 The BEST emulator on the internet. No ads and self hosted!
 
+Example page: https://coldcast.org/games/1/Super-Mario-Bros
+
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
 <p>I have made a google chrome extension using this code <a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>here</a> - Does not need webserver.</p>
