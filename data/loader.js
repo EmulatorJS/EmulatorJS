@@ -42,6 +42,9 @@ if (! path2Send.startsWith('/') && path2Send.split('://').length == 1 && path2Se
 	path2Send = window.location.protocol + '//' + window.location.host + path2Send
 	EJS_pathtodata = path2Send
 }
+if (EJS_pathtodata.startsWith('/')) {
+	EJS_pathtodata = window.location.protocol + '//' + window.location.host + path2Send
+}
 
 if (!EJS_pathtodata.endsWith('/')) {
 	EJS_pathtodata = EJS_pathtodata+'/'
