@@ -7,7 +7,9 @@ Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
-<p>I have made a google chrome extension using this code <a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>here</a> - Does not need webserver.</p>
+<p>I have made a google chrome extension using this code <a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>here</a> - Does not need webserver. (I dont update this often)</p>
+
+Recomended: https://github.com/ethanaobrien/youtube-downloader - A fully featured youtube downloader. 100% client side. No viruses, no malware, no ads!
 
 <h1>Where did I get this?</h1>
 <p>So I found this website called <a href='https://www.emulatorjs.com/'>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
