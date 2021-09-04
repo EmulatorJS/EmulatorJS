@@ -1,362 +1,189 @@
-<h1>emulatorjs</h1>
+<h1>在线万能模拟器</h1>
 
-A javascript emulator for nes, snes, and more!
-The BEST emulator on the internet. No ads and self hosted!
+WASM方式模拟 fc, sfc,ps1,gb/gbc/gba等游戏!
+这是最好的网页模拟器,没有烦人的广告!
 
-<p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
+<p>演示: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
-<p>I have made a google chrome extension using this code <a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>here</a> - Does not need webserver.</p>
+<p>演示: <a href='https://nenge.net/emulator/app/emujs/'>https://nenge.net/emulator/app/emujs/</a></p>
 
-<h1>Where did I get this?</h1>
-<p>So I found this website called <a href='https://www.emulatorjs.com/'>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
-<p>EMULATOR JS PEOPLE - I looked everywhere and found no terms of service on your site.</p>
+<p>谷歌浏览器插件<a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>这里</a> - 不需要联网.</p>
 
-<p>The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
+<h1>来源</h1>
 
-<p>IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!</p>
+<p>我在这个网站:<a href='https://www.emulatorjs.com/'>emulatorjs</a>找到他的代码并加以编辑.</p>
+<p>EMULATOR JS PEOPLE - 我没找到这个网站的条款,应该是开源的把.</p>
 
-<h1>IF YOU WOULD LIKE ANOTHER SYSTEM</h1>
-<p>Check if the system is on <a href='https://www.emulatorjs.com/'>emulatorjs.com</a>. If it is then open an issue asking for the system you would like to emulate.</p>
+<p>这是模拟器,不是盗版游戏ROM,使用者如何使用,导致的法律问题与本模拟器无关.</p>
 
-<h1>HOW TO</h1>
 
-Download this repository (Code > Download as zip) then Extract the contents
+<h1>怎么用</h1>
 
-<p>MUST HOST ON WEB SERVER!! (I use <a href='https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en'>Web Server for Chrome</a> but you are welcome to use what you like)</p>
+下载此储存库 (Code > Download as zip) 然后提取内容
 
-If you have questions, ask me and I will clarify (use the issues tab)
+<p>必须在WEB服务器中托管!! (我用 <a href='https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en'>Chrome的Web服务器</a>但是你可以随意使用)</p>
 
-Just so you know - You DO NOT NEED the bios for most games / systems, even if it is listed. For some systems, the bios is REQUIRED
+<p>如果有什么问题?那么请去问问这个16岁的天才少女:<a href="https://github.com/ethanaobrien/emulatorjs/issues">https://github.com/ethanaobrien/emulatorjs/issues</a></p>
 
-Roms can be zipped into .zip archive or .7z archive
+正如您所知，大多数游戏都不需要bios，即使它已列出。对于某些系统还是需要bios
 
-<h1>Supported systems!</h1>
-<h2>NES / Famicom</h2>
+ROM可以压缩到.zip或.7z格式
 
-Code example
+<p>或者打开<a href='https://www.emulatorjs.com/'>emulatorjs.com</a>. 看看他的代码示例.只需要做出轻微改动即可.</p>
 
+<h1>支持的游戏!</h1>
+
+
+<h2>代码例子</h2>
 ```
 <div style="width:640px;height:480px;max-width:100%">
   <div id="game"></div>
 </div>
 <script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Famicom Disk System bios
-    EJS_gameUrl = ''; // Url to Game rom
-    EJS_core = 'nes';
-    EJS_lightgun = false; // Lightgun
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
+    EJS_player = '#game';//游戏的网页元素 ID
+    EJS_biosUrl = ''; // 如果需要BIOS,这里填写,否则留空,不支持跨域
+    EJS_gameUrl = ''; // 游戏文件地址,不支持跨域
+    EJS_core = 'nes'; //游戏核心
+    EJS_lightgun = false; // Lightgun 不知道干嘛的
+    EJS_pathtodata = 'data/'; //定义asm文件的地址!!
 </script>
 <script src="data/loader.js"></script>
 ```
-Your rom MUST have one of the following extensions
 
+<h3>NES / Famicom 又名FC 红白机</h3>
 ```
-.fds
-.nes
-.unif
-.unf
+    EJS_core = 'nes'; //游戏核心
+    扩展名格式
+    .fds
+    .nes
+    .unif
+    .unf
 ```
-You can find the famicon BIOS by looking up the md5 sum which is `ca30b50f880eb660a320674ed365ef7a`
+nes的可选BIOS文件的MD5是 `ca30b50f880eb660a320674ed365ef7a`
 <br><br>
-<h2>SNES</h2>
-
-Code Example
-
+<h3>SNES 又名SFC 又名超级任天堂</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
-    EJS_core = 'snes';
-    EJS_mouse = false; // SNES Mouse
-    EJS_multitap = false; // SNES Multitap
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
+    EJS_core = 'snes'; //游戏核心
+    扩展名格式
+    .smc
+    .fig
+    .sfc
+    .gd3
+    .gd7
+    .dx2
+    .bsx
+    .swc
 ```
-Your rom MUST have one of the following extensions
-
-```
-.smc
-.fig
-.sfc
-.gd3
-.gd7
-.dx2
-.bsx
-.swc
-```
-There is no bios for this system
+没有bios
 <br><br>
-<h2>Nintendo 64</h2>
-
-Code Example
-
+<h3>Nintendo 64 又名N64,任天堂扑街之作</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'n64';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
+    扩展名格式
+    n64
+    z64
 ```
-I do not know the file extension limits for this system. I know the `.z64` roms work.
-
-There is no bios for this system
+没有bios
 <br><br>
-<h2>Nintendo Game Boy</h2>
-
-Code example
-
+<h3>Nintendo Game Boy/Color 这是游戏界的大哥大,土豪的象征,彩色版又叫彩game</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = '';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'gb';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
+    
 ```
-
-I do not know the file extension limits for this system.
-
-You can find the Game Boy BIOS by looking up the md5 sum which is `32fbbd84168d3482956eb3c5051637f5`
-
-You can find the Game Boy Color BIOS by looking up the md5 sum which is `dbfce9db9deaa2567f6a84fde55f9680`
+gb的可选BIOS文件的MD5是 `32fbbd84168d3482956eb3c5051637f5`
+gbc的可选BIOS文件的MD5是 `dbfce9db9deaa2567f6a84fde55f9680`
 <br><br>
-<h2>Nintendo Game Boy Advance</h2>
-
-Code example
-
+<h3>Nintendo Game Boy Advance</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = '';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'gba';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
+gba的可选BIOS文件的MD5是 `	a860e8c0b6d573d191e4ec7db1b1e4f6`
 
-I do not know the file extension limits for this system.
+gb的可选BIOS文件的MD5是`	32fbbd84168d3482956eb3c5051637f5`
 
-You can find the Game Boy Advance BIOS by looking up the md5 sum which is `	a860e8c0b6d573d191e4ec7db1b1e4f6`
+gbc的可选BIOS文件的MD5是 `dbfce9db9deaa2567f6a84fde55f9680`
 
-You can find the Game Boy BIOS by looking up the md5 sum which is `	32fbbd84168d3482956eb3c5051637f5`
-
-You can find the Game Boy Color BIOS by looking up the md5 sum which is `dbfce9db9deaa2567f6a84fde55f9680`
-
-You can find the Super Game Boy BIOS by looking up the md5 sum which is `d574d4f9c12f305074798f54c091a8b4`
+sgb的可选BIOS文件的MD5是 `d574d4f9c12f305074798f54c091a8b4`
 <br><br>
-<h2>Nintendo DS</h2>
-
-Code example
-
+<h3>Nintendo DS</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'nds';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
+没有bios文件
 <br><br>
-<h2>PlayStation</h2>
-
-Code example
-
+<h3>PlayStation</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Bios file
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'psx';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
+    扩展名
+    .bin
+    .cue
+    .img
+    .mdf
+    .pbp
+    .toc
+    .cbn
+    .m3u
+    .ccd
 ```
-Your rom MUST have one of the following extensions
+ps1 的可选JP BIOS文件的MD5是 `8dd7d5296a650fac7319bce665a6a53c`
 
-```
-.bin
-.cue
-.img
-.mdf
-.pbp
-.toc
-.cbn
-.m3u
-.ccd
-```
-You can find the PlayStation 1 JP BIOS by looking up the md5 sum which is `8dd7d5296a650fac7319bce665a6a53c`
+PS1 的可选US BIOS文件的MD5是 `490f666e1afb15b7362b406ed1cea246`
 
-You can find the PlayStation 1 US BIOS by looking up the md5 sum which is `490f666e1afb15b7362b406ed1cea246`
-
-You can find the PlayStation 1 EU BIOS by looking up the md5 sum which is `32736f17079d0b2b7024407c39bd3050`
+PS1 的可选EU BIOS文件的MD5是 `32736f17079d0b2b7024407c39bd3050`
 <br><br>
-<h2>Virtual Boy</h2>
-
-Code example
-
+<h3>Arcade</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
+    EJS_core = 'arcade';
+```
+使用libretro核心 FBA v0.2.97.42 ROMs set
+重要! 所有ROM必须在扩展名为的支持列表中使用相同的名称.zip
+
+neogeo.zip	Required for Neo Geo Games	        `410c65b2debdf4f2dac9ea2b23aa496e`
+
+pgm.zip	    Required for IGS Games	            `653e991a39e867354d090c3394157d1c`
+
+isgsm.zip	ISG Selection Master Type 2006 BIOS	`4a56d56e2219c5e2b006b66a4263c01c`
+<br><br>
+<h3>Virtual Boy</h3>
+```
     EJS_core = 'vb';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>Sega Mega Drive</h2>
-
-Code example
-
+<h3>Sega Mega Drive</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'segaMD';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>Sega CD</h2>
-
-Code example
-
+<h3>Sega CD</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'segaCD';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
+MegaCD 的可选EU BIOS文件的MD5是 `e66fa1dc5820d254611fdcdba0662372`
 
-I do not know the file extension limits for this system.
+SegaCD 的可选US BIOS文件的MD5是 `854b9150240a198070150e4566ae1290`
 
-You can find the MegaCD EU BIOS by looking up the md5 sum which is `e66fa1dc5820d254611fdcdba0662372`
-
-You can find the SegaCD US BIOS by looking up the md5 sum which is `854b9150240a198070150e4566ae1290`
-
-You can find the MegaCD EU BIOS by looking up the md5 sum which is `278a9397d192149e84e820ac621a8edd`
+MegaCD 的可选EU BIOS文件的MD5是 `278a9397d192149e84e820ac621a8edd`
 <br><br>
-<h2>Atari Lynx</h2>
-
-Code example
-
+<h3>Atari Lynx</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'lynx';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>MSX</h2>
-
-Code example
-
+<h3>MSX</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Bios file
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'msx';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
 <p>You can download the 'Databases' and 'Machines' folders from an <a href='http://bluemsx.msxblue.com/download.html'>official full standalone blueMSX emulator installation.</a> Get blueMSXv282full.zip near the bottom of the page.</p>
 Compress the 'Databases' and 'Machines' Folders to 7z or zip archive.
 <br><br>
-<h2>3DO</h2>
-
-Code example
-
+<h3>3DO</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Bios file
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = '3do';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
+    游戏扩展名
+    .bin
+    .cue
+    .iso
 ```
-
-Your rom MUST have one of the following extensions
-
-```
-.bin
-.cue
-.iso
-```
-
 Panasonic FZ-1	`f47264dd47fe30f73ab3c010015c155b`
 
 Panasonic FZ-10	`51f2f43ae2f3508a14d9f56597e2d3ce`
@@ -379,199 +206,45 @@ Panasonic FZ-10JA Kanji ROM	`428577250f43edc902ea239c50d2240d`
 
 Panasonic FZ-1J Kanji ROM	`c23fb5d5e6bb1c240d02cf968972be37`
 <br><br>
-<h2>Sega 32X</h2>
-
-Code example
-
+<h3>Sega 32X</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'sega32x';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>Atari Jaguar</h2>
-
-Code example
-
+<h3>Atari Jaguar</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'jaguar';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>Neo Geo Poket</h2>
-
-Code example
-
+<h3>Neo Geo Poket</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'ngp';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>Sega Game Gear</h2>
-
-Code example
-
+<h3>Sega Game Gear</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'segaGG';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
 GameGear BIOS (bootrom) - Optional	`672e104c3be3a238301aceffc3b23fd6`
 <br><br>
-<h2>Sega Saturn</h2>
-
-Code example
-
+<h3>Sega Saturn</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Bios file
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'segaSaturn';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
 Saturn BIOS - Optional	`af5828fdff51384f99b3c4926be27762`
 <br><br>
-<h2>Atari 7800</h2>
-
-Code example
-
+<h3>Atari 7800</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'atari7800';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>Wanderswan | Color</h2>
-
-Code example
-
+<h3>Wanderswan | Color</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'ws';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
-There is no bios for this system
 <br><br>
-<h2>TurboGrafs-16 | PC Engine</h2>
-
-Code example
-
+<h3>TurboGrafs-16 | PC Engine</h3>
 ```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Bios file
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'pce';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
 ```
-
-I do not know the file extension limits for this system.
-
 syscard3.pce	Super CD-ROM2 System V3.xx - Required	`38179df8f4ac870017db21ebcbf53114`
-<br><br>
-<h2>Arcade</h2>
-
-Code example
-
-```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_biosUrl = ''; // Url to Bios file
-    EJS_gameUrl = ''; // Url to Game rom
-    EJS_core = 'arcade';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
-```
-
-Use only FBA v0.2.97.42 ROMs set
-Important! all roms must use the same name at support list with extension .zip
-
-neogeo.zip	Required for Neo Geo Games	        `410c65b2debdf4f2dac9ea2b23aa496e`
-
-pgm.zip	    Required for IGS Games	            `653e991a39e867354d090c3394157d1c`
-
-isgsm.zip	ISG Selection Master Type 2006 BIOS	`4a56d56e2219c5e2b006b66a4263c01c`
