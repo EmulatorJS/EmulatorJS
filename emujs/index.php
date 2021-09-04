@@ -1,9 +1,3 @@
-<?php
-if(!empty($_GET['ajax'])){
-    echo 1686243;
-
-}
-?>
 <!DOCTYPE html>
 <html lang="zh-hans">
 <head>
@@ -49,37 +43,9 @@ if(empty($_GET['game'])){
 
 ?>
 <div id="_gamelist" hidden>宝可梦 - 比卡超|gb
-宝可梦 - 水晶版ckn|gb
-第五次机器人大战|gb
-拳王96|gb
-三国英雄传 - 傲视天下|gb
-三国英雄传 - 吞食天地|gb
-勇者斗恶龙 - 怪兽仙境|gb
-勇者斗恶龙I.II-星夜之幻修正|gb
-携带电兽力量版|gb
-携带电兽速度版|gb
-农场物语GB3|gb
-萨尔达传说1梦见岛|gb
-第三次超级机器人大战SFC|snes
-重装机兵(中文)|nes
-火焰之纹章 - 暗黑龙与光之剑|nes
-忍者龙剑坛2(中文)|nes
-忍者龙剑坛3(中文)|nes
-第二次机器人大战(中文)|nes
-松鼠大战1|nes
-魂斗罗6代|nes
-Battletoads Double Dragon|nes
-三目童子|nes
-雪人兄弟|nes</div>
+宝可梦 - 水晶版ckn|gb</div>
 <div id="gamelist">
-<ul>
-<li>
-	<script type="text/javascript">
-        var cpro_id = "u6575786";
-        
-</script>
-<script type="text/javascript" src="//cpro.baidustatic.com/cpro/ui/cm.js"></script></li>
-</ul>
+	<ul></ul>
 </div>
 <script>
 var m=document.querySelector('#_gamelist'),t = m.textContent.split('\n'),ul=document.querySelector('#gamelist').querySelector('ul');
@@ -137,7 +103,9 @@ for(var i=0;i<t.length;i++){
               EJS_core = '<?php echo $cores; ?>',
               EJS_biosUrl = '<?php echo $bios; ?>';// Url to Famicom Disk System bios
         </script>
-<script src="Mylocalforage.js"></script>
+<!-- 127.0.0.1 => <script src="Mylocalforage.js"></script> -->
+	<!-- server ↓ -->
+<script src="Mylocalforage.min.js"></script>
 <?php
 }
 ?>
