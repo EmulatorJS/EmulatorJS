@@ -1,7 +1,9 @@
-[extract7z.js](https://www.emulatorjs.com/worker/extract7z.js) 
+<h1>本地测试时需要下载一下文件 并且一这样命名</h1>
 
-[extractzip.js](https://www.emulatorjs.com/worker/extractzip.js) 
+[extract7z.min.js](https://www.emulatorjs.com/worker/extract7z.js) 
 
-[libunrar.js](https://www.emulatorjs.com/worker/libunrar.js) 
+[extractzip.min.js](https://www.emulatorjs.com/worker/extractzip.js) 
+
+[libunrar.min.js](https://www.emulatorjs.com/worker/libunrar.js) 
 
 [libunrar.js.mem](https://www.emulatorjs.com/worker/libunrar.js.mem) 
