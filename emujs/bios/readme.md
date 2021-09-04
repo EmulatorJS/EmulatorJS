@@ -10,6 +10,4 @@
 
 [segacd.7z](https://www.retrogames.cc/bios/segacd.7z)
 
-[sega.7z](https://www.retrogames.cc/bios/sega.7z)
-
 [bios.gg](https://www.retrogames.cc/bios/bios.gg)
