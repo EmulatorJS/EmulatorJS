@@ -35,22 +35,24 @@ ROM可以压缩到.zip或.7z格式
 
 
 <h2>代码例子</h2>
+
 ```
-<div style="width:640px;height:480px;max-width:100%">
-  <div id="game"></div>
-</div>
-<script type="text/javascript">
-    EJS_player = '#game';//游戏的网页元素 ID
-    EJS_biosUrl = ''; // 如果需要BIOS,这里填写,否则留空,不支持跨域
-    EJS_gameUrl = ''; // 游戏文件地址,不支持跨域
-    EJS_core = 'nes'; //游戏核心
-    EJS_lightgun = false; // Lightgun 不知道干嘛的
-    EJS_pathtodata = 'data/'; //定义asm文件的地址!!
-</script>
-<script src="data/loader.js"></script>
+    <div style="width:640px;height:480px;max-width:100%">
+    <div id="game"></div>
+    </div>
+    <script type="text/javascript">
+        EJS_player = '#game';//游戏的网页元素 ID
+        EJS_biosUrl = ''; // 如果需要BIOS,这里填写,否则留空,不支持跨域
+        EJS_gameUrl = ''; // 游戏文件地址,不支持跨域
+        EJS_core = 'nes'; //游戏核心
+        EJS_lightgun = false; // Lightgun 不知道干嘛的
+        EJS_pathtodata = 'data/'; //定义asm文件的地址!!
+    </script>
+    <script src="data/loader.js"></script>
 ```
 
 <h3>NES / Famicom 又名FC 红白机</h3>
+
 ```
     EJS_core = 'nes'; //游戏核心
     扩展名格式
@@ -59,9 +61,11 @@ ROM可以压缩到.zip或.7z格式
     .unif
     .unf
 ```
+
 nes的可选BIOS文件的MD5是 `ca30b50f880eb660a320674ed365ef7a`
 <br><br>
 <h3>SNES 又名SFC 又名超级任天堂</h3>
+
 ```
     EJS_core = 'snes'; //游戏核心
     扩展名格式
@@ -77,6 +81,7 @@ nes的可选BIOS文件的MD5是 `ca30b50f880eb660a320674ed365ef7a`
 没有bios
 <br><br>
 <h3>Nintendo 64 又名N64,任天堂扑街之作</h3>
+
 ```
     EJS_core = 'n64';
     扩展名格式
@@ -86,14 +91,15 @@ nes的可选BIOS文件的MD5是 `ca30b50f880eb660a320674ed365ef7a`
 没有bios
 <br><br>
 <h3>Nintendo Game Boy/Color 这是游戏界的大哥大,土豪的象征,彩色版又叫彩game</h3>
+
 ```
     EJS_core = 'gb';
-    
 ```
 gb的可选BIOS文件的MD5是 `32fbbd84168d3482956eb3c5051637f5`
 gbc的可选BIOS文件的MD5是 `dbfce9db9deaa2567f6a84fde55f9680`
 <br><br>
 <h3>Nintendo Game Boy Advance</h3>
+
 ```
     EJS_core = 'gba';
 ```
@@ -106,12 +112,14 @@ gbc的可选BIOS文件的MD5是 `dbfce9db9deaa2567f6a84fde55f9680`
 sgb的可选BIOS文件的MD5是 `d574d4f9c12f305074798f54c091a8b4`
 <br><br>
 <h3>Nintendo DS</h3>
+
 ```
     EJS_core = 'nds';
 ```
 没有bios文件
 <br><br>
 <h3>PlayStation</h3>
+
 ```
     EJS_core = 'psx';
     扩展名
@@ -132,6 +140,7 @@ PS1 的可选US BIOS文件的MD5是 `490f666e1afb15b7362b406ed1cea246`
 PS1 的可选EU BIOS文件的MD5是 `32736f17079d0b2b7024407c39bd3050`
 <br><br>
 <h3>Arcade</h3>
+
 ```
     EJS_core = 'arcade';
 ```
@@ -145,16 +154,19 @@ pgm.zip	    Required for IGS Games	            `653e991a39e867354d090c3394157d1c
 isgsm.zip	ISG Selection Master Type 2006 BIOS	`4a56d56e2219c5e2b006b66a4263c01c`
 <br><br>
 <h3>Virtual Boy</h3>
+
 ```
     EJS_core = 'vb';
 ```
 <br><br>
 <h3>Sega Mega Drive</h3>
+
 ```
     EJS_core = 'segaMD';
 ```
 <br><br>
 <h3>Sega CD</h3>
+
 ```
     EJS_core = 'segaCD';
 ```
@@ -165,11 +177,13 @@ SegaCD 的可选US BIOS文件的MD5是 `854b9150240a198070150e4566ae1290`
 MegaCD 的可选EU BIOS文件的MD5是 `278a9397d192149e84e820ac621a8edd`
 <br><br>
 <h3>Atari Lynx</h3>
+
 ```
     EJS_core = 'lynx';
 ```
 <br><br>
 <h3>MSX</h3>
+
 ```
     EJS_core = 'msx';
 ```
@@ -177,6 +191,7 @@ MegaCD 的可选EU BIOS文件的MD5是 `278a9397d192149e84e820ac621a8edd`
 Compress the 'Databases' and 'Machines' Folders to 7z or zip archive.
 <br><br>
 <h3>3DO</h3>
+
 ```
     EJS_core = '3do';
     游戏扩展名
@@ -207,43 +222,51 @@ Panasonic FZ-10JA Kanji ROM	`428577250f43edc902ea239c50d2240d`
 Panasonic FZ-1J Kanji ROM	`c23fb5d5e6bb1c240d02cf968972be37`
 <br><br>
 <h3>Sega 32X</h3>
+
 ```
     EJS_core = 'sega32x';
 ```
 <br><br>
 <h3>Atari Jaguar</h3>
+
 ```
     EJS_core = 'jaguar';
 ```
 <br><br>
 <h3>Neo Geo Poket</h3>
+
 ```
     EJS_core = 'ngp';
 ```
 <br><br>
 <h3>Sega Game Gear</h3>
+
 ```
     EJS_core = 'segaGG';
 ```
 GameGear BIOS (bootrom) - Optional	`672e104c3be3a238301aceffc3b23fd6`
 <br><br>
 <h3>Sega Saturn</h3>
+
 ```
     EJS_core = 'segaSaturn';
 ```
 Saturn BIOS - Optional	`af5828fdff51384f99b3c4926be27762`
 <br><br>
 <h3>Atari 7800</h3>
+
 ```
     EJS_core = 'atari7800';
 ```
 <br><br>
 <h3>Wanderswan | Color</h3>
+
 ```
     EJS_core = 'ws';
 ```
 <br><br>
 <h3>TurboGrafs-16 | PC Engine</h3>
+
 ```
     EJS_core = 'pce';
 ```
