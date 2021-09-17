@@ -77,7 +77,7 @@ window.readAsBufferrr = function(fileBlob) {
 }
 
 window.EJS_loadStateFromURL = async function() {
-    if (! EJS_loadStateURL) {return}
+    if (! window.EJS_loadStateURL) {return}
     var a = await fetch(EJS_loadStateURL)
     var a = await a.blob()
     var a = await readAsBufferrr(a)
