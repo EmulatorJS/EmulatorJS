@@ -56,7 +56,6 @@ window.getHeadGameInfo = function(normalFunc, url) {
 	if (! url.startsWith('blob:')) {
 		return normalFunc(url, {})
 	} else {
-window.addEventListener("beforeunload", function(event) {indexedDB.deleteDatabase('ejs-roms');indexedDB.deleteDatabase('ejs-romsdata');});
 		return async function() {
 			//console.log('blob url')
 			var a = await fetch(url)
@@ -64,6 +63,25 @@ window.addEventListener("beforeunload", function(event) {indexedDB.deleteDatabas
 			return {headers:{'content-length': a.size, 'content-type': 'text/plain'}}
 		}();
 	}
+}
+
+window.readAsBufferrr = function(fileBlob) {
+    return new Promise(function(resolve, reject) {
+        var reader = new FileReader()
+        reader.onload = function(e) {
+            resolve(e.target.result)
+        }
+        reader.readAsArrayBuffer(fileBlob)
+    })
+}
+
+window.EJS_loadStateFromURL = async function() {
+    if (! EJS_loadStateURL) {return}
+    var a = await fetch(EJS_loadStateURL)
+    var a = await a.blob()
+    var a = await readAsBufferrr(a)
+    var a = new Uint8Array(a)
+    EJS_loadState(a)
 }
 
 
