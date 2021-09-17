@@ -7,13 +7,14 @@ Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
+EMULATOR JS PEOPLE - If you want to talk to me about taking this down, you can email me at ethan.a.obrien@gmail.com
+
 <p>I have made a google chrome extension using this code <a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>here</a> - Does not need webserver. (I dont update this often)</p>
 
 Recomended: https://github.com/ethanaobrien/youtube-downloader - A fully featured youtube downloader. 100% client side. No viruses, no malware, no ads!
 
 <h1>Where did I get this?</h1>
 <p>So I found this website called <a href='https://www.emulatorjs.com/'>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
-<p>EMULATOR JS PEOPLE - I looked everywhere and found no terms of service on your site.</p>
 
 <p>The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
 
