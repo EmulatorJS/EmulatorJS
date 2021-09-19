@@ -27,7 +27,7 @@ function decryptButton() {
 		for (var i=1; i<a.length; i++) {
 			var error = false
 			a[i] = a[i].split("']")[0]
-			if (a[i].split('\\x').length != 1 || a[i].split('\\u').length != 1 || a[i].split("'").length != 1 || a[i].split('"').length != 1 || a[i].split(' ').length != 1) {
+			if (a[i].split('\\x').length != 1 || a[i].split('\\u').length != 1 || a[i].split("'").length != 1 || a[i].split('"').length != 1 || a[i].split('-').length != 1 || a[i].split('_').length != 1 || a[i].split(' ').length != 1) {
                 var error = true
             }
 			if (! error) {
