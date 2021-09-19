@@ -56,7 +56,6 @@ window.getHeadGameInfo = function(normalFunc, url) {
 	if (! url.startsWith('blob:')) {
 		return normalFunc(url, {})
 	} else {
-		window.addEventListener("beforeunload", function(event) {indexedDB.deleteDatabase('ejs-roms');indexedDB.deleteDatabase('ejs-romsdata');});
 		return async function() {
 			//console.log('blob url')
 			var a = await fetch(url)
