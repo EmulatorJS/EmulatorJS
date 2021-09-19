@@ -32,7 +32,7 @@ function decryptButton() {
 			try {var code = eval('"\\x'+a[i]+'"')} catch(e) {console.log(e, '"\\x'+a[i]+'"'); var error = true}
 			if (! error) {
 				if (code != '\n' && code != '\r') {
-					window.body = body.replaceAll('\\x'+a[i], code.replaceAll("'", "\\'").replaceAll('"', '\\"'))
+					window.body = body.replaceAll('\\x'+a[i], code.replaceAll("'", "\\'").replaceAll('"', '\\"').replaceAll('\\', '\\\\'))
 				}
 			}
 		}
