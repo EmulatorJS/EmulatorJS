@@ -2,7 +2,7 @@ fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').
 	if (response.ok) {
 		response.text().then(body => {
 			var version = JSON.parse(body);
-			var usingVersion = '0.4.23-01';
+			var usingVersion = '0.4.23-02';
 			if (usingVersion != version.current_version) {
 				console.log('Using emulatorjs version ' + usingVersion + ' but the newest version is ' + version.current_version);
 			};
@@ -56,7 +56,6 @@ window.getHeadGameInfo = function(normalFunc, url) {
 	if (! url.startsWith('blob:')) {
 		return normalFunc(url, {})
 	} else {
-		window.addEventListener("beforeunload", function(event) {indexedDB.deleteDatabase('ejs-roms');indexedDB.deleteDatabase('ejs-romsdata');});
 		return async function() {
 			//console.log('blob url')
 			var a = await fetch(url)
