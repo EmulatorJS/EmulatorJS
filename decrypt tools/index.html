@@ -64,7 +64,7 @@ function decryptButton() {
 		document.getElementById('download').style = 'display:block;'
 		window.body = e.target.result
 		var encrypted = []
-		var a = body.split("_0x16a2('")
+		var a = body.split("_0x4e1f('")
 		var b = []
 		for (var i=0; i<a.length; i++) {
 			var c = a[i].split("')")[0].split("','")
@@ -82,7 +82,7 @@ function decryptButton() {
 				//window.checked.push(value)
 				if (add) {
 					window.amountReplaced++
-					window.body = body.replaceAll("_0x16a2('" + b[i][0] + "','" + b[i][1] + "')", "'" + value + "'")
+					window.body = body.replaceAll("_0x4e1f('" + b[i][0] + "','" + b[i][1] + "')", "'" + value + "'")
 					console.log(window.amountReplaced)
 					//updateAmountReplaced()
 				}
