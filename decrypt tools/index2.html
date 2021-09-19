@@ -1,0 +1,44 @@
+<html>
+<body>
+<div id='app'>
+<ul>
+<br><br>
+	<input type='file' onchange='decryptButton()' id='file'></input><br><br><br>
+</ul>
+</div>
+
+<script src='decrypt.js'></script>
+<script>
+
+function decryptButton() {
+	var finished = function() {
+		window.stopped = true
+		var a = document.createElement('a')
+		a.href = URL.createObjectURL(new Blob([window.body]))
+		a.download = 'emulator.js'
+		a.click()
+	}
+	window.finished = finished
+	var file = document.getElementById('file').files[0]
+	document.getElementById('file').remove()
+	var reader = new FileReader()
+	reader.onload = async function(e) {
+		window.body = e.target.result
+		var a = body.split('\\x')
+		for (var i=1; i<a.length; i++) {
+			var error = false
+			a[i] = a[i].substr(0, 2)
+			console.log(a[i])
+			try {var code = eval('"\\x'+a[i]+'"')} catch(e) {console.log(e, '"\\x'+a[i]+'"'); var error = true}
+			if (! error) {
+				if (code != '\n' && code != '\r') {
+					window.body = body.replaceAll('\\x'+a[i], code.replaceAll("'", "\\'").replaceAll('"', '\\"'))
+				}
+			}
+		}
+	}
+	reader.readAsText(file)
+}
+</script>
+</body>
+</html>
