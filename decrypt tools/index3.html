@@ -26,12 +26,12 @@ function decryptButton() {
 		var a = body.split("['")
 		for (var i=1; i<a.length; i++) {
 			var error = false
-			a[i] = a[i].split("']")
+			a[i] = a[i].split("']")[0]
 			if (a[i].split('\\x').length != 1 || a[i].split('\\u').length != 1 || a[i].split("'").length != 1 || a[i].split('"').length != 1) {
                 var error = true
             }
 			if (! error) {
-				window.body = body.replaceAll('\\x'+a[i], code.replaceAll("'", "\\'").replaceAll('"', '\\"').replaceAll('\\', '\\\\'))
+				window.body = body.replaceAll("['"+a[i]+"']", '.' + a[i].replaceAll("'", "\\'").replaceAll('"', '\\"').replaceAll('\\', '\\\\'))
 			}
 		}
 		finished()
