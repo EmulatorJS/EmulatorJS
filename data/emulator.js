@@ -17003,8 +17003,11 @@ var EJS = function(_0x574f5e) {
                     else {
                         var _0x2b5fc8 = new Blob([_0x2c1832]),
                             _0x152605 = _0xa88a13['startName']['split']('/')['pop']()['split']('.'),
-                            _0x51d471 = _0x152605['slice'](0x0, _0x152605['length'] - 0x1)['join']('.'),
-                            _0x49f6b6 = _0x51d471 ? '' ['concat'](_0x51d471, '.state') : 'game.state';
+                            _0x51d471 = _0x152605['slice'](0x0, _0x152605['length'] - 0x1)['join']('.')
+                        if (window.EJS_gameName) {
+                            var _0x51d471 = window.EJS_gameName
+                        }
+                        var _0x49f6b6 = _0x51d471 ? '' ['concat'](_0x51d471, '.state') : 'game.state';
                         _0x4e4ca6()(_0x2b5fc8, _0x49f6b6);
                     }
                     _0xa88a13['elements']['container']['focus']();

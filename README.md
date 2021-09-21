@@ -35,6 +35,15 @@ Just so you know - You DO NOT NEED the bios for most games / systems, even if it
 
 Roms can be zipped into .zip archive or .7z archive
 
+TIPS: you can use `blob:` urls, although the save state name will be `game.state`. To have the proper file name add the following line to your configuration.
+You can use this without having the gameUrl set to a `blob:` url. Just do the same thing below
+
+```
+EJS_gameName = "name of game";
+```
+When the user saves a state, the state will be saved with the name `name of game.state`
+
+
 <h1>Supported systems!</h1>
 <h2>NES / Famicom</h2>
 
