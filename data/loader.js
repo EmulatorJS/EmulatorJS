@@ -2,7 +2,7 @@ fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').
 	if (response.ok) {
 		response.text().then(body => {
 			var version = JSON.parse(body);
-			var usingVersion = '0.4.23-03';
+			var usingVersion = '0.4.23-04';
 			if (usingVersion != version.current_version) {
 				console.log('Using emulatorjs version ' + usingVersion + ' but the newest version is ' + version.current_version);
 			};
