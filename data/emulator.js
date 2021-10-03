@@ -15056,7 +15056,7 @@ var EJS = function(_0x574f5e) {
                                         'responseType': 'arraybuffer'
                                     })['then'](function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4['data']);
-                                        if (EJS_gameUrl.startsWith('blob:')) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
+                                        if (EJS_gameUrl.startsWith('blob:') || EJS_gameUrl.startsWith('file:') || EJS_gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && EJS_gameUrl.startsWith('/') && EJS_gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
                                         if (_0x107e8a && _0x4e171c['db'])
                                             if (_0x17edbf['length'] > 0x6400000)
                                                 for (var _0x2c1832 = Math['ceil'](_0x17edbf['length'] / 0x6400000), _0x257c4d = 0x0; _0x257c4d < _0x2c1832; _0x257c4d += 0x1) {
