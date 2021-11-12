@@ -6,11 +6,11 @@ The BEST emulator on the internet. No ads and self hosted!
 Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
+EMULATOR JS PEOPLE - If you want to talk to me about taking this down, you can email me at ethan.a.obrien@gmail.com
 
-<h1>Credits</h1>
-<p>(normally this is at the end of the readme, although I think this is the most important part)</p>
-<p>All credit on the emulators go to <a href="https://github.com/linuxserver/emulatorjs">@linuxserver</a>
-<p>Originally I found <a href='https://www.emulatorjs.com/'>this</a> website and downloaded all the resources. Now we can (theoretically) just compile everything from <a href="https://github.com/linuxserver/emulatorjs">here</a></p>
+<h1>Where did I get this?</h1>
+<p>So I found this website called <a href='https://www.emulatorjs.com/'>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
+https://github.com/linuxserver/emulatorjs may soon make it possible to use all this open source
 
 <p>The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
 
