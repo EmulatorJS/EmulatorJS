@@ -16,6 +16,8 @@ https://github.com/linuxserver/emulatorjs may soon make it possible to use all t
 
 <p>IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!</p>
 
+NOTE: The screen recording option does not currently support audio! only video recording is supported at this time.
+
 <h1>IF YOU WOULD LIKE ANOTHER SYSTEM</h1>
 <p>Check if the system is on <a href='https://www.emulatorjs.com/'>emulatorjs.com</a>. If it is then open an issue asking for the system you would like to emulate.</p>
 
