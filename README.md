@@ -6,19 +6,17 @@ The BEST emulator on the internet. No ads and self hosted!
 Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
-
 EMULATOR JS PEOPLE - If you want to talk to me about taking this down, you can email me at ethan.a.obrien@gmail.com
-
-<p>I have made a google chrome extension using this code <a href='https://github.com/ethanaobrien/emulatorjs-chrome-extension'>here</a> - Does not need webserver. (I dont update this often)</p>
-
-Recomended: https://github.com/ethanaobrien/youtube-downloader - A fully featured youtube downloader. 100% client side. No viruses, no malware, no ads!
 
 <h1>Where did I get this?</h1>
 <p>So I found this website called <a href='https://www.emulatorjs.com/'>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
+https://github.com/linuxserver/emulatorjs may soon make it possible to use all this open source
 
 <p>The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
 
 <p>IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!</p>
+
+NOTE: The screen recording option does not currently support audio! only video recording is supported at this time.
 
 <h1>IF YOU WOULD LIKE ANOTHER SYSTEM</h1>
 <p>Check if the system is on <a href='https://www.emulatorjs.com/'>emulatorjs.com</a>. If it is then open an issue asking for the system you would like to emulate.</p>
@@ -276,6 +274,32 @@ I do not know the file extension limits for this system.
 
 There is no bios for this system
 <br><br>
+<h2>Sega Master System</h2>
+
+Code example
+
+```
+<div style="width:640px;height:480px;max-width:100%">
+        <div id="game"></div>
+      </div>
+<script type="text/javascript">
+    EJS_player = '#game';
+    EJS_gameUrl = ''; // Url to Game rom
+    EJS_core = 'segaMS';
+    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
+</script>
+<script src="data/loader.js"></script>
+```
+
+I do not know the file extension limits for this system.
+
+bios_E.sms :	MasterSystem EU BIOS (bootrom) - Optional	840481177270d5642a14ca71ee72844c
+
+bios_U.sms : MasterSystem US BIOS (bootrom) - Optional	840481177270d5642a14ca71ee72844c
+
+bios_J.sms : MasterSystem JP BIOS (bootrom) - Optional	24a519c53f67b00640d0048ef7089105
+<br><br>
+
 <h2>Sega CD</h2>
 
 Code example
