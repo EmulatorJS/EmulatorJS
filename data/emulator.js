@@ -14625,6 +14625,12 @@ var EJS = function(_0x574f5e) {
                         'loading-info': _0x449eac({
                             'loading-info': !0x0
                         }),
+                        'ad': _0x449eac({
+                            'ad': !0x0
+                        }),
+                        'close-ad': _0x449eac({
+                            'close-ad': !0x0
+                        }),
                         'start-game': _0x449eac({
                             'start-game': !0x0
                         }),
