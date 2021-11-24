@@ -15417,9 +15417,9 @@ var EJS = function(_0x574f5e) {
                                         }
                                     };
                                     var _0xa88a13, _0x1dedcd = Math['ceil'](new Date()['valueOf']() / 0x3e8);
-                                    _0xa88a13 = '127.0.0.1' === document['location']['hostname'] && '8002' === document['location']['port'] ? '/v.json?_t=' ['concat'](_0x1dedcd) : '' ['concat']([EJS_pathtodata + 'v.json?t=']['join'](''))['concat'](_0x1dedcd);
+                                    _0xa88a13 = EJS_pathtodata + 'v.json?t='+_0x1dedcd;
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        _0x550f17['a']['get']('' ['concat'](EJS_pathtodata + _0x47ed14)['concat'](_0x16049b, '?v=')['concat'](_0x55a075), {
+                                        _0x550f17['a']['get'](EJS_pathtodata + _0x47ed14+_0x16049b+'?v='+_0x55a075, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b['total'] ? '' ['concat'](Math['floor'](_0x117e6b['loaded'] / _0x117e6b['total'] * 0x64), '%') : '';
                                                 _0x3787ba['innerHTML'] = 'Download Game Core ' ['concat'](_0x55a075);
@@ -15433,6 +15433,7 @@ var EJS = function(_0x574f5e) {
                                             });
                                             var _0xea4c63 = _0x519406['slice'] ? _0x519406['slice'](0xc) : _0x519406['subarray'](0xc);
                                             _0xea4c63['set']([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0), _0x519406 = null, _0x4f0fcc(_0xea4c63);
+                                            
                                         })['catch'](function(_0x2e06c8) {
                                             _0x3787ba['innerHTML'] = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
                                         });
