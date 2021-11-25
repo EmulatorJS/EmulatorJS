@@ -14614,9 +14614,8 @@ var EJS = function(_0x574f5e) {
                         'mame2003': 'mame2003'
                     },
                     _0xc6823 = this,
-                    _0x1143c5 = _0xc6823['system'],
-                    _0x47ed14 = '';
-                '127.0.0.1' === document['location']['hostname'] && '8002' === document['location']['port'] || (_0x47ed14 = ''), _0x17edbf = EJS_pathtodata + 'extract7z.js', _0x2c1832 = EJS_pathtodata + 'extractzip.js?v=1', _0x4ce206 = EJS_pathtodata + 'libunrar.js';
+                    _0x1143c5 = _0xc6823['system'];
+                _0x17edbf = EJS_pathtodata + 'extract7z.js', _0x2c1832 = EJS_pathtodata + 'extractzip.js?v=1', _0x4ce206 = EJS_pathtodata + 'libunrar.js';
                 var _0xb2be2a = _0x428003('canvas', {});
                 this['game']['appendChild'](_0xb2be2a), _0x4d7024['loading'] = _0x428003('div', {
                     'class': this['config']['classNames']['loading']
@@ -14678,7 +14677,7 @@ var EJS = function(_0x574f5e) {
                         return 0x50 === _0x571737[0x0] && 0x4b === _0x571737[0x1] && 0x3 === _0x571737[0x2] && 0x4 === _0x571737[0x3] ? _0x17edbf = 'zip' : 0x50 === _0x571737[0x0] && 0x4b === _0x571737[0x1] && 0x5 === _0x571737[0x2] && 0x6 === _0x571737[0x3] ? _0x17edbf = 'zip' : 0x50 === _0x571737[0x0] && 0x4b === _0x571737[0x1] && 0x7 === _0x571737[0x2] && 0x8 === _0x571737[0x3] ? _0x17edbf = 'zip' : 0x37 === _0x571737[0x0] && 0x7a === _0x571737[0x1] && 0xbc === _0x571737[0x2] && 0xaf === _0x571737[0x3] && 0x27 === _0x571737[0x4] && 0x1c === _0x571737[0x5] ? _0x17edbf = '7z' : 0x52 === _0x571737[0x0] && 0x61 === _0x571737[0x1] && 0x72 === _0x571737[0x2] && 0x21 === _0x571737[0x3] && 0x1a === _0x571737[0x4] && 0x7 === _0x571737[0x5] && 0x0 == _0x571737[0x6] && (_0x17edbf = 'rar'), _0x17edbf;
                     },
                     _0xa24f60 = function(_0xbf2b8b) {
-                        var _0x17edbf = 'importScripts("' ['concat'](_0xbf2b8b, '");'),
+                        var _0x17edbf = 'importScripts("'+_0xbf2b8b+'");',
                             _0x2c1832 = new Blob([_0x17edbf], {
                                 'type': 'application/javascript'
                             }),
@@ -14688,15 +14687,15 @@ var EJS = function(_0x574f5e) {
                         });
                     },
                     _0x41d0bd = function(_0x3a41ff, _0x2b541e) {
-                        var _0x2c1832 = '';
-                        if ('rar' == _0x2b541e) _0x2c1832 = '\nvar dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \'' ['concat'](EJS_pathtodata + 'extractzip.js?v=1')['concat'](_0x3a41ff, '");\nvar unrar = function(data, password) {\n    var cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    var rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    var rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ');
-                        var _0x22326b = new Blob([_0x2c1832], {
-                                'type': 'application/javascript'
-                            }),
-                            _0x3635b1 = window['URL']['createObjectURL'](_0x22326b);
-                        return new Promise(function(_0x2d169f, _0x341b0d) {
-                            _0x2d169f(new Worker(_0x3635b1));
-                        });
+                            var _0x2c1832 = '';
+                            if ('rar' == _0x2b541e) _0x2c1832 = '\nvar dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \'' ['concat'](_0x3a41ff+'.mem', '\';\n    }\n};\nimportScripts("')['concat'](_0x3a41ff, '");\nvar unrar = function(data, password) {\n    var cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    var rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    var rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ');
+                            var _0x22326b = new Blob([_0x2c1832], {
+                                    'type': 'application/javascript'
+                                }),
+                                _0x3635b1 = window['URL']['createObjectURL'](_0x22326b);
+                            return new Promise(function(_0x2d169f, _0x341b0d) {
+                                _0x2d169f(new Worker(_0x3635b1));
+                            });
                     },
                     _0x24de8d = null,
                     _0x4e171c = null,
@@ -15419,7 +15418,7 @@ var EJS = function(_0x574f5e) {
                                     var _0xa88a13, _0x1dedcd = Math['ceil'](new Date()['valueOf']() / 0x3e8);
                                     _0xa88a13 = EJS_pathtodata + 'v.json?t='+_0x1dedcd;
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        _0x550f17['a']['get'](EJS_pathtodata + _0x47ed14+_0x16049b+'?v='+_0x55a075, {
+                                        _0x550f17['a']['get'](EJS_pathtodata+_0x16049b+'?v='+_0x55a075, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b['total'] ? '' ['concat'](Math['floor'](_0x117e6b['loaded'] / _0x117e6b['total'] * 0x64), '%') : '';
                                                 _0x3787ba['innerHTML'] = 'Download Game Core ' ['concat'](_0x55a075);
