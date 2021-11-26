@@ -9,7 +9,17 @@
 
 <script src='decrypt.js'></script>
 <script>
-
+if (! String.prototype.includez) {
+    String.prototype.includez = function() {
+        var args = Array.prototype.slice.call(arguments)
+        for (var i=0; i<args.length; i++) {
+            if (this.indexOf(args[i]) != -1) {
+                return true
+            }
+        }
+        return false
+    }
+}
 function decryptButton() {
 	var finished = function() {
 		window.stopped = true
@@ -24,18 +34,21 @@ function decryptButton() {
 	var reader = new FileReader()
 	reader.onload = async function(e) {
 		window.body = e.target.result
-		var a = body.split('\\x')
+        var q = []
+		var a = body.split('[\'')
+        console.log(a.length)
 		for (var i=1; i<a.length; i++) {
 			var error = false
-			a[i] = a[i].substr(0, 2)
-			console.log(a[i])
-			try {var code = eval('"\\x'+a[i]+'"')} catch(e) {console.log(e, '"\\x'+a[i]+'"'); var error = true}
-			if (! error) {
-				if (code != '\n' && code != '\r') {
-					window.body = body.replaceAll('\\x'+a[i], code.replaceAll("'", "\\'").replaceAll('"', '\\"').replaceAll('\\', '\\\\'))
-				}
-			}
+            var value = a[i].split('\']')[0]
+            if(! q.includes(value)) {
+                if (!value.includez("'", '-', ' ', '@', ':')) {
+                    q.push(value)
+                    console.log(value)
+                    window.body = body.replaceAll("['"+value+"']", "."+value)
+                }
+            }
 		}
+        console.log(q)
 		finished()
 	}
 	reader.readAsText(file)
