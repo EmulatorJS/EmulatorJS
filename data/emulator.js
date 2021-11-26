@@ -2165,7 +2165,7 @@ var EJS = function(_0x574f5e) {
     };
 }, function(_0x2406a9, _0x548f51, _0x324eb4) {
     'use strict';
-    _0x548f51.a = '0.4.23';
+    _0x548f51.a = '0.4.24';
 }, function(_0x2e240f, _0x5b82af, _0x39b24a) {
     var _0xafdfe, _0x133983;
     ! function(_0xcb4965, _0x3924c5, _0x2b6d6d) {
