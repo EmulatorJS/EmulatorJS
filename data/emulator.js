@@ -16080,7 +16080,7 @@ var EJS = function(_0x574f5e) {
                             _0x1849bc = _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x21e62d, '"][data-index="').concat(_0x23d419, '"][data-type="2"]'));
                         if (!_0x294e35 || !_0x1849bc) return !0x1;
                         var _0x19d43b = _0x378b5c.controllers[_0x23d419][_0x21e62d];
-                        _0x19d43b && (_0x19d43b.type && 0x1 !== parseInt(_0x19d43b.type, 0xa) ? _0x1849bc.value = '' : _0x19d43b.value && (_0x294e35.value = _0x378b5c.keyMap[_0x19d43b.value], _0x294e35.setAttribute('data-value', _0x19d43b.value)), _0x19d43b.value2 && (_0x1849bc.value = 'button ' .concat(parseInt(_0x19d43b.value2, 0xa) + 0x1), _0x1849bc.setAttribute('data-value', _0x19d43b.value2)));
+                        _0x19d43b && (_0x19d43b.type && 0x1 !== parseInt(_0x19d43b.type, 0xa) ? _0x1849bc.value = '' : _0x19d43b.value && (_0x294e35.value = _0x378b5c.keyMap[_0x19d43b.value] || '', _0x294e35.setAttribute('data-value', _0x19d43b.value)), _0x19d43b.value2 && (_0x1849bc.value = isNaN(_0x19d43b.value2) ? (_0x19d43b.value2) : ('button ' .concat(parseInt(_0x19d43b.value2, 0xa) + 0x1)), _0x1849bc.setAttribute('data-value', _0x19d43b.value2)));
                     });
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-submit'])), 'click', function(_0x5f19bd) {
                     var _0x2c1832 = _0xa88a13.elements.dialogs.gamepad.querySelectorAll('input'),
@@ -16782,6 +16782,70 @@ var EJS = function(_0x574f5e) {
                         });
                     });
                 }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.AXIS_CHANGED, function(_0x31f017) {
+					if (_0x31f017.value === 0 || _0x31f017.value === 1) {
+						if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
+							if (parseInt(_0x31f017.value) !== 0) {
+								var _0x1f4ee2 = _0x2c1832.getAttribute('data-id'),
+									_0xdd4205 = parseInt(_0x2c1832.getAttribute('data-index'), 0xa);
+								var _0x126d2d = _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))
+								_0x126d2d.setAttribute('data-value', _0x31f017.axis + ':' + _0x31f017.value)
+								_0x126d2d.value = _0x31f017.axis + ':' + _0x31f017.value
+								_0x132da7(_0x2c1832, true)
+							}
+						} else {
+							var quit = false
+							for (var q=0; q<Object.keys(_0x378b5c.controllers).length; q++) {
+								var _0x5cf388 = Object.keys(_0x378b5c.controllers)[q]
+								for (var w=0; w<Object.keys(_0x378b5c.controllers[_0x5cf388]).length; w++) {
+									var _0x3cf4d3 = Object.keys(_0x378b5c.controllers[_0x5cf388])[w]
+									if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
+										continue
+									}
+									if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value && ['24', '25'].includes(_0x3cf4d3)) {
+										if (_0x3cf4d3 == '24') {//save
+											quit = true
+											//console.log('save')
+											if (_0xa88a13.started && !_0x378b5c.connected) {
+												var _0x17edbf = _0x378b5c.saveState();
+												try {
+													_0x27f4c4.FS.unlink('quick.state');
+												} catch (_0x4b4d4c) {}
+												_0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
+											}
+										} else if (_0x3cf4d3 == '25') {//load
+											quit = true
+											//console.log('load')
+											var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
+											if (_0xa88a13.started && !_0x378b5c.connected) try {
+												_0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
+													_0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
+												}, 0xa);
+											} catch (_0x4ee386) {console.warn(_0x4ee386)}
+										}
+									}
+									if (_0x31f017.value === 0) {
+										// button up
+										if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis) {
+											_0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x0)
+										}
+									} else {
+										//button down
+										if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value) {
+											quit = true
+											_0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1)
+										}
+									}
+								};
+							};
+							if (quit) {
+								return
+							}
+							if (! _0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
+								return
+							}
+						}
+					}
+                    
                     Math.abs(_0x31f017.value) <= 0.1 && (_0x31f017.value = 0x0);
                     var _0x17edbf = _0x31f017.gamepad.index;
                     'LEFT_STICK_X' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x10, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x11, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x11, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x10, 0x0))), 'LEFT_STICK_Y' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x12, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x13, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x13, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x12, 0x0))), 'RIGHT_STICK_X' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x14, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x15, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x15, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x14, 0x0))), 'RIGHT_STICK_Y' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x16, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x17, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x17, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x16, 0x0)));
@@ -17275,7 +17339,7 @@ var EJS = function(_0x574f5e) {
                     return _0x378b5c.toggleShader(0x0), _0x840cf4(), _0x378b5c.toggleShader(0x1), _0x27f4c4.FS.readFile('screenshot.png');
                 }, _0x378b5c.restartGame = _0x27f4c4.Module.cwrap('system_restart', '', []), _0x378b5c.currentFrameNum = _0x27f4c4.Module.cwrap('get_current_frame_count', '', []), _0x378b5c.saveSavFiles = _0x27f4c4.Module.cwrap('cmd_savefiles', '', []), _0x27f4c4.Module._get_core_options && (_0x378b5c.getGameCoreOptions = _0x27f4c4.Module.cwrap('get_core_options', 'string', [])), _0x378b5c.systemPause = function(_0x29d94a) {
                     return !0x1;
-                }, _0x378b5c.controllers = _0x2593da.storage.get('controllers'), _0x378b5c.controllers || (_0x378b5c.controllers = _0x378b5c.defaultControllers);
+                }, _0x378b5c.controllers = _0x2593da.storage.get('controllers'), _0x378b5c.controllers || (_0x378b5c.controllers = JSON.parse(JSON.stringify(_0x378b5c.defaultControllers)));
             }
         },
         _0xdcec2a = _0x378b5c;
