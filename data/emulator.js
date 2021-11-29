@@ -16752,6 +16752,26 @@ var EJS = function(_0x574f5e) {
                         }
                     } else Object.keys(_0x378b5c.controllers).forEach(function(_0x5cf388) {
                         Object.keys(_0x378b5c.controllers[_0x5cf388]).forEach(function(_0x3cf4d3) {
+                            if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25'].includes(_0x3cf4d3)) {
+                                if (_0x3cf4d3 == '24') {//save
+                                    //console.log('save')
+                                    if (_0xa88a13.started && !_0x378b5c.connected) {
+                                        var _0x17edbf = _0x378b5c.saveState();
+                                        try {
+                                            _0x27f4c4.FS.unlink('quick.state');
+                                        } catch (_0x4b4d4c) {}
+                                        _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
+                                    }
+                                } else if (_0x3cf4d3 == '25') {//load
+                                    //console.log('load')
+                                    var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
+                                    if (_0xa88a13.started && !_0x378b5c.connected) try {
+                                        _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
+                                            _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
+                                        }, 0xa);
+                                    } catch (_0x4ee386) {console.warn(_0x4ee386)}
+                                }
+                            }
                             parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
                         });
                     });
