@@ -16782,7 +16782,7 @@ var EJS = function(_0x574f5e) {
                         });
                     });
                 }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.AXIS_CHANGED, function(_0x31f017) {
-                    if (_0x31f017.value === 0 || _0x31f017.value === 1) {
+                    if (_0x31f017.value === -1 || _0x31f017.value === 0 || _0x31f017.value === 1) {
                         if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                             if (parseInt(_0x31f017.value) !== 0) {
                                 var _0x1f4ee2 = _0x2c1832.getAttribute('data-id'),
