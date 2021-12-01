@@ -13580,7 +13580,7 @@ var EJS = function(_0x574f5e) {
                 'loadState': 'Load State (Shift + F4)',
                 'screenRecord': 'Start Screen Recording',
                 'netplay': 'Netplay',
-                'gamepad': 'Controls Settings',
+                'gamepad': 'Control Settings',
                 'cheat': 'Cheats',
                 'menuBack': 'Go back to previous menu',
                 'normal': 'Normal',
@@ -16036,11 +16036,83 @@ var EJS = function(_0x574f5e) {
             },
             'setGamepadDialog': function() {
                 var _0xa88a13 = this;
-                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '\x22>\n            <div class=\x22' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>Controls Settings</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">Player 1</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">Player 2</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">Player 3</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">Player 4</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls\x22>\n                \n            </div>\n            </div>\n            <div class=\x22' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">Update</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">Reset</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">Clear</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">Cancel</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">Press keyboard or gamepad</div>\n                </div>\n            </div>\n        </div>\n        '
+                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '\x22>\n            <div class=\x22' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>Control Settings</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">Player 1</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">Player 2</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">Player 3</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">Player 4</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls\x22>\n                \n            </div>\n            </div>\n            <div class=\x22' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">Update</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">Reset</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">Clear</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">Cancel</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">Press keyboard or gamepad</div>\n                </div>\n            </div>\n        </div>\n        '
                 
                 var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">Gamepad</div>\n                        <div style="text-align:center;width:50%;float:left">Keyboard</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
-                    _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '\x22 href=\x22#\x22 onclick=\x22return false\x22>Set</a>\n            </div>\n            <div style=\x22clear:both\x22></div>\n        </div>'),
-                    _0x48ee51 = {
+                    _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '\x22 href=\x22#\x22 onclick=\x22return false\x22>Set</a>\n            </div>\n            <div style=\x22clear:both\x22></div>\n        </div>')
+                if ('nes' === _0xa88a13.system) {
+                    var _0x48ee51 = {
+                        0: 'B',
+                        2: 'SELECT',
+                        3: 'START',
+                        4: 'UP',
+                        5: 'DOWN',
+                        6: 'LEFT',
+                        7: 'RIGHT',
+                        8: 'A',
+                        24: 'QUICK SAVE STATE',
+                        25: 'QUICK LOAD STATE'
+                    }
+                } else if ('snes' === _0xa88a13.system) {
+                    var _0x48ee51 = {
+                        0: 'B',
+                        1: 'Y',
+                        2: 'SELECT',
+                        3: 'START',
+                        4: 'UP',
+                        5: 'DOWN',
+                        6: 'LEFT',
+                        7: 'RIGHT',
+                        8: 'A',
+                        9: 'X',
+                        10: 'L',
+                        11: 'R',
+                        24: 'QUICK SAVE STATE',
+                        25: 'QUICK LOAD STATE'
+                    };
+                } else if ('n64' === _0xa88a13.system) {
+                    var _0x48ee51 = {
+                        0: 'B',
+                        3: 'START',
+                        4: 'UP',
+                        5: 'DOWN',
+                        6: 'LEFT',
+                        7: 'RIGHT',
+                        8: 'A',
+                        10: 'L',
+                        11: 'R',
+                        12: 'Z',
+                        19: 'L STICK UP',
+                        18: 'L STICK DOWN',
+                        17: 'L STICK LEFT',
+                        16: 'L STICK RIGHT',
+                        23: 'R STICK UP',
+                        22: 'R STICK DOWN',
+                        21: 'R STICK LEFT',
+                        20: 'R STICK RIGHT',
+                        24: 'QUICK SAVE STATE',
+                        25: 'QUICK LOAD STATE'
+                    };
+                } else if ('nds' === _0xa88a13.system) {
+                    var _0x48ee51 = {
+                        0: 'B',
+                        1: 'Y',
+                        2: 'SELECT',
+                        3: 'START',
+                        4: 'UP',
+                        5: 'DOWN',
+                        6: 'LEFT',
+                        7: 'RIGHT',
+                        8: 'A',
+                        9: 'X',
+                        10: 'L',
+                        11: 'R',
+                        14: 'Microphone',
+                        24: 'QUICK SAVE STATE',
+                        25: 'QUICK LOAD STATE'
+                    };
+                } else {
+                    var _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -16068,7 +16140,11 @@ var EJS = function(_0x574f5e) {
                         24: 'QUICK SAVE STATE',
                         25: 'QUICK LOAD STATE'
                     };
-                'arcade' === _0xa88a13.system && (_0x48ee51[0x2] = 'INSERT COIN'), 'nds' === _0xa88a13.system && (_0x48ee51[0xe] = 'Microphone'), 'nes' === _0xa88a13.system && (delete _0x48ee51[0xa], delete _0x48ee51[0xb], delete _0x48ee51[0xc], delete _0x48ee51[0xd], delete _0x48ee51[0xe], delete _0x48ee51[0xf], delete _0x48ee51[0x10], delete _0x48ee51[0x11], delete _0x48ee51[0x12], delete _0x48ee51[0x13], delete _0x48ee51[0x14], delete _0x48ee51[0x15], delete _0x48ee51[0x16], delete _0x48ee51[0x17]);
+                }
+                if ('arcade' === _0xa88a13.system) {
+                    _0x48ee51[2] = 'INSERT COIN'
+                }
+                
                 for (var _0x501790 = [0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x0, 0x9, 0x1, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x13, 0x12, 0x11, 0x10, 0x17, 0x16, 0x15, 0x14, 0x18, 0x19], _0x50fd12 = function(_0x88827f) {
                         _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'])).innerHTML += _0x17edbf.replace(/{index}/g, _0x88827f), _0x501790.forEach(function(_0x1bf162) {
                             _0x48ee51[_0x1bf162] && (_0xa88a13.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x88827f)).innerHTML += _0x2c1832.replace(/{index}/g, _0x88827f).replace(/{id}/g, _0x1bf162).replace(/{label}/g, _0x48ee51[_0x1bf162]));
@@ -16750,8 +16826,8 @@ var EJS = function(_0x574f5e) {
                             var _0x126d2d = null;
                             (_0x126d2d = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))).setAttribute('data-value', _0x15761a.index), _0x126d2d.value = 'button ' .concat(_0x15761a.index + 0x1), _0x132da7(_0x2c1832, true);
                         }
-                    } else Object.keys(_0x378b5c.controllers[_0x15761a.gamepad.index]).forEach(function(_0x3cf4d3) {
-                        var _0x5cf388 = _0x15761a.gamepad.index;
+                    } else Object.keys(_0x378b5c.controllers[_0x15761a.gamepad.index.toString()]).forEach(function(_0x3cf4d3) {
+                        var _0x5cf388 = _0x15761a.gamepad.index.toString();
                         if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25'].includes(_0x3cf4d3)) {
                             if (_0x3cf4d3 == '24') {//save
                                 //console.log('save')
@@ -16791,8 +16867,20 @@ var EJS = function(_0x574f5e) {
                             _0x132da7(_0x2c1832, true)
                         }
                     } else {
+                        if (! _0x378b5c.prevButtons) {
+                            _0x378b5c.prevButtons = {}
+                        }
                         var quit = false
                         var _0x5cf388 = _0x31f017.gamepad.index.toString();
+                        if (! _0x378b5c.prevButtons[_0x5cf388]) {
+                            _0x378b5c.prevButtons[_0x5cf388] = {}
+                        }
+                        if (! _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis]) {
+                            _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = 0
+                        }
+                        if (! _0x378b5c.prevButtons[_0x5cf388].buttonID) {
+                            _0x378b5c.prevButtons[_0x5cf388].buttonID = 0
+                        }
                         for (var w=0; w<Object.keys(_0x378b5c.controllers[_0x5cf388]).length; w++) {
                             var _0x3cf4d3 = Object.keys(_0x378b5c.controllers[_0x5cf388])[w]
                             if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
@@ -16823,11 +16911,19 @@ var EJS = function(_0x574f5e) {
                             if (_0x31f017.value === 0) {
                                 // button up
                                 if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis) {
+                                    _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = _0x31f017.value
+                                    _0x378b5c.prevButtons[_0x5cf388].buttonID = _0x3cf4d3
                                     _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x0)
                                 }
                             } else {
                                 //button down
+                                if ((1 === _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] && _0x31f017.value === -1) ||
+                                    (-1 === _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] && _0x31f017.value === 1)) {
+                                    _0x378b5c.simulateInput(_0x5cf388, _0x378b5c.prevButtons[_0x5cf388].buttonID, 0x0)
+                                }
                                 if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value) {
+                                    _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = _0x31f017.value
+                                    _0x378b5c.prevButtons[_0x5cf388].buttonID = _0x3cf4d3
                                     quit = true
                                     _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1)
                                 }
