@@ -15664,8 +15664,8 @@ var EJS = function(_0x574f5e) {
             'close': function() {
                 _0xf43a92.closeModal();
             }
-        }),
-        _0x378b5c = {
+        })
+        window._0x378b5c = {
             'defaultControllers': {
                 0: {
                     0: {
@@ -16164,6 +16164,7 @@ var EJS = function(_0x574f5e) {
                     return Array.from(_0x2c1832).forEach(function(_0x33c024) {
                         var _0x5f19bd, _0x2c1832 = _0x33c024.getAttribute('data-index'),
                             _0x124d0a = _0x33c024.getAttribute('data-value');
+                        console.log(_0x33c024.getAttribute('data-value'))
                         0x2 === parseInt(_0x33c024.getAttribute('data-type'), 0xa) && (_0x5f19bd = _0x33c024.getAttribute('data-value'));
                         var _0x54b9af = _0x33c024.getAttribute('data-id');
                         _0x2844f7[_0x2c1832] || (_0x2844f7[_0x2c1832] = {}), _0x2844f7[_0x2c1832][_0x54b9af] || (_0x2844f7[_0x2c1832][_0x54b9af] = {}), _0x124d0a && (_0x2844f7[_0x2c1832][_0x54b9af].value = _0x124d0a), _0x5f19bd && (_0x2844f7[_0x2c1832][_0x54b9af].value2 = _0x5f19bd);
@@ -16188,6 +16189,7 @@ var EJS = function(_0x574f5e) {
                         } else {
                             _0x2c1832[i].value = ''
                         }
+                        _0x2c1832[i].setAttribute('data-value', _0x2c1832[i].value)
                     }
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-clear'])), 'click', function(_0x5f19bd) {
                     var c = {0:{}, 1:{}, 2:{}, 3:{}}
@@ -16202,6 +16204,7 @@ var EJS = function(_0x574f5e) {
                     var _0x2c1832 = _0xa88a13.elements.dialogs.gamepad.querySelectorAll('input')
                     for (var i=0; i<_0x2c1832.length; i++) {
                         _0x2c1832[i].value = ''
+                        _0x2c1832[i].setAttribute('data-value', '')
                     }
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x16d598) {
                     return _0x132da7(_0xa88a13.elements.dialogs.gamepad, true), _0xa88a13.elements.container.focus(), _0x16d598.stopPropagation(), !0x1;
@@ -17432,8 +17435,8 @@ var EJS = function(_0x574f5e) {
                     return !0x1;
                 }, _0x378b5c.controllers = _0x2593da.storage.get('controllers'), _0x378b5c.controllers || (_0x378b5c.controllers = JSON.parse(JSON.stringify(_0x378b5c.defaultControllers)));
             }
-        },
-        _0xdcec2a = _0x378b5c;
+        }
+        window._0xdcec2a = _0x378b5c;
 
     function _0x5005e6(_0x7f3270, _0x477158) {
         return function(_0x20890f) {
