@@ -16792,7 +16792,7 @@ var EJS = function(_0x574f5e) {
                         }
                     } else {
                         var quit = false
-                        var _0x5cf388 = _0x31f017.gamepad.index;
+                        var _0x5cf388 = _0x31f017.gamepad.index.toString();
                         for (var w=0; w<Object.keys(_0x378b5c.controllers[_0x5cf388]).length; w++) {
                             var _0x3cf4d3 = Object.keys(_0x378b5c.controllers[_0x5cf388])[w]
                             if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
