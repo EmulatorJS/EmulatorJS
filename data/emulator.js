@@ -16750,30 +16750,29 @@ var EJS = function(_0x574f5e) {
                             var _0x126d2d = null;
                             (_0x126d2d = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))).setAttribute('data-value', _0x15761a.index), _0x126d2d.value = 'button ' .concat(_0x15761a.index + 0x1), _0x132da7(_0x2c1832, true);
                         }
-                    } else Object.keys(_0x378b5c.controllers).forEach(function(_0x5cf388) {
-                        Object.keys(_0x378b5c.controllers[_0x5cf388]).forEach(function(_0x3cf4d3) {
-                            if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25'].includes(_0x3cf4d3)) {
-                                if (_0x3cf4d3 == '24') {//save
-                                    //console.log('save')
-                                    if (_0xa88a13.started && !_0x378b5c.connected) {
-                                        var _0x17edbf = _0x378b5c.saveState();
-                                        try {
-                                            _0x27f4c4.FS.unlink('quick.state');
-                                        } catch (_0x4b4d4c) {}
-                                        _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
-                                    }
-                                } else if (_0x3cf4d3 == '25') {//load
-                                    //console.log('load')
-                                    var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
-                                    if (_0xa88a13.started && !_0x378b5c.connected) try {
-                                        _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                            _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
-                                        }, 0xa);
-                                    } catch (_0x4ee386) {console.warn(_0x4ee386)}
+                    } else Object.keys(_0x378b5c.controllers[_0x15761a.gamepad.index]).forEach(function(_0x3cf4d3) {
+                        var _0x5cf388 = _0x15761a.gamepad.index;
+                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25'].includes(_0x3cf4d3)) {
+                            if (_0x3cf4d3 == '24') {//save
+                                //console.log('save')
+                                if (_0xa88a13.started && !_0x378b5c.connected) {
+                                    var _0x17edbf = _0x378b5c.saveState();
+                                    try {
+                                        _0x27f4c4.FS.unlink('quick.state');
+                                    } catch (_0x4b4d4c) {}
+                                    _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
                                 }
+                            } else if (_0x3cf4d3 == '25') {//load
+                                //console.log('load')
+                                var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
+                                if (_0xa88a13.started && !_0x378b5c.connected) try {
+                                    _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
+                                        _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
+                                    }, 0xa);
+                                } catch (_0x4ee386) {console.warn(_0x4ee386)}
                             }
-                            parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
-                        });
+                        }
+                        parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
                     });
                 }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_UP, function(_0x3220b3) {
                     Object.keys(_0x378b5c.controllers).forEach(function(_0x302c3e) {
@@ -16793,48 +16792,46 @@ var EJS = function(_0x574f5e) {
                         }
                     } else {
                         var quit = false
-                        for (var q=0; q<Object.keys(_0x378b5c.controllers).length; q++) {
-                            var _0x5cf388 = Object.keys(_0x378b5c.controllers)[q]
-                            for (var w=0; w<Object.keys(_0x378b5c.controllers[_0x5cf388]).length; w++) {
-                                var _0x3cf4d3 = Object.keys(_0x378b5c.controllers[_0x5cf388])[w]
-                                if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
-                                    continue
-                                }
-                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value && ['24', '25'].includes(_0x3cf4d3)) {
-                                    if (_0x3cf4d3 == '24') {//save
-                                        quit = true
-                                        //console.log('save')
-                                        if (_0xa88a13.started && !_0x378b5c.connected) {
-                                            var _0x17edbf = _0x378b5c.saveState();
-                                            try {
-                                                _0x27f4c4.FS.unlink('quick.state');
-                                            } catch (_0x4b4d4c) {}
-                                            _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
-                                        }
-                                    } else if (_0x3cf4d3 == '25') {//load
-                                        quit = true
-                                        //console.log('load')
-                                        var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
-                                        if (_0xa88a13.started && !_0x378b5c.connected) try {
-                                            _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                                _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
-                                            }, 0xa);
-                                        } catch (_0x4ee386) {console.warn(_0x4ee386)}
+                        var _0x5cf388 = _0x31f017.gamepad.index;
+                        for (var w=0; w<Object.keys(_0x378b5c.controllers[_0x5cf388]).length; w++) {
+                            var _0x3cf4d3 = Object.keys(_0x378b5c.controllers[_0x5cf388])[w]
+                            if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
+                                continue
+                            }
+                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value && ['24', '25'].includes(_0x3cf4d3)) {
+                                if (_0x3cf4d3 == '24') {//save
+                                    quit = true
+                                    //console.log('save')
+                                    if (_0xa88a13.started && !_0x378b5c.connected) {
+                                        var _0x17edbf = _0x378b5c.saveState();
+                                        try {
+                                            _0x27f4c4.FS.unlink('quick.state');
+                                        } catch (_0x4b4d4c) {}
+                                        _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
                                     }
+                                } else if (_0x3cf4d3 == '25') {//load
+                                    quit = true
+                                    //console.log('load')
+                                    var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
+                                    if (_0xa88a13.started && !_0x378b5c.connected) try {
+                                        _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
+                                            _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
+                                        }, 0xa);
+                                    } catch (_0x4ee386) {console.warn(_0x4ee386)}
                                 }
-                                if (_0x31f017.value === 0) {
-                                    // button up
-                                    if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis) {
-                                        _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x0)
-                                    }
-                                } else {
-                                    //button down
-                                    if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value) {
-                                        quit = true
-                                        _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1)
-                                    }
+                            }
+                            if (_0x31f017.value === 0) {
+                                // button up
+                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis) {
+                                    _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x0)
                                 }
-                            };
+                            } else {
+                                //button down
+                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value) {
+                                    quit = true
+                                    _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1)
+                                }
+                            }
                         };
                         if (quit) {
                             return
