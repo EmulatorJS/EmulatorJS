@@ -73,7 +73,7 @@ window.EJS_loadStateFromURL = async function() {
 
 var emulatorjs = document.createElement('script')
 var scriptTag = document.getElementsByTagName('script')[0]
-emulatorjs.async = 0x1
+emulatorjs.async = true
 emulatorjs.src = EJS_pathtodata + 'emulator.js?v=' + '0.4.24'
 scriptTag.parentNode.insertBefore(emulatorjs, scriptTag)
 emulatorjs.onload = function() {
@@ -90,6 +90,7 @@ emulatorjs.onload = function() {
     'undefined' != typeof EJS_onSaveState && (config.onsavestate = EJS_onSaveState)
     'undefined' != typeof EJS_onLoadState && (config.onloadstate = EJS_onLoadState)
     'undefined' != typeof EJS_lightgun && (config.lightgun = EJS_lightgun)
+    'undefined' != typeof EJS_gameName && (config.gameName = EJS_gameName)
     'undefined' != typeof EJS_mouse && (config.mouse = EJS_mouse)
     'undefined' != typeof EJS_multitap && (config.multitap = EJS_multitap)
     'undefined' != typeof EJS_playerName && (config.playerName = EJS_playerName)
