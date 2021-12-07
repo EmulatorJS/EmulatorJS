@@ -84,6 +84,7 @@ emulatorjs.onload = function() {
     'undefined' != typeof EJS_gameID && (config.gameId = EJS_gameID)
     'undefined' != typeof EJS_gameParentUrl && (config.gameParentUrl = EJS_gameParentUrl)
     'undefined' != typeof EJS_gamePatchUrl && (config.gamePatchUrl = EJS_gamePatchUrl)
+    'undefined' != typeof EJS_AdUrl && (config.adUrl = EJS_AdUrl)
     config.system = EJS_core
     config.onsavestate = null
     config.onloadstate = null
