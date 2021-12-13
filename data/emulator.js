@@ -16185,10 +16185,11 @@ var EJS = function(_0x574f5e) {
                             } else {
                                 _0x2c1832[i].value = 'button ' + (parseInt(_0x378b5c.defaultControllers[player][buttonId][a])+1)
                             }
+                            _0x2c1832[i].setAttribute('data-value', _0x378b5c.defaultControllers[player][buttonId][a])
                         } else {
                             _0x2c1832[i].value = ''
+                            _0x2c1832[i].setAttribute('data-value', '')
                         }
-                        _0x2c1832[i].setAttribute('data-value', _0x2c1832[i].value)
                     }
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-clear'])), 'click', function(_0x5f19bd) {
                     var c = {0:{}, 1:{}, 2:{}, 3:{}}
