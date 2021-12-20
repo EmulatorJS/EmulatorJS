@@ -1,5 +1,5 @@
 [NES / Famicom]: docs/NES-Famicom.md
-[SNES]: docs/SNES.md.md
+[SNES]: docs/SNES.md
 [Nintendo 64]: docs/Nintendo%2064.md
 [Nintendo Game Boy]: docs/Nintendo%20Game%20Boy.md
 [Nintendo Game Boy Advance]: docs/Nintendo%20Game%20Boy%20Advance.md
