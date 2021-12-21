@@ -25,7 +25,7 @@
 
 
 
-<h1>emulatorjs</h1>
+# emulatorjs
 
 A javascript emulator for nes, snes, and more!
 The BEST emulator on the internet. No ads and self hosted!
@@ -34,41 +34,27 @@ Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
-<h1>Where did I get this?</h1>
-<p>So I found this website called <a href='https://www.emulatorjs.com/'>emulatorjs</a> and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.</p>
+## Where did I get this?
+
+So I found this website called [emulatorjs](https://www.emulatorjs.com/) and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.
 https://github.com/linuxserver/emulatorjs may soon make it possible to use all this open source
 
-<p>The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.</p>
-
-<p>IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!</p>
+The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.
 
 NOTE: The screen recording option does not currently support audio! only video recording is supported at this time.
 
-<h1>IF YOU WOULD LIKE ANOTHER SYSTEM</h1>
-<p>Check if the system is on <a href='https://www.emulatorjs.com/'>emulatorjs.com</a>. If it is then open an issue asking for the system you would like to emulate.</p>
+## How To
 
-<h1>HOW TO</h1>
+1. Download this repository (Code > Download as zip) then Extract the contents
+2. Load into a web server and open localhost
 
-Download this repository (Code > Download as zip) then Extract the contents
+If you have questions, ask me and I will clarify (use the issues tab). Please search to make sure your isuue hasnt already been asked
 
-<p>MUST HOST ON WEB SERVER!! (I use <a href='https://chrome.google.com/webstore/detail/web-server-for-chrome/ofhbbkphhbklhfoeikjpcbhemlocgigb?hl=en'>Web Server for Chrome</a> but you are welcome to use what you like)</p>
+IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!
 
-If you have questions, ask me and I will clarify (use the issues tab)
+All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
 
-Just so you know - You DO NOT NEED the bios for most games / systems, even if it is listed. For some systems, the bios is REQUIRED
-
-Roms can be zipped into .zip archive or .7z archive
-
-TIPS: you can use `blob:` urls, although the save state name will be `game.state`. To have the proper file name add the following line to your configuration.
-You can use this without having the gameUrl set to a `blob:` url. Just do the same thing below
-
-```
-EJS_gameName = "name of game";
-```
-When the user saves a state, the state will be saved with the name `name of game.state`
-
-
-<h1>Supported systems!</h1>
+## Supported systems!
 
 | Supported Systems |
 |:------------------:|
@@ -96,3 +82,20 @@ When the user saves a state, the state will be saved with the name `name of game
 | [TurboGrafs-16 / PC Engine] |
 | [Arcade] |
 | [Atari 2600] |
+
+## Tips
+
+To customize the filename of save states, add the line of code below
+
+```
+EJS_gameName = 'name of game";
+```
+When the user saves a state, the state will be saved with the name `name of game.state`
+
+<br>
+
+To add an ad to the play now screen, add the following line to your code
+
+```
+EJS_AdUrl = ''; //path to AD page
+```
