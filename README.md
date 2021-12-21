@@ -88,7 +88,7 @@ All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
 To customize the filename of save states, add the line of code below
 
 ```
-EJS_gameName = 'name of game";
+EJS_gameName = 'name of game';
 ```
 When the user saves a state, the state will be saved with the name `name of game.state`
 
