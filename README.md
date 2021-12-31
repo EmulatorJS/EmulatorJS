@@ -102,7 +102,7 @@ EJS_AdUrl = `URL`;
 [Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
 [Emulator Demo]: https://ethanaobrien.github.io/emulatorjs/
 
-[Issue]: issues
+[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 [This repository]: https://github.com/linuxserver/emulatorjs
 
 [EJS]: https://www.emulatorjs.com/
