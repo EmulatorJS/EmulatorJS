@@ -2165,7 +2165,7 @@ var EJS = function(_0x574f5e) {
     };
 }, function(_0x2406a9, _0x548f51, _0x324eb4) {
     'use strict';
-    _0x548f51.a = '0.4.24';
+    _0x548f51.a = '0.4.25';
 }, function(_0x2e240f, _0x5b82af, _0x39b24a) {
     var _0xafdfe, _0x133983;
     ! function(_0xcb4965, _0x3924c5, _0x2b6d6d) {
@@ -14615,7 +14615,9 @@ var EJS = function(_0x574f5e) {
                     },
                     _0xc6823 = this,
                     _0x1143c5 = _0xc6823.system;
-                _0x17edbf = EJS_pathtodata + 'extract7z.js', _0x2c1832 = EJS_pathtodata + 'extractzip.js?v=1', _0x4ce206 = EJS_pathtodata + 'libunrar.js';
+                _0x17edbf = _0xc6823.dataPath + 'extract7z.js';
+                _0x2c1832 = _0xc6823.dataPath + 'extractzip.js?v=1';
+                _0x4ce206 = _0xc6823.dataPath + 'libunrar.js';
                 var _0xb2be2a = _0x428003('canvas', {});
                 this.game.appendChild(_0xb2be2a), _0x4d7024.loading = _0x428003('div', {
                     'class': this.config.classNames.loading
@@ -14949,6 +14951,16 @@ var EJS = function(_0x574f5e) {
                             _0x429d6b = (_0x1bc287.split('.').pop(), _0x29078e[_0x1143c5]),
                             _0xb0c5d8 = -0x1,
                             _0x567713 = '',
+                            _0x567717 = function() {
+                                if (typeof _0x55627a.loadStateOnStart == 'string') {
+                                    fetch(_0x55627a.loadStateOnStart).then(function(response) {
+                                        response.arrayBuffer().then(function(ab) {
+                                            var a = new Uint8Array(a)
+                                            EJS_loadState(a)
+                                        })
+                                    })
+                                }
+                            },
                             _0x99321 = function(_0x52e6f3) {
                                 if (_0x52e6f3.data) {
                                     if (0x1 === _0x52e6f3.data.t) {
@@ -14961,7 +14973,7 @@ var EJS = function(_0x574f5e) {
                                                 [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                             ];
                                             'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v'), _0x4d7024.Module[_0x17edbf](_0x2c1832), _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
-                                            EJS_loadStateFromURL();
+                                            _0x567717();
                                         } catch (_0x4a1471) {
                                             console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
                                         }
@@ -15007,7 +15019,7 @@ var EJS = function(_0x574f5e) {
                                         [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                     ];
                                 'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v'), _0x4d7024.Module[_0x165f73](_0x4dd87f), _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
-                                EJS_loadStateFromURL();
+                                _0x567717();
                             } catch (_0x42970c) {
                                 console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
                             }
@@ -15428,9 +15440,9 @@ var EJS = function(_0x574f5e) {
                                         }
                                     };
                                     var _0xa88a13, _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
-                                    _0xa88a13 = EJS_pathtodata + 'v.json?t='+_0x1dedcd;
+                                    _0xa88a13 = _0xc6823.dataPath + 'v.json?t='+_0x1dedcd;
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        _0x550f17.a.get(EJS_pathtodata+_0x16049b+'?v='+_0x55a075, {
+                                        _0x550f17.a.get(_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
                                                 _0x3787ba.innerHTML = 'Download Game Core ' .concat(_0x55a075);
@@ -15457,9 +15469,15 @@ var EJS = function(_0x574f5e) {
                                             _0x5b1dcd = Boolean(_0x28ee7f.state),
                                             _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
                                             _0x3e4345 = Boolean(_0x28ee7f.wasm);
-                                        'nds' != _0x2c1832.system || _0x2d904a.wasm || (_0x5b1dcd = !0x1), _0x4d7024.coreFileVersion = _0x124167, _0x4d7024.coreFileName = _0x5d075f;
+                                        if ('nds' == _0x2c1832.system && ! _0x2d904a.wasm) {
+                                            _0x5b1dcd = !0x1;
+                                        };
+                                        _0x4d7024.coreFileVersion = _0x124167;
+                                        _0x4d7024.coreFileName = _0x5d075f;
                                         var _0x2eb141 = !0x1;
-                                        if (['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true), 'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1), 'mame' == _0x2c1832.system) {
+                                        ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
+                                        'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
+                                        if ('mame' == _0x2c1832.system) {
                                             var _0x4921ff = _0x2c1832.config,
                                                 _0x38239e = (_0x4921ff.gameId, _0x4921ff.gameUrl.split('/')),
                                                 _0x29349f = _0x38239e[_0x38239e.length - 0x1];
@@ -19020,7 +19038,6 @@ var EJS = function(_0x574f5e) {
     }
     var _0x3dbc76 = function() {
         function _0x6954aa(_0x28cce1, _0x2ba0e6) {
-            //_0x2ba0e6.adUrl = 'https://www.youtube.com/embed/8vkh9UO3PnA'
             var _0x5938bc = this;
             if (function(_0x154660, _0x15626f) {
                     if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
@@ -19029,6 +19046,8 @@ var EJS = function(_0x574f5e) {
                 this.system = '',
                 this.adUrl = null,
                 this.gameName = null,
+                this.loadStateOnStart = false,
+                this.dataPath = '',
                 this.hash = '',
                 this.lightgun = false,
                 this.mouse = false,
@@ -19044,6 +19063,7 @@ var EJS = function(_0x574f5e) {
                 this.game.innerHTML = '',
                 this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {}),
                 this.lightgun = this.config.lightgun,
+                this.loadStateOnStart = this.config.loadStateOnStart || false,
                 this.adUrl = this.config.adUrl || null,
                 this.gameName = this.config.gameName || null,
                 this.mouse = this.config.mouse,
@@ -19051,6 +19071,69 @@ var EJS = function(_0x574f5e) {
                 this.cheats = this.config.cheats,
                 this.cheats || (this.cheats = []),
                 this.color = this.config.color,
+                this.dataPath = function(path) {
+                    if (typeof path != 'string') {
+                        return function(origpath) {
+                            var fullrequestpath = origpath
+                            var finpath = fullrequestpath.split('/').pop()
+                            var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
+                            if (origpath == '/') {
+                                return window.location.protocol + '//' + window.location.host + '/';
+                            } else {
+                                if (finalpath.startsWith('/')) {
+                                    finalpath = window.location.protocol + '//' + window.location.host + finalpath;
+                                }
+                                if (! finalpath.endsWith('/')) {
+                                    finalpath = finalpath + '/';
+                                }
+                                return finalpath
+                            }
+                        }(window.location.href);
+                    }
+                    var finpath = window.location.pathname.split('/').pop();
+                    var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
+                    var split3 = finalpath.split('/')
+                    var split2 = path.split('/')
+                    var split1 = [ ]
+                    for (var i=0; i<split3.length; i++) {
+                        if (split3[i] != '') {
+                            split1.push(split3[i])
+                        }
+                    }
+                    if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1) {
+                        for (var w=0; w<split2.length; w++) {
+                            if (split2[w] == '' || split2[w] == '.') {
+                            } else if (split2[w] == '..') {
+                                if (split1.length > 0) {
+                                    var split1 = function(origpath) {
+                                        var fullrequestpath = origpath
+                                        var finpath = fullrequestpath.split('/').pop()
+                                        var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
+                                        if (origpath == '/') {
+                                            return '/'
+                                        } else {
+                                            return finalpath
+                                        }
+                                    }(split1.join('/')).split('/');
+                                }
+                            } else {
+                                split1.push(split2[w]);
+                            }
+                        }
+                        var path = split1.join('/')
+                        if (! path.startsWith('/')) {
+                            var path = '/' + path;
+                        }
+                        path = window.location.protocol + '//' + window.location.host + path;
+                    }
+                    if (path.startsWith('/')) {
+                        path = window.location.protocol + '//' + window.location.host + path;
+                    }
+                    if (! path.endsWith('/')) {
+                        path = path + '/';
+                    }
+                    return path
+                }(this.config.dataPath),
                 Object.keys(this.config.classNames).forEach(function(_0x1d6b41) {
                     var _0x28cce1 = _0x5938bc;
                     if (_0x1e2c68.object(_0x28cce1.config.classNames[_0x1d6b41])) Object.keys(_0x28cce1.config.classNames[_0x1d6b41]).forEach(function(_0x42f7f2) {
@@ -19100,7 +19183,7 @@ var EJS = function(_0x574f5e) {
                 });
                 this.elements.container.appendChild(_0x32c8af), _0x5ab74d.addStyleHook.call(this), _0xdcec2a.setup.call(this), _0x5ab74d.build.call(this), this.listeners.container(), this.listeners.global(), this.fullscreen = new _0x335854(this), _0x27f4c4.create.call(this);
                 var _0x446e06 = document.createElement('script');
-                _0x446e06.src = EJS_pathtodata + 'webrtc-adapter.js', document.body.appendChild(_0x446e06);
+                _0x446e06.src = this.dataPath + 'webrtc-adapter.js', document.body.appendChild(_0x446e06);
             }
         }
         var _0x17edbf, _0x2c1832, _0x423c42;
