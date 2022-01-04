@@ -83,7 +83,7 @@ All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
 | [Arcade] |
 | [Atari 2600] |
 
-## Tips
+## More Features
 
 To customize the filename of save states, add the line of code below
 
@@ -99,3 +99,12 @@ To add an ad to the play now screen, add the following line to your code
 ```
 EJS_AdUrl = ''; //path to AD page
 ```
+
+<br>
+
+To change the default color of the emulator interface, add the line below
+
+```
+EJS_color = ''; //hex color id
+```
+You can set the color to a hex color code, for example `#FF0000` (red)
