@@ -16693,25 +16693,11 @@ var EJS = function(_0x574f5e) {
                             Object.keys(_0x378b5c.controllers[_0x3863d2]).forEach(function(_0x509939) {
                                 if (parseInt(_0x378b5c.controllers[_0x3863d2][_0x509939].value, 0xa) === _0x459b32.keyCode && ['24', '25'].includes(_0x509939) && _0x459b32.type == 'keydown' && ! _0x459b32.repeat) {
                                     if (_0x509939 == '24') {//save
-                                        //console.log('save')
-                                        if (_0xa88a13.started && !_0x378b5c.connected) {
-                                            var _0x17edbf = _0x378b5c.saveState();
-                                            try {
-                                                _0x27f4c4.FS.unlink('quick.state');
-                                            } catch (_0x4b4d4c) {}
-                                            _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
-                                        }
+                                        _0x378b5c.quickSaveState()
                                     } else if (_0x509939 == '25') {//load
-                                        //console.log('load')
-                                        var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
-                                        if (_0xa88a13.started && !_0x378b5c.connected) try {
-                                            _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                                _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
-                                            }, 0xa);
-                                        } catch (_0x4ee386) {console.warn(_0x4ee386)}
+                                        _0x378b5c.quickLoadState()
                                     }
                                     // quick save/load button
-                                    //console.log(_0x378b5c.controllers[_0x3863d2][_0x509939])
                                 }
                                 parseInt(_0x378b5c.controllers[_0x3863d2][_0x509939].value, 0xa) === _0x459b32.keyCode && (_0x2eb03e ? _0x509939 >= 0x10 && _0x509939 <= 0x17 ? _0x378b5c.simulateInput(_0x3863d2, _0x509939, 0x7fff) : _0x378b5c.simulateInput(_0x3863d2, _0x509939, 0x1) : _0x378b5c.simulateInput(_0x3863d2, _0x509939, 0x0));
                             });
@@ -16857,22 +16843,9 @@ var EJS = function(_0x574f5e) {
                         var _0x5cf388 = _0x15761a.gamepad.index.toString();
                         if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25'].includes(_0x3cf4d3)) {
                             if (_0x3cf4d3 == '24') {//save
-                                //console.log('save')
-                                if (_0xa88a13.started && !_0x378b5c.connected) {
-                                    var _0x17edbf = _0x378b5c.saveState();
-                                    try {
-                                        _0x27f4c4.FS.unlink('quick.state');
-                                    } catch (_0x4b4d4c) {}
-                                    _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
-                                }
+                                _0x378b5c.quickSaveState()
                             } else if (_0x3cf4d3 == '25') {//load
-                                //console.log('load')
-                                var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
-                                if (_0xa88a13.started && !_0x378b5c.connected) try {
-                                    _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                        _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
-                                    }, 0xa);
-                                } catch (_0x4ee386) {console.warn(_0x4ee386)}
+                                _0x378b5c.quickLoadState()
                             }
                         }
                         parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
@@ -16916,23 +16889,10 @@ var EJS = function(_0x574f5e) {
                             if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value && ['24', '25'].includes(_0x3cf4d3)) {
                                 if (_0x3cf4d3 == '24') {//save
                                     quit = true
-                                    //console.log('save')
-                                    if (_0xa88a13.started && !_0x378b5c.connected) {
-                                        var _0x17edbf = _0x378b5c.saveState();
-                                        try {
-                                            _0x27f4c4.FS.unlink('quick.state');
-                                        } catch (_0x4b4d4c) {}
-                                        _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
-                                    }
+                                    _0x378b5c.quickSaveState()
                                 } else if (_0x3cf4d3 == '25') {//load
                                     quit = true
-                                    //console.log('load')
-                                    var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
-                                    if (_0xa88a13.started && !_0x378b5c.connected) try {
-                                        _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                            _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
-                                        }, 0xa);
-                                    } catch (_0x4ee386) {console.warn(_0x4ee386)}
+                                    _0x378b5c.quickLoadState()
                                 }
                             }
                             if (_0x31f017.value === 0) {
@@ -17381,16 +17341,34 @@ var EJS = function(_0x574f5e) {
                 }, _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string'])), _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat), _0x378b5c.quickSaveState = function() {
                         // save state button
                     if (_0xa88a13.started && !_0x378b5c.connected) {
+                        if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
+                            var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
+                            if (! slot) {
+                                slot = 1;
+                            }
+                        } else {
+                            var slot = 1;
+                        }
+                        var name = slot + '-quick.state';
                         var _0x17edbf = _0x378b5c.saveState();
                         try {
-                            _0x27f4c4.FS.unlink('quick.state');
+                            _0x27f4c4.FS.unlink(name);
                         } catch (_0x4b4d4c) {}
-                        _0x27f4c4.FS.createDataFile('/', 'quick.state', _0x17edbf, true, true);
+                        _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
                     }
                 }, _0x378b5c.quickLoadState = function() {
+                    if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
+                        var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
+                        if (! slot) {
+                            slot = 1;
+                        }
+                    } else {
+                        var slot = 1;
+                    }
+                    var name = slot + '-quick.state';
                     if (_0xa88a13.started && !_0x378b5c.connected) try {
-                        _0x25a7a2('quick.state', 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                            _0x378b5c.getStateInfo(), _0x25a7a2('quick.state', 0x0);
+                        _0x25a7a2(name, 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
+                            _0x378b5c.getStateInfo(), _0x25a7a2(name, 0x0);
                         }, 0xa);
                     } catch (_0x4ee386) {}
                 }, window.EJS_loadState = function(_0x4dd6a5) {
@@ -17876,6 +17854,12 @@ var EJS = function(_0x574f5e) {
                         break;
                     default:
                         _0xa88a13 = {}, console.warn('Unsupport emulator');
+                }
+                _0xa88a13['save-state-slot'] = {
+                    'label': 'Save State Slot',
+                    'options': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                    'default': 1,
+                    'netplay': false
                 }
                 _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
                     var _0x5995db = _0x2bef5a.split('; '),
