@@ -108,3 +108,26 @@ To change the default color of the emulator interface, add the line below
 EJS_color = ''; //hex color id
 ```
 You can set the color to a hex color code, for example `#FF0000` (red)
+
+<br>
+
+To start the emulator immediately, add this line to your code
+
+```
+EJS_startOnLoaded = true;
+```
+This will start the emulator instantly
+Please note, the Audio cannot start until the user interacts with the page
+
+<br>
+
+To specify an exact path for a file, add this line to your code
+
+```
+EJS_paths = {
+    "fileName": "/somepath",
+    "emulator.js": "https://example.com/emulator.js",
+    "n64-asmjs.data": "/asdfds.data"
+}
+```
+If a file is not defined, it be set to default
