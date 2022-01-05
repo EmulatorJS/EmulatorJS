@@ -1,8 +1,9 @@
+var VERSION = '0.4.25'
 fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
 	if (response.ok) {
 		response.text().then(body => {
 			var version = JSON.parse(body);
-			var usingVersion = '0.4.25';
+			var usingVersion = VERSION;
 			if (usingVersion != version.current_version) {
 				console.log('Using emulatorjs version ' + usingVersion + ' but the newest version is ' + version.current_version + '\n\nopen https://github.com/ethanaobrien/emulatorjs to update');
 			};
@@ -13,7 +14,15 @@ fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').
 var emulatorjs = document.createElement('script')
 var scriptTag = document.getElementsByTagName('script')[0]
 emulatorjs.async = true
-emulatorjs.src = EJS_pathtodata + 'emulator.js?v=' + '0.4.25'
+emulatorjs.src = function() {
+    if ('undefined' != typeof EJS_paths && typeof EJS_paths['emulator.js'] == 'string') {
+        return EJS_paths['emulator.js']
+    } else if ('undefined' != typeof EJS_pathtodata) {
+        return EJS_pathtodata + 'emulator.js?v=' + VERSION
+    } else {
+        return 'emulator.js?v=' + VERSION;
+    }
+}()
 scriptTag.parentNode.insertBefore(emulatorjs, scriptTag)
 emulatorjs.onload = function() {
     var config = {};
@@ -24,6 +33,7 @@ emulatorjs.onload = function() {
     'undefined' != typeof EJS_gameParentUrl && (config.gameParentUrl = EJS_gameParentUrl)
     'undefined' != typeof EJS_gamePatchUrl && (config.gamePatchUrl = EJS_gamePatchUrl)
     'undefined' != typeof EJS_AdUrl && (config.adUrl = EJS_AdUrl)
+    'undefined' != typeof EJS_paths && (config.paths = EJS_paths)
     'undefined' != typeof EJS_core && (config.system = EJS_core)
     'undefined' != typeof EJS_loadStateURL && (config.loadStateOnStart = EJS_loadStateURL)
     config.onsavestate = null

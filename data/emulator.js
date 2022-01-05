@@ -14615,9 +14615,9 @@ var EJS = function(_0x574f5e) {
                     },
                     _0xc6823 = this,
                     _0x1143c5 = _0xc6823.system;
-                _0x17edbf = _0xc6823.dataPath + 'extract7z.js';
-                _0x2c1832 = _0xc6823.dataPath + 'extractzip.js?v=1';
-                _0x4ce206 = _0xc6823.dataPath + 'libunrar.js';
+                _0x17edbf = (_0xc6823.customPaths && typeof _0xc6823.customPaths['extract7z.js'] == 'string') ? _0xc6823.customPaths['extract7z.js'] : (_0xc6823.dataPath + 'extract7z.js');;
+                _0x2c1832 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['extractzip.js'] == 'string') ? _0xc6823.customPaths['extractzip.js'] : (_0xc6823.dataPath + 'extractzip.js?v=1');
+                _0x4ce206 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['libunrar.js'] == 'string') ? _0xc6823.customPaths['libunrar.js'] : (_0xc6823.dataPath + 'libunrar.js');
                 var _0xb2be2a = _0x428003('canvas', {});
                 this.game.appendChild(_0xb2be2a), _0x4d7024.loading = _0x428003('div', {
                     'class': this.config.classNames.loading
@@ -15440,9 +15440,10 @@ var EJS = function(_0x574f5e) {
                                         }
                                     };
                                     var _0xa88a13, _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
-                                    _0xa88a13 = _0xc6823.dataPath + 'v.json?t='+_0x1dedcd;
+                                    var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        _0x550f17.a.get(_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075, {
+                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : (_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075);
+                                        _0x550f17.a.get(path, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
                                                 _0x3787ba.innerHTML = 'Download Game Core ' .concat(_0x55a075);
@@ -19039,6 +19040,51 @@ var EJS = function(_0x574f5e) {
     var _0x3dbc76 = function() {
         function _0x6954aa(_0x28cce1, _0x2ba0e6) {
             var _0x5938bc = this;
+            var _0x2136bc = function(path, isDirectory) {
+                var finpath = window.location.pathname.split('/').pop();
+                var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
+                var split3 = finalpath.split('/')
+                var split2 = path.split('/')
+                var split1 = [ ]
+                for (var i=0; i<split3.length; i++) {
+                    if (split3[i] != '') {
+                        split1.push(split3[i])
+                    }
+                }
+                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1) {
+                    for (var w=0; w<split2.length; w++) {
+                        if (split2[w] == '' || split2[w] == '.') {
+                        } else if (split2[w] == '..') {
+                            if (split1.length > 0) {
+                                var split1 = function(origpath) {
+                                    var fullrequestpath = origpath
+                                    var finpath = fullrequestpath.split('/').pop()
+                                    var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
+                                    if (origpath == '/') {
+                                        return '/'
+                                    } else {
+                                        return finalpath
+                                    }
+                                }(split1.join('/')).split('/');
+                            }
+                        } else {
+                            split1.push(split2[w]);
+                        }
+                    }
+                    var path = split1.join('/')
+                    if (! path.startsWith('/')) {
+                        var path = '/' + path;
+                    }
+                    path = window.location.protocol + '//' + window.location.host + path;
+                }
+                if (path.startsWith('/')) {
+                    path = window.location.protocol + '//' + window.location.host + path;
+                }
+                if (! path.endsWith('/') && isDirectory) {
+                    path = path + '/';
+                }
+                return path
+            }
             if (function(_0x154660, _0x15626f) {
                     if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
                 }(this, _0x6954aa), 
@@ -19048,6 +19094,7 @@ var EJS = function(_0x574f5e) {
                 this.gameName = null,
                 this.loadStateOnStart = false,
                 this.dataPath = '',
+                this.customPaths = null,
                 this.hash = '',
                 this.lightgun = false,
                 this.mouse = false,
@@ -19071,6 +19118,16 @@ var EJS = function(_0x574f5e) {
                 this.cheats = this.config.cheats,
                 this.cheats || (this.cheats = []),
                 this.color = this.config.color,
+                this.customPaths = function(paths) {
+                    if (! paths) return null;
+                    var newPaths = {};
+                    for (var k in paths) {
+                        if (typeof paths[k] == 'string') {
+                            newPaths[k] = _0x2136bc(paths[k]);
+                        }
+                    }
+                    return newPaths;
+                }(this.config.paths),
                 this.dataPath = function(path) {
                     if (typeof path != 'string') {
                         return function(origpath) {
@@ -19090,49 +19147,7 @@ var EJS = function(_0x574f5e) {
                             }
                         }(window.location.href);
                     }
-                    var finpath = window.location.pathname.split('/').pop();
-                    var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
-                    var split3 = finalpath.split('/')
-                    var split2 = path.split('/')
-                    var split1 = [ ]
-                    for (var i=0; i<split3.length; i++) {
-                        if (split3[i] != '') {
-                            split1.push(split3[i])
-                        }
-                    }
-                    if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1) {
-                        for (var w=0; w<split2.length; w++) {
-                            if (split2[w] == '' || split2[w] == '.') {
-                            } else if (split2[w] == '..') {
-                                if (split1.length > 0) {
-                                    var split1 = function(origpath) {
-                                        var fullrequestpath = origpath
-                                        var finpath = fullrequestpath.split('/').pop()
-                                        var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
-                                        if (origpath == '/') {
-                                            return '/'
-                                        } else {
-                                            return finalpath
-                                        }
-                                    }(split1.join('/')).split('/');
-                                }
-                            } else {
-                                split1.push(split2[w]);
-                            }
-                        }
-                        var path = split1.join('/')
-                        if (! path.startsWith('/')) {
-                            var path = '/' + path;
-                        }
-                        path = window.location.protocol + '//' + window.location.host + path;
-                    }
-                    if (path.startsWith('/')) {
-                        path = window.location.protocol + '//' + window.location.host + path;
-                    }
-                    if (! path.endsWith('/')) {
-                        path = path + '/';
-                    }
-                    return path
+                    return _0x2136bc(path, true);
                 }(this.config.dataPath),
                 Object.keys(this.config.classNames).forEach(function(_0x1d6b41) {
                     var _0x28cce1 = _0x5938bc;
@@ -19183,7 +19198,8 @@ var EJS = function(_0x574f5e) {
                 });
                 this.elements.container.appendChild(_0x32c8af), _0x5ab74d.addStyleHook.call(this), _0xdcec2a.setup.call(this), _0x5ab74d.build.call(this), this.listeners.container(), this.listeners.global(), this.fullscreen = new _0x335854(this), _0x27f4c4.create.call(this);
                 var _0x446e06 = document.createElement('script');
-                _0x446e06.src = this.dataPath + 'webrtc-adapter.js', document.body.appendChild(_0x446e06);
+                _0x446e06.src = (this.customPaths && typeof this.customPaths['webrtc-adapter.js'] == 'string') ? this.customPaths['webrtc-adapter.js'] : (this.dataPath + 'webrtc-adapter.js');
+                document.body.appendChild(_0x446e06);
             }
         }
         var _0x17edbf, _0x2c1832, _0x423c42;
