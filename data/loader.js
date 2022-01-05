@@ -34,6 +34,7 @@ emulatorjs.onload = function() {
     'undefined' != typeof EJS_gamePatchUrl && (config.gamePatchUrl = EJS_gamePatchUrl)
     'undefined' != typeof EJS_AdUrl && (config.adUrl = EJS_AdUrl)
     'undefined' != typeof EJS_paths && (config.paths = EJS_paths)
+    'undefined' != typeof EJS_startOnLoaded && (config.startOnLoad = EJS_startOnLoaded)
     'undefined' != typeof EJS_core && (config.system = EJS_core)
     'undefined' != typeof EJS_loadStateURL && (config.loadStateOnStart = EJS_loadStateURL)
     config.onsavestate = null
