@@ -54,6 +54,14 @@ IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as p
 
 All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
 
+
+NETPLAY IS DISABLED BY DEFAULT. To enable, add this line to your code
+
+```
+EJS_gameID = 1; // ID in your website, required for netplay.
+```
+
+
 ## Supported systems!
 
 | Supported Systems |
