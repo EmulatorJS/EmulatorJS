@@ -15288,7 +15288,7 @@ var EJS = function(_0x574f5e) {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
                         var _0x17edbf = _0xa88a13.config.biosUrl,
                             _0x2c1832 = _0xa88a13;
-                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setMessageDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024.FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
+                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024.FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
                         var _0x14d39f = '';
                         _0x14d39f += 'savefile_directory = /data/saves\n', _0x14d39f += 'video_vsync = true\n', _0x14d39f += 'screenshot_directory = /\n', _0x14d39f += 'video_shader = /shader/shader.glslp\n', _0x14d39f += 'video_shader_enable = true\n', _0x14d39f += 'video_font_enable = false\n', _0x14d39f += 'video_scale = 1.0\n', _0x14d39f += 'video_gpu_screenshot = false\n', _0x14d39f += 'audio_latency = 96\n';
                         var _0x36edb7 = _0x2593da.defaultCoreOptionsValues.call(_0xa88a13);
@@ -16061,13 +16061,6 @@ var EJS = function(_0x574f5e) {
             },
             'initShaders': function() {
                 for (var _0xa88a13 = _0x5032e6, _0x17edbf = Object.keys(_0xa88a13), _0x2c1832 = '', _0x26fb6a = 0x0; _0x26fb6a < _0x17edbf.length; _0x26fb6a += 0x1) _0x2c1832 = _0xa88a13[_0x17edbf[_0x26fb6a]], _0x27f4c4.FS.writeFile('/shader/' .concat(_0x17edbf[_0x26fb6a]), _0x2c1832), _0x2593da.storage.get('shader') === _0x17edbf[_0x26fb6a] && _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x2c1832);
-            },
-            'setMessageDialog': function() {
-                var _0xa88a13 = this;
-                var p = document.createElement('p')
-                p.innerHTML = 'TEST'
-                this.elements.messageDialog = p
-                this.game.appendChild(p)
             },
             'setGamepadDialog': function() {
                 var _0xa88a13 = this;
