@@ -15288,7 +15288,7 @@ var EJS = function(_0x574f5e) {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
                         var _0x17edbf = _0xa88a13.config.biosUrl,
                             _0x2c1832 = _0xa88a13;
-                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024.FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
+                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setMessageDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024.FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
                         var _0x14d39f = '';
                         _0x14d39f += 'savefile_directory = /data/saves\n', _0x14d39f += 'video_vsync = true\n', _0x14d39f += 'screenshot_directory = /\n', _0x14d39f += 'video_shader = /shader/shader.glslp\n', _0x14d39f += 'video_shader_enable = true\n', _0x14d39f += 'video_font_enable = false\n', _0x14d39f += 'video_scale = 1.0\n', _0x14d39f += 'video_gpu_screenshot = false\n', _0x14d39f += 'audio_latency = 96\n';
                         var _0x36edb7 = _0x2593da.defaultCoreOptionsValues.call(_0xa88a13);
@@ -15473,6 +15473,11 @@ var EJS = function(_0x574f5e) {
                                         if ('nds' == _0x2c1832.system && ! _0x2d904a.wasm) {
                                             _0x5b1dcd = !0x1;
                                         };
+                                        //alert(_0x5b1dcd) // is save/load state supported
+                                        if (_0xc6823.statesSupported === false) {
+                                            _0x5b1dcd = false;
+                                        };
+                                        _0xc6823.setStatesSupported(_0x5b1dcd);
                                         _0x4d7024.coreFileVersion = _0x124167;
                                         _0x4d7024.coreFileName = _0x5d075f;
                                         var _0x2eb141 = !0x1;
@@ -16057,6 +16062,13 @@ var EJS = function(_0x574f5e) {
             'initShaders': function() {
                 for (var _0xa88a13 = _0x5032e6, _0x17edbf = Object.keys(_0xa88a13), _0x2c1832 = '', _0x26fb6a = 0x0; _0x26fb6a < _0x17edbf.length; _0x26fb6a += 0x1) _0x2c1832 = _0xa88a13[_0x17edbf[_0x26fb6a]], _0x27f4c4.FS.writeFile('/shader/' .concat(_0x17edbf[_0x26fb6a]), _0x2c1832), _0x2593da.storage.get('shader') === _0x17edbf[_0x26fb6a] && _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x2c1832);
             },
+            'setMessageDialog': function() {
+                var _0xa88a13 = this;
+                var p = document.createElement('p')
+                p.innerHTML = 'TEST'
+                this.elements.messageDialog = p
+                this.game.appendChild(p)
+            },
             'setGamepadDialog': function() {
                 var _0xa88a13 = this;
                 _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>Control Settings</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">Player 1</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">Player 2</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">Player 3</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">Player 4</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">Update</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">Reset</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">Clear</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">Cancel</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">Press keyboard or gamepad</div>\n                </div>\n            </div>\n        </div>\n        '
@@ -16167,6 +16179,10 @@ var EJS = function(_0x574f5e) {
                 if ('arcade' === _0xa88a13.system) {
                     _0x48ee51[2] = 'INSERT COIN'
                 }
+                if (_0xa88a13.statesSupported === false) {
+                    delete _0x48ee51[24]
+                    delete _0x48ee51[25]
+                }
                 
                 for (var _0x501790 = [0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x0, 0x9, 0x1, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x13, 0x12, 0x11, 0x10, 0x17, 0x16, 0x15, 0x14, 0x18, 0x19], _0x50fd12 = function(_0x88827f) {
                         _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'])).innerHTML += _0x17edbf.replace(/{index}/g, _0x88827f), _0x501790.forEach(function(_0x1bf162) {
@@ -16255,7 +16271,7 @@ var EJS = function(_0x574f5e) {
                             _0x4a6f6f = _0x2c1832.getAttribute('data-label');
                         _0x132da7(_0x11b11a, !0x1), _0x11b11a.setAttribute('data-id', _0x4e649c), _0x11b11a.setAttribute('data-index', _0x431719);
                         var _0x179623 = '[ ' .concat(_0x4a6f6f, ' ]');
-                        _0x378b5c.gamepad.gamepads[_0x431719] && _0x4e649c < 0x10 ? _0x179623 += '<br /><span style="font-size:12px">Gamepad:' .concat(_0x378b5c.gamepad.gamepads[_0x431719].id, '</span><br />Press keyboard or gamepad') : _0x179623 += '<br />Press keyboard', _0x11b11a.querySelector('.' .concat(_0x378b5c.classNames['key-setting-popup'])).innerHTML = _0x179623, _0x1e1d79.stopPropagation();
+                        _0x378b5c.gamepad.gamepads[_0x431719] && _0x4e649c < 0x10 ? _0x179623 += '<br /><span style="font-size:12px">Gamepad:' .concat(_0x378b5c.gamepad.gamepads[_0x431719].id, '</span><br />Press keyboard or gamepad<br/>Press escape (esc) to clear') : _0x179623 += '<br />Press keyboard<br/>Press escape (esc) to clear', _0x11b11a.querySelector('.' .concat(_0x378b5c.classNames['key-setting-popup'])).innerHTML = _0x179623, _0x1e1d79.stopPropagation();
                     });
                 });
             },
@@ -16685,6 +16701,15 @@ var EJS = function(_0x574f5e) {
                         var _0x335c01 = !_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden,
                             _0x2eb03e = 'keydown' === _0x459b32.type;
                         if (_0x2eb03e && _0x335c01) {
+                            var _0x1a3a47 = _0x2c1832.getAttribute('data-index'),
+                                _0x1394cb = _0x2c1832.getAttribute('data-id'),
+                                _0x2c8fd1 = null;
+                            if (_0x459b32.key && _0x378b5c.keyMap[_0x459b32.keyCode] === 'escape') {
+                                (_0x2c8fd1 = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1394cb, '"][data-index="').concat(_0x1a3a47, '"][data-type="1"]'))).setAttribute('data-value', '')
+                                _0x2c8fd1.value = ''
+                                _0x132da7(_0x2c1832, true);
+                                return;
+                            };
                             var _0x1a3a47 = _0x2c1832.getAttribute('data-index'),
                                 _0x1394cb = _0x2c1832.getAttribute('data-id'),
                                 _0x2c8fd1 = null;
@@ -17339,8 +17364,10 @@ var EJS = function(_0x574f5e) {
                     }
                     _0xa88a13.elements.container.focus();
                 }, _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string'])), _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat), _0x378b5c.quickSaveState = function() {
-                        // save state button
                     if (_0xa88a13.started && !_0x378b5c.connected) {
+                        if (_0xa88a13.statesSupported === false) {
+                            return;
+                        }
                         if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                             var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
                             if (! slot) {
@@ -17357,6 +17384,9 @@ var EJS = function(_0x574f5e) {
                         _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
                     }
                 }, _0x378b5c.quickLoadState = function() {
+                    if (_0xa88a13.statesSupported === false) {
+                        return;
+                    }
                     if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                         var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
                         if (! slot) {
@@ -17855,11 +17885,13 @@ var EJS = function(_0x574f5e) {
                     default:
                         _0xa88a13 = {}, console.warn('Unsupport emulator');
                 }
-                _0xa88a13['save-state-slot'] = {
-                    'label': 'Save State Slot',
-                    'options': [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                    'default': 1,
-                    'netplay': false
+                if (this.statesSupported === true) {
+                    _0xa88a13['save-state-slot'] = {
+                        'label': 'Save State Slot',
+                        'options': [1, 2, 3, 4, 5, 6, 7, 8, 9],
+                        'default': 1,
+                        'netplay': false
+                    }
                 }
                 _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
                     var _0x5995db = _0x2bef5a.split('; '),
@@ -19081,6 +19113,7 @@ var EJS = function(_0x574f5e) {
                 this.adUrl = null,
                 this.gameName = null,
                 this.loadStateOnStart = false,
+                this.statesSupported = true,
                 this.startOnLoad = false,
                 this.dataPath = '',
                 this.customPaths = null,
@@ -19108,6 +19141,7 @@ var EJS = function(_0x574f5e) {
                 this.cheats || (this.cheats = []),
                 this.color = this.config.color,
                 this.startOnLoad = this.config.startOnLoad || false,
+                this.statesSupported = this.config.statesSupported || true,
                 this.customPaths = function(paths) {
                     if (! paths) return null;
                     var newPaths = {};
@@ -19227,6 +19261,11 @@ var EJS = function(_0x574f5e) {
                     return _0x2c1832 && _0x2593da.toggleMenu.call(this, !0x1), !_0x2c1832;
                 }
                 return !0x1;
+            }
+        }, {
+            'key': 'setStatesSupported',
+            'value': function(newValue) {
+                this.statesSupported = newValue;
             }
         }, {
             'key': 'loadState',
