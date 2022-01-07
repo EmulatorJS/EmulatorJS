@@ -15771,7 +15771,8 @@ var EJS = function(_0x574f5e) {
                     22: {'value': '75'},
                     23: {'value': '73'},
                     24: {},
-                    25: {}
+                    25: {},
+                    26: {}
                 },
                 1: {},
                 2: {},
@@ -15920,6 +15921,7 @@ var EJS = function(_0x574f5e) {
             'loadState': null,
             'quickSaveState': null,
             'quickLoadState': null,
+            'changeStateSlot': null,
             'getScreenData': null,
             'getStateInfo': null,
             'setCheat': null,
@@ -16079,7 +16081,8 @@ var EJS = function(_0x574f5e) {
                         7: 'RIGHT',
                         8: 'A',
                         24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE'
+                        25: 'QUICK LOAD STATE',
+                        26: 'CHANGE STATE SLOT'
                     }
                 } else if ('snes' === _0xa88a13.system) {
                     var _0x48ee51 = {
@@ -16096,7 +16099,8 @@ var EJS = function(_0x574f5e) {
                         10: 'L',
                         11: 'R',
                         24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE'
+                        25: 'QUICK LOAD STATE',
+                        26: 'CHANGE STATE SLOT'
                     };
                 } else if ('n64' === _0xa88a13.system) {
                     var _0x48ee51 = {
@@ -16119,7 +16123,8 @@ var EJS = function(_0x574f5e) {
                         21: 'R STICK LEFT',
                         20: 'R STICK RIGHT',
                         24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE'
+                        25: 'QUICK LOAD STATE',
+                        26: 'CHANGE STATE SLOT'
                     };
                 } else if ('nds' === _0xa88a13.system) {
                     var _0x48ee51 = {
@@ -16137,7 +16142,8 @@ var EJS = function(_0x574f5e) {
                         11: 'R',
                         14: 'Microphone',
                         24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE'
+                        25: 'QUICK LOAD STATE',
+                        26: 'CHANGE STATE SLOT'
                     };
                 } else {
                     var _0x48ee51 = {
@@ -16166,7 +16172,8 @@ var EJS = function(_0x574f5e) {
                         21: 'R STICK LEFT',
                         20: 'R STICK RIGHT',
                         24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE'
+                        25: 'QUICK LOAD STATE',
+                        26: 'CHANGE STATE SLOT'
                     };
                 }
                 if ('arcade' === _0xa88a13.system) {
@@ -16175,9 +16182,10 @@ var EJS = function(_0x574f5e) {
                 if (_0xa88a13.statesSupported === false) {
                     delete _0x48ee51[24]
                     delete _0x48ee51[25]
+                    delete _0x48ee51[26]
                 }
                 
-                for (var _0x501790 = [0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x0, 0x9, 0x1, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x13, 0x12, 0x11, 0x10, 0x17, 0x16, 0x15, 0x14, 0x18, 0x19], _0x50fd12 = function(_0x88827f) {
+                for (var _0x501790 = [0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x0, 0x9, 0x1, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x13, 0x12, 0x11, 0x10, 0x17, 0x16, 0x15, 0x14, 0x18, 0x19, 26], _0x50fd12 = function(_0x88827f) {
                         _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'])).innerHTML += _0x17edbf.replace(/{index}/g, _0x88827f), _0x501790.forEach(function(_0x1bf162) {
                             _0x48ee51[_0x1bf162] && (_0xa88a13.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x88827f)).innerHTML += _0x2c1832.replace(/{index}/g, _0x88827f).replace(/{id}/g, _0x1bf162).replace(/{label}/g, _0x48ee51[_0x1bf162]));
                         }), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="16"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="16"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="17"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="17"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="18"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="18"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="19"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="19"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="20"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="20"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="21"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="21"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="22"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="22"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="23"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="23"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc');
@@ -16709,11 +16717,13 @@ var EJS = function(_0x574f5e) {
                             _0x459b32.key && ((_0x2c8fd1 = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1394cb, '"][data-index="').concat(_0x1a3a47, '"][data-type="1"]'))).setAttribute('data-value', _0x459b32.keyCode), _0x2c8fd1.value = _0x378b5c.keyMap[_0x459b32.keyCode]), _0x132da7(_0x2c1832, true);
                         } else Object.keys(_0x378b5c.controllers).forEach(function(_0x3863d2) {
                             Object.keys(_0x378b5c.controllers[_0x3863d2]).forEach(function(_0x509939) {
-                                if (parseInt(_0x378b5c.controllers[_0x3863d2][_0x509939].value, 0xa) === _0x459b32.keyCode && ['24', '25'].includes(_0x509939) && _0x459b32.type == 'keydown' && ! _0x459b32.repeat) {
+                                if (parseInt(_0x378b5c.controllers[_0x3863d2][_0x509939].value, 0xa) === _0x459b32.keyCode && ['24', '25', '26'].includes(_0x509939) && _0x459b32.type == 'keydown' && ! _0x459b32.repeat) {
                                     if (_0x509939 == '24') {//save
                                         _0x378b5c.quickSaveState()
                                     } else if (_0x509939 == '25') {//load
                                         _0x378b5c.quickLoadState()
+                                    } else if (_0x509939 == '26') {//load
+                                        _0x378b5c.changeStateSlot()
                                     }
                                     // quick save/load button
                                 }
@@ -16859,11 +16869,13 @@ var EJS = function(_0x574f5e) {
                         }
                     } else Object.keys(_0x378b5c.controllers[_0x15761a.gamepad.index.toString()]).forEach(function(_0x3cf4d3) {
                         var _0x5cf388 = _0x15761a.gamepad.index.toString();
-                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25'].includes(_0x3cf4d3)) {
+                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25', '26'].includes(_0x3cf4d3)) {
                             if (_0x3cf4d3 == '24') {//save
                                 _0x378b5c.quickSaveState()
                             } else if (_0x3cf4d3 == '25') {//load
                                 _0x378b5c.quickLoadState()
+                            } else if (_0x3cf4d3 == '26') {//load
+                                _0x378b5c.changeStateSlot()
                             }
                         }
                         parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
@@ -16904,13 +16916,15 @@ var EJS = function(_0x574f5e) {
                             if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
                                 continue
                             }
-                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value && ['24', '25'].includes(_0x3cf4d3)) {
+                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === _0x31f017.value && ['24', '25', '26'].includes(_0x3cf4d3)) {
                                 if (_0x3cf4d3 == '24') {//save
                                     quit = true
                                     _0x378b5c.quickSaveState()
                                 } else if (_0x3cf4d3 == '25') {//load
                                     quit = true
                                     _0x378b5c.quickLoadState()
+                                } else if (_0x3cf4d3 == '26') {//load
+                                    _0x378b5c.changeStateSlot()
                                 }
                             }
                             if (_0x31f017.value === 0) {
@@ -17359,6 +17373,18 @@ var EJS = function(_0x574f5e) {
                 }, _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string'])), _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat), _0x378b5c.quickSaveState = function() {
                     if (_0xa88a13.started && !_0x378b5c.connected) {
                         if (_0xa88a13.statesSupported === false) {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY SAVE STATE';
+                            for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
+                                _0x378b5c.saveMsgTransitions[i] = false;
+                            }
+                            var a = _0x378b5c.saveMsgTransitions.length;
+                            _0x378b5c.saveMsgTransitions.push(true);
+                            setTimeout(function() {
+                                if (_0x378b5c.saveMsgTransitions[a]) {
+                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                    _0x378b5c.saveMsgTransitions = [];
+                                }
+                            }, 1500)
                             return;
                         }
                         if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
@@ -17370,16 +17396,85 @@ var EJS = function(_0x574f5e) {
                             var slot = 1;
                         }
                         var name = slot + '-quick.state';
-                        var _0x17edbf = _0x378b5c.saveState();
                         try {
                             _0x27f4c4.FS.unlink(name);
                         } catch (_0x4b4d4c) {}
-                        _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
+                        var success = true;
+                        try {
+                            var _0x17edbf = _0x378b5c.saveState();
+                            _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
+                        } catch(e) {
+                            success = false;
+                        }
+                        if (! success) {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO SAVE STATE TO SLOT ' + slot;
+                        } else {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                        }
+                        for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
+                            _0x378b5c.saveMsgTransitions[i] = false;
+                        }
+                        var a = _0x378b5c.saveMsgTransitions.length;
+                        _0x378b5c.saveMsgTransitions.push(true);
+                        setTimeout(function() {
+                            if (_0x378b5c.saveMsgTransitions[a]) {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                _0x378b5c.saveMsgTransitions = [];
+                            }
+                        }, 1500)
                     }
-                }, _0x378b5c.quickLoadState = function() {
-                    if (_0xa88a13.statesSupported === false) {
-                        return;
+                }, _0x378b5c.saveMsgTransitions = [], _0x378b5c.quickLoadState = function() {
+                    if (_0xa88a13.started && !_0x378b5c.connected) {
+                        if (_0xa88a13.statesSupported === false) {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY LOAD STATE';
+                            for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
+                                _0x378b5c.saveMsgTransitions[i] = false;
+                            }
+                            var a = _0x378b5c.saveMsgTransitions.length;
+                            _0x378b5c.saveMsgTransitions.push(true);
+                            setTimeout(function() {
+                                if (_0x378b5c.saveMsgTransitions[a]) {
+                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                    _0x378b5c.saveMsgTransitions = [];
+                                }
+                            }, 1500)
+                            return;
+                        }
+                        if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
+                            var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
+                            if (! slot) {
+                                slot = 1;
+                            }
+                        } else {
+                            var slot = 1;
+                        }
+                        var name = slot + '-quick.state';
+                        var success = true;
+                        try {
+                            _0x25a7a2(name, 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
+                                _0x378b5c.getStateInfo(), _0x25a7a2(name, 0x0);
+                            }, 0xa);
+                        } catch (_0x4ee386) {
+                            success = false;
+                        }
+                        if (! success) {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO LOAD STATE FROM SLOT ' + slot;
+                        } else {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'LOADED STATE FROM SLOT ' + slot;
+                        }
+                        for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
+                            _0x378b5c.saveMsgTransitions[i] = false;
+                        }
+                        var a = _0x378b5c.saveMsgTransitions.length;
+                        _0x378b5c.saveMsgTransitions.push(true);
+                        setTimeout(function() {
+                            if (_0x378b5c.saveMsgTransitions[a]) {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                _0x378b5c.saveMsgTransitions = [];
+                            }
+                        }, 1500)
                     }
+                }, _0x378b5c.changeStateSlot = function(e) {
                     if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                         var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
                         if (! slot) {
@@ -17388,12 +17483,28 @@ var EJS = function(_0x574f5e) {
                     } else {
                         var slot = 1;
                     }
-                    var name = slot + '-quick.state';
-                    if (_0xa88a13.started && !_0x378b5c.connected) try {
-                        _0x25a7a2(name, 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                            _0x378b5c.getStateInfo(), _0x25a7a2(name, 0x0);
-                        }, 0xa);
-                    } catch (_0x4ee386) {}
+                    var newSlot;
+                    if (typeof e != 'number') {
+                        newSlot = slot + 1;
+                    } else {
+                        newSlot = e;
+                    }
+                    if (newSlot > 9) {
+                        newSlot = 1;
+                    }
+                    _0x7f9f36.updateCoreOptions.call(_0xa88a13, 'save-state-slot', newSlot)
+                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'SET SAVE STATE SLOT TO ' + newSlot;
+                    for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
+                        _0x378b5c.saveMsgTransitions[i] = false;
+                    }
+                    var a = _0x378b5c.saveMsgTransitions.length;
+                    _0x378b5c.saveMsgTransitions.push(true);
+                    setTimeout(function() {
+                        if (_0x378b5c.saveMsgTransitions[a]) {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                            _0x378b5c.saveMsgTransitions = [];
+                        }
+                    }, 1500)
                 }, window.EJS_loadState = function(_0x4dd6a5) {
                     _0x378b5c.loadState(_0x4dd6a5, 0x0), setTimeout(function() {
                         if (_0x378b5c.connected) {
@@ -17876,7 +17987,7 @@ var EJS = function(_0x574f5e) {
                         _0xa88a13 = {};
                         break;
                     default:
-                        _0xa88a13 = {}, console.warn('Unsupport emulator');
+                        _0xa88a13 = {}, console.warn('Unsupported emulator');
                 }
                 if (this.statesSupported === true) {
                     _0xa88a13['save-state-slot'] = {
@@ -18408,6 +18519,21 @@ var EJS = function(_0x574f5e) {
                 }))).appendChild(_0x173db3);
                 this.elements.dialogs.cheat = _0x173db3;
             },
+            'setStateInfoBarWidget': function() {
+                var _0xa88a13 = _0x428003('div', {
+                        'class': _0x449eac({
+                            'ejs__widget': true
+                        })
+                    }),
+                    _0x17edbf = _0x428003('div');
+                _0x17edbf.style = 'color: red;font-size: 17px;padding:10px;text-align:left;text-shadow:1px 1px 1px #000'
+                _0xa88a13.appendChild(_0x17edbf);
+                _0x530042.call(this, '.' .concat(_0x449eac({
+                    'ejs__widgets': true
+                }))).appendChild(_0xa88a13);
+                this.elements.widgets.stateInfo = _0xa88a13;
+                this.elements.widgets.stateInfoDiv = _0x17edbf;
+            },
             'setNetplayWidgets': function() {
                 var _0xa88a13 = _0x428003('div', {
                         'class': _0x449eac({
@@ -18583,6 +18709,7 @@ var EJS = function(_0x574f5e) {
                 _0x7f9f36.setScreenRecord.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.supportNetPlay.call(this, _0x17edbf) && parseInt(this.config.gameId, 0xa) > 0x0 && _0x7f9f36.setNetplay.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setGamepad.call(this, _0x17edbf, _0x42e40d);
+                _0x7f9f36.setStateInfoBarWidget.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setCheat.call(this, _0x17edbf, _0x42e40d);
                 _0x17edbf.appendChild(_0x428003('span', {
                     'style': 'flex:1'
@@ -18871,9 +18998,18 @@ var EJS = function(_0x574f5e) {
                     var _0x3953b5 = _0x2c1832.controls;
                     _0x3953b5 && 'enterfullscreen' === _0x1ac81c.type && (_0x3953b5.pressed = !0x1, _0x3953b5.hover = !0x1);
                     var _0x2c3de3 = 0x0;
-                    ['touchstart', 'touchmove', 'mousemove', 'start-game'].includes(_0x1ac81c.type) && (_0x5ab74d.toggleControls.call(_0x45d275, true), _0x2c3de3 = _0x45d275.touch ? 0xbb8 : 0x7d0), clearTimeout(_0x31e271), _0x31e271 = setTimeout(function() {
-                        return _0x5ab74d.toggleControls.call(_0x45d275, !0x1);
-                    }, _0x2c3de3), _0x2c1832.controls.setAttribute('data-timer', _0x31e271);
+                    if (['touchstart', 'touchmove', 'mousemove', 'start-game'].includes(_0x1ac81c.type)) {
+                        if (_0x17edbf.system == 'nds' && ['touchstart', 'touchmove', 'mousemove'].includes(_0x1ac81c.type) && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && (document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas)) {
+                            return;
+                        }
+                        _0x5ab74d.toggleControls.call(_0x45d275, true);
+                        _0x2c3de3 = _0x45d275.touch ? 0xbb8 : 0x7d0;
+                        clearTimeout(_0x31e271);
+                        _0x31e271 = setTimeout(function() {
+                            return _0x5ab74d.toggleControls.call(_0x45d275, !0x1);
+                        }, _0x2c3de3);
+                        _0x2c1832.controls.setAttribute('data-timer', _0x31e271);
+                    };
                 }), _0x1093f4.call(_0x45d275, window, 'resize', function(_0x3e2cc5) {
                     var _0x17edbf = _0x45d275.elements.container.clientHeight,
                         _0x2c1832 = _0x23ffa1.call(_0x45d275, '.' .concat(_0x449eac({
@@ -18922,6 +19058,12 @@ var EJS = function(_0x574f5e) {
                 }, !0x1), _0x1093f4.call(_0x2c1832, _0x17edbf.container, 'mousewheel', function(_0x49c974) {
                     _0x49c974.stopPropagation();
                 }, !0x1), _0x1093f4.call(_0x2c1832, _0x17edbf.container, 'mousedown', function(_0x53ee35) {
+                    if (_0x31e271.system == 'nds' && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && ! _0x27f4c4.isMobileDevice && !(document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas) && _0x31e271.started && !_0x31e271.connected) {
+                        setTimeout(function() {
+                            _0x27f4c4.Module.canvas.requestPointerLock = _0x27f4c4.Module.canvas.requestPointerLock || _0x27f4c4.Module.canvas.mozRequestPointerLock;
+                            _0x27f4c4.Module.canvas.requestPointerLock()
+                        }, 100)
+                    }
                     _0x2c1832.touch || _0x2593da.toggleContextMenu.call(_0x2c1832, _0x53ee35, !0x1);
                 }, !0x1), _0x1093f4.call(_0x2c1832, _0x2c1832.game, 'volumechange', function() {
                     _0x2c1832.storage.set({
