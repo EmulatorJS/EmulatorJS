@@ -18757,6 +18757,10 @@ var EJS = function(_0x574f5e) {
                 this.elements.settings.popup = _0x262fb8
                 this.elements.settings.menu = _0x2746ab
                 _0x17edbf.appendChild(_0x7f9f36.createButton.call(this, 'fullscreen'))
+                var _0x19edbf = this;
+                _0x17edbf.addEventListener('mousedown', function() {
+                    _0x19edbf.onButtonDiv = true;
+                })
                 this.elements.controls = _0x17edbf
                 _0x7f9f36.setNormalOptionsMenu.call(this)
                 _0x7f9f36.setCoreOptionsMenu.call(this)
@@ -19060,8 +19064,11 @@ var EJS = function(_0x574f5e) {
                 }, !0x1), _0x1093f4.call(_0x2c1832, _0x17edbf.container, 'mousedown', function(_0x53ee35) {
                     if (_0x31e271.system == 'nds' && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && ! _0x27f4c4.isMobileDevice && !(document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas) && _0x31e271.started && !_0x31e271.connected) {
                         setTimeout(function() {
-                            _0x27f4c4.Module.canvas.requestPointerLock = _0x27f4c4.Module.canvas.requestPointerLock || _0x27f4c4.Module.canvas.mozRequestPointerLock;
-                            _0x27f4c4.Module.canvas.requestPointerLock()
+                            if (_0x31e271.onButtonDiv !== true) {
+                                _0x27f4c4.Module.canvas.requestPointerLock = _0x27f4c4.Module.canvas.requestPointerLock || _0x27f4c4.Module.canvas.mozRequestPointerLock;
+                                _0x27f4c4.Module.canvas.requestPointerLock()
+                            }
+                            _0x31e271.onButtonDiv = false
                         }, 100)
                     }
                     _0x2c1832.touch || _0x2593da.toggleContextMenu.call(_0x2c1832, _0x53ee35, !0x1);
