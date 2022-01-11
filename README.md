@@ -34,6 +34,8 @@ Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
+BETA site: https://emulatorjs.netlify.app/
+
 ## Where did I get this?
 
 So I found this website called [emulatorjs](https://www.emulatorjs.com/) and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.
