@@ -34,6 +34,8 @@ Example page: https://coldcast.org/games/1/Super-Mario-Bros
 
 <p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
 
+BETA site: https://emulatorjs.netlify.app/
+
 ## Where did I get this?
 
 So I found this website called [emulatorjs](https://www.emulatorjs.com/) and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.
@@ -53,6 +55,14 @@ If you have questions, ask me and I will clarify (use the issues tab). Please se
 IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!
 
 All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
+
+
+NETPLAY IS DISABLED BY DEFAULT. To enable, add this line to your code
+
+```
+EJS_gameID = 1; // ID in your website, required for netplay.
+```
+
 
 ## Supported systems!
 
@@ -83,7 +93,7 @@ All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
 | [Arcade] |
 | [Atari 2600] |
 
-## Tips
+## More Features
 
 To customize the filename of save states, add the line of code below
 
@@ -99,3 +109,35 @@ To add an ad to the play now screen, add the following line to your code
 ```
 EJS_AdUrl = ''; //path to AD page
 ```
+
+<br>
+
+To change the default color of the emulator interface, add the line below
+
+```
+EJS_color = ''; //hex color id
+```
+You can set the color to a hex color code, for example `#FF0000` (red)
+
+<br>
+
+To start the emulator immediately, add this line to your code
+
+```
+EJS_startOnLoaded = true;
+```
+This will start the emulator instantly
+Please note, the Audio cannot start until the user interacts with the page
+
+<br>
+
+To specify an exact path for a file, add this line to your code
+
+```
+EJS_paths = {
+    "fileName": "/somepath",
+    "emulator.js": "https://example.com/emulator.js",
+    "n64-asmjs.data": "/asdfds.data"
+}
+```
+If a file is not defined, it be set to default
