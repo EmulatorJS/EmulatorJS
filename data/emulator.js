@@ -14960,7 +14960,7 @@ var EJS = function(_0x574f5e) {
                                 if (typeof _0x55627a.loadStateOnStart == 'string') {
                                     fetch(_0x55627a.loadStateOnStart).then(function(response) {
                                         response.arrayBuffer().then(function(ab) {
-                                            var a = new Uint8Array(a)
+                                            var a = new Uint8Array(ab)
                                             EJS_loadState(a)
                                         })
                                     })
