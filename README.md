@@ -81,6 +81,8 @@ to enable it, add the following:
 EJS_gameID = 1; 
 ```
 
+<br>
+
 *I have successfully rewrote the server side portion* <br>
 *of netplay, which you can now use to self host!*
 
