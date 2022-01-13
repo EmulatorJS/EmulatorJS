@@ -34,39 +34,18 @@ Self-hosted **Javascript** emulation for various system.
 
 #### Nintendo
 
-- **[Game Boy Advance][Nintendo Game Boy Advance]**
-- **[Famicom / NES][NES / Famicom]**
-- **[Virtual Boy][Virtual Boy]**
-- **[Game Boy][Nintendo Game Boy]**
-- **[SNES]**
-- **[DS][Nintendo DS]**
-- **[64][Nintendo 64]**
+**[Game Boy Advance][Nintendo Game Boy Advance]** | **[Famicom / NES][NES / Famicom]** | **[Virtual Boy][Virtual Boy]** | **[Game Boy][Nintendo Game Boy]** | **[SNES]** | **[DS][Nintendo DS]** | **[64][Nintendo 64]**
 
 #### Sega
-
-- **[Master System][Sega Master System]**
-- **[Mega Drive][Sega Mega Drive]**
-- **[Game Gear][Sega Game Gear]**
-- **[Saturn][Sega Saturn]**
-- **[32X][Sega 32X]**
-- **[CD][Sega CD]**
+**[Master System][Sega Master System]** | **[Mega Drive][Sega Mega Drive]** | **[Game Gear][Sega Game Gear]** | **[Saturn][Sega Saturn]** | **[32X][Sega 32X]** | **[CD][Sega CD]**
 
 #### Atari
 
-- **[Jaguar][Atari Jaguar]**
-- **[Lynx][Atari Lynx]**
-- **[7800][Atari 7800]**
-- **[2600][Atari 2600]**
+**[Jaguar][Atari Jaguar]** | **[Lynx][Atari Lynx]** | **[7800][Atari 7800]** | **[2600][Atari 2600]**
 
 #### Other
 
-- **[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]**
-- **[WanderSwan Color][WanderSwan / Color]**
-- **[Neo Geo Poket][Neo Geo Poket]**
-- **[PlayStation]**
-- **[Arcade]**
-- **[MSX]**
-- **[3DO]**
+**[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]** | **[WanderSwan Color][WanderSwan / Color]** | **[Neo Geo Poket][Neo Geo Poket]** | **[PlayStation]** | **[Arcade]** | **[MSX]** | **[3DO]**
 
 ---
 
