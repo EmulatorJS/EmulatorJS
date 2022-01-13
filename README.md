@@ -32,18 +32,41 @@ Self-hosted **Javascript** emulation for various system.
 
 ## Supported Systems
 
-| Nintendo | Sega | Atari |   |   |
-|:--------:|:----:|:-----:|:-:|:-:|
-| **[Game Boy<br>Advance][Nintendo Game Boy Advance]** | **[Master<br>System][Sega Master System]** | **[Jaguar][Atari Jaguar]** | **[TurboGrafs 16<br>PC Engine][TurboGrafs-16 / PC Engine]** | **[MSX]**
-| **[Game Boy][Nintendo Game Boy]** | **[Mega<br>Drive][Sega Mega Drive]** | **[Lynx][Atari Lynx]** | **[WanderSwan<br>Color][WanderSwan / Color]** | **[3DO]**
-| **[Famicom <br> NES][NES / Famicom]** | **[Game<br>Gear][Sega Game Gear]** | **[7800][Atari 7800]** | **[Neo Geo<br>Poket][Neo Geo Poket]**
-| **[Virtual<br>Boy][Virtual Boy]** | **[Saturn][Sega Saturn]** | **[2600][Atari 2600]** | **[PlayStation]**
-| **[SNES]** | **[32X][Sega 32X]** | | **[Arcade]**
-| **[DS][Nintendo DS]** | **[CD][Sega CD]** |
-| **[64][Nintendo 64]**
+#### Nintendo
 
-*If your system is not listed here, navigate to* ***[EmulatorJS.com][EJS]*** *,* <br>
-*check if it's available there and if it is, simply open an* ***[Issue]*** *.*
+- **[Game Boy Advance][Nintendo Game Boy Advance]**
+- **[Famicom / NES][NES / Famicom]**
+- **[Virtual Boy][Virtual Boy]**
+- **[Game Boy][Nintendo Game Boy]**
+- **[SNES]**
+- **[DS][Nintendo DS]**
+- **[64][Nintendo 64]**
+
+#### Sega
+
+- **[Master System][Sega Master System]**
+- **[Mega Drive][Sega Mega Drive]**
+- **[Game Gear][Sega Game Gear]**
+- **[Saturn][Sega Saturn]**
+- **[32X][Sega 32X]**
+- **[CD][Sega CD]**
+
+#### Atari
+
+- **[Jaguar][Atari Jaguar]**
+- **[Lynx][Atari Lynx]**
+- **[7800][Atari 7800]**
+- **[2600][Atari 2600]**
+
+#### Other
+
+- **[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]**
+- **[WanderSwan Color][WanderSwan / Color]**
+- **[Neo Geo Poket][Neo Geo Poket]**
+- **[PlayStation]**
+- **[Arcade]**
+- **[MSX]**
+- **[3DO]**
 
 ---
 
@@ -78,7 +101,7 @@ to enable it, add the following:
 
 ```js
 // ID of your website, required for netplay.
-EJS_gameID = 1; 
+EJS_gameID = 1;
 ```
 
 <br>
@@ -89,13 +112,13 @@ EJS_gameID = 1;
 1. Download the **[Server]**.
 
 2. Install **NPM**
-  
+
   ```sh
   npm install
   ```
-  
+
 3. Start the server with:
-  
+
   ```sh
   node index.js
   ```
@@ -208,4 +231,3 @@ EJS_paths = {
 [TurboGrafs-16 / PC Engine]: docs/TurboGrafs%2016-PC%20Engine.md
 [Arcade]: docs/Arcade.md
 [Atari 2600]: docs/Atari%202600.md
-
