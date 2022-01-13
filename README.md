@@ -79,7 +79,7 @@ By default **Netplay** is ***disabled***, <br>
 to enable it, add the following:
 
 ```js
-// ID of your website, required for netplay.
+// ID in your website, required for netplay. Each game in your site should have a different ID
 EJS_gameID = 1;
 ```
 
