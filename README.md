@@ -12,7 +12,7 @@ Self-hosted **Javascript** emulation for various system.
 
 ---
 
-**⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥**
+**⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
 
 ---
 
@@ -47,6 +47,7 @@ Self-hosted **Javascript** emulation for various system.
 
 ---
 
+
 ## Usage
 
 *For questions please use the* ***[Issue]*** *tab.*
@@ -64,16 +65,45 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-##### BIOS
-
-Some **Games** and **Systems** require <br>
-a `BIOS`, though most usually ***don't***.
-
-<br>
-
 ##### ROMs
 
 **ROMs** can be used as `zip` / `rar` / `7z` archives.
+
+<br>
+
+##### Netplay
+
+By default **Netplay** is ***disabled***, <br>
+to enable it, add the following:
+
+```js
+// ID of your website, required for netplay.
+EJS_gameID = 1; 
+```
+
+*I have successfully rewrote the server side portion* <br>
+*of netplay, which you can now use to self host!*
+
+1. Download the **[Server]**.
+
+2. Install **NPM**
+  
+  ```sh
+  npm install
+  ```
+  
+3. Start the server with:
+  
+  ```sh
+  node index.js
+  ```
+
+4. Specify the servers address with:
+
+```js
+// Absolute Url To Your Netplay Server
+EJS_netplayUrl = `http://localhost:3000/`;  
+```
 
 <br>
 
@@ -99,15 +129,58 @@ To place an advertisement in front of the <br>
 EJS_AdUrl = `URL`;
 ```
 
+<br>
+
+##### Interface Color
+
+To use a different color for the emulator interface, use:
+
+```js
+EJS_color = '#FF0000'; // Hex Color Code
+```
+
+<br>
+
+##### Direct Start
+
+To start the emulator immediately, add this line:
+
+```js
+EJS_startOnLoaded = true;
+```
+
+*For audio to play the user still* <br>
+*needs to interact with the page.*
+
+<br>
+
+##### Custom Paths
+
+Paths to emulator files can be customized with:
+
+```js
+EJS_paths = {
+    'fileName' : `/somepath` ,
+    'emulator.js' : `https://example.com/emulator.js` ,
+    'n64-asmjs.data' : `/asdfds.data`
+};
+```
+
+*If a file is not defined, the default is used.*
+
+
 <!----------------------------------------------------------------------------->
 
 [Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
 [Emulator Demo]: https://ethanaobrien.github.io/emulatorjs/
+[Beta]: https://emulatorjs.netlify.app/
 
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 [This repository]: https://github.com/linuxserver/emulatorjs
 
 [EJS]: https://www.emulatorjs.com/
+
+[Server]: https://github.com/ethanaobrien/emuserver
 
 [NES / Famicom]: docs/NES-Famicom.md
 [SNES]: docs/SNES.md
@@ -133,3 +206,4 @@ EJS_AdUrl = `URL`;
 [TurboGrafs-16 / PC Engine]: docs/TurboGrafs%2016-PC%20Engine.md
 [Arcade]: docs/Arcade.md
 [Atari 2600]: docs/Atari%202600.md
+
