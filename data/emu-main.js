@@ -2819,7 +2819,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x325651 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-5aa765d61d8327de'),
                         _0x3d0d28 = {};
                     _0x378b5c.connection = new _0x4a2390.a();
-                    var _0x10d51e = 'wss://ws.emulatorjs.com/';
+                    var _0x10d51e = _0xa88a13.socketUrl;
+                    if (! _0x10d51e.endsWith('/')) {
+                        _0x10d51e += '/';
+                    };
                     _0x378b5c.connection.socketURL = '/', _0x378b5c.connection.socketURL = _0x10d51e, _0x378b5c.connection.socketMessageEvent = 'emulatorjs-message', _0x378b5c.connection.socketCustomEvent = 'emulatorjs-custom-message';
                     var _0xda20e9 = _0x59aa33.info();
                     _0x378b5c.connection.extra = {
@@ -3057,8 +3060,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         };
                     _0x378b5c.loadRoomsList = function() {
                         _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), true), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), true);
+                        var listUrl = _0x17edbf.listUrl
+                        if (! listUrl.endsWith('/')) {
+                            listUrl += '/';
+                        };
                         var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])).querySelector('tbody'),
-                            _0x5cf2be = ['htt', 'ps://ws.emulatorjs.com/list?game_id=', _0x17edbf.config.gameId, '&domain=', document.domain].join('');
+                            _0x5cf2be = [listUrl, 'list?game_id=', _0x17edbf.config.gameId, '&domain=', document.domain].join('');
                         _0x550f17.a.get(_0x5cf2be, {}).then(function(_0x37c60b) {
                             if (_0x37c60b.data) {
                                 var _0x4782da = [],
@@ -5713,6 +5720,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.gameName = null,
                 this.loadStateOnStart = false,
                 this.statesSupported = true,
+                this.listUrl = 'https://ws.emulatorjs.com/',
+                this.socketUrl = 'wss://ws.emulatorjs.com/',
                 this.startOnLoad = false,
                 this.dataPath = '',
                 this.customPaths = null,
@@ -5738,6 +5747,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.multitap = this.config.multitap,
                 this.cheats = this.config.cheats,
                 this.cheats || (this.cheats = []),
+                this.listUrl = this.config.netplayUrl || 'https://ws.emulatorjs.com/',
+                this.socketUrl = this.config.netplayUrl || 'wss://ws.emulatorjs.com/',
                 this.color = this.config.color,
                 this.startOnLoad = this.config.startOnLoad || false,
                 this.statesSupported = this.config.statesSupported || true,

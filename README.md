@@ -63,6 +63,17 @@ NETPLAY IS DISABLED BY DEFAULT. To enable, add this line to your code
 EJS_gameID = 1; // ID in your website, required for netplay.
 ```
 
+I have successfully rewrote the server side portion of netplay. You can now self host! To do so:
+
+1. Open https://github.com/ethanaobrien/emuserver and download
+2. run `npm install`
+3. run `node index.js`
+4. Add the following line to your code
+
+```
+EJS_netplayUrl = 'http://localhost:3000/';  // Url to netplay server (MUST BE AN ABSOLUTE URL)
+```
+
 
 ## Supported systems!
 

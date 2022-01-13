@@ -12824,7 +12824,7 @@ var EJS = function(_0x574f5e) {
             for (var _0x55216d in _0x45595f) _0x45595f.hasOwnProperty(_0x55216d) && (_0x3efa0b[_0x55216d] = _0x45595f[_0x55216d]);
             return _0x3efa0b;
         }(this.query);
-        _0x3efa0b.EIO = _0x423ddf.protocol, _0x3efa0b.transport = _0x148af1;
+        _0x3efa0b.EIO = 4, _0x3efa0b.transport = _0x148af1;
         var _0x55216d = this.transportOptions[_0x148af1] || {};
         return this.id && (_0x3efa0b.sid = this.id), new _0x1fdb83[_0x148af1]({
             'query': _0x3efa0b,
