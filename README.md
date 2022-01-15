@@ -164,13 +164,20 @@ Paths to emulator files can be customized with:
 
 ```js
 EJS_paths = {
-    'fileName' : `/somepath` ,
-    'emulator.js' : `https://example.com/emulator.js` ,
-    'n64-asmjs.data' : `/asdfds.data`
+    'fileName' : '/somepath',
+    'emulator.js' : 'https://example.com/emulator.js',
+    'n64-asmjs.data' : '/asdfds.data'
 };
 ```
 
 *If a file is not defined, the default is used.*
+
+
+# LICENCE
+
+Licenced under the Apache License 2.0
+
+Read the whole license [here](license)
 
 
 <!----------------------------------------------------------------------------->
