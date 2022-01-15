@@ -173,11 +173,11 @@ EJS_paths = {
 *If a file is not defined, the default is used.*
 
 
-# LICENCE
+# LICENSE
 
 Licenced under the Apache License 2.0
 
-Read the whole license [here](license)
+Read the whole license [here](LICENSE)
 
 
 <!----------------------------------------------------------------------------->
