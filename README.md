@@ -99,7 +99,7 @@ EJS_gameID = 1;
 3. Start the server with:
 
   ```sh
-  node index.js
+  npm run start
   ```
 
 4. Specify the servers address with:
