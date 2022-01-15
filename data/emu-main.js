@@ -3096,7 +3096,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }, _0x378b5c.openRoom = function(_0x10625f) {
                         _0x378b5c.stopLoadRooms(), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), true), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), !0x1), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), true), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), !0x1), _0x378b5c.resetCheat(), _0x132da7(_0x10625f.elements.buttons.cheat, true);
                         var _0x17edbf = _0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])),
-                            _0x2c1832 = _0x17edbf.querySelector('p[data-room-password]');
+                            _0x2c1832 = _0x17edbf.querySelector('[data-room-password]');
                         null === _0x378b5c.connection.password ? _0x132da7(_0x2c1832, true) : (_0x132da7(_0x2c1832, !0x1), _0x2c1832.querySelector('span').innerText = _0x378b5c.connection.password);
                         var _0x18c1cb = _0x17edbf.querySelector('tbody');
                         _0x18c1cb.innerHTML = '', _0x17edbf.querySelector('strong').innerText = _0x3d0d28.room_name, _0x378b5c.players.forEach(function(_0x938d55, _0xf3d39a) {
