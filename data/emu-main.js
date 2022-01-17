@@ -1416,10 +1416,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                             ];
                                             'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v'), _0x4d7024.Module[_0x17edbf](_0x2c1832), _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
-                                            _0x567717();
                                         } catch (_0x4a1471) {
                                             console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
                                         }
+                                        try{_0x567717();}catch(e){}
                                     }
                                     if (0x2 === _0x52e6f3.data.t) {
                                         var _0x25aae3 = _0x52e6f3.data.file.split('/'),
@@ -1462,10 +1462,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                     ];
                                 'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v'), _0x4d7024.Module[_0x165f73](_0x4dd87f), _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
-                                _0x567717();
                             } catch (_0x42970c) {
                                 console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
                             }
+                            try{_0x567717();}catch(e){}
                         }
                     },
                     _0x5048db = function() {
