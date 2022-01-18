@@ -90,23 +90,10 @@ EJS_gameID = 1;
 
 1. Download the **[Server]**.
 
-2. Install **NPM**
-
-  ```sh
-  npm install
-  ```
-
-3. Start the server with:
-
-  ```sh
-  npm run start
-  ```
-
-4. Specify the servers address with:
+2. Specify the servers address with:
 
 ```js
-// Absolute Url To Your Netplay Server
-EJS_netplayUrl = `http://localhost:3000/`;  
+EJS_netplayUrl = 'http://localhost:3000/'; // Absolute Url To Your Netplay Server
 ```
 
 <br>
@@ -191,7 +178,7 @@ Read the whole license [here](LICENSE)
 
 [EJS]: https://www.emulatorjs.com/
 
-[Server]: https://github.com/ethanaobrien/emuserver
+[Server]: https://github.com/ethanaobrien/emuserver/releases
 
 [NES / Famicom]: docs/NES-Famicom.md
 [SNES]: docs/SNES.md
