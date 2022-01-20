@@ -3505,7 +3505,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     });
                     _0x17edbf.on('end', function(_0x27f006, _0x1fb527) {
                         _0x378b5c.syncInput(0x0, 0x4, 0x0), _0x378b5c.syncInput(0x0, 0x5, 0x0), _0x378b5c.syncInput(0x0, 0x6, 0x0), _0x378b5c.syncInput(0x0, 0x7, 0x0);
-                    }), _0x17edbf.on('move', function(_0x1b060e, _0x4ae7d6) {
+                    });
+                    _0x17edbf.on('move', function(_0x1b060e, _0x4ae7d6) {
                         var _0x2c1832 = _0x4ae7d6.angle.degree;
                         _0x2c1832 >= 0x1e && _0x2c1832 < 0x96 ? _0x378b5c.syncInput(0x0, 0x4, 0x1) : window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x4, 0x0);
@@ -3523,15 +3524,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x2ec721 = _0x449eac({
                             'touch': true
                         });
+                    /*
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(_0x2ae626) {
                         _0x2ae626.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    */
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_a': true
                     }))), 'touchstart touchend', function(_0x185083) {
                         'touchend' === _0x185083.type ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x8, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x185083.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x8, 0x1)), _0x185083.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_b': true
                     }))), 'touchstart touchend', function(_0x213c3d) {
                         'touchend' === _0x213c3d.type ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
