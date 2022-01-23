@@ -159,6 +159,24 @@ EJS_paths = {
 
 *If a file is not defined, the default is used.*
 
+<br>
+
+##### USING MAME SYSTEM
+
+you must add the line
+
+```
+EJS_core = 'mame';
+```
+
+and the line
+
+```
+EJS_mameCore = '' // mame core options (example: '4|0')
+```
+set the mame core value to the mame core number (`1` - `6`) + `|` + save states supported (`0` or `1`)
+
+<br>
 
 # LICENSE
 
