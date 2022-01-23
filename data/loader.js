@@ -39,6 +39,7 @@ emu_main.onload = function() {
         var config = {};
         config.gameUrl = EJS_gameUrl
 
+        'undefined' != typeof EJS_mameCore && (config.mameCore = EJS_mameCore)
         'undefined' != typeof EJS_biosUrl && (config.biosUrl = EJS_biosUrl)
         'undefined' != typeof EJS_gameID && (config.gameId = EJS_gameID)
         'undefined' != typeof EJS_gameParentUrl && (config.gameParentUrl = EJS_gameParentUrl)

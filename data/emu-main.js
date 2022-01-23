@@ -1927,25 +1927,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
                                         'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
                                         if ('mame' == _0x2c1832.system) {
-                                            var _0x4921ff = _0x2c1832.config,
-                                                _0x38239e = (_0x4921ff.gameId, _0x4921ff.gameUrl.split('/')),
-                                                _0x29349f = _0x38239e[_0x38239e.length - 0x1];
-                                            _0x29349f.indexOf('?') > -0x1 && (_0x29349f = _0x29349f.substr(0x0, _0x29349f.indexOf('?')));
-                                            var _0x36b5a0;
-                                            _0x29349f.split('.').pop();
-                                            _0x36b5a0 = 'https://www.emulatorjs.com/api/mame.php?name='.concat(_0x29349f), _0x550f17.a.get(_0x36b5a0, {
-                                                'responseType': 'text'
-                                            }).then(function(_0xf30170) {
-                                                var _0x3787ba = _0xf30170.data.split('|');
-                                                _0x4d7024.coreFileName = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]), _0x5b1dcd = '1' === _0x3787ba[0x1], _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd), _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0], '-wasm.data'), _0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Webassembly support is not detected in this browser</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
-                                                    if (_0x655c87 && _0x655c87.version === _0x124167) {
-                                                        var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
-                                                        _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0), _0x4f0fcc(_0x3787ba);
-                                                    } else _0x3641d6(_0x2458d5, _0x124167);
-                                                }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Unsupported Game</strong>';
-                                            }).catch(function(_0x941dfc) {
-                                                console.log(_0x941dfc), _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
-                                            });
+                                            var data = _0x2c1832.mameCore;
+                                            if (! data || data === null) {
+                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Missing mame config</strong>';
+                                                return
+                                            }
+                                            var _0x3787ba = data.split('|');
+                                            _0x4d7024.coreFileName = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]), _0x5b1dcd = '1' === _0x3787ba[0x1], _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd), _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0], '-wasm.data'), _0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Webassembly support is not detected in this browser</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
+                                                if (_0x655c87 && _0x655c87.version === _0x124167) {
+                                                    var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
+                                                    _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0), _0x4f0fcc(_0x3787ba);
+                                                } else _0x3641d6(_0x2458d5, _0x124167);
+                                            }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Unsupported Game</strong>';
                                         } else _0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x5d075f, '-wasm.data'), 'n64' !== _0x2c1832.system || _0x2eb141 || (_0x2458d5 = '' .concat(_0x5d075f, '-legacy-wasm.data')), _0x31a5b3 = true) : _0x9a1f1 && (_0x2458d5 = '' .concat(_0x5d075f, '-asmjs.data'), 'n64' !== _0x2c1832.system || _0x2eb141 || (_0x2458d5 = '' .concat(_0x5d075f, '-legacy-asmjs.data'))), 'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE), _0x2458d5 ? _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
                                             if (_0x47a6fd && _0x47a6fd.version === _0x124167) {
                                                 var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
@@ -2324,6 +2317,79 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 221: 'close braket',
                 222: 'single quote'
             },
+            'saveLoaddbDB': {
+                put: function(key, data) {
+                    var openRequest = indexedDB.open("ejs-states", 1);
+                    openRequest.onerror = function() {};
+                    openRequest.onsuccess = function() {
+                        var db = openRequest.result;
+                        var transaction = db.transaction(["states"], "readwrite");
+                        var objectStore = transaction.objectStore("states");
+                        var request = objectStore.put(data, key);
+                        request.onerror = function() {};
+                        request.onsuccess = function() {};
+                    };
+                    openRequest.onupgradeneeded = function() {
+                        var db = openRequest.result;
+                        if (! db.objectStoreNames.contains('states')) {
+                            db.createObjectStore('states');
+                        };
+                    };
+                },
+                get: function(key) {
+                    return new Promise(function(resolve, reject) {
+                        var openRequest = indexedDB.open("ejs-states", 1);
+                        openRequest.onerror = function() {};
+                        openRequest.onsuccess = function() {
+                            var db = openRequest.result;
+                            var transaction = db.transaction(["states"], "readwrite");
+                            var objectStore = transaction.objectStore("states");
+                            var request = objectStore.get(key);
+                            request.onsuccess = async function(e) {
+                                var file = e.target.result;
+                                if (file) {
+                                    resolve(file)
+                                };
+                            };
+                            request.onerror = function() {};
+                        };
+                        openRequest.onupgradeneeded = function() {
+                            var db = openRequest.result;
+                            if (! db.objectStoreNames.contains('states')) {
+                                db.createObjectStore('states');
+                            };
+                        };
+                    });
+                },
+            },
+            'saveLoadDB': function(type) {
+                try {
+                    if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
+                        var location = _0x2593da.getCoreOptionsValues()['save-state-location'];
+                        var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
+                        var game = this.config.gameUrl.split('?')[0].split('/').pop();
+                        var key = game + '-' + slot;
+                        if (location === 'download') {
+                            return false;
+                        }
+                        if (type === 'save') {
+                            try {
+                                var data = _0x378b5c.saveState();
+                            } catch(e) {return false;};
+                            _0x378b5c.saveLoaddbDB.put(key, data);
+                        } else {
+                            _0x378b5c.saveLoaddbDB.get(key).then(function(data) {
+                                EJS_loadState(data);
+                            });
+                        }
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } catch(e) {
+                    return false;
+                }
+            },
             'gamepad': null,
             'allowCheat': true,
             'connection': null,
@@ -2619,7 +2685,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: 'CHANGE STATE SLOT'
                     };
                 }
-                if ('arcade' === _0xa88a13.system) {
+                if (['arcade', 'mame'].includes(_0xa88a13.system)) {
                     _0x48ee51[2] = 'INSERT COIN'
                 }
                 if (_0xa88a13.statesSupported === false) {
@@ -3524,11 +3590,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x2ec721 = _0x449eac({
                             'touch': true
                         });
-                    /*
-                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(_0x2ae626) {
-                        _0x2ae626.stopPropagation();
-                    });
-                    */
+                    if (! _0x59aa33.isIos) {
+                        _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(_0x2ae626) {
+                            _0x2ae626.stopPropagation();
+                        });
+                    }
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_a': true
                     }))), 'touchstart touchend', function(_0x185083) {
@@ -3724,6 +3790,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x132da7(_0xa88a13.elements.dialogs.cheat, !0x1);
                 });
                 _0x1093f4.call(_0xa88a13, _0xa88a13.elements.container, 'savestate', function(_0x25b541) {
+                    if (_0x378b5c.saveLoadDB.call(_0xa88a13, 'save')) {
+                        return
+                    }
                     var _0x2c1832 = _0x25b541.detail.state;
                     if (_0x1e2c68.function(_0xa88a13.config.onsavestate)) _0xa88a13.config.onsavestate.call(null, {
                         'screenshot': _0x25b541.detail.screenshot,
@@ -3748,6 +3817,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         EJS_loadState(_0xa88a13);
                     }, _0xfd246e.readAsArrayBuffer(_0x3fdd71[0x0])), _0xa88a13.game.stateloadField = _0x428003('input'), _0xa88a13.game.stateloadField.type = 'file', _0xa88a13.game.stateloadField.onchange = _0x17edbf;
                 }, _0x1093f4.call(_0xa88a13, _0xa88a13.elements.container, 'loadstate', function(_0x13504c) {
+                    if (_0x378b5c.saveLoadDB.call(_0xa88a13, 'load')) {
+                        return
+                    }
                     _0x1e2c68.function(_0xa88a13.config.onloadstate) ? _0xa88a13.config.onloadstate.call(null, _0xa88a13.loadState) : _0xa88a13.game.stateloadField.click(), _0xa88a13.elements.container.focus();
                 }), document.addEventListener('visibilitychange', function() {
                     'hidden' === document.visibilityState ? console.log('hidden') : console.log('active');
@@ -4469,6 +4541,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'default': 1,
                         'netplay': false
                     }
+                }
+                _0xa88a13['save-state-location'] = {
+                    'label': 'Save State Location',
+                    'options': ['download', 'keep in browser'],
+                    'default': 'download',
+                    'netplay': false
                 }
                 _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
                     var _0x5995db = _0x2bef5a.split('; '),
@@ -5734,6 +5812,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.statesSupported = true,
                 this.listUrl = 'https://ws.emulatorjs.com/',
                 this.socketUrl = 'wss://ws.emulatorjs.com/',
+                this.mameCore = null,
                 this.startOnLoad = false,
                 this.dataPath = '',
                 this.customPaths = null,
@@ -5761,6 +5840,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.cheats || (this.cheats = []),
                 this.listUrl = this.config.netplayUrl || 'https://ws.emulatorjs.com/',
                 this.socketUrl = this.config.netplayUrl || 'wss://ws.emulatorjs.com/',
+                this.mameCore = this.config.mameCore || null,
                 this.color = this.config.color,
                 this.startOnLoad = this.config.startOnLoad || false,
                 this.statesSupported = this.config.statesSupported || true,
