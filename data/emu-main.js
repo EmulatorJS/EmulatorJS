@@ -2367,9 +2367,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                         var location = _0x2593da.getCoreOptionsValues()['save-state-location'];
                         var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
-                        var game = this.config.gameUrl.split('?')[0].split('/').pop();
+                        var game = this.config.gameUrl.split('/').pop();
+                        if (this.gameName) {
+                            game = this.gameName;
+                        };
                         var key = game + '-' + slot;
-                        if (location === 'download') {
+                        if (!location || location === 'download') {
                             return false;
                         }
                         if (type === 'save') {
@@ -4542,11 +4545,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'netplay': false
                     }
                 }
-                _0xa88a13['save-state-location'] = {
-                    'label': 'Save State Location',
-                    'options': ['download', 'keep in browser'],
-                    'default': 'download',
-                    'netplay': false
+                if (this.statesSupprted === true && window.indexedDB &&
+                    (!this.config.gameUrl.startsWith('blob:') || this.gameName !== null)) {
+                    _0xa88a13['save-state-location'] = {
+                        'label': 'Save State Location',
+                        'options': ['download', 'keep in browser'],
+                        'default': 'download',
+                        'netplay': false
+                    }
                 }
                 _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
                     var _0x5995db = _0x2bef5a.split('; '),
