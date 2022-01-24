@@ -2371,6 +2371,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (this.gameName) {
                             game = this.gameName;
                         };
+                        if ((!this.gameName && this.config.gameUrl.startsWith('blob:')) || !window.indexedDB) {
+                            return false;
+                        }
                         var key = game + '-' + slot;
                         if (!location || location === 'download') {
                             return false;
@@ -4545,8 +4548,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'netplay': false
                     }
                 }
-                if (this.statesSupprted === true && window.indexedDB &&
-                    (!this.config.gameUrl.startsWith('blob:') || this.gameName !== null)) {
+                if (this.statesSupported === true && window.indexedDB &&
+                    (typeof this.gameName == 'string' || !this.config.gameUrl.startsWith('blob:'))) {
                     _0xa88a13['save-state-location'] = {
                         'label': 'Save State Location',
                         'options': ['download', 'keep in browser'],
