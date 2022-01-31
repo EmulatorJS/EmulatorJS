@@ -28,7 +28,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'reset': 'Reset',
                 'disabled': 'Disabled',
                 'enabled': 'Enabled',
-                'playNow': 'Play Now'
+                'playNow': 'Start Game'
             },
             'listeners': {
                 'play': null,
@@ -6036,3 +6036,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     _0x17edbf.default = _0x3dbc76;
 }
 
+$(".ejs--73f9b4e94a7a1fe74e11107d5ab2ef").attr("id","start");
+$(".ejs--cbcfe0a1421cadac9a04c81d6431d6").attr("id","loding");
+$(".ejs--71527b6509aa48afce3ce1a11c02f0").attr("id","naming");
+$(".ejs--057800d021995e1347ec07cb748672").addClass("backg");
+$("#loding").attr("hidden","");
+$("#loding").hide();
+$("#start").on('touchstart click', function() {
+$(".ejs--057800d021995e1347ec07cb748672").removeClass("backg");
+$("#loding").show();
+$("#loding").removeAttr("hidden");
+$("div").remove(".ejs--f3a1903d935f6cf720d4a0498db62a");
