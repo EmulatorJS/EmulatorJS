@@ -1,7 +1,5 @@
 # Allancoding's Version of Emulatorjs
 
-# EmulatorJS
-
 Self-hosted **Javascript** emulation for various system.
 
 <br>
