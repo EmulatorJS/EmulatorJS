@@ -1947,7 +1947,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     var _0xa88a13, _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
                                     var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : (_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075);
+                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
                                         _0x550f17.a.get(path, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
@@ -1956,13 +1956,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x5eb80b) {
                                             var _0x519406 = new Uint8Array(_0x5eb80b.data);
+                                            _0x24de8d.db && _0x24de8d.put(_0x16049b, {
+                                                'version': _0x55a075,
+                                                'data': _0x519406
+                                            });
                                             if (_0xc6823.coreVer === 2) {
                                                 _0x4f0fcc(_0x519406);
                                             } else {
-                                                _0x24de8d.db && _0x24de8d.put(_0x16049b, {
-                                                    'version': _0x55a075,
-                                                    'data': _0x519406
-                                                });
                                                 var _0xea4c63 = _0x519406.slice ? _0x519406.slice(0xc) : _0x519406.subarray(0xc);
                                                 _0xea4c63.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
                                                 _0x519406 = null;
@@ -1996,9 +1996,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
                                         if ('mame' == _0x2c1832.system) {
                                             var data = _0x2c1832.mameCore;
-                                            if (! data || data === null) {
+                                            if (! data || data === null || data.split('|').length !== 2) {
                                                 _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Missing mame config</strong>';
-                                                return
+                                                return;
                                             }
                                             var _0x3787ba = data.split('|');
                                             _0x4d7024.coreFileName = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]), _0x5b1dcd = '1' === _0x3787ba[0x1], _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd), _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0], '-wasm.data'), _0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Webassembly support is not detected in this browser</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
@@ -2012,17 +2012,46 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     }
                                                 } else _0x3641d6(_0x2458d5, _0x124167);
                                             }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Unsupported Game</strong>';
-                                        } else _0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x5d075f, '-wasm.data'), 'n64' !== _0x2c1832.system || _0x2eb141 || (_0x2458d5 = '' .concat(_0x5d075f, '-legacy-wasm.data')), _0x31a5b3 = true) : _0x9a1f1 && (_0x2458d5 = '' .concat(_0x5d075f, '-asmjs.data'), 'n64' !== _0x2c1832.system || _0x2eb141 || (_0x2458d5 = '' .concat(_0x5d075f, '-legacy-asmjs.data'))), 'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE), _0x2458d5 ? _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
-                                            if (_0x47a6fd && _0x47a6fd.version === _0x124167) {
-                                                if (_0xc6823.coreVer === 2) {
-                                                    _0x4f0fcc(_0x47a6fd.data);
-                                                } else {
-                                                    var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
-                                                    _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                                    _0x4f0fcc(_0x3787ba);
+                                        } else {
+                                            _0x2458d5 = false;
+                                            var type;
+                                            if (_0x2d904a.wasm && _0x3e4345) {
+                                                type = 'wasm';
+                                                _0x2458d5 = true;
+                                                if ('n64' === _0x2c1832.system && !_0x2eb141) {
+                                                    type = 'legacy-wasm';
                                                 }
-                                            } else _0x3641d6(_0x2458d5, _0x124167);
-                                        }) : _0x3641d6(_0x2458d5, _0x124167) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Please upgrade your browser to the latest version</strong>';
+                                                _0x31a5b3 = true;
+                                            } else if (_0x9a1f1) {
+                                                _0x2458d5 = true;
+                                                type = 'asmjs';
+                                                if ('n64' === _0x2c1832.system && !_0x2eb141) {
+                                                    type = 'legacy-asmjs';
+                                                }
+                                            }
+                                            'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                            if (_0x2458d5 !== true) {
+                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Please upgrade your browser to the latest version</strong>';
+                                                return;
+                                            }
+                                            if (_0x2c1832.coreVer === 2) {
+                                                _0x2458d5 = _0x5d075f + '-' + type + '.data';
+                                            } else {
+                                                _0x2458d5 = _0x5d075f + '-old-' + type + '.data';
+                                            }
+                                            'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                            _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
+                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167) {
+                                                    if (_0xc6823.coreVer === 2) {
+                                                        _0x4f0fcc(_0x47a6fd.data);
+                                                    } else {
+                                                        var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
+                                                        _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                                        _0x4f0fcc(_0x3787ba);
+                                                    }
+                                                } else _0x3641d6(_0x2458d5, _0x124167);
+                                            }) : _0x3641d6(_0x2458d5, _0x124167);
+                                        }
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                         _0xc6823.setStatesSupported(_0x5b1dcd);
                                     }).catch(function(_0x2d06a9) {
@@ -5614,7 +5643,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x3953b5 && 'enterfullscreen' === _0x1ac81c.type && (_0x3953b5.pressed = !0x1, _0x3953b5.hover = !0x1);
                     var _0x2c3de3 = 0x0;
                     if (['touchstart', 'touchmove', 'mousemove', 'start-game'].includes(_0x1ac81c.type)) {
-                        if (_0x17edbf.system == 'nds' && ['touchstart', 'touchmove', 'mousemove'].includes(_0x1ac81c.type) && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && (document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas)) {
+                        if (_0x17edbf.system == 'nds' && _0x1ac81c.type == 'mousemove' && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && (document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas)) {
                             _0x5ab74d.toggleControls.call(_0x45d275, false);
                             return;
                         }
