@@ -3892,7 +3892,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             'act': 'pause'
                         })), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
                             'pause': true
-                        })) : (_0xa88a13.playing = true, _0x4d7024.Module.resumeMainLoop(), _0x378b5c.connected && _0x378b5c.connection.isInitiator && _0x378b5c.connection.send(JSON.stringify({
+                        })) : (_0xa88a13.playing = true, _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.connected && _0x378b5c.connection.isInitiator && _0x378b5c.connection.send(JSON.stringify({
                             'act': 'resume'
                         })), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
                             'pause': !0x1
