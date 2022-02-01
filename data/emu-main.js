@@ -1458,7 +1458,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v');
                                             _0x4d7024.Module.callMain(_0x2c1832);
                                             if (_0xc6823.coreVer === 2) {
-                                                _0x4d7024.Module.resumeMainLoop();	
+                                                _0x4d7024.Module.resumeMainLoop();
                                                 _0x4d7024.Module.setCanvasSize(800, 600);
                                             }
                                             _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
@@ -1509,7 +1509,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v');	
                                 _0x4d7024.Module.callMain(_0x4dd87f);
                                 if (_0xc6823.coreVer === 2) {
-                                    _0x4d7024.Module.resumeMainLoop();	
+                                    _0x4d7024.Module.resumeMainLoop();
                                     _0x4d7024.Module.setCanvasSize(800, 600);
                                 }
                                 _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
@@ -3892,7 +3892,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             'act': 'pause'
                         })), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
                             'pause': true
-                        })) : (_0xa88a13.playing = true, _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.connected && _0x378b5c.connection.isInitiator && _0x378b5c.connection.send(JSON.stringify({
+                        })) : (_0xa88a13.playing = true, _0x4d7024.Module.resumeMainLoop(), _0x378b5c.connected && _0x378b5c.connection.isInitiator && _0x378b5c.connection.send(JSON.stringify({
                             'act': 'resume'
                         })), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
                             'pause': !0x1
@@ -5637,7 +5637,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             container: function() {
                 var _0x31e271, _0x17edbf = this.emulator,
                     _0x2c1832 = _0x17edbf.elements,
-                    _0x45d275 = _0x17edbf;
+                    _0x45d275 = _0x17edbf,
+                    setFullscreenInterval = null;
                 _0x1093f4.call(_0x45d275, _0x2c1832.container, 'mousemove mouseleave touchstart touchmove enterfullscreen exitfullscreen start-game', function(_0x1ac81c) {
                     var _0x3953b5 = _0x2c1832.controls;
                     _0x3953b5 && 'enterfullscreen' === _0x1ac81c.type && (_0x3953b5.pressed = !0x1, _0x3953b5.hover = !0x1);
@@ -5670,10 +5671,25 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'portrait': true
                     }), !0x1);
                 }), _0xbae705.call(_0x45d275, window, 'resize'), _0x1093f4.call(_0x45d275, _0x45d275.elements.container, 'enterfullscreen', function(_0x586586) {
+                    if (_0x45d275.coreVer === 2 && _0x27f4c4.Module) {
+                        var repeat = 50;
+                        clearInterval(setFullscreenInterval);
+                        setFullscreenInterval = setInterval(function() {
+                            _0x27f4c4.Module.setCanvasSize(window.innerWidth, window.innerHeight);
+                            if (repeat < 0) {
+                                clearInterval(setFullscreenInterval);
+                            }
+                            repeat--;
+                        }, 100)
+                    }
                     setTimeout(function() {
                         _0xbae705.call(_0x45d275, window, 'resize');
                     }, 0x12c);
                 }), _0x1093f4.call(_0x45d275, _0x45d275.elements.container, 'exitfullscreen', function(_0x4de2f3) {
+                    if (_0x45d275.coreVer === 2 && _0x27f4c4.Module) {
+                        clearInterval(setFullscreenInterval);
+                        _0x27f4c4.Module.setCanvasSize(800, 600);
+                    }
                     setTimeout(function() {
                         _0xbae705.call(_0x45d275, window, 'resize');
                     }, 0x12c);
@@ -5856,7 +5872,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         split1.push(split3[i])
                     }
                 }
-                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1) {
+                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1 && path.split('blob:').length == 1) {
                     for (var w=0; w<split2.length; w++) {
                         if (split2[w] == '' || split2[w] == '.') {
                         } else if (split2[w] == '..') {
