@@ -9,6 +9,8 @@ Self-hosted **Javascript** emulation for various system.
 
 *The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
 
+Beta: https://emulatorjs.netlify.app/beta/
+
 ---
 
 **⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
