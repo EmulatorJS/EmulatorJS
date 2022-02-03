@@ -1980,7 +1980,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             _0x254bc2 = Boolean(_0x28ee7f.netplay),
                                             _0x5b1dcd = Boolean(_0x28ee7f.state),
                                             _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
-                                            _0x1b4c7 = Boolean(_0x28ee7f.V2),
                                             _0x3e4345 = Boolean(_0x28ee7f.wasm);
                                         if ('nds' == _0x2c1832.system && ! _0x2d904a.wasm) {
                                             _0x5b1dcd = !0x1;
@@ -2001,7 +2000,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 return;
                                             }
                                             var _0x3787ba = data.split('|');
-                                            _0x4d7024.coreFileName = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]), _0x5b1dcd = '1' === _0x3787ba[0x1], _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd), _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0], '-wasm.data'), _0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
+                                            _0x4d7024.coreFileName = ''.concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]);
+                                            _0x5b1dcd = '1' === _0x3787ba[0x1];
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd);
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd);
+                                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd);
+                                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
+                                            if (_0x2c1832.coreVer === 2) {
+                                                _0x2458d5 = '';
+                                            } else {
+                                                _0x2458d5 = _0x2c1832.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
+                                            }
+                                            _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
                                                 if (_0x655c87 && _0x655c87.version === _0x124167) {
                                                     if (_0xc6823.coreVer === 2) {
                                                         _0x4f0fcc(_0x655c87.data);
@@ -6018,7 +6028,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.statesSupported = true;
             this.listUrl = 'https://ws.emulatorjs.com/';
             this.socketUrl = 'wss://ws.emulatorjs.com/';
-            this.coreVer = 2; // 2 = beta cores, 1 = old cores
             this.mameCore = null;
             this.startOnLoad = false;
             this.dataPath = '';
@@ -6037,6 +6046,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.game = this.game;
             this.game.innerHTML = '';
             this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
+            this.coreVer = function(core) {
+                if (false) {
+                    return 2;
+                }
+                var supportedCores = ['nes'];
+                return supportedCores.includes(core) ? 2 : 1;
+            }(this.config.system); // 2 = beta cores, 1 = old cores
             this.lightgun = this.config.lightgun;
             this.loadStateOnStart = this.config.loadStateOnStart || false;
             this.adUrl = this.config.adUrl || null;
@@ -6052,7 +6068,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.startOnLoad = this.config.startOnLoad || false;
             this.statesSupported = this.config.statesSupported || true;
             this.customPaths = function(paths) {
-                if (! paths) return null;
+                if (! paths) return {};
                 var newPaths = {};
                 for (var k in paths) {
                     if (typeof paths[k] == 'string') {
@@ -6085,7 +6101,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             (async function(dataPath, customPath, lang) {
                 var localJson = {};
                 if (lang && typeof lang == 'string' && lang !== 'en-US') {
-                    var url = (typeof customPath[lang+'.json'] == 'string') ? customPath[lang+'.json'] : dataPath+'localization/'+lang+'.json';
+                    var url = (customPath && typeof customPath[lang+'.json'] == 'string') ? customPath[lang+'.json'] : dataPath+'localization/'+lang+'.json';
                     try {
                         var res = await fetch(url);
                         var text = await res.text();
