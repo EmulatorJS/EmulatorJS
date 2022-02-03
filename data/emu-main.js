@@ -4,7 +4,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     _0x2c1832(0xa2), _0x2c1832(0x16c), _0x2c1832(0x16d);
     var _0x39ca5e = {
             'volume': 0.5,
-            'muted': !0x1,
+            'muted': false,
             'i18n': {
                 'restart': 'Restart',
                 'play': 'Play',
@@ -5360,12 +5360,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         contextHtml.splice(i, 0, '<li><a href="#" onclick="return false">'+title+'</a></li>')
                     }
                 }
-                addContextHtml('Take Screenshot', false, function(_0x20faaa) {
+                addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
                     var _0x4e898a = _0x378b5c.getScreenData();
                     _0x4e4ca6()(new Blob([_0x4e898a]), 'game.png');
                     return false;
                 })
-                addContextHtml('Cache Manage', true, function(_0x275730) {
+                addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
                     if (_0x27f4c4.romdb) {
                         _0x132da7(_0xa88a13.elements.dialogs.cache, !0x1);
                         var _0x3360eb = _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content']));
@@ -5402,11 +5402,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return false;
                 })
-                addContextHtml('Quick Save (F2)', false, function(_0x395c73) {
+                addContextHtml(_0xa88a13.localization('Quick Save')+' (F2)', false, function(_0x395c73) {
                     _0x378b5c.quickSaveState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
-                addContextHtml('Quick Load (F4)', false, function(_0x124f69) {
+                addContextHtml(_0xa88a13.localization('Quick Load')+' (F4)', false, function(_0x124f69) {
                     _0x378b5c.quickLoadState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
@@ -6084,7 +6084,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }(this.config.dataPath);
             (async function(dataPath, customPath, lang) {
                 var localJson = {};
-                if (lang && typeof lang == 'string' && lang !== 'en') {
+                if (lang && typeof lang == 'string' && lang !== 'en-US') {
                     var url = (typeof customPath[lang+'.json'] == 'string') ? customPath[lang+'.json'] : dataPath+'localization/'+lang+'.json';
                     try {
                         var res = await fetch(url);
