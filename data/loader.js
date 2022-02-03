@@ -50,6 +50,7 @@ emu_main.onload = function() {
         'undefined' != typeof EJS_startOnLoaded && (config.startOnLoad = EJS_startOnLoaded)
         'undefined' != typeof EJS_core && (config.system = EJS_core)
         'undefined' != typeof EJS_loadStateURL && (config.loadStateOnStart = EJS_loadStateURL)
+        'undefined' != typeof EJS_language && (config.lang = EJS_language)
         config.onsavestate = null
         config.onloadstate = null
         'undefined' != typeof EJS_onSaveState && (config.onsavestate = EJS_onSaveState)
