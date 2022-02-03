@@ -190,5 +190,8 @@
     "Please upgrade your browser to the latest version": "-Please upgrade your browser to the latest version",
     "Missing mame config": "-Missing mame config",
     "Stop Screen Recording": "-Stop Screen Recording",
-    "Start Screen Recording": "-Start Screen Recording"
+    "Start Screen Recording": "-Start Screen Recording",
+    "Take Screenshot": "-Take Screenshot",
+    "Quick Save": "Quick Save",
+    "Quick Load": "Quick Load"
 }
