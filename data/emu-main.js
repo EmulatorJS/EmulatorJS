@@ -2051,7 +2051,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
                                             _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
-                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167) {
+                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167 && false) {
                                                     if (_0xc6823.coreVer === 2) {
                                                         _0x4f0fcc(_0x47a6fd.data);
                                                     } else {
@@ -2498,9 +2498,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                         if (type === 'save') {
                             try {
-                                var data = _0x378b5c.saveState();
+                                if (this.coreVer === 2) {
+                                    _0x378b5c.saveState().then(function(data) {
+                                        _0x378b5c.saveLoaddbDB.put(key, data);
+                                    })
+                                } else {
+                                    var data = _0x378b5c.saveState();
+                                    _0x378b5c.saveLoaddbDB.put(key, data);
+                                }
                             } catch(e) {return false;};
-                            _0x378b5c.saveLoaddbDB.put(key, data);
                         } else {
                             _0x378b5c.saveLoaddbDB.get(key).then(function(data) {
                                 EJS_loadState(data);
@@ -4018,30 +4024,79 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0x762355 = _0x27f4c4.Module.cwrap('shader_enable', 'null', ['number']);
                 _0x378b5c.toggleShader = function(_0x433182) {
                     return _0x762355(_0x433182);
-                }, _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []), _0x378b5c.saveState = function() {
-                    var _0xa88a13, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
-                        _0x2c1832 = _0x17edbf[0x0] >> 0x0;
-                    if (_0x2c1832 > 0x0) {
-                        _0xa88a13 = new Uint8Array(_0x2c1832);
-                        for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a13[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
+                }
+                _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
+                _0x378b5c.saveStateToFile = _0x27f4c4.Module.cwrap('cmd_save_state', 'null', []);
+                _0x378b5c.saveState = function() {
+                    if (_0xa88a13.coreVer === 2) {
+                        _0x378b5c.saveStateToFile();
+                        return new Promise(function(resolve, reject) {
+                            var a = setInterval(function() {
+                                try {
+                                    var data = _0x27f4c4.FS.readFile('save.state');
+                                } catch(e) {return;}
+                                clearInterval(a);
+                                _0x27f4c4.FS.unlink('save.state');
+                                resolve(data);
+                            }, 100)
+                            })
+                    } else {
+                        var _0xa88a14, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
+                            _0x2c1832 = _0x17edbf[0x0] >> 0x0;
+                        if (_0x2c1832 > 0x0) {
+                            _0xa88a14 = new Uint8Array(_0x2c1832);
+                            for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a14[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
+                        }
+                        return _0xa88a14;
                     }
-                    return _0xa88a13;
                 };
                 var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
                 _0x378b5c.loadState = function(_0x4389ae, _0x1d4918) {
                     var _0x91cd69;
-                    if (_0x91cd69 = _0x4389ae, _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true), null === _0x1d4918 && (_0x1d4918 = 0x0), _0x25a7a2('game.state', _0x1d4918), 'arcade' === _0x17edbf ? setTimeout(function() {
-                            _0x378b5c.getStateInfo(), _0x25a7a2('game.state', _0x1d4918), _0x27f4c4.FS.unlink('game.state');
-                        }, 0xa) : _0x27f4c4.FS.unlink('game.state'), _0x378b5c.connected && _0x378b5c.connection.isInitiator) {
-                        for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
-                        var _0x227419 = new File([_0xce58ec], '0-game.state', {
+                    _0x91cd69 = _0x4389ae;
+                    _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
+                    null === _0x1d4918 && (_0x1d4918 = 0);
+                    _0x25a7a2('game.state', _0x1d4918);
+                    if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
+                        setTimeout(function() {
+                            _0x378b5c.getStateInfo();
+                            _0x25a7a2('game.state', _0x1d4918);
+                            _0x27f4c4.FS.unlink('game.state');
+                        }, 0xa)
+                    } else {
+                        _0x27f4c4.FS.unlink('game.state');
+                    }
+                    if (_0xa88a13.coreVer === 2) {
+                        var _0x227419 = new File([_0x91cd69], '0-game.state', {
                             'type': '',
                             'lastModified': new Date()
                         });
-                        _0x378b5c.connection.shareFile(_0x227419), _0x378b5c.inputsData = {}, _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x378b5c.disableControl(true);
+                        _0x378b5c.connection.shareFile(_0x227419);
+                        _0x378b5c.inputsData = {};
+                        _0x378b5c.wait = true;
+                        _0x378b5c.systemPause(0x1);
+                        _0x27f4c4.Module.pauseMainLoop();
+                        _0x378b5c.disableControl(true);
+                    } else {
+                        if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
+                            for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
+                            var _0x227419 = new File([_0xce58ec], '0-game.state', {
+                                'type': '',
+                                'lastModified': new Date()
+                            });
+                            _0x378b5c.connection.shareFile(_0x227419);
+                            _0x378b5c.inputsData = {};
+                            _0x378b5c.wait = true;
+                            _0x378b5c.systemPause(0x1);
+                            _0x27f4c4.Module.pauseMainLoop();
+                            _0x378b5c.disableControl(true);
+                        }
                     }
                     _0xa88a13.elements.container.focus();
-                }, _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string'])), _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat), _0x378b5c.quickSaveState = function() {
+                };
+                _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string']));
+                _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat);
+                _0x378b5c.quickSaveState = function() {
                     if (_0xa88a13.started && !_0x378b5c.connected) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY SAVE STATE';
@@ -4065,8 +4120,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } catch (_0x4b4d4c) {}
                         var success = true;
                         try {
-                            var _0x17edbf = _0x378b5c.saveState();
-                            _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                            if (_0xa88a13.coreVer === 2) {
+                                _0x378b5c.saveState().then(function(data) {
+                                    _0x27f4c4._FS.createDataFile('/', name, data, true, true);
+                                });
+                            } else {
+                                var _0x17edbf = _0x378b5c.saveState();
+                                _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                            }
                         } catch(e) {
                             success = false;
                         }
@@ -4080,7 +4141,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                         }, 1500)
                     }
-                }, _0x378b5c.saveMsgTransitions = null, _0x378b5c.quickLoadState = function() {
+                };
+                _0x378b5c.saveMsgTransitions = null;
+                _0x378b5c.quickLoadState = function() {
                     if (_0xa88a13.started && !_0x378b5c.connected) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY LOAD STATE';
@@ -4101,9 +4164,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var name = slot + '-quick.state';
                         var success = true;
                         try {
-                            _0x25a7a2(name, 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                _0x378b5c.getStateInfo(), _0x25a7a2(name, 0x0);
-                            }, 0xa);
+                            if (_0xa88a13.coreVer === 2) {
+                                var data = _0x27f4c4.FS.readFile(name);
+                                _0x27f4c4.FS.writeFile('/game.state', data);
+                                setTimeout(function() {
+                                    _0x25a7a2(name, 0);
+                                }, 100)
+                            } else {
+                                _0x25a7a2(name, 0);
+                            }
+                            if (_0xa88a13.coreVer === 2) {
+                                //_0x27f4c4.FS.unlink('game.state');
+                            }
+                            if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
+                                setTimeout(function() {
+                                    _0x378b5c.getStateInfo();
+                                    _0x25a7a2(name, 0x0);
+                                }, 0xa);
+                            }
                         } catch (_0x4ee386) {
                             success = false;
                         }
@@ -5885,11 +5963,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x5ab74d.toggleControls.call(_0x17edbf, !0x1), _0x132da7(_0x2c1832.dialogs.gamepad, !0x1);
                     }, 'mute'), this.bind(_0x2c1832.buttons.saveState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', !0x1, {});
-                        var _0x31e271 = _0xdcec2a.saveState(),
-                            _0x2c1832 = _0xdcec2a.getScreenData();
-                        _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
-                            'state': _0x31e271,
-                            'screenshot': _0x2c1832
+                        _0xdcec2a.saveState().then(function(_0x31e271) {
+                            var _0x2c1832 = _0xdcec2a.getScreenData();
+                            _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
+                                'state': _0x31e271,
+                                'screenshot': _0x2c1832
+                            });
                         });
                     }, 'mute'), this.bind(_0x2c1832.buttons.loadState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'loadstate', !0x1, {});
