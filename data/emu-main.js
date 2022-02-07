@@ -4056,27 +4056,36 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x91cd69 = _0x4389ae;
                     _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
                     null === _0x1d4918 && (_0x1d4918 = 0);
-                    _0x25a7a2('game.state', _0x1d4918);
                     if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
                         setTimeout(function() {
                             _0x378b5c.getStateInfo();
                             _0x25a7a2('game.state', _0x1d4918);
                             _0x27f4c4.FS.unlink('game.state');
                         }, 0xa)
+                    } else if (_0xa88a13.coreVer === 2) {
+                        setTimeout(function() {
+                            _0x25a7a2('game.state', _0x1d4918);
+                            setTimeout(function() {
+                                _0x27f4c4.FS.unlink('game.state');
+                            }, 100)
+                        }, 10)
                     } else {
+                        _0x25a7a2('game.state', _0x1d4918);
                         _0x27f4c4.FS.unlink('game.state');
                     }
                     if (_0xa88a13.coreVer === 2) {
-                        var _0x227419 = new File([_0x91cd69], '0-game.state', {
-                            'type': '',
-                            'lastModified': new Date()
-                        });
-                        _0x378b5c.connection.shareFile(_0x227419);
-                        _0x378b5c.inputsData = {};
-                        _0x378b5c.wait = true;
-                        _0x378b5c.systemPause(0x1);
-                        _0x27f4c4.Module.pauseMainLoop();
-                        _0x378b5c.disableControl(true);
+                        if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
+                            var _0x227419 = new File([_0x91cd69], '0-game.state', {
+                                'type': '',
+                                'lastModified': new Date()
+                            });
+                            _0x378b5c.connection.shareFile(_0x227419);
+                            _0x378b5c.inputsData = {};
+                            _0x378b5c.wait = true;
+                            _0x378b5c.systemPause(0x1);
+                            _0x27f4c4.Module.pauseMainLoop();
+                            _0x378b5c.disableControl(true);
+                        }
                     } else {
                         if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
                             for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
@@ -4169,12 +4178,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x27f4c4.FS.writeFile('/game.state', data);
                                 setTimeout(function() {
                                     _0x25a7a2(name, 0);
-                                }, 100)
+                                    setTimeout(function() {
+                                        _0x27f4c4.FS.unlink('game.state');
+                                    }, 100)
+                                }, 10)
                             } else {
                                 _0x25a7a2(name, 0);
-                            }
-                            if (_0xa88a13.coreVer === 2) {
-                                //_0x27f4c4.FS.unlink('game.state');
                             }
                             if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
                                 setTimeout(function() {
@@ -4220,7 +4229,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                     }, 1500)
                 }, window.EJS_loadState = function(_0x4dd6a5) {
-                    _0x378b5c.loadState(_0x4dd6a5, 0x0), setTimeout(function() {
+                    _0x378b5c.loadState(_0x4dd6a5, 0x0);
+                    setTimeout(function() {
                         if (_0x378b5c.connected) {
                             var _0x17edbf = new File([_0x4dd6a5], '0-game.state', {
                                 'type': '',
