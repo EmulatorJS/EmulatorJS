@@ -3652,24 +3652,32 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'hidden': ''
                     });
                     this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
+                    var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
                     var html = '';
                     html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
+                    
                     html += '<div class="'+_0x449eac({'top': true})+'">';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'">L</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'">R</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;'+blockCSS+'">L</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;'+blockCSS+'">R</div>';
                     html += '</div>';
+                    
                     html += '<div class="'+_0x449eac({'left': true})+'"></div>';
+                    
                     html += '<div class="'+_0x449eac({'center': true})+'">';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'">'+_0xa88a13.localization('Select')+'</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'">'+_0xa88a13.localization('Start')+'</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'">'+_0xa88a13.localization('Menu')+'</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-35px;">'+_0xa88a13.localization('Select')+'</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:30px;">'+_0xa88a13.localization('Start')+'</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:95px;">'+_0xa88a13.localization('Menu')+'</div>';
                     html += '</div>';
+                    
                     html += '<div class="'+_0x449eac({'right': true})+'">';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_a': true})+'">A</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_b': true})+'">B</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_x': true})+'">X</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_y': true})+'">Y</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_a': true})+'" style="left:40px;top:80px;">A</div>';
+                    html += '<div class="'+_0x449eac({'buttons': true,'b_b': true})+'" style="left:81px;top:40px;">B</div>';
+                    if (! [].includes(_0xa88a13.system)) {
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_x': true})+'" style="top:40px;">X</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_y': true})+'" style="left:40px;">Y</div>';
+                    }
                     html += '</div></div>';
+                    
                     _0x378b5c.virtualGamepadContainer.innerHTML = html;
                     _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
                     var _0x17edbf = _0x3a58c8.a.create({
@@ -3713,65 +3721,68 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_a': true
-                    }))), 'touchstart touchend', function(_0x185083) {
-                        'touchend' === _0x185083.type ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x185083) {
+                        ['touchend', 'mouseup'].includes(_0x185083.type) ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x8, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x185083.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x8, 0x1)), _0x185083.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_b': true
-                    }))), 'touchstart touchend', function(_0x213c3d) {
-                        'touchend' === _0x213c3d.type ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x213c3d) {
+                        ['touchend', 'mouseup'].includes(_0x213c3d.type) ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x0, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x213c3d.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x0, 0x1)), _0x213c3d.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_x': true
-                    }))), 'touchstart touchend', function(_0x5ce708) {
-                        'touchend' === _0x5ce708.type ? (_0x3a8e2f(_0x5ce708.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x5ce708) {
+                        ['touchend', 'mouseup'].includes(_0x5ce708.type) ? (_0x3a8e2f(_0x5ce708.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x9, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x5ce708.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x9, 0x1)), _0x5ce708.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_y': true
-                    }))), 'touchstart touchend', function(_0x1cfae6) {
-                        'touchend' === _0x1cfae6.type ? (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x1cfae6) {
+                        ['touchend', 'mouseup'].includes(_0x1cfae6.type) ? (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x1, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x1, 0x1)), _0x1cfae6.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_l': true
-                    }))), 'touchstart touchend', function(_0x1a50ab) {
-                        'touchend' === _0x1a50ab.type ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x1a50ab) {
+                        ['touchend', 'mouseup'].includes(_0x1a50ab.type) ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0xa, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0xa, 0x1)), _0x1a50ab.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_r': true
-                    }))), 'touchstart touchend', function(_0x3b8139) {
-                        'touchend' === _0x3b8139.type ? (_0x3a8e2f(_0x3b8139.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x3b8139) {
+                        ['touchend', 'mouseup'].includes(_0x3b8139.type) ? (_0x3a8e2f(_0x3b8139.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0xb, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x3b8139.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0xb, 0x1)), _0x3b8139.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_start': true
-                    }))), 'touchstart touchend', function(_0x47af91) {
-                        'touchend' === _0x47af91.type ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x47af91) {
+                        ['touchend', 'mouseup'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x3, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x3, 0x1)), _0x47af91.stopPropagation();
                     });
+                    var hideTimeout;
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_c': true
-                    }))), 'touchstart touchend', function(_0x47af91) {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x47af91) {
+                        ['touchend', 'mouseup'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, false)) : _0x3a8e2f(_0x47af91.target, _0x2ec721, true);
+                        clearTimeout(hideTimeout);
                         _0x5ab74d.toggleControls.call(_0xa88a13, true);
-                        setTimeout(function() {
+                        hideTimeout = setTimeout(function() {
                             _0x5ab74d.toggleControls.call(_0xa88a13, false);
                         }, 5000)
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_select': true
-                    }))), 'touchstart touchend', function(_0x37f594) {
-                        'touchend' === _0x37f594.type ? (_0x3a8e2f(_0x37f594.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup', function(_0x37f594) {
+                        ['touchend', 'mouseup'].includes(_0x37f594.type) ? (_0x3a8e2f(_0x37f594.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x2, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x37f594.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x2, 0x1)), _0x37f594.stopPropagation();
                     });
@@ -6127,6 +6138,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.game.innerHTML = '';
             this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
             this.coreVer = function(core) {
+                return 1
                 if (false) {
                     return 2;
                 }
