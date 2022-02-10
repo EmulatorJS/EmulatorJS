@@ -3654,28 +3654,61 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
                     var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
                     var html = '';
+                    if (['snes', 'nds'].includes(_0xa88a13.system)) {
+                        var elements = {
+                            order: ['X','Y','A','B'],
+                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
+                            LandR: true
+                        }
+                    } else if (['gba', 'gb', 'vb', 'nes'].includes(_0xa88a13.system)) {
+                        var elements = {
+                            order: ['B','A'],
+                            orderCSS: ['left:-10px;top:70px;', 'left:60px;top:70px;'],
+                            LandR: (_0xa88a13.system === 'gba')
+                        }
+                    } else if (['n64'].includes(_0xa88a13.system)) {
+                        var elements = {
+                            order: ['B','A'],
+                            orderCSS: ['left:-10px;top:70px;', 'left:60px;top:70px;'],
+                            LandR: true
+                        }
+                    } else {
+                        var elements = {
+                            order: ['Y','X','B','A'],
+                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
+                            LandR: true
+                        }
+                    }
                     html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
                     
                     html += '<div class="'+_0x449eac({'top': true})+'">';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;'+blockCSS+'">L</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;'+blockCSS+'">R</div>';
+                    if (elements.LandR === true) {
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;'+blockCSS+'">L</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;'+blockCSS+'">R</div>';
+                    }
                     html += '</div>';
                     
                     html += '<div class="'+_0x449eac({'left': true})+'"></div>';
                     
                     html += '<div class="'+_0x449eac({'center': true})+'">';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-35px;">'+_0xa88a13.localization('Select')+'</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:30px;">'+_0xa88a13.localization('Start')+'</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:95px;">'+_0xa88a13.localization('Menu')+'</div>';
+                    if (_0xa88a13.system === 'n64') {
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:0px;">'+_0xa88a13.localization('Start')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:65px;">'+_0xa88a13.localization('Menu')+'</div>';
+                    } else {
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:30px;">'+_0xa88a13.localization('Start')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:95px;">'+_0xa88a13.localization('Menu')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-35px;">'+_0xa88a13.localization('Select')+'</div>';
+                    }
                     html += '</div>';
                     
                     html += '<div class="'+_0x449eac({'right': true})+'">';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_a': true})+'" style="left:40px;top:80px;">A</div>';
-                    html += '<div class="'+_0x449eac({'buttons': true,'b_b': true})+'" style="left:81px;top:40px;">B</div>';
-                    if (! [].includes(_0xa88a13.system)) {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_x': true})+'" style="top:40px;">X</div>';
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_y': true})+'" style="left:40px;">Y</div>';
+                    
+                    for (var i=0; i<elements.order.length; i++) {
+                        var opts = {'buttons': true};
+                        opts['b_'+elements.order[i].toLowerCase()] = true;
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+elements.orderCSS[i]+'">'+elements.order[i]+'</div>';
                     }
+                    
                     html += '</div></div>';
                     
                     _0x378b5c.virtualGamepadContainer.innerHTML = html;
@@ -3693,19 +3726,40 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         },
                         'color': 'red'
                     });
+                    if (_0xa88a13.system === 'n64' && false) { //not ready
+                        var inputs = {
+                            4: 19,
+                            5: 18,
+                            6: 17,
+                            7: 16
+                        }
+                    } else {
+                        var inputs = {
+                            4: 4,
+                            5: 5,
+                            6: 6,
+                            7: 7
+                        }
+                    }
                     _0x17edbf.on('end', function(_0x27f006, _0x1fb527) {
-                        _0x378b5c.syncInput(0x0, 0x4, 0x0), _0x378b5c.syncInput(0x0, 0x5, 0x0), _0x378b5c.syncInput(0x0, 0x6, 0x0), _0x378b5c.syncInput(0x0, 0x7, 0x0);
+                        _0x378b5c.syncInput(0, inputs[4], 0);
+                        _0x378b5c.syncInput(0, inputs[5], 0);
+                        _0x378b5c.syncInput(0, inputs[6], 0);
+                        _0x378b5c.syncInput(0, inputs[7], 0);
                     });
                     _0x17edbf.on('move', function(_0x1b060e, _0x4ae7d6) {
                         var _0x2c1832 = _0x4ae7d6.angle.degree;
-                        _0x2c1832 >= 0x1e && _0x2c1832 < 0x96 ? _0x378b5c.syncInput(0x0, 0x4, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x4, 0x0);
-                        }, 0x1e), _0x2c1832 >= 0xd2 && _0x2c1832 < 0x14a ? _0x378b5c.syncInput(0x0, 0x5, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x5, 0x0);
-                        }, 0x1e), _0x2c1832 >= 0x78 && _0x2c1832 < 0xf0 ? _0x378b5c.syncInput(0x0, 0x6, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x6, 0x0);
-                        }, 0x1e), _0x2c1832 >= 0x12c || _0x2c1832 >= 0x0 && _0x2c1832 < 0x3c ? _0x378b5c.syncInput(0x0, 0x7, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x7, 0x0);
+                        _0x2c1832 >= 0x1e && _0x2c1832 < 0x96 ? _0x378b5c.syncInput(0, inputs[4], 1) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs[4], 0);
+                        }, 0x1e);
+                        _0x2c1832 >= 0xd2 && _0x2c1832 < 0x14a ? _0x378b5c.syncInput(0, inputs[5], 1) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs[5], 0);
+                        }, 0x1e);
+                        _0x2c1832 >= 0x78 && _0x2c1832 < 0xf0 ? _0x378b5c.syncInput(0, inputs[6], 1) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs[6], 0);
+                        }, 0x1e);
+                        _0x2c1832 >= 0x12c || _0x2c1832 >= 0x0 && _0x2c1832 < 0x3c ? _0x378b5c.syncInput(0, inputs[7], 1) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs[7], 0);
                         }, 0x1e);
                     });
                     var _0x2c1832 = _0x449eac({
@@ -3721,68 +3775,72 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_a': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x185083) {
-                        ['touchend', 'mouseup'].includes(_0x185083.type) ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x185083) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x185083.type) ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x8, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x185083.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x8, 0x1)), _0x185083.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_b': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x213c3d) {
-                        ['touchend', 'mouseup'].includes(_0x213c3d.type) ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x213c3d) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x213c3d.type) ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x0, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x213c3d.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x0, 0x1)), _0x213c3d.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_x': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x5ce708) {
-                        ['touchend', 'mouseup'].includes(_0x5ce708.type) ? (_0x3a8e2f(_0x5ce708.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x5ce708) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x5ce708.type) ? (_0x3a8e2f(_0x5ce708.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x9, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x5ce708.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x9, 0x1)), _0x5ce708.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_y': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x1cfae6) {
-                        ['touchend', 'mouseup'].includes(_0x1cfae6.type) ? (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x1cfae6) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x1cfae6.type) ? (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x1, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x1, 0x1)), _0x1cfae6.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_l': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x1a50ab) {
-                        ['touchend', 'mouseup'].includes(_0x1a50ab.type) ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x1a50ab) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x1a50ab.type) ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0xa, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0xa, 0x1)), _0x1a50ab.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_r': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x3b8139) {
-                        ['touchend', 'mouseup'].includes(_0x3b8139.type) ? (_0x3a8e2f(_0x3b8139.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x3b8139) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x3b8139.type) ? (_0x3a8e2f(_0x3b8139.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0xb, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x3b8139.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0xb, 0x1)), _0x3b8139.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_start': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x47af91) {
-                        ['touchend', 'mouseup'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x3, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x3, 0x1)), _0x47af91.stopPropagation();
                     });
                     var hideTimeout;
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_c': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x47af91) {
-                        ['touchend', 'mouseup'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, false)) : _0x3a8e2f(_0x47af91.target, _0x2ec721, true);
-                        clearTimeout(hideTimeout);
-                        _0x5ab74d.toggleControls.call(_0xa88a13, true);
-                        hideTimeout = setTimeout(function() {
-                            _0x5ab74d.toggleControls.call(_0xa88a13, false);
-                        }, 5000)
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        if (['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type)) {
+                            _0x3a8e2f(_0x47af91.target, _0x2ec721, false);
+                        } else {
+                            _0x3a8e2f(_0x47af91.target, _0x2ec721, true);
+                            clearTimeout(hideTimeout);
+                            _0x5ab74d.toggleControls.call(_0xa88a13, true);
+                            hideTimeout = setTimeout(function() {
+                                _0x5ab74d.toggleControls.call(_0xa88a13, false);
+                            }, 5000)
+                        }
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_select': true
-                    }))), 'touchstart touchend mousedown mouseup', function(_0x37f594) {
-                        ['touchend', 'mouseup'].includes(_0x37f594.type) ? (_0x3a8e2f(_0x37f594.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x37f594) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x37f594.type) ? (_0x3a8e2f(_0x37f594.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x2, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x37f594.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x2, 0x1)), _0x37f594.stopPropagation();
                     });
@@ -4016,7 +4074,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'key': _0x480d05,
                                 'status': _0x50f784,
                                 'frame': _0x52e1f4
-                            }), _0x378b5c.simulateInputFn(_0xf1bb97, _0x480d05, _0x50f784)) : _0x378b5c.connection.send(JSON.stringify({
+                            }),_0x378b5c.simulateInputFn(_0xf1bb97, _0x480d05, _0x50f784)) : _0x378b5c.connection.send(JSON.stringify({
                                 'act': 'sync-control',
                                 'value': ['' .concat(_0xf1bb97, '|').concat(_0x480d05, '|').concat(_0x50f784, '|').concat(_0x52e1f4)]
                             }), _0x378b5c.roomMaster)), _0x2c63cc[_0x480d05] = _0x50f784);
@@ -4028,7 +4086,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return _0x762355(_0x433182);
                 }
                 _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
-                _0x378b5c.saveStateToFile = _0x27f4c4.Module.cwrap('cmd_save_state', 'null', []);
+                if (_0xa88a13.coreVer === 2) {
+                    _0x378b5c.saveStateToFile = _0x27f4c4.Module.cwrap('cmd_save_state', 'null', []);
+                }
                 _0x378b5c.saveState = function() {
                     if (_0xa88a13.coreVer === 2) {
                         _0x378b5c.saveStateToFile();
