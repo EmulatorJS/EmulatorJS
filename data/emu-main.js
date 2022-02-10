@@ -2380,10 +2380,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 34: 'page down',
                 35: 'end',
                 36: 'home',
-                37: 'left arrow',//6
-                38: 'up arrow',//4
-                39: 'right arrow',//7
-                40: 'down arrow',//5
+                37: 'left arrow',
+                38: 'up arrow',
+                39: 'right arrow',
+                40: 'down arrow',
                 45: 'insert',
                 46: 'delete',
                 48: '0',
@@ -4706,7 +4706,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'default': 'none',
                                 'netplay': true
                             },
-                            'joystick-input': {
+                        };
+                        if (_0xdcec2a && (_0xdcec2a.virtualGamepadContainer == 'undefined' || _0xdcec2a.virtualGamepadContainer === null)) {
+
+                            _0xa88a13['joystick-input'] = {
                                 'label': this.localization('Joystick input keys'),
                                 'options': {
                                     'd-pad': this.localization('d-pad'),
@@ -4715,7 +4718,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'default': 'analog-stick',
                                 'netplay': true
                             }
-                        };
+                        }
                         break;
                     case 'nds':
                         _0xa88a13 = {
