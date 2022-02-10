@@ -4707,7 +4707,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'netplay': true
                             },
                         };
-                        if (_0xdcec2a && (_0xdcec2a.virtualGamepadContainer == 'undefined' || _0xdcec2a.virtualGamepadContainer === null)) {
+                        if (_0xdcec2a && (_0xdcec2a.virtualGamepadContainer != 'undefined' || _0xdcec2a.virtualGamepadContainer !== null)) {
 
                             _0xa88a13['joystick-input'] = {
                                 'label': this.localization('Joystick input keys'),
