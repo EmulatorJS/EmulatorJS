@@ -1,5 +1,9 @@
 window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     'use strict';
+    window.EJS_RESET_VARS = [];
+    for (var k in window) {
+        window.EJS_RESET_VARS.push(k);
+    }
     _0x2c1832.r(_0x17edbf);
     _0x2c1832(0xa2), _0x2c1832(0x16c), _0x2c1832(0x16d);
     var _0x39ca5e = {
@@ -1443,14 +1447,41 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         })
                                     })
                                 }
-                            },
-                            _0x99321 = function(_0x52e6f3) {
+                            };
+                        window.EJS_terminate = function() {
+                            _0x4d7024.Module.pauseMainLoop();
+                            if (_0x55627a && _0x55627a.eventListeners) {
+                                for (var k in _0x55627a) {
+                                    for (var i=0; i<_0x55627a.eventListeners.length; i++) {
+                                        var a = _0x55627a.eventListeners[i];
+                                        a.element.removeEventListener(a.type, a.callback, a.capture);
+                                    }
+                                }
+                            }
+                            if (window.EJS_RESET_VARS) {
+                                var a = [];
+                                var b = [];
+                                for (var k in window) {
+                                    a.push(k);
+                                }
+                                for (var i=0; i<a.length; i++) {
+                                    if (! window.EJS_RESET_VARS.includes(a[i])) {
+                                        b.push(a[i]);
+                                    }
+                                }
+                                for (var i=0; i<b.length; i++) {
+                                    if (window[b[i]]) {
+                                        delete window[b[i]];
+                                    }
+                                }
+                            }
+                        }
+                        var _0x99321 = function(_0x52e6f3) {
                                 if (_0x52e6f3.data) {
                                     if (0x1 === _0x52e6f3.data.t) {
                                         _0x1cfda7.innerHTML = 'Game Data ready', _0x52e6f3.target.terminate();
                                         try {
                                             _0x4bd781(), _0x5f3757(_0x55627a), _0x16cf3e();
-                                            var _0x17edbf = 'callMain';
                                             !_0x55627a.startName && _0x567713 && (_0x55627a.startName = _0x567713);
                                             var _0x2c1832 = [_0x55627a.startName,
                                                 [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
@@ -4081,6 +4112,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     } else _0x378b5c.disableInput || _0x378b5c.simulateInputFn(_0x249751, _0x480d05, _0x50f784);
                 }, _0x378b5c.syncInput = _0x378b5c.simulateInput;
+                window.simulateInput = _0x378b5c.simulateInput;
                 var _0x762355 = _0x27f4c4.Module.cwrap('shader_enable', 'null', ['number']);
                 _0x378b5c.toggleShader = function(_0x433182) {
                     return _0x762355(_0x433182);
