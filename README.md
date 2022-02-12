@@ -16,20 +16,6 @@ Self-hosted **Javascript** emulation for various system.
 
 ---
 
-## Where Did I Get This?
-
-> So I found this website called [EmulatorJS.com][EJS] and <br>
-> I went into inspect and downloaded the resources.<br>
-> <br>
-> I removed the ad server, and made everything work within your own domain.<br>
-> <br>
-> [This repository] may soon make it possible to use all this open source.<br>
-> <br>
-> The emulator is not illegal - the rom is - I am not responsible <br>
-> for what people decide to do with this software.
-
----
-
 ## Supported Systems
 
 #### Nintendo
