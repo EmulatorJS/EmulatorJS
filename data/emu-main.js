@@ -6299,14 +6299,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = _0x3d61f9.a;
+            this.version = '1.0';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
             this.loadStateOnStart = false;
             this.statesSupported = true;
-            this.listUrl = 'https://ws.emulatorjs.com/';
-            this.socketUrl = 'wss://ws.emulatorjs.com/';
             this.mameCore = null;
             this.startOnLoad = false;
             this.dataPath = '';
@@ -6325,13 +6323,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.game = this.game;
             this.game.innerHTML = '';
             this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
-            this.coreVer = function(core) {
-                if (false) {
-                    return 2;
+            this.coreVer = function(core, useBeta) {
+                if (useBeta === true) {
+                    if (window.WebAssembly) {
+                        var supportedCores = ['nes', 'snes'];
+                        return supportedCores.includes(core) ? 2 : 1;
+                    }
                 }
-                var supportedCores = ['nes', 'snes'];
-                return supportedCores.includes(core) ? 2 : 1;
-            }(this.config.system); // 2 = beta cores, 1 = old cores
+                return 1;
+            }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
             this.lightgun = this.config.lightgun;
             this.loadStateOnStart = this.config.loadStateOnStart || false;
             this.adUrl = this.config.adUrl || null;
@@ -6340,8 +6340,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.multitap = this.config.multitap;
             this.cheats = this.config.cheats;
             this.cheats || (this.cheats = []);
-            this.listUrl = this.config.netplayUrl || 'https://ws.emulatorjs.com/';
-            this.socketUrl = this.config.netplayUrl || 'wss://ws.emulatorjs.com/';
+            var u = function(a, b) {
+                if (typeof b === 'string') {
+                    return b;
+                } else if (a === true) {
+                    return 'https://ws.emulatorjs.com/'
+                } else {
+                    return 'https://emulatorjs.herokuapp.com/';
+                }
+            }(this.config.oldNetplayServer, this.config.netplayUrl);
+            this.listUrl = u;
+            this.socketUrl = u;
             this.mameCore = this.config.mameCore || null;
             this.color = this.config.color;
             this.startOnLoad = this.config.startOnLoad || false;
