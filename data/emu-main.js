@@ -4192,16 +4192,27 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0x378b5c.saveState = function() {
                     if (_0xa88a13.coreVer === 2) {
                         _0x378b5c.saveStateToFile();
+                        var length;
+                        var asd = 50;
                         return new Promise(function(resolve, reject) {
                             var a = setInterval(function() {
                                 try {
                                     var data = _0x27f4c4.FS.readFile('save.state');
                                 } catch(e) {return;}
+                                if (data.length === 0 || length === 0 || length !== data.length) {
+                                    length = data.length;
+                                    asd = 50;
+                                    return;
+                                }
+                                if (asd > 0) {
+                                    asd--;
+                                    return;
+                                }
                                 clearInterval(a);
                                 _0x27f4c4.FS.unlink('save.state');
                                 resolve(data);
                             }, 100)
-                            })
+                        })
                     } else {
                         var _0xa88a14, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
                             _0x2c1832 = _0x17edbf[0x0] >> 0x0;
@@ -4289,28 +4300,33 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         try {
                             _0x27f4c4.FS.unlink(name);
                         } catch (_0x4b4d4c) {}
-                        var success = true;
                         try {
                             if (_0xa88a13.coreVer === 2) {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'SAVING STATE TO SLOT ' + slot;
                                 _0x378b5c.saveState().then(function(data) {
                                     _0x27f4c4._FS.createDataFile('/', name, data, true, true);
+                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                                    clearTimeout(_0x378b5c.saveMsgTransitions);
+                                    _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                        _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                    }, 1500)
                                 });
                             } else {
                                 var _0x17edbf = _0x378b5c.saveState();
                                 _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                                clearTimeout(_0x378b5c.saveMsgTransitions);
+                                _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                }, 1500)
                             }
                         } catch(e) {
-                            success = false;
-                        }
-                        if (! success) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO SAVE STATE TO SLOT ' + slot;
-                        } else {
-                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                            clearTimeout(_0x378b5c.saveMsgTransitions);
+                            _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                            }, 1500)
                         }
-                        clearTimeout(_0x378b5c.saveMsgTransitions);
-                        _0x378b5c.saveMsgTransitions = setTimeout(function() {
-                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                        }, 1500)
                     }
                 };
                 _0x378b5c.saveMsgTransitions = null;
