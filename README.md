@@ -1,3 +1,189 @@
+
+# EmulatorJS
+
+Self-hosted **Javascript** emulation for various system.
+
+<br>
+
+*If something doesn't work, please consider opening an* ***[Issue]*** <br>
+*with as many details as possible, as well as the console log.*
+
+*The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
+
+---
+
+**⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
+
+---
+
+## Supported Systems
+
+#### Nintendo
+
+**[Game Boy Advance][Nintendo Game Boy Advance]** | **[Famicom / NES][NES / Famicom]** | **[Virtual Boy][Virtual Boy]** | **[Game Boy][Nintendo Game Boy]** | **[SNES]** | **[DS][Nintendo DS]** | **[64][Nintendo 64]**
+
+#### Sega
+**[Master System][Sega Master System]** | **[Mega Drive][Sega Mega Drive]** | **[Game Gear][Sega Game Gear]** | **[Saturn][Sega Saturn]** | **[32X][Sega 32X]** | **[CD][Sega CD]**
+
+#### Atari
+
+**[Jaguar][Atari Jaguar]** | **[Lynx][Atari Lynx]** | **[7800][Atari 7800]** | **[2600][Atari 2600]**
+
+#### Other
+
+**[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]** | **[WanderSwan Color][WanderSwan / Color]** | **[Neo Geo Poket][Neo Geo Poket]** | **[PlayStation]** | **[Arcade]** | **[MSX]** | **[3DO]**
+
+---
+
+
+## Usage
+
+*For questions please use the* ***[Issue]*** *tab.*
+
+<br>
+
+##### Setup
+
+1. Download this repository.<br>
+    *`Code ➞ Download As Zip`*
+
+2. Use a **WebServer** to host the emulator.
+
+3. Use your **Browser** to navigate to `localhost`
+
+<br>
+
+##### ROMs
+
+**ROMs** can be used as `zip` / `rar` / `7z` archives.
+
+<br>
+
+##### Netplay
+
+By default **Netplay** is ***disabled***, <br>
+to enable it, add the following:
+
+```js
+// ID in your website, required for netplay. Each game in your site should have a different ID
+EJS_gameID = 1;
+```
+
+<br>
+
+*I have successfully rewrote the server side portion* <br>
+*of netplay, which you can now use to self host!*
+
+1. Download the **[Server]**.
+
+2. Specify the servers address with:
+
+```js
+EJS_netplayUrl = 'http://localhost:3000/'; // Absolute Url To Your Netplay Server
+```
+
+<br>
+
+##### Custom Saves
+
+To customize the filename of save states <br>
+simply add the following lines of code.
+
+```js
+EJS_gameName = `Game Name`;
+```
+
+**➞ Save Filename:** `Game Name.state`
+
+<br>
+
+##### AD
+
+To place an advertisement in front of the <br>
+`play now` screen, include the following line:
+
+```js
+EJS_AdUrl = `URL`;
+```
+
+<br>
+
+##### Interface Color
+
+To use a different color for the emulator interface, use:
+
+```js
+EJS_color = '#FF0000'; // Hex Color Code
+```
+
+<br>
+
+##### Direct Start
+
+To start the emulator immediately, add this line:
+
+```js
+EJS_startOnLoaded = true;
+```
+
+*For audio to play the user still* <br>
+*needs to interact with the page.*
+
+<br>
+
+##### Custom Paths
+
+Paths to emulator files can be customized with:
+
+```js
+EJS_paths = {
+    'fileName' : '/somepath',
+    'emulator.js' : 'https://example.com/emulator.js',
+    'n64-asmjs.data' : '/asdfds.data'
+};
+```
+
+*If a file is not defined, the default is used.*
+
+<br>
+
+##### USING MAME SYSTEM
+
+you must add the line
+
+```
+EJS_core = 'mame';
+```
+
+and the line
+
+```
+EJS_mameCore = '' // mame core options (example: '4|0')
+```
+set the mame core value to the mame core number (`1` - `6`) + `|` + save states supported (`0` or `1`)
+
+<br>
+
+# LICENSE
+
+Licenced under the Apache License 2.0
+
+Read the whole license [here](LICENSE)
+
+
+<!----------------------------------------------------------------------------->
+
+[Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
+[Emulator Demo]: https://ethanaobrien.github.io/emulatorjs/
+[Beta]: https://emulatorjs.netlify.app/
+
+[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
+[This repository]: https://github.com/linuxserver/emulatorjs
+
+[EJS]: https://www.emulatorjs.com/
+
+[Server]: https://github.com/ethanaobrien/emuserver/releases
+
 [NES / Famicom]: docs/NES-Famicom.md
 [SNES]: docs/SNES.md
 [Nintendo 64]: docs/Nintendo%2064.md
@@ -22,122 +208,3 @@
 [TurboGrafs-16 / PC Engine]: docs/TurboGrafs%2016-PC%20Engine.md
 [Arcade]: docs/Arcade.md
 [Atari 2600]: docs/Atari%202600.md
-
-
-
-# emulatorjs
-
-A javascript emulator for nes, snes, and more!
-The BEST emulator on the internet. No ads and self hosted!
-
-Example page: https://coldcast.org/games/1/Super-Mario-Bros
-
-<p>demo: <a href='https://ethanaobrien.github.io/emulatorjs/'>https://ethanaobrien.github.io/emulatorjs/</a></p>
-
-BETA site: https://emulatorjs.netlify.app/
-
-## Where did I get this?
-
-So I found this website called [emulatorjs](https://www.emulatorjs.com/) and I went into inspect and downloaded the resources. I removed the ad server, and made everything work within your own domain.
-https://github.com/linuxserver/emulatorjs may soon make it possible to use all this open source
-
-The emulator is not illegal - the rom is - I am not responsible for what people decide to do with this software.
-
-NOTE: The screen recording option does not currently support audio! only video recording is supported at this time.
-
-## How To
-
-1. Download this repository (Code > Download as zip) then Extract the contents
-2. Load into a web server and open localhost
-
-If you have questions, ask me and I will clarify (use the issues tab). Please search to make sure your isuue hasnt already been asked
-
-IF SOMETHING DOES NOT WORK - Please make an issue!! Include as many details as possible and please include a log of the console!
-
-All roms can be zipped into a `.zip`, `.rar`, or `.7z` archive
-
-
-NETPLAY IS DISABLED BY DEFAULT. To enable, add this line to your code
-
-```
-EJS_gameID = 1; // ID in your website, required for netplay.
-```
-
-
-## Supported systems!
-
-| Supported Systems |
-|:------------------:|
-| [NES / Famicom] |
-| [SNES] |
-| [Nintendo 64] |
-| [Nintendo Game Boy] |
-| [Nintendo Game Boy Advance] |
-| [Nintendo DS] |
-| [PlayStation] |
-| [Virtual Boy] |
-| [Sega Mega Drive] |
-| [Sega Master System] |
-| [Sega CD] |
-| [Atari Lynx] |
-| [MSX] |
-| [3DO] |
-| [Sega 32X] |
-| [Atari Jaguar] |
-| [Neo Geo Poket] |
-| [Sega Game Gear] |
-| [Sega Saturn] |
-| [Atari 7800] |
-| [WanderSwan / Color] |
-| [TurboGrafs-16 / PC Engine] |
-| [Arcade] |
-| [Atari 2600] |
-
-## More Features
-
-To customize the filename of save states, add the line of code below
-
-```
-EJS_gameName = 'name of game';
-```
-When the user saves a state, the state will be saved with the name `name of game.state`
-
-<br>
-
-To add an ad to the play now screen, add the following line to your code
-
-```
-EJS_AdUrl = ''; //path to AD page
-```
-
-<br>
-
-To change the default color of the emulator interface, add the line below
-
-```
-EJS_color = ''; //hex color id
-```
-You can set the color to a hex color code, for example `#FF0000` (red)
-
-<br>
-
-To start the emulator immediately, add this line to your code
-
-```
-EJS_startOnLoaded = true;
-```
-This will start the emulator instantly
-Please note, the Audio cannot start until the user interacts with the page
-
-<br>
-
-To specify an exact path for a file, add this line to your code
-
-```
-EJS_paths = {
-    "fileName": "/somepath",
-    "emulator.js": "https://example.com/emulator.js",
-    "n64-asmjs.data": "/asdfds.data"
-}
-```
-If a file is not defined, it be set to default
