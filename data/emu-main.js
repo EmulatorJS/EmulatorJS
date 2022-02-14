@@ -1,10 +1,14 @@
 window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     'use strict';
+    window.EJS_RESET_VARS = [];
+    for (var k in window) {
+        window.EJS_RESET_VARS.push(k);
+    }
     _0x2c1832.r(_0x17edbf);
     _0x2c1832(0xa2), _0x2c1832(0x16c), _0x2c1832(0x16d);
     var _0x39ca5e = {
             'volume': 0.5,
-            'muted': !0x1,
+            'muted': false,
             'i18n': {
                 'restart': 'Restart',
                 'play': 'Play',
@@ -963,6 +967,46 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     var _0xc778fa = _0x2c1832(0xa0),
         _0x5a641d = _0x2c1832.n(_0xc778fa),
         _0x4d7024 = {
+            '_FS': {
+                'createPath': function(parent, path, canRead, canWrite) {
+                    if (! _0x4d7024.FS) return;
+                    if (typeof _0x4d7024.FS.createPath != 'function') {
+                        _0x4d7024.FS.mkdir(path);
+                    } else {
+                        _0x4d7024.FS.createPath(parent, path, canRead, canWrite);
+                    }
+                },
+                'createDataFile': function(parent, name, data, canRead, canWrite, canOwn) {
+                    if (! _0x4d7024.FS) return;
+                    if (typeof _0x4d7024.FS.createDataFile != 'function') {
+                        var path = function(parent, name) {
+                            if (parent.endsWith('/') || name.startsWith('/')) {
+                                return parent + name;
+                            } else {
+                                return parent + '/' + name;
+                            }
+                        }(parent, name);
+                        _0x4d7024.FS.writeFile(path, data);
+                    } else {
+                        _0x4d7024.FS.createDataFile(parent, name, data, canRead, canWrite, canOwn);
+                    }
+                },
+                'createFolder': function(parent, name, a, b) {
+                    if (! _0x4d7024.FS) return;
+                    if (typeof _0x4d7024.FS.createFolder != 'function') {
+                        var path = function(parent, name) {
+                            if (parent.endsWith('/') || name.startsWith('/')) {
+                                return parent + name;
+                            } else {
+                                return parent + '/' + name;
+                            }
+                        }(parent, name);
+                        _0x4d7024.FS.mkdir(path);
+                    } else {
+                        _0x4d7024.FS.createFolder(parent, name, a, b);
+                    }
+                }
+            },
             'romdb': null,
             'supportBatterySave': !0x1,
             'hash': '2b35cacf70ae',
@@ -1403,19 +1447,52 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         })
                                     })
                                 }
-                            },
-                            _0x99321 = function(_0x52e6f3) {
+                            };
+                        window.EJS_terminate = function() {
+                            _0x4d7024.Module.pauseMainLoop();
+                            if (_0x55627a && _0x55627a.eventListeners) {
+                                for (var k in _0x55627a) {
+                                    for (var i=0; i<_0x55627a.eventListeners.length; i++) {
+                                        var a = _0x55627a.eventListeners[i];
+                                        a.element.removeEventListener(a.type, a.callback, a.capture);
+                                    }
+                                }
+                            }
+                            if (window.EJS_RESET_VARS) {
+                                var a = [];
+                                var b = [];
+                                for (var k in window) {
+                                    a.push(k);
+                                }
+                                for (var i=0; i<a.length; i++) {
+                                    if (! window.EJS_RESET_VARS.includes(a[i])) {
+                                        b.push(a[i]);
+                                    }
+                                }
+                                for (var i=0; i<b.length; i++) {
+                                    if (window[b[i]]) {
+                                        delete window[b[i]];
+                                    }
+                                }
+                            }
+                        }
+                        var _0x99321 = function(_0x52e6f3) {
                                 if (_0x52e6f3.data) {
                                     if (0x1 === _0x52e6f3.data.t) {
                                         _0x1cfda7.innerHTML = 'Game Data ready', _0x52e6f3.target.terminate();
                                         try {
                                             _0x4bd781(), _0x5f3757(_0x55627a), _0x16cf3e();
-                                            var _0x17edbf = 'callMain';
                                             !_0x55627a.startName && _0x567713 && (_0x55627a.startName = _0x567713);
                                             var _0x2c1832 = [_0x55627a.startName,
                                                 [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                             ];
-                                            'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v'), _0x4d7024.Module[_0x17edbf](_0x2c1832), _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
+                                            'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v');
+                                            _0x4d7024.Module.callMain(_0x2c1832);
+                                            if (_0xc6823.coreVer === 2) {
+                                                _0x4d7024.Module.resumeMainLoop();
+                                                _0x4d7024.Module.setCanvasSize(800, 600);
+                                            }
+                                            _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                                         } catch (_0x4a1471) {
                                             console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
                                         }
@@ -1425,14 +1502,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         var _0x25aae3 = _0x52e6f3.data.file.split('/'),
                                             _0x1bc287 = _0x25aae3.pop(),
                                             _0x1844e3 = _0x1bc287.split('.').pop();
-                                        _0x1bc287 = _0x1bc287.replace(/\#/g, ''), _0x4d7024.FS.createPath('/', _0x25aae3.join('/'), true, true);
+                                        _0x1bc287 = _0x1bc287.replace(/\#/g, ''), _0x4d7024._FS.createPath('/', _0x25aae3.join('/'), true, true);
                                         for (var _0x36bace = _0x1e0766[_0x429d6b].length - 0x1; _0x36bace >= 0x0; _0x36bace -= 0x1) _0x1e0766[_0x429d6b][_0x36bace] === _0x1844e3.toLowerCase() && _0x36bace > _0xb0c5d8 && (_0xb0c5d8 = _0x36bace, _0x55627a.startName = ['', _0x25aae3.join('/'), _0x1bc287].join('/'), _0x55627a.startName = _0x55627a.startName.replace(/\/+/, '/'));
-                                        _0x1bc287 && (_0x4d7024.FS.createDataFile('/' .concat(_0x25aae3.join('/')), _0x1bc287, _0x52e6f3.data.data, true, !0x1), _0x468801 += _0x52e6f3.data.data.length), _0x567713 = '/' .concat(_0x25aae3.join('/'), '/').concat(_0x1bc287);
+                                        _0x1bc287 && (_0x4d7024._FS.createDataFile('/' .concat(_0x25aae3.join('/')), _0x1bc287, _0x52e6f3.data.data, true, !0x1), _0x468801 += _0x52e6f3.data.data.length), _0x567713 = '/' .concat(_0x25aae3.join('/'), '/').concat(_0x1bc287);
                                     }
                                     if (0x4 === _0x52e6f3.data.t && _0x52e6f3.data.total > 0x0) {
                                         var _0x163fc4 = Math.floor(_0x52e6f3.data.current / _0x52e6f3.data.total * 0x64),
                                             _0x5448a3 = _0x52e6f3.data.name || '';
-                                        _0x163fc4 <= 0x64 && _0x163fc4 > 0x0 && (_0x1cfda7.innerHTML = 'Decompress Game Data ' .concat(_0x5448a3, ' ').concat(_0x163fc4, '%'));
+                                        _0x163fc4 <= 0x64 && _0x163fc4 > 0x0 && (_0x1cfda7.innerHTML = _0xa88a13.localization('Decompress Game Data')+' ' .concat(_0x5448a3, ' ').concat(_0x163fc4, '%'));
                                     }
                                 }
                             },
@@ -1451,17 +1528,22 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (!_0x1e67c4) {
                             var _0x1c661d = _0x1bc287.replace(/\#/g, '');
                             try {
-                                _0x468801 += _0x1844e3.length, _0x4d7024.FS.createDataFile('/', _0x1c661d, _0x1844e3, true, !0x1);
+                                _0x468801 += _0x1844e3.length, _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x1844e3, true, !0x1);
                             } catch (_0x210043) {
                                 console.log(_0x210043);
                             }
                             _0x4bd781(), _0x55627a.startName = _0x1c661d, _0x5f3757(_0x55627a), _0x16cf3e();
                             try {
-                                var _0x165f73 = 'callMain',
-                                    _0x4dd87f = [_0x55627a.startName,
+                                var _0x4dd87f = [_0x55627a.startName,
                                         [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
-                                    ];
-                                'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v'), _0x4d7024.Module[_0x165f73](_0x4dd87f), _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
+                                    ];	
+                                'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v');	
+                                _0x4d7024.Module.callMain(_0x4dd87f);
+                                if (_0xc6823.coreVer === 2) {
+                                    _0x4d7024.Module.resumeMainLoop();
+                                    _0x4d7024.Module.setCanvasSize(800, 600);
+                                }
+                                _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                             } catch (_0x42970c) {
                                 console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
                             }
@@ -1479,7 +1561,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x139f1c = _0x154dc5[_0x154dc5.length - 0x1];
                         _0x139f1c.indexOf('?') > -0x1 && (_0x139f1c = _0x139f1c.substr(0x0, _0x139f1c.indexOf('?')));
                         _0x139f1c.split('.').pop();
-                        _0x2c1832.innerHTML = 'Download Game Data', ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl && (_0x2c1832.innerHTML += ' (2/2)'), _0x17edbf.config.gamePatchUrl && (_0x2c1832.innerHTML += ' (2/2)');
+                        _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data'), ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl && (_0x2c1832.innerHTML += ' (2/2)'), _0x17edbf.config.gamePatchUrl && (_0x2c1832.innerHTML += ' (2/2)');
                         new Promise(async function(resolve, reject) {
                             if (! _0x3cf3cf.startsWith('blob:')) {
                                 resolve(await _0x550f17.a.head(_0x3cf3cf, {}))
@@ -1496,12 +1578,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     _0x550f17.a.get(_0x3cf3cf, {
                                         'onDownloadProgress': function(_0x4e7133) {
                                             var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
-                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = 'Download Game Data (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = 'Download Game Data (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = 'Download Game Data ' .concat(_0x13b999);
+                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
                                         },
                                         'responseType': 'arraybuffer'
                                     }).then(function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4.data);
-                                        if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.startsWith('/') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
+                                        if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
                                         if (_0x107e8a && _0x4e171c.db)
                                             if (_0x17edbf.length > 0x6400000)
                                                 for (var _0x2c1832 = Math.ceil(_0x17edbf.length / 0x6400000), _0x257c4d = 0x0; _0x257c4d < _0x2c1832; _0x257c4d += 0x1) {
@@ -1536,7 +1618,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 });
                                         _0x3512e9(_0x139f1c, _0x17edbf);
                                     }).catch(function(_0x2e4d62) {
-                                        console.log(_0x2e4d62), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                        console.log(_0x2e4d62), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                     });
                                 };
                             _0x1ffb98.db ? _0x1ffb98.get(_0x107e8a, function(_0x5afc4a) {
@@ -1560,7 +1642,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 else _0x43a689();
                             }) : _0x43a689();
                         }).catch(function(_0x5ec6be) {
-                            _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                            _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                         });
                     },
                     _0x139f68 = function() {
@@ -1571,9 +1653,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x179b43 = _0x227b23[_0x227b23.length - 0x1];
                             _0x179b43.indexOf('?') > -0x1 && (_0x179b43 = _0x179b43.substr(0x0, _0x179b43.indexOf('?')));
                             _0x179b43.split('.').pop();
-                            _0x2591d9.innerHTML = 'Download Game Data (1/2)', _0x550f17.a.get(_0x5c896f, {
+                            _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2)', _0x550f17.a.get(_0x5c896f, {
                                 'onDownloadProgress': function(_0x3da9ab) {
-                                    _0x2591d9.innerHTML = 'Download Game Data (1/2) ';
+                                    _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2) ';
                                     var _0x17edbf = _0x3da9ab.total ? '' .concat(Math.floor(_0x3da9ab.loaded / _0x3da9ab.total * 0x64), '%') : '';
                                     _0x2591d9.innerHTML += _0x17edbf;
                                 },
@@ -1588,12 +1670,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     var _0x17edbf = _0x36004e.data.file.split('/'),
                                                         _0x2c1832 = _0x17edbf.pop(),
                                                         _0x2b320e = _0x2c1832.split('.').pop();
-                                                    _0x4d7024.FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024.FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x36004e.data.data, true, !0x1), _0x468801 += _0x36004e.data.data.length, ['ips', 'bps', 'ups'].includes(_0x2b320e) && !_0x4d7024.gamePatch && (_0x4d7024.gamePatch = '/' + _0x17edbf.join('/') + '/' + _0x2c1832);
+                                                    _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x36004e.data.data, true, !0x1), _0x468801 += _0x36004e.data.data.length, ['ips', 'bps', 'ups'].includes(_0x2b320e) && !_0x4d7024.gamePatch && (_0x4d7024.gamePatch = '/' + _0x17edbf.join('/') + '/' + _0x2c1832);
                                                 }
                                                 if (0x4 === _0x36004e.data.t && _0x36004e.data.total > 0x0) {
                                                     var _0x1097ca = Math.floor(_0x36004e.data.current / _0x36004e.data.total * 0x64),
                                                         _0x95ac83 = _0x36004e.data.name || '';
-                                                    _0x1097ca <= 0x64 && _0x1097ca > 0x0 && (_0xf6806b.innerHTML = 'Decompress Game Patch ' .concat(_0x95ac83, ' ').concat(_0x1097ca, '%'));
+                                                    _0x1097ca <= 0x64 && _0x1097ca > 0x0 && (_0xf6806b.innerHTML = _0xa88a13.localization('Decompress Game Patch')+' ' .concat(_0x95ac83, ' ').concat(_0x1097ca, '%'));
                                                 }
                                             }
                                         }),
@@ -1606,10 +1688,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x46622d.onmessage = _0x59c7c1, _0x46622d.postMessage(_0x1097ca);
                                     }), _0x4c332a = true) : 'rar' == _0x17f736 && (_0x41d0bd(_0x4ce206, 'rar').then(function(_0x2ecd24) {
                                         _0x2ecd24.onmessage = messageCallBack, _0x2ecd24.postMessage(_0x1097ca);
-                                    }), _0x4c332a = true), _0x4c332a || (_0x468801 += _0x1097ca.length, _0x4d7024.gamePatch = '/' .concat(_0xe531f0), _0x4d7024.FS.createDataFile('/', _0xe531f0, _0x1097ca, true, !0x1), _0x5048db());
+                                    }), _0x4c332a = true), _0x4c332a || (_0x468801 += _0x1097ca.length, _0x4d7024.gamePatch = '/' .concat(_0xe531f0), _0x4d7024._FS.createDataFile('/', _0xe531f0, _0x1097ca, true, !0x1), _0x5048db());
                                 }(_0x179b43, _0x39a81f);
                             }).catch(function(_0x314293) {
-                                console.log(_0x314293), _0x2591d9.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                console.log(_0x314293), _0x2591d9.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x5048db();
                     },
@@ -1622,7 +1704,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0xa1889f = _0x71bb4d[_0x71bb4d.length - 0x1];
                             _0xa1889f.indexOf('?') > -0x1 && (_0xa1889f = _0xa1889f.substr(0x0, _0xa1889f.indexOf('?')));
                             _0xa1889f.split('.').pop();
-                            _0x2c1832.innerHTML = 'Download Game Data (1/2)', _0x17edbf.config.gamePatchUrl && (_0x2c1832.innerHTML = 'Download Game Data (1/3)'), _0x550f17.a.head(_0x5a21f7, {}).then(function(_0x35c23a) {
+                            _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2)', _0x17edbf.config.gamePatchUrl && (_0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/3)'), _0x550f17.a.head(_0x5a21f7, {}).then(function(_0x35c23a) {
                                 var _0x17edbf = _0x35c23a.headers['content-length'],
                                     _0x500ba1 = _0x35c23a.headers['content-type'],
                                     _0x316472 = (_0x35c23a.headers['last-modified'], '' .concat(_0x1143c5, '-').concat(_0xa1889f)),
@@ -1630,7 +1712,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x550f17.a.get(_0x5a21f7, {
                                             'onDownloadProgress': function(_0x5e449f) {
                                                 var _0x17edbf = _0x5e449f.total ? '' .concat(Math.floor(_0x5e449f.loaded / _0x5e449f.total * 0x64), '%') : '';
-                                                _0x2c1832.innerHTML = 'Download Game Data (1/2) ' .concat(_0x17edbf);
+                                                _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2) ' .concat(_0x17edbf);
                                             },
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x191007) {
@@ -1669,12 +1751,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     });
                                             var _0x54d79 = _0xa1889f.replace(/\#/g, '');
                                             try {
-                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
+                                                _0x468801 += _0x17edbf.length, _0x4d7024._FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
                                             } catch (_0x125736) {
                                                 console.log(_0x125736);
                                             }
                                         }).catch(function(_0x516cc3) {
-                                            console.log(_0x516cc3), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                            console.log(_0x516cc3), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                 _0x1ffb98.db ? _0x1ffb98.get(_0x316472, function(_0x3e612b) {
@@ -1688,13 +1770,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     return _0x1c8a88;
                                                 }).length !== _0x6f30ae ? _0x31f098() : (_0x198a02.forEach(function(_0x22b824, _0x16eecf) {
                                                     _0x2c1832.set(_0x22b824.data, 0x6400000 * (_0x16eecf + 0x1));
-                                                }), _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
+                                                }), _0x4d7024._FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
                                             }, function() {}, 'sparse');
-                                        } else _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
+                                        } else _0x4d7024._FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
                                     else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
-                                _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x139f68();
                     },
@@ -1707,7 +1789,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         var _0x17edbf = _0x1e8643.data.file.split('/'),
                                             _0x2c1832 = _0x17edbf.pop();
                                         _0x2c1832.split('.').pop();
-                                        _0x4d7024.FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024.FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, !0x1), _0x468801 += _0x1e8643.data.data.length;
+                                        _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, !0x1), _0x468801 += _0x1e8643.data.data.length;
                                     }
                                     if (0x4 === _0x1e8643.data.t && _0x1e8643.data.total > 0x0) {
                                         var _0x149f09 = Math.floor(_0x1e8643.data.current / _0x1e8643.data.total * 0x64),
@@ -1725,25 +1807,36 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x259be0.onmessage = messageCallBack, _0x259be0.postMessage(_0x3cff36);
                         }), _0x3a6560 = true) : (_0xa24f60(_0x2c1832).then(function(_0x31c70d) {
                             _0x31c70d.onmessage = _0x19a43e, _0x31c70d.postMessage(_0x3cff36);
-                        }), _0x3a6560 = true), _0x3a6560 || (_0x468801 += _0x3cff36.length, _0x50119.innerHTML = 'BIOS ready', _0x4d7024.FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, !0x1), _0x452592());
+                        }), _0x3a6560 = true), _0x3a6560 || (_0x468801 += _0x3cff36.length, _0x50119.innerHTML = 'BIOS ready', _0x4d7024._FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, !0x1), _0x452592());
                     },
                     _0x10b71a = function() {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
                         var _0x17edbf = _0xa88a13.config.biosUrl,
                             _0x2c1832 = _0xa88a13;
-                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024.FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
+                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024._FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
                         var _0x14d39f = '';
                         _0x14d39f += 'savefile_directory = /data/saves\n', _0x14d39f += 'video_vsync = true\n', _0x14d39f += 'screenshot_directory = /\n', _0x14d39f += 'video_shader = /shader/shader.glslp\n', _0x14d39f += 'video_shader_enable = true\n', _0x14d39f += 'video_font_enable = false\n', _0x14d39f += 'video_scale = 1.0\n', _0x14d39f += 'video_gpu_screenshot = false\n', _0x14d39f += 'audio_latency = 96\n';
                         var _0x36edb7 = _0x2593da.defaultCoreOptionsValues.call(_0xa88a13);
                         _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n')), _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n')), _0x2c1832.multitap && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = 257\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n')), 'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n'), _0x2c1832.system, _0x14d39f += 'fastforward_ratio = 1.0\n', _0x14d39f += 'video_smooth = false\n';
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
                             _0x32dd27 = '';
+                        if (_0x2c1832.coreVer === 2) {	
+                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);	
+                            _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);	
+                            _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);	
+                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);	
+                        } else {
+                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);	
+                            _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);	
+                            _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);	
+                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);	
+                        }
                         if (_0x55117c && Object.keys(_0x55117c).forEach(function(_0x2950d3) {
                                 if (_0x2c1832.lightgun && 'nes' === _0x2c1832.system && 'system_type' === _0x2950d3) return !0x1;
                                 _0x32dd27 += '' .concat(_0x2950d3, ' = "').concat(_0x55117c[_0x2950d3], '"\n'), _0x1093f4.call(_0x2c1832, _0x2c1832.elements.container, 'start-game', function(_0x362c5c) {
                                     _0xdcec2a.setVariable(_0x2950d3, _0x55117c[_0x2950d3]);
                                 });
-                            }), _0x4d7024.FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true), _0x4d7024.FS.createFolder('/home/web_user', '.config', true, true), _0x4d7024.FS.createFolder('/home/web_user/.config', 'retroarch', true, true), _0x4d7024.FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true), _0x17edbf) {
+                            }), _0x17edbf) {
                             var _0x12e137 = _0x17edbf.split('/'),
                                 _0x103241 = _0x12e137[_0x12e137.length - 0x1];
                             _0x103241.indexOf('?') > -0x1 && (_0x103241 = _0x103241.substr(0x0, _0x103241.indexOf('?')));
@@ -1769,14 +1862,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 'data': _0x17edbf
                                             }), _0x57d85d(_0x103241, _0x17edbf);
                                         }).catch(function(_0x58e374) {
-                                            _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                            _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                 _0xa884ea.db ? _0xa884ea.get(_0x51bfef, function(_0x5cac21) {
                                     _0x5cac21 && _0x5cac21.filename === _0x103241 && _0x5cac21.filesize - _0x8e30bf == 0x0 && _0x5cac21.filetype === _0x14309b ? _0x57d85d(_0x5cac21.filename, _0x5cac21.data) : _0x574747();
                                 }) : _0x574747();
                             }).catch(function(_0x4f39c1) {
-                                _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x452592();
                     },
@@ -1825,7 +1918,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x58b5a7 = _0x17edbf.split('.').pop();
                                     _0x4d7024.coreFileData[_0x17edbf] = _0x3f49ec.data.data, 'js' !== _0x58b5a7 || _0x17edbf.includes('.worker.js') || (_0x247459 = _0x3f49ec.data.data), 'mem' === _0x58b5a7 && (_0x4d7024.memData = _0x3f49ec.data.data), 'wasm' === _0x58b5a7 && (_0x4d7024.wasmData = _0x3f49ec.data.data);
                                 }
-                                0x4 === _0x3f49ec.data.t && _0x3f49ec.data.total > 0x0 && (_0x2c1832.innerHTML = 'Decompress Game Core ' .concat(Math.floor(_0x3f49ec.data.current / _0x3f49ec.data.total * 0x64), '%'));
+                                0x4 === _0x3f49ec.data.t && _0x3f49ec.data.total > 0x0 && (_0x2c1832.innerHTML = _0xa88a13.localization('Decompress Game Core')+' ' .concat(Math.floor(_0x3f49ec.data.current / _0x3f49ec.data.total * 0x64), '%'));
                             }
                         };
                         _0xa24f60(_0x17edbf).then(function(_0x48c633) {
@@ -1837,7 +1930,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         function() {
                             var _0x3787ba = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)),
                                 _0x2c1832 = _0xa88a13;
-                            _0x3787ba.innerHTML = 'Loading...';
+                            _0x3787ba.innerHTML = _0x2c1832.localization('Loading')+'...';
                             var _0x1c9c57 = setInterval(function() {
                                 if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
                                     window.Module = {
@@ -1885,11 +1978,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     var _0xa88a13, _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
                                     var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : (_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075);
+                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
                                         _0x550f17.a.get(path, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
-                                                _0x3787ba.innerHTML = 'Download Game Core ' .concat(_0x55a075);
+                                                _0x3787ba.innerHTML = _0x2c1832.localization('Download Game Core')+' ' .concat(_0x55a075);
                                             },
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x5eb80b) {
@@ -1898,11 +1991,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 'version': _0x55a075,
                                                 'data': _0x519406
                                             });
-                                            var _0xea4c63 = _0x519406.slice ? _0x519406.slice(0xc) : _0x519406.subarray(0xc);
-                                            _0xea4c63.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0), _0x519406 = null, _0x4f0fcc(_0xea4c63);
+                                            if (_0xc6823.coreVer === 2) {
+                                                _0x4f0fcc(_0x519406);
+                                            } else {
+                                                var _0xea4c63 = _0x519406.slice ? _0x519406.slice(0xc) : _0x519406.subarray(0xc);
+                                                _0xea4c63.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                                _0x519406 = null;
+                                                _0x4f0fcc(_0xea4c63);
+                                            }
                                             
                                         }).catch(function(_0x2e06c8) {
-                                            _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                            _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Network Error')+'</strong>';
                                         });
                                     };
                                     _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
@@ -1920,7 +2019,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         if (_0xc6823.statesSupported === false) {
                                             _0x5b1dcd = false;
                                         };
-                                        _0xc6823.setStatesSupported(_0x5b1dcd);
                                         _0x4d7024.coreFileVersion = _0x124167;
                                         _0x4d7024.coreFileName = _0x5d075f;
                                         var _0x2eb141 = !0x1;
@@ -1928,26 +2026,77 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
                                         if ('mame' == _0x2c1832.system) {
                                             var data = _0x2c1832.mameCore;
-                                            if (! data || data === null) {
-                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Missing mame config</strong>';
-                                                return
+                                            if (! data || data === null || data.split('|').length !== 2) {
+                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Missing mame config')+'</strong>';
+                                                return;
                                             }
                                             var _0x3787ba = data.split('|');
-                                            _0x4d7024.coreFileName = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]), _0x5b1dcd = '1' === _0x3787ba[0x1], _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd), _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0], '-wasm.data'), _0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Webassembly support is not detected in this browser</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
+                                            _0x4d7024.coreFileName = ''.concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]);
+                                            _0x5b1dcd = '1' === _0x3787ba[0x1];
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd);
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd);
+                                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd);
+                                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
+                                            if (_0x2c1832.coreVer === 2) {
+                                                _0x2458d5 = '';
+                                            } else {
+                                                _0x2458d5 = _0x2c1832.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
+                                            }
+                                            _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
                                                 if (_0x655c87 && _0x655c87.version === _0x124167) {
-                                                    var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
-                                                    _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0), _0x4f0fcc(_0x3787ba);
+                                                    if (_0xc6823.coreVer === 2) {
+                                                        _0x4f0fcc(_0x655c87.data);
+                                                    } else {
+                                                        var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
+                                                        _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                                        _0x4f0fcc(_0x3787ba);
+                                                    }
                                                 } else _0x3641d6(_0x2458d5, _0x124167);
-                                            }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Unsupported Game</strong>';
-                                        } else _0x2d904a.wasm && _0x3e4345 ? (_0x2458d5 = '' .concat(_0x5d075f, '-wasm.data'), 'n64' !== _0x2c1832.system || _0x2eb141 || (_0x2458d5 = '' .concat(_0x5d075f, '-legacy-wasm.data')), _0x31a5b3 = true) : _0x9a1f1 && (_0x2458d5 = '' .concat(_0x5d075f, '-asmjs.data'), 'n64' !== _0x2c1832.system || _0x2eb141 || (_0x2458d5 = '' .concat(_0x5d075f, '-legacy-asmjs.data'))), 'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE), _0x2458d5 ? _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
-                                            if (_0x47a6fd && _0x47a6fd.version === _0x124167) {
-                                                var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
-                                                _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0), _0x4f0fcc(_0x3787ba);
-                                            } else _0x3641d6(_0x2458d5, _0x124167);
-                                        }) : _0x3641d6(_0x2458d5, _0x124167) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Please upgrade your browser to the latest version</strong>';
+                                            }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Unsupported Game')+'</strong>';
+                                        } else {
+                                            _0x2458d5 = false;
+                                            var type;
+                                            if (_0x2d904a.wasm && _0x3e4345) {
+                                                type = 'wasm';
+                                                _0x2458d5 = true;
+                                                if ('n64' === _0x2c1832.system && !_0x2eb141) {
+                                                    type = 'legacy-wasm';
+                                                }
+                                                _0x31a5b3 = true;
+                                            } else if (_0x9a1f1) {
+                                                _0x2458d5 = true;
+                                                type = 'asmjs';
+                                                if ('n64' === _0x2c1832.system && !_0x2eb141) {
+                                                    type = 'legacy-asmjs';
+                                                }
+                                            }
+                                            'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                            if (_0x2458d5 !== true) {
+                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Please upgrade your browser to the latest version')+'</strong>';
+                                                return;
+                                            }
+                                            if (_0x2c1832.coreVer === 2) {
+                                                _0x2458d5 = _0x5d075f + '-' + type + '.data';
+                                            } else {
+                                                _0x2458d5 = _0x5d075f + '-old-' + type + '.data';
+                                            }
+                                            'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                            _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
+                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167 && false) {
+                                                    if (_0xc6823.coreVer === 2) {
+                                                        _0x4f0fcc(_0x47a6fd.data);
+                                                    } else {
+                                                        var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
+                                                        _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                                        _0x4f0fcc(_0x3787ba);
+                                                    }
+                                                } else _0x3641d6(_0x2458d5, _0x124167);
+                                            }) : _0x3641d6(_0x2458d5, _0x124167);
+                                        }
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
+                                        _0xc6823.setStatesSupported(_0x5b1dcd);
                                     }).catch(function(_0x2d06a9) {
-                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Network Error</strong>';
+                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Network Error')+'</strong>';
                                     }), clearInterval(_0x1c9c57), _0x4d7024.romdb = _0x4e171c;
                                 }
                             }, 0x1f4);
@@ -2380,9 +2529,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                         if (type === 'save') {
                             try {
-                                var data = _0x378b5c.saveState();
+                                if (this.coreVer === 2) {
+                                    _0x378b5c.saveState().then(function(data) {
+                                        _0x378b5c.saveLoaddbDB.put(key, data);
+                                    })
+                                } else {
+                                    var data = _0x378b5c.saveState();
+                                    _0x378b5c.saveLoaddbDB.put(key, data);
+                                }
                             } catch(e) {return false;};
-                            _0x378b5c.saveLoaddbDB.put(key, data);
                         } else {
                             _0x378b5c.saveLoaddbDB.get(key).then(function(data) {
                                 EJS_loadState(data);
@@ -2581,10 +2736,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             },
             'setGamepadDialog': function() {
                 var _0xa88a13 = this;
-                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>Control Settings</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">Player 1</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">Player 2</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">Player 3</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">Player 4</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">Update</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">Reset</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">Clear</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">Cancel</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">Press keyboard or gamepad</div>\n                </div>\n            </div>\n        </div>\n        '
+                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_0xa88a13.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_0xa88a13.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_0xa88a13.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_0xa88a13.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_0xa88a13.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">'+_0xa88a13.localization('Update')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_0xa88a13.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_0xa88a13.localization('Clear')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">'+_0xa88a13.localization('Cancel')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_0xa88a13.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        '
                 
-                var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">Gamepad</div>\n                        <div style="text-align:center;width:50%;float:left">Keyboard</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
-                    _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">Set</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
+                var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Gamepad')+'</div>\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Keyboard')+'</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
+                    _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">'+_0xa88a13.localization('Set')+'</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
                 if ('nes' === _0xa88a13.system) {
                     var _0x48ee51 = {
                         0: 'B',
@@ -2595,9 +2750,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         6: 'LEFT',
                         7: 'RIGHT',
                         8: 'A',
-                        24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE',
-                        26: 'CHANGE STATE SLOT'
+                        24: _0xa88a13.localization('QUICK SAVE STATE'),
+                        25: _0xa88a13.localization('QUICK LOAD STATE'),
+                        26: _0xa88a13.localization('CHANGE STATE SLOT')
                     }
                 } else if ('snes' === _0xa88a13.system) {
                     var _0x48ee51 = {
@@ -2613,9 +2768,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         9: 'X',
                         10: 'L',
                         11: 'R',
-                        24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE',
-                        26: 'CHANGE STATE SLOT'
+                        24: _0xa88a13.localization('QUICK SAVE STATE'),
+                        25: _0xa88a13.localization('QUICK LOAD STATE'),
+                        26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else if ('n64' === _0xa88a13.system) {
                     var _0x48ee51 = {
@@ -2637,9 +2792,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         22: 'R STICK DOWN',
                         21: 'R STICK LEFT',
                         20: 'R STICK RIGHT',
-                        24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE',
-                        26: 'CHANGE STATE SLOT'
+                        24: _0xa88a13.localization('QUICK SAVE STATE'),
+                        25: _0xa88a13.localization('QUICK LOAD STATE'),
+                        26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else if ('nds' === _0xa88a13.system) {
                     var _0x48ee51 = {
@@ -2656,9 +2811,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         10: 'L',
                         11: 'R',
                         14: 'Microphone',
-                        24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE',
-                        26: 'CHANGE STATE SLOT'
+                        24: _0xa88a13.localization('QUICK SAVE STATE'),
+                        25: _0xa88a13.localization('QUICK LOAD STATE'),
+                        26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else {
                     var _0x48ee51 = {
@@ -2686,18 +2841,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         22: 'R STICK DOWN',
                         21: 'R STICK LEFT',
                         20: 'R STICK RIGHT',
-                        24: 'QUICK SAVE STATE',
-                        25: 'QUICK LOAD STATE',
-                        26: 'CHANGE STATE SLOT'
+                        24: _0xa88a13.localization('QUICK SAVE STATE'),
+                        25: _0xa88a13.localization('QUICK LOAD STATE'),
+                        26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 }
                 if (['arcade', 'mame'].includes(_0xa88a13.system)) {
-                    _0x48ee51[2] = 'INSERT COIN'
+                    _0x48ee51[2] = _0xa88a13.localization('INSERT COIN');
                 }
                 if (_0xa88a13.statesSupported === false) {
-                    delete _0x48ee51[24]
-                    delete _0x48ee51[25]
-                    delete _0x48ee51[26]
+                    delete _0x48ee51[24];
+                    delete _0x48ee51[25];
+                    delete _0x48ee51[26];
                 }
                 
                 for (var _0x501790 = [0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x0, 0x9, 0x1, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x13, 0x12, 0x11, 0x10, 0x17, 0x16, 0x15, 0x14, 0x18, 0x19, 26], _0x50fd12 = function(_0x88827f) {
@@ -2747,19 +2902,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     }
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-clear'])), 'click', function(_0x5f19bd) {
-                    var c = {0:{}, 1:{}, 2:{}, 3:{}}
+                    var c = {0:{}, 1:{}, 2:{}, 3:{}};
                     for (var k in _0x48ee51) {
-                        c[0][k] = {}
-                        c[1][k] = {}
-                        c[2][k] = {}
-                        c[3][k] = {}
+                        c[0][k] = {};
+                        c[1][k] = {};
+                        c[2][k] = {};
+                        c[3][k] = {};
                     }
                     _0x378b5c.controllers = c
                     localStorage.setItem(_0x2593da.storage.key, JSON.stringify({controllers: _0x378b5c.controllers}))
                     var _0x2c1832 = _0xa88a13.elements.dialogs.gamepad.querySelectorAll('input')
                     for (var i=0; i<_0x2c1832.length; i++) {
-                        _0x2c1832[i].value = ''
-                        _0x2c1832[i].setAttribute('data-value', '')
+                        _0x2c1832[i].value = '';
+                        _0x2c1832[i].setAttribute('data-value', '');
                     }
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x16d598) {
                     return _0x132da7(_0xa88a13.elements.dialogs.gamepad, true), _0xa88a13.elements.container.focus(), _0x16d598.stopPropagation(), !0x1;
@@ -2787,16 +2942,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x4a6f6f = _0x2c1832.getAttribute('data-label');
                         _0x132da7(_0x11b11a, !0x1), _0x11b11a.setAttribute('data-id', _0x4e649c), _0x11b11a.setAttribute('data-index', _0x431719);
                         var _0x179623 = '[ ' .concat(_0x4a6f6f, ' ]');
-                        _0x378b5c.gamepad.gamepads[_0x431719] && _0x4e649c < 0x10 ? _0x179623 += '<br /><span style="font-size:12px">Gamepad:' .concat(_0x378b5c.gamepad.gamepads[_0x431719].id, '</span><br />Press keyboard or gamepad<br/>Press escape (esc) to clear') : _0x179623 += '<br />Press keyboard<br/>Press escape (esc) to clear', _0x11b11a.querySelector('.' .concat(_0x378b5c.classNames['key-setting-popup'])).innerHTML = _0x179623, _0x1e1d79.stopPropagation();
+                        _0x378b5c.gamepad.gamepads[_0x431719] && _0x4e649c < 0x10 ? _0x179623 += '<br /><span style="font-size:12px">Gamepad:' .concat(_0x378b5c.gamepad.gamepads[_0x431719].id, '</span><br />'+_0xa88a13.localization('Press keyboard or gamepad')+'<br/>'+_0xa88a13.localization('Press escape (esc) to clear')) : _0x179623 += '<br />Press keyboard<br/>'+_0xa88a13.localization('Press escape (esc) to clear'), _0x11b11a.querySelector('.' .concat(_0x378b5c.classNames['key-setting-popup'])).innerHTML = _0x179623, _0x1e1d79.stopPropagation();
                     });
                 });
             },
             'setCacheDialog': function() {
                 var _0xa88a13 = this;
-                _0xa88a13.elements.dialogs.cache.innerHTML = '\n        <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n            <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                <h4>Cache Manager</h4>\n            </div>\n            <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n\n            </div>\n            <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">Close</a>\n            </div>\n        </div>\n        '), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x5d6721) {
+                _0xa88a13.elements.dialogs.cache.innerHTML = '\n        <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n            <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                <h4>'+_0xa88a13.localization('Cache Manager')+'</h4>\n            </div>\n            <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n\n            </div>\n            <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">'+_0xa88a13.localization('Close')+'</a>\n            </div>\n        </div>\n        '), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x5d6721) {
                     return _0x132da7(_0xa88a13.elements.dialogs.cache, true), _0xa88a13.elements.container.focus(), _0x5d6721.stopPropagation(), !0x1;
                 }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-title'], ' a')), 'click', function(_0x46992d) {
-                    return _0x27f4c4.romdb && (_0x27f4c4.romdb.clear(), _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content'])).innerHTML = '<div style="text-align:center">Empty</div>'), _0x46992d.stopPropagation(), !0x1;
+                    return _0x27f4c4.romdb && (_0x27f4c4.romdb.clear(), _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content'])).innerHTML = '<div style="text-align:center">'+_0xa88a13.localization('Empty')+'</div>'), _0x46992d.stopPropagation(), !0x1;
                 });
             },
             'showLoading': function(_0x108b55) {
@@ -2808,12 +2963,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0x4d8495.close(), _0x132da7(this.elements.dialogs.loading, true);
             },
             'setLoadingDialog': function() {
-                this.elements.dialogs.loading && (this.elements.dialogs.loading.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-6ed698f3d04061f5" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-6ed698f3d04061f5-title">\n                Loading...\n                </div>\n                </div>\n            </div>'));
+                this.elements.dialogs.loading && (this.elements.dialogs.loading.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-6ed698f3d04061f5" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-6ed698f3d04061f5-title">\n                '+this.localization('Loading')+'...\n                </div>\n                </div>\n            </div>'));
             },
             'setCheatDialog': function() {
                 var _0xa88a13 = this;
                 if (_0xa88a13.elements.dialogs.cheat) {
-                    _0xa88a13.elements.dialogs.cheat.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>Cheats</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['cheats-list'], '">\n                        \n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['cheats-add'], '">Add Cheat</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-submit'], '">OK</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">Close</a>\n                </div>\n            </div>\n\n            \n\n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" style="width:100%" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484b-title">\n                    Add Cheat Code\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484b-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>Code</strong><br />\n                        <textarea style="width:100%;height:80px;" class="').concat(_0x378b5c.classNames['cheat-code-input'], '"></textarea><br />\n                        <strong>Description</strong><br />\n                        <input type="text" class="').concat(_0x378b5c.classNames['cheat-name-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">Submit</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">Close</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            ');
+                    _0xa88a13.elements.dialogs.cheat.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>Cheats</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['cheats-list'], '">\n                        \n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['cheats-add'], '">'+_0xa88a13.localization('Add Cheat')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-submit'], '">'+_0xa88a13.localization('OK')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">Close</a>\n                </div>\n            </div>\n\n            \n\n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" style="width:100%" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484b-title">\n                    '+_0xa88a13.localization('Add Cheat Code')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484b-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0xa88a13.localization('Code')+'</strong><br />\n                        <textarea style="width:100%;height:80px;" class="').concat(_0x378b5c.classNames['cheat-code-input'], '"></textarea><br />\n                        <strong>'+_0xa88a13.localization('Description')+'</strong><br />\n                        <input type="text" class="').concat(_0x378b5c.classNames['cheat-name-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0xa88a13.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0xa88a13.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            ');
                     var _0x17edbf = _0xa88a13.elements.dialogs.cheat.querySelector('#modal-85cd7a1c543a484b');
                     _0x1093f4.call(this, _0xa88a13.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['cheats-add'])), 'click', function(_0x2a74b5) {
                         return _0x4d8495.show('modal-85cd7a1c543a484b', {
@@ -2876,7 +3031,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0xa88a13 = this,
                     _0x17edbf = this;
                 if (_0x17edbf.elements.dialogs.netplay) {
-                    _0x17edbf.elements.dialogs.netplay.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>Netplay</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['netplay-roomlist'], '" hidden>\n                        <strong>Rooms</strong>\n                        <table style="width:100%" cellspacing=0>\n                            <thead>\n                                <tr>\n                                    <td>Room Name</td>\n                                    <td>Players</td>\n                                    <td></td>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr>\n                                    <td></td>\n                                    <td></td>\n                                    <td></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </div>\n\n                    <div class="').concat(_0x378b5c.classNames['netplay-room'], '" hidden>\n                        <strong>Room Name</strong>\n                        <div data-room-password>Password: <span></span></div>\n                        <table style="width:100%" cellspacing="0">\n                            <thead>\n                            <tr>\n                                <td>Player</td>\n                                <td>Name</td>\n                                <td></td>\n                            </tr>\n                            </thead>\n                            <tbody>\n                            <tr>\n                                <td>1</td>\n                                <td>Name 1</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>2</td>\n                                <td>Name 2</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>3</td>\n                                <td>Name 3</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>4</td>\n                                <td>Name 4</td>\n                                <td></td>\n                            </tr>\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-quit'], '">Quit Room</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-create-room'], '">Create a Room</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">Close</a>\n                </div>\n            </div>\n\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-9de6c4e9ce2b9361" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-9de6c4e9ce2b9361-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-9de6c4e9ce2b9361-title">\n                        Set Player Name\n                    </h2>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-9de6c4e9ce2b9361-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>Player Name</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-player-name'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">Submit</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484a" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484a-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484a-title">\n                    Create a Room\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484a-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>Room Name</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-name-input'], '" /><br />\n                        <strong>Max Players</strong><br />\n                        <select data-max-players>\n                            <option value="2">2</option>\n                            <option value="3">3</option>\n                            <option value="4">4</option>\n                        </select>\n                        <br />\n                        <strong>Password (Optional)</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">Submit</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">Close</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-5aa765d61d8327de" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-5aa765d61d8327de-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-5aa765d61d8327de-title">\n                        Password\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-5aa765d61d8327de-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">Submit</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">Close</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-7d8fd50ed642340b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-7d8fd50ed642340b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-7d8fd50ed642340b-title"></h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-7d8fd50ed642340b-content">\n                        \n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '" data-modal-close>OK</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            '), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x3d4554) {
+                    _0x17edbf.elements.dialogs.netplay.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>'+_0x17edbf.localization('Netplay')+'</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['netplay-roomlist'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Rooms')+'</strong>\n                        <table style="width:100%" cellspacing=0>\n                            <thead>\n                                <tr>\n                                    <td>'+_0x17edbf.localization('Room Name')+'</td>\n                                    <td>'+_0x17edbf.localization('Players')+'</td>\n                                    <td></td>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr>\n                                    <td></td>\n                                    <td></td>\n                                    <td></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </div>\n\n                    <div class="').concat(_0x378b5c.classNames['netplay-room'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong>\n                        <div data-room-password>'+_0x17edbf.localization('Password')+': <span></span></div>\n                        <table style="width:100%" cellspacing="0">\n                            <thead>\n                            <tr>\n                                <td>'+_0x17edbf.localization('Player')+'</td>\n                                <td>'+_0x17edbf.localization('Name')+'</td>\n                                <td></td>\n                            </tr>\n                            </thead>\n                            <tbody>\n                            <tr>\n                                <td>1</td>\n                                <td>'+_0x17edbf.localization('Name')+' 1</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>2</td>\n                                <td>'+_0x17edbf.localization('Name')+' 2</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>3</td>\n                                <td>'+_0x17edbf.localization('Name')+' 3</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>4</td>\n                                <td>'+_0x17edbf.localization('Name')+' 4</td>\n                                <td></td>\n                            </tr>\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-quit'], '">'+_0x17edbf.localization('Quit Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-create-room'], '">'+_0x17edbf.localization('Create a Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">'+_0x17edbf.localization('Close')+'</a>\n                </div>\n            </div>\n\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-9de6c4e9ce2b9361" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-9de6c4e9ce2b9361-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-9de6c4e9ce2b9361-title">\n                        '+_0x17edbf.localization('Set Player Name')+'\n                    </h2>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-9de6c4e9ce2b9361-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Player Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-player-name'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484a" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484a-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484a-title">\n                    '+_0x17edbf.localization('Create a Room')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484a-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-name-input'], '" /><br />\n                        <strong>Max Players</strong><br />\n                        <select data-max-players>\n                            <option value="2">2</option>\n                            <option value="3">3</option>\n                            <option value="4">4</option>\n                        </select>\n                        <br />\n                        <strong>'+_0x17edbf.localization('Password (optional)')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-5aa765d61d8327de" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-5aa765d61d8327de-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-5aa765d61d8327de-title">\n                        '+_0x17edbf.localization('Password')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-5aa765d61d8327de-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-7d8fd50ed642340b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-7d8fd50ed642340b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-7d8fd50ed642340b-title"></h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-7d8fd50ed642340b-content">\n                        \n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '" data-modal-close>OK</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            '), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x3d4554) {
                         return _0x132da7(_0x17edbf.elements.dialogs.netplay, true), _0x378b5c.disableControl(!0x1), _0x378b5c.stopLoadRooms(), _0x3d4554.stopPropagation(), _0x17edbf.elements.container.focus(), !0x1;
                     }), window.setInterval(function() {
                         var _0xa88a13 = '<ul>';
@@ -3053,7 +3208,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     'value': _0x2a5bce
                                 }));
                                 for (var _0x8624ae = _0x378b5c.getStateInfo().split('|'), _0x99810a = _0x8624ae[0x0] >> 0x0, _0x96975a = new Uint8Array(_0x99810a), _0x4aea80 = _0x8624ae[0x1] >> 0x0, _0x2d2ba0 = 0x0; _0x2d2ba0 < _0x99810a; _0x2d2ba0 += 0x1) _0x96975a[_0x2d2ba0] = _0x27f4c4.Module.getValue(_0x4aea80 + _0x2d2ba0);
-                                _0x27f4c4.FS.createDataFile('/', 'game.state', _0x96975a, true, true), _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number'])('game.state', 0x0), _0x27f4c4.FS.unlink('game.state'), _0x378b5c.inputsData = {};
+                                _0x27f4c4._FS.createDataFile('/', 'game.state', _0x96975a, true, true), _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number'])('game.state', 0x0), _0x27f4c4.FS.unlink('game.state'), _0x378b5c.inputsData = {};
                                 var _0x49054f = new File([_0x96975a], '' .concat(0x0, '-game.state'), {
                                     'type': '',
                                     'lastModified': new Date()
@@ -3229,6 +3384,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x2c8fd1 = null;
                             if (_0x459b32.key && _0x378b5c.keyMap[_0x459b32.keyCode] === 'escape') {
                                 (_0x2c8fd1 = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1394cb, '"][data-index="').concat(_0x1a3a47, '"][data-type="1"]'))).setAttribute('data-value', '')
+                                _0x2c8fd1.value = ''
+                                (_0x2c8fd1 = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1394cb, '"][data-index="').concat(_0x1a3a47, '"][data-type="2"]'))).setAttribute('data-value', '')
                                 _0x2c8fd1.value = ''
                                 _0x132da7(_0x2c1832, true);
                                 return;
@@ -3524,44 +3681,82 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             'ejs-virtual-gamepad': true
                         }),
                         'hidden': ''
-                    }), this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer), _0x378b5c.virtualGamepadContainer.innerHTML = '\n            <div class="' .concat(_0x449eac({
-                        'virtual-gamepad': true
-                    }), '" style="display: block;">\n            <div class="').concat(_0x449eac({
-                        'top': true
-                    }), '">\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_l': true
-                    }), '">L</div>\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_r': true
-                    }), '">R</div>\n            </div>\n            <div class="').concat(_0x449eac({
-                        'left': true
-                    }), '"></div>\n            <div class="').concat(_0x449eac({
-                        'center': true
-                    }), '">\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_select': true
-                    }), '">SELECT</div>\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_start': true
-                    }), '">START</div>\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_c': true
-                    }), '">MENU</div>\n            </div>\n            <div class="').concat(_0x449eac({
-                        'right': true
-                    }), '">\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_a': true
-                    }), '">A</div>\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_b': true
-                    }), '">B</div>\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_x': true
-                    }), '">X</div>\n            <div class="').concat(_0x449eac({
-                        'buttons': true,
-                        'b_y': true
-                    }), '">Y</div>\n            </div>\n            </div>'), _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                    });
+                    this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
+                    var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
+                    var html = '';
+                    if (['snes', 'nds'].includes(_0xa88a13.system)) {
+                        var elements = {
+                            order: ['X','Y','A','B'],
+                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
+                            LandR: true
+                        }
+                    } else if (['gba', 'gb', 'vb', 'nes'].includes(_0xa88a13.system)) {
+                        var elements = {
+                            order: ['B','A'],
+                            orderCSS: ['left:-10px;top:70px;', 'left:60px;top:70px;'],
+                            LandR: (_0xa88a13.system === 'gba')
+                        }
+                    } else if (['n64'].includes(_0xa88a13.system)) {
+                        var elements = {
+                            order: ['B','A'],
+                            orderCSS: ['left:-10px;top:95px;', 'left:40px;top:150px;'],
+                            LandR: true
+                        }
+                    } else {
+                        var elements = {
+                            order: ['Y','X','B','A'],
+                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
+                            LandR: true
+                        }
+                    }
+                    html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
+                    
+                    html += '<div class="'+_0x449eac({'top': true})+'">';
+                    if (elements.LandR === true) {
+                        if (_0xa88a13.system === 'n64') {
+                            html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;top:-40px;'+blockCSS+'">L</div>';
+                            html += '<div class="'+_0x449eac({'buttons': true,'b_z': true})+'" style="left:10px;'+blockCSS+'">Z</div>';
+                            html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;top:-40px;'+blockCSS+'">R</div>';
+                        } else {
+                            html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;'+blockCSS+'">L</div>';
+                            html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;'+blockCSS+'">R</div>';
+                        }
+                    }
+                    html += '</div>';
+                    
+                    html += '<div class="'+_0x449eac({'left': true})+'"></div>';
+                    
+                    html += '<div class="'+_0x449eac({'center': true})+'">';
+                    if (_0xa88a13.system === 'n64') {
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:65px;">'+_0xa88a13.localization('Menu')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:0px;">'+_0xa88a13.localization('Start')+'</div>';
+                    } else {
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:30px;">'+_0xa88a13.localization('Start')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:95px;">'+_0xa88a13.localization('Menu')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-35px;">'+_0xa88a13.localization('Select')+'</div>';
+                    }
+                    html += '</div>';
+                    
+                    html += '<div class="'+_0x449eac({'right': true})+'">';
+                    
+                    if (_0xa88a13.system === 'n64') {
+                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cu': true})+'" style="left:25px;top:-65px;"></div>';
+                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cd': true})+'" style="left:25px;top:15px;"></div>';
+                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cl': true})+'" style="left:-15px;top:-25px;"></div>';
+                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cr': true})+'" style="left:65px;top:-25px;"></div>';
+                    }
+                    
+                    for (var i=0; i<elements.order.length; i++) {
+                        var opts = {'buttons': true};
+                        opts['b_'+elements.order[i].toLowerCase()] = true;
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+elements.orderCSS[i]+'">'+elements.order[i]+'</div>';
+                    }
+                    
+                    html += '</div></div>';
+                    
+                    _0x378b5c.virtualGamepadContainer.innerHTML = html;
+                    _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
                     var _0x17edbf = _0x3a58c8.a.create({
                         'zone': _0x530042.call(this, '.' .concat(_0x449eac({
                             'ejs-virtual-gamepad': true
@@ -3575,19 +3770,58 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         },
                         'color': 'red'
                     });
+                    function inputs() {
+                        if (_0xa88a13.system === 'n64') {
+                            var inputLocation;
+                            if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
+                                inputLocation = _0x2593da.getCoreOptionsValues()['joystick-input'];
+                            }
+                            if (inputLocation === 'd-pad') {
+                                return {
+                                    downVal: 1,
+                                    4: 4,
+                                    5: 5,
+                                    6: 6,
+                                    7: 7
+                                }
+                            } else {
+                                return {
+                                    downVal: 0x7fff,
+                                    4: 19,
+                                    5: 18,
+                                    6: 17,
+                                    7: 16
+                                }
+                            }
+                        } else {
+                            return {
+                                downVal: 1,
+                                4: 4,
+                                5: 5,
+                                6: 6,
+                                7: 7
+                            }
+                        }
+                    }
                     _0x17edbf.on('end', function(_0x27f006, _0x1fb527) {
-                        _0x378b5c.syncInput(0x0, 0x4, 0x0), _0x378b5c.syncInput(0x0, 0x5, 0x0), _0x378b5c.syncInput(0x0, 0x6, 0x0), _0x378b5c.syncInput(0x0, 0x7, 0x0);
+                        _0x378b5c.syncInput(0, inputs[4], 0);
+                        _0x378b5c.syncInput(0, inputs[5], 0);
+                        _0x378b5c.syncInput(0, inputs[6], 0);
+                        _0x378b5c.syncInput(0, inputs[7], 0);
                     });
                     _0x17edbf.on('move', function(_0x1b060e, _0x4ae7d6) {
                         var _0x2c1832 = _0x4ae7d6.angle.degree;
-                        _0x2c1832 >= 0x1e && _0x2c1832 < 0x96 ? _0x378b5c.syncInput(0x0, 0x4, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x4, 0x0);
-                        }, 0x1e), _0x2c1832 >= 0xd2 && _0x2c1832 < 0x14a ? _0x378b5c.syncInput(0x0, 0x5, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x5, 0x0);
-                        }, 0x1e), _0x2c1832 >= 0x78 && _0x2c1832 < 0xf0 ? _0x378b5c.syncInput(0x0, 0x6, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x6, 0x0);
-                        }, 0x1e), _0x2c1832 >= 0x12c || _0x2c1832 >= 0x0 && _0x2c1832 < 0x3c ? _0x378b5c.syncInput(0x0, 0x7, 0x1) : window.setTimeout(function() {
-                            _0x378b5c.syncInput(0x0, 0x7, 0x0);
+                        _0x2c1832 >= 0x1e && _0x2c1832 < 0x96 ? _0x378b5c.syncInput(0, inputs()[4], inputs().downVal) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs()[4], 0);
+                        }, 0x1e);
+                        _0x2c1832 >= 0xd2 && _0x2c1832 < 0x14a ? _0x378b5c.syncInput(0, inputs()[5], inputs().downVal) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs()[5], 0);
+                        }, 0x1e);
+                        _0x2c1832 >= 0x78 && _0x2c1832 < 0xf0 ? _0x378b5c.syncInput(0, inputs()[6], inputs().downVal) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs()[6], 0);
+                        }, 0x1e);
+                        _0x2c1832 >= 0x12c || _0x2c1832 >= 0x0 && _0x2c1832 < 0x3c ? _0x378b5c.syncInput(0, inputs()[7], inputs().downVal) : window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, inputs()[7], 0);
                         }, 0x1e);
                     });
                     var _0x2c1832 = _0x449eac({
@@ -3603,58 +3837,109 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_a': true
-                    }))), 'touchstart touchend', function(_0x185083) {
-                        'touchend' === _0x185083.type ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x185083) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x185083.type) ? (_0x3a8e2f(_0x185083.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x8, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x185083.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x8, 0x1)), _0x185083.stopPropagation();
                     });
                     _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_b': true
-                    }))), 'touchstart touchend', function(_0x213c3d) {
-                        'touchend' === _0x213c3d.type ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x213c3d) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x213c3d.type) ? (_0x3a8e2f(_0x213c3d.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x0, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x213c3d.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x0, 0x1)), _0x213c3d.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_x': true
-                    }))), 'touchstart touchend', function(_0x5ce708) {
-                        'touchend' === _0x5ce708.type ? (_0x3a8e2f(_0x5ce708.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x5ce708) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x5ce708.type) ? (_0x3a8e2f(_0x5ce708.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x9, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x5ce708.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x9, 0x1)), _0x5ce708.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_y': true
-                    }))), 'touchstart touchend', function(_0x1cfae6) {
-                        'touchend' === _0x1cfae6.type ? (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x1cfae6) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x1cfae6.type) ? (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x1, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x1cfae6.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x1, 0x1)), _0x1cfae6.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_l': true
-                    }))), 'touchstart touchend', function(_0x1a50ab) {
-                        'touchend' === _0x1a50ab.type ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x1a50ab) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x1a50ab.type) ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0xa, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0xa, 0x1)), _0x1a50ab.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                        'b_z': true
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x1a50ab) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x1a50ab.type) ? (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                            _0x378b5c.syncInput(0x0, 12, 0x0);
+                        }, 0x1e)) : (_0x3a8e2f(_0x1a50ab.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 12, 0x1)), _0x1a50ab.stopPropagation();
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_r': true
-                    }))), 'touchstart touchend', function(_0x3b8139) {
-                        'touchend' === _0x3b8139.type ? (_0x3a8e2f(_0x3b8139.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x3b8139) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x3b8139.type) ? (_0x3a8e2f(_0x3b8139.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0xb, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x3b8139.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0xb, 0x1)), _0x3b8139.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_start': true
-                    }))), 'touchstart touchend', function(_0x47af91) {
-                        'touchend' === _0x47af91.type ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x3, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x3, 0x1)), _0x47af91.stopPropagation();
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    });
+                    
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                        'b_cu': true
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, 23, 0);
+                        }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0, 23, 0x7fff)), _0x47af91.stopPropagation();
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                        'b_cd': true
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, 22, 0);
+                        }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0, 22, 0x7fff)), _0x47af91.stopPropagation();
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                        'b_cl': true
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, 21, 0);
+                        }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0, 21, 0x7fff)), _0x47af91.stopPropagation();
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                        'b_cr': true
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type) ? (_0x3a8e2f(_0x47af91.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                            _0x378b5c.syncInput(0, 20, 0);
+                        }, 0x1e)) : (_0x3a8e2f(_0x47af91.target, _0x2ec721, true), _0x378b5c.syncInput(0, 20, 0x7fff)), _0x47af91.stopPropagation();
+                    });
+                    
+                    var hideTimeout;
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_c': true
-                    }))), 'touchstart touchend', function(_0x47af91) {
-                        _0x5ab74d.toggleControls.call(_0xa88a13, true);
-                        setTimeout(function() {
-                            _0x5ab74d.toggleControls.call(_0xa88a13, false);
-                        }, 5000)
-                    }), _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
+                        if (['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type)) {
+                            _0x3a8e2f(_0x47af91.target, _0x2ec721, false);
+                        } else {
+                            _0x3a8e2f(_0x47af91.target, _0x2ec721, true);
+                            clearTimeout(hideTimeout);
+                            _0x5ab74d.toggleControls.call(_0xa88a13, true);
+                            hideTimeout = setTimeout(function() {
+                                _0x5ab74d.toggleControls.call(_0xa88a13, false);
+                            }, 5000)
+                        }
+                    });
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
                         'b_select': true
-                    }))), 'touchstart touchend', function(_0x37f594) {
-                        'touchend' === _0x37f594.type ? (_0x3a8e2f(_0x37f594.target, _0x2ec721, !0x1), window.setTimeout(function() {
+                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x37f594) {
+                        ['touchend', 'mouseup', 'mouseout'].includes(_0x37f594.type) ? (_0x3a8e2f(_0x37f594.target, _0x2ec721, !0x1), window.setTimeout(function() {
                             _0x378b5c.syncInput(0x0, 0x2, 0x0);
                         }, 0x1e)) : (_0x3a8e2f(_0x37f594.target, _0x2ec721, true), _0x378b5c.syncInput(0x0, 0x2, 0x1)), _0x37f594.stopPropagation();
                     });
@@ -3734,7 +4019,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.recordData = {started:false, data:[], stopped: false}
                     }
                     if (! _0xa88a13.recordData.started) { //start recording
-                        _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = 'Stop Screen Recording';
+                        _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Stop Screen Recording');
                         if (MediaRecorder.isTypeSupported('video/webm; codecs=h264')) {
                             var options = {mimeType: 'video/webm; codecs=h264'}; // video/webm; codecs=h264,opus
                         } else if (MediaRecorder.isTypeSupported('video/webm; codecs=H264')) {
@@ -3766,7 +4051,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 a.click()
                                 window.URL.revokeObjectURL(a.href)
                                 delete _0xa88a13.recordData
-                                _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = 'Start Screen Recording';
+                                _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Start Screen Recording');
                             }
                         }
                         _0xa88a13.recordData.recorder.start()
@@ -3888,53 +4173,118 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'key': _0x480d05,
                                 'status': _0x50f784,
                                 'frame': _0x52e1f4
-                            }), _0x378b5c.simulateInputFn(_0xf1bb97, _0x480d05, _0x50f784)) : _0x378b5c.connection.send(JSON.stringify({
+                            }),_0x378b5c.simulateInputFn(_0xf1bb97, _0x480d05, _0x50f784)) : _0x378b5c.connection.send(JSON.stringify({
                                 'act': 'sync-control',
                                 'value': ['' .concat(_0xf1bb97, '|').concat(_0x480d05, '|').concat(_0x50f784, '|').concat(_0x52e1f4)]
                             }), _0x378b5c.roomMaster)), _0x2c63cc[_0x480d05] = _0x50f784);
                         }
                     } else _0x378b5c.disableInput || _0x378b5c.simulateInputFn(_0x249751, _0x480d05, _0x50f784);
                 }, _0x378b5c.syncInput = _0x378b5c.simulateInput;
+                window.simulateInput = _0x378b5c.simulateInput;
                 var _0x762355 = _0x27f4c4.Module.cwrap('shader_enable', 'null', ['number']);
                 _0x378b5c.toggleShader = function(_0x433182) {
                     return _0x762355(_0x433182);
-                }, _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []), _0x378b5c.saveState = function() {
-                    var _0xa88a13, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
-                        _0x2c1832 = _0x17edbf[0x0] >> 0x0;
-                    if (_0x2c1832 > 0x0) {
-                        _0xa88a13 = new Uint8Array(_0x2c1832);
-                        for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a13[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
+                }
+                _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
+                if (_0xa88a13.coreVer === 2) {
+                    _0x378b5c.saveStateToFile = _0x27f4c4.Module.cwrap('cmd_save_state', 'null', []);
+                }
+                _0x378b5c.saveState = function() {
+                    if (_0xa88a13.coreVer === 2) {
+                        _0x378b5c.saveStateToFile();
+                        var length;
+                        var asd = 50;
+                        return new Promise(function(resolve, reject) {
+                            var a = setInterval(function() {
+                                try {
+                                    var data = _0x27f4c4.FS.readFile('save.state');
+                                } catch(e) {return;}
+                                if (data.length === 0 || length === 0 || length !== data.length) {
+                                    length = data.length;
+                                    asd = 50;
+                                    return;
+                                }
+                                if (asd > 0) {
+                                    asd--;
+                                    return;
+                                }
+                                clearInterval(a);
+                                _0x27f4c4.FS.unlink('save.state');
+                                resolve(data);
+                            }, 100)
+                        })
+                    } else {
+                        var _0xa88a14, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
+                            _0x2c1832 = _0x17edbf[0x0] >> 0x0;
+                        if (_0x2c1832 > 0x0) {
+                            _0xa88a14 = new Uint8Array(_0x2c1832);
+                            for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a14[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
+                        }
+                        return _0xa88a14;
                     }
-                    return _0xa88a13;
                 };
                 var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
                 _0x378b5c.loadState = function(_0x4389ae, _0x1d4918) {
                     var _0x91cd69;
-                    if (_0x91cd69 = _0x4389ae, _0x27f4c4.FS.createDataFile('/', 'game.state', _0x91cd69, true, true), null === _0x1d4918 && (_0x1d4918 = 0x0), _0x25a7a2('game.state', _0x1d4918), 'arcade' === _0x17edbf ? setTimeout(function() {
-                            _0x378b5c.getStateInfo(), _0x25a7a2('game.state', _0x1d4918), _0x27f4c4.FS.unlink('game.state');
-                        }, 0xa) : _0x27f4c4.FS.unlink('game.state'), _0x378b5c.connected && _0x378b5c.connection.isInitiator) {
-                        for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
-                        var _0x227419 = new File([_0xce58ec], '0-game.state', {
-                            'type': '',
-                            'lastModified': new Date()
-                        });
-                        _0x378b5c.connection.shareFile(_0x227419), _0x378b5c.inputsData = {}, _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x378b5c.disableControl(true);
+                    _0x91cd69 = _0x4389ae;
+                    _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
+                    null === _0x1d4918 && (_0x1d4918 = 0);
+                    if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
+                        setTimeout(function() {
+                            _0x378b5c.getStateInfo();
+                            _0x25a7a2('game.state', _0x1d4918);
+                            _0x27f4c4.FS.unlink('game.state');
+                        }, 0xa)
+                    } else if (_0xa88a13.coreVer === 2) {
+                        setTimeout(function() {
+                            _0x25a7a2('game.state', _0x1d4918);
+                            setTimeout(function() {
+                                _0x27f4c4.FS.unlink('game.state');
+                            }, 100)
+                        }, 10)
+                    } else {
+                        _0x25a7a2('game.state', _0x1d4918);
+                        _0x27f4c4.FS.unlink('game.state');
+                    }
+                    if (_0xa88a13.coreVer === 2) {
+                        if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
+                            var _0x227419 = new File([_0x91cd69], '0-game.state', {
+                                'type': '',
+                                'lastModified': new Date()
+                            });
+                            _0x378b5c.connection.shareFile(_0x227419);
+                            _0x378b5c.inputsData = {};
+                            _0x378b5c.wait = true;
+                            _0x378b5c.systemPause(0x1);
+                            _0x27f4c4.Module.pauseMainLoop();
+                            _0x378b5c.disableControl(true);
+                        }
+                    } else {
+                        if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
+                            for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
+                            var _0x227419 = new File([_0xce58ec], '0-game.state', {
+                                'type': '',
+                                'lastModified': new Date()
+                            });
+                            _0x378b5c.connection.shareFile(_0x227419);
+                            _0x378b5c.inputsData = {};
+                            _0x378b5c.wait = true;
+                            _0x378b5c.systemPause(0x1);
+                            _0x27f4c4.Module.pauseMainLoop();
+                            _0x378b5c.disableControl(true);
+                        }
                     }
                     _0xa88a13.elements.container.focus();
-                }, _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string'])), _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat), _0x378b5c.quickSaveState = function() {
+                };
+                _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string']));
+                _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat);
+                _0x378b5c.quickSaveState = function() {
                     if (_0xa88a13.started && !_0x378b5c.connected) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY SAVE STATE';
-                            for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
-                                _0x378b5c.saveMsgTransitions[i] = false;
-                            }
-                            var a = _0x378b5c.saveMsgTransitions.length;
-                            _0x378b5c.saveMsgTransitions.push(true);
-                            setTimeout(function() {
-                                if (_0x378b5c.saveMsgTransitions[a]) {
-                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                                    _0x378b5c.saveMsgTransitions = [];
-                                }
+                            clearTimeout(_0x378b5c.saveMsgTransitions);
+                            _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                             }, 1500)
                             return;
                         }
@@ -3950,44 +4300,43 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         try {
                             _0x27f4c4.FS.unlink(name);
                         } catch (_0x4b4d4c) {}
-                        var success = true;
                         try {
-                            var _0x17edbf = _0x378b5c.saveState();
-                            _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
-                        } catch(e) {
-                            success = false;
-                        }
-                        if (! success) {
-                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO SAVE STATE TO SLOT ' + slot;
-                        } else {
-                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
-                        }
-                        for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
-                            _0x378b5c.saveMsgTransitions[i] = false;
-                        }
-                        var a = _0x378b5c.saveMsgTransitions.length;
-                        _0x378b5c.saveMsgTransitions.push(true);
-                        setTimeout(function() {
-                            if (_0x378b5c.saveMsgTransitions[a]) {
-                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                                _0x378b5c.saveMsgTransitions = [];
+                            if (_0xa88a13.coreVer === 2) {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'SAVING STATE TO SLOT ' + slot;
+                                _0x378b5c.saveState().then(function(data) {
+                                    _0x27f4c4._FS.createDataFile('/', name, data, true, true);
+                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                                    clearTimeout(_0x378b5c.saveMsgTransitions);
+                                    _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                        _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                    }, 1500)
+                                });
+                            } else {
+                                var _0x17edbf = _0x378b5c.saveState();
+                                _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                                clearTimeout(_0x378b5c.saveMsgTransitions);
+                                _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                                }, 1500)
                             }
-                        }, 1500)
+                        } catch(e) {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO SAVE STATE TO SLOT ' + slot;
+                            clearTimeout(_0x378b5c.saveMsgTransitions);
+                            _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                            }, 1500)
+                        }
                     }
-                }, _0x378b5c.saveMsgTransitions = [], _0x378b5c.quickLoadState = function() {
+                };
+                _0x378b5c.saveMsgTransitions = null;
+                _0x378b5c.quickLoadState = function() {
                     if (_0xa88a13.started && !_0x378b5c.connected) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY LOAD STATE';
-                            for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
-                                _0x378b5c.saveMsgTransitions[i] = false;
-                            }
-                            var a = _0x378b5c.saveMsgTransitions.length;
-                            _0x378b5c.saveMsgTransitions.push(true);
-                            setTimeout(function() {
-                                if (_0x378b5c.saveMsgTransitions[a]) {
-                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                                    _0x378b5c.saveMsgTransitions = [];
-                                }
+                            clearTimeout(_0x378b5c.saveMsgTransitions);
+                            _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                             }, 1500)
                             return;
                         }
@@ -4002,9 +4351,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var name = slot + '-quick.state';
                         var success = true;
                         try {
-                            _0x25a7a2(name, 0x0), 'arcade' === _0x17edbf && setTimeout(function() {
-                                _0x378b5c.getStateInfo(), _0x25a7a2(name, 0x0);
-                            }, 0xa);
+                            if (_0xa88a13.coreVer === 2) {
+                                var data = _0x27f4c4.FS.readFile(name);
+                                _0x27f4c4.FS.writeFile('/game.state', data);
+                                setTimeout(function() {
+                                    _0x25a7a2(name, 0);
+                                    setTimeout(function() {
+                                        _0x27f4c4.FS.unlink('game.state');
+                                    }, 100)
+                                }, 10)
+                            } else {
+                                _0x25a7a2(name, 0);
+                            }
+                            if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
+                                setTimeout(function() {
+                                    _0x378b5c.getStateInfo();
+                                    _0x25a7a2(name, 0x0);
+                                }, 0xa);
+                            }
                         } catch (_0x4ee386) {
                             success = false;
                         }
@@ -4013,16 +4377,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } else {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'LOADED STATE FROM SLOT ' + slot;
                         }
-                        for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
-                            _0x378b5c.saveMsgTransitions[i] = false;
-                        }
-                        var a = _0x378b5c.saveMsgTransitions.length;
-                        _0x378b5c.saveMsgTransitions.push(true);
-                        setTimeout(function() {
-                            if (_0x378b5c.saveMsgTransitions[a]) {
-                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                                _0x378b5c.saveMsgTransitions = [];
-                            }
+                        clearTimeout(_0x378b5c.saveMsgTransitions);
+                        _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                         }, 1500)
                     }
                 }, _0x378b5c.changeStateSlot = function(e) {
@@ -4045,19 +4402,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     _0x7f9f36.updateCoreOptions.call(_0xa88a13, 'save-state-slot', newSlot)
                     _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'SET SAVE STATE SLOT TO ' + newSlot;
-                    for (var i=0; i<_0x378b5c.saveMsgTransitions.length; i++) {
-                        _0x378b5c.saveMsgTransitions[i] = false;
-                    }
-                    var a = _0x378b5c.saveMsgTransitions.length;
-                    _0x378b5c.saveMsgTransitions.push(true);
-                    setTimeout(function() {
-                        if (_0x378b5c.saveMsgTransitions[a]) {
-                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                            _0x378b5c.saveMsgTransitions = [];
-                        }
+                    clearTimeout(_0x378b5c.saveMsgTransitions);
+                    _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                        _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                     }, 1500)
                 }, window.EJS_loadState = function(_0x4dd6a5) {
-                    _0x378b5c.loadState(_0x4dd6a5, 0x0), setTimeout(function() {
+                    _0x378b5c.loadState(_0x4dd6a5, 0x0);
+                    setTimeout(function() {
                         if (_0x378b5c.connected) {
                             var _0x17edbf = new File([_0x4dd6a5], '0-game.state', {
                                 'type': '',
@@ -4070,9 +4421,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0x840cf4 = _0x27f4c4.Module.cwrap('cmd_take_screenshot', '', []);
                 _0x378b5c.getScreenData = function() {
                     return _0x378b5c.toggleShader(0x0), _0x840cf4(), _0x378b5c.toggleShader(0x1), _0x27f4c4.FS.readFile('screenshot.png');
-                }, _0x378b5c.restartGame = _0x27f4c4.Module.cwrap('system_restart', '', []), _0x378b5c.currentFrameNum = _0x27f4c4.Module.cwrap('get_current_frame_count', '', []), _0x378b5c.saveSavFiles = _0x27f4c4.Module.cwrap('cmd_savefiles', '', []), _0x27f4c4.Module._get_core_options && (_0x378b5c.getGameCoreOptions = _0x27f4c4.Module.cwrap('get_core_options', 'string', [])), _0x378b5c.systemPause = function(_0x29d94a) {
+                };
+                _0x378b5c.restartGame = _0x27f4c4.Module.cwrap('system_restart', '', []);
+                _0x378b5c.currentFrameNum = _0x27f4c4.Module.cwrap('get_current_frame_count', '', []);
+                _0x378b5c.saveSavFiles = _0x27f4c4.Module.cwrap('cmd_savefiles', '', []);
+                _0x27f4c4.Module._get_core_options && (_0x378b5c.getGameCoreOptions = _0x27f4c4.Module.cwrap('get_core_options', 'string', []));
+                _0x378b5c.systemPause = function(_0x29d94a) {
                     return !0x1;
-                }, _0x378b5c.controllers = _0x2593da.storage.get('controllers'), _0x378b5c.controllers || (_0x378b5c.controllers = JSON.parse(JSON.stringify(_0x378b5c.defaultControllers)));
+                };
+                _0x378b5c.controllers = _0x2593da.storage.get('controllers');
+                _0x378b5c.controllers || (_0x378b5c.controllers = JSON.parse(JSON.stringify(_0x378b5c.defaultControllers)));
             }
         },
         _0xdcec2a = _0x378b5c;
@@ -4159,9 +4517,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 switch (this.system) {
                     case 'nes':
                         _0xa88a13.fceumm_palette = {
-                            'label': 'Color Palette',
+                            'label': this.localization('Color Palette'),
                             'options': {
-                                'default': 'Default',
+                                'default': this.localization('Default'),
                                 'asqrealc': 'asqrealc',
                                 'nintendo-vc': 'nintendo-vc',
                                 'rgb': 'rgb',
@@ -4181,22 +4539,22 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             },
                             'default': 'default'
                         }, _0xa88a13.fceumm_nospritelimit = {
-                            'label': 'No Sprite Limit',
+                            'label': this.localization('No Sprite Limit'),
                             'options': {
-                                'enabled': 'Enabled',
-                                'disabled': 'Disabled'
+                                'enabled': this.localization('Enabled'),
+                                'disabled': this.localization('Disabled')
                             },
                             'default': 'disabled'
                         }, _0xa88a13.fceumm_sndquality = {
-                            'label': 'Sound Quality',
+                            'label': this.localization('Sound Quality'),
                             'options': {
-                                'Low': 'Low',
-                                'High': 'High',
-                                'Very High': 'Very High'
+                                'Low': this.localization('Low'),
+                                'High': this.localization('High'),
+                                'Very High': this.localization('Very High')
                             },
                             'default': 'Low'
                         }, this.lightgun || (_0xa88a13.system_type = {
-                            'label': '4 Players Support',
+                            'label': this.localization('4 Players Support'),
                             'options': {
                                 'nes': 'NES',
                                 'famicom': 'Famicom'
@@ -4204,13 +4562,22 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             'default': 'nes',
                             'netplay': true
                         }), _0xa88a13.fceumm_turbo_enable = {
-                            'label': 'Turbo Enable',
-                            'options': ['None', 'Player 1', 'Player 2', 'Both'],
+                            'label': this.localization('Turbo Enable'),
+                            'options': {
+                                'None': this.localization('None'),
+                                'Player 1': this.localization('Player 1'),
+                                'Player 2': this.localization('Player 2'),
+                                'Both': this.localization('Both')
+                            },
                             'default': 'None',
                             'netplay': true
                         }, _0xa88a13.fceumm_region = {
-                            'label': 'Region',
-                            'options': ['Auto', 'NTSC', 'PAL', 'Dendy'],
+                            'label': this.localization('Region'),
+                            'options': {
+                                'Auto': this.localization('Auto'),
+                                'NTSC': 'NTSC',
+                                'PAL': 'PAL',
+                                'Dendy': 'Dendy'},
                             'default': 'Auto',
                             'netplay': true
                         };
@@ -4218,9 +4585,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'snes':
                         _0xa88a13 = {
                             'snes9x_next_overclock': {
-                                'label': 'SuperFX Overclock',
+                                'label': this.localization('SuperFX Overclock'),
                                 'options': {
-                                    'disabled': 'Disabled(10MHz)',
+                                    'disabled': this.localization('Disabled')+'(10MHz)',
                                     '40MHz': '40MHz',
                                     '60MHz': '60MHz',
                                     '80MHz': '80MHz',
@@ -4239,29 +4606,29 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'gb':
                         _0xa88a13 = {
                             'gambatte_gb_colorization': {
-                                'label': 'GB Colorization',
+                                'label': this.localization('GB Colorization'),
                                 'options': {
-                                    'disabled': 'Disabled',
-                                    'auto': 'auto',
-                                    'internal': 'internal'
+                                    'disabled': this.localization('Disabled'),
+                                    'auto': this.localization('auto'),
+                                    'internal': this.localization('internal')
                                 },
                                 'default': 'disabled'
                             },
                             'gambatte_gb_internal_palette': {
-                                'label': 'Internal Palette',
+                                'label': this.localization('Internal Palette'),
                                 'options': {
-                                    'GBC - Blue': 'GBC - Blue',
-                                    'GBC - Brown': 'GBC - Brown',
-                                    'GBC - Dark Blue': 'GBC - Dark Blue',
-                                    'GBC - Dark Brown': 'GBC - Dark Brown',
-                                    'GBC - Dark Green': 'GBC - Dark Green',
-                                    'GBC - Grayscale': 'GBC - Grayscale',
-                                    'GBC - Green': 'GBC - Green',
-                                    'GBC - Inverted': 'GBC - Inverted',
-                                    'GBC - Orange': 'GBC - Orange',
-                                    'GBC - Pastel Mix': 'GBC - Pastel Mix',
-                                    'GBC - Red': 'GBC - Red',
-                                    'GBC - Yellow': 'GBC - Yellow'
+                                    'GBC - Blue': this.localization('GBC - Blue'),
+                                    'GBC - Brown': this.localization('GBC - Brown'),
+                                    'GBC - Dark Blue': this.localization('GBC - Dark Blue'),
+                                    'GBC - Dark Brown': this.localization('GBC - Dark Brown'),
+                                    'GBC - Dark Green': this.localization('GBC - Dark Green'),
+                                    'GBC - Grayscale': this.localization('GBC - Grayscale'),
+                                    'GBC - Green': this.localization('GBC - Green'),
+                                    'GBC - Inverted': this.localization('GBC - Inverted'),
+                                    'GBC - Orange': this.localization('GBC - Orange'),
+                                    'GBC - Pastel Mix': this.localization('GBC - Pastel Mix'),
+                                    'GBC - Red': this.localization('GBC - Red'),
+                                    'GBC - Yellow': this.localization('GBC - Yellow')
                                 },
                                 'default': 'GBC - Blue'
                             }
@@ -4270,12 +4637,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'gba':
                         _0xa88a13 = {
                             'mgba_solar_sensor_level': {
-                                'label': 'Solar sensor level',
+                                'label': this.localization('Solar sensor level'),
                                 'options': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
                                 'default': '0'
                             },
                             'mgba_frameskip': {
-                                'label': 'Frameskip',
+                                'label': this.localization('Frameskip'),
                                 'options': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10'],
                                 'default': '0'
                             }
@@ -4284,12 +4651,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'vbanext':
                         _0xa88a13 = {
                             'vbanext_turboenable': {
-                                'label': 'Enable Turbo Buttons',
-                                'options': ['disabled', 'enabled'],
+                                'label': this.localization('Enable Turbo Buttons'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled'
                             },
                             'vbanext_turbodelay': {
-                                'label': 'Turbo Delay in frames',
+                                'label': this.localization('Turbo Delay in frames'),
                                 'options': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15'],
                                 'default': '2'
                             }
@@ -4298,65 +4668,103 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'n64':
                         _0xa88a13 = {
                             'glupen64-aspect': {
-                                'label': 'Aspect Ratio (Need to refresh page)',
+                                'label': this.localization('Aspect Ratio (Need to refresh page)'),
                                 'options': ['4:3', '16:9'],
                                 'default': '4:3'
                             },
                             'glupen64-43screensize': {
-                                'label': '4:3 Resolution',
+                                'label': this.localization('4:3 Resolution'),
                                 'options': ['320x240', '640x480', '960x720', '1280x960'],
                                 'default': '320x240'
                             },
                             'glupen64-169screensize': {
-                                'label': '16:9 Resolution',
+                                'label': this.localization('16:9 Resolution'),
                                 'options': ['640x360', '960x540', '1280x720'],
                                 'default': '640x360'
                             },
                             'glupen64-pak1': {
-                                'label': 'Player 1 Pak',
-                                'options': ['none', 'memory', 'rumble'],
+                                'label': this.localization('Player 1 Pak'),
+                                'options': {
+                                    'none': this.localization('none'),
+                                    'memory': this.localization('memory'),
+                                    'rumble': this.localization('rumble')
+                                },
                                 'default': 'none',
                                 'netplay': true
                             },
                             'glupen64-pak2': {
-                                'label': 'Player 2 Pak',
-                                'options': ['none', 'memory', 'rumble'],
+                                'label': this.localization('Player 2 Pak'),
+                                'options': {
+                                    'none': this.localization('none'),
+                                    'memory': this.localization('memory'),
+                                    'rumble': this.localization('rumble')
+                                },
                                 'default': 'none',
                                 'netplay': true
                             },
                             'glupen64-pak3': {
-                                'label': 'Player 3 Pak',
-                                'options': ['none', 'memory', 'rumble'],
+                                'label': this.localization('Player 3 Pak'),
+                                'options': {
+                                    'none': this.localization('none'),
+                                    'memory': this.localization('memory'),
+                                    'rumble': this.localization('rumble')
+                                },
                                 'default': 'none',
                                 'netplay': true
                             },
                             'glupen64-pak4': {
-                                'label': 'Player 4 Pak',
-                                'options': ['none', 'memory', 'rumble'],
+                                'label': this.localization('Player 4 Pak'),
+                                'options': {
+                                    'none': this.localization('none'),
+                                    'memory': this.localization('memory'),
+                                    'rumble': this.localization('rumble')
+                                },
                                 'default': 'none',
                                 'netplay': true
-                            }
+                            },
                         };
+                        if (_0xdcec2a && (_0xdcec2a.virtualGamepadContainer != 'undefined' || _0xdcec2a.virtualGamepadContainer !== null)) {
+
+                            _0xa88a13['joystick-input'] = {
+                                'label': this.localization('Joystick input keys'),
+                                'options': {
+                                    'd-pad': this.localization('d-pad'),
+                                    'analog-stick': this.localization('Analog Stick')
+                                },
+                                'default': 'analog-stick',
+                                'netplay': true
+                            }
+                        }
                         break;
                     case 'nds':
                         _0xa88a13 = {
                             'desmume_screens_layout': {
-                                'label': 'Screen layout',
-                                'options': ['top/bottom', 'bottom/top', 'left/right', 'right/left', 'top only', 'bottom only', 'quick switch', 'hybrid/top', 'hybrid/bottom'],
+                                'label': this.localization('Screen layout'),
+                                'options': {
+                                    'top/bottom': this.localization('top/bottom'),
+                                    'bottom/top': this.localization('bottom/top'),
+                                    'left/right': this.localization('left/right'),
+                                    'right/left': this.localization('right/left'),
+                                    'top only': this.localization('top only'),
+                                    'bottom only': this.localization('bottom only'),
+                                    'quick switch': this.localization('quick switch'),
+                                    'hybrid/top': this.localization('hybrid/top'),
+                                    'hybrid/bottom': this.localization('hybrid/bottom')
+                                },
                                 'default': 'top/bottom'
                             },
                             'screen_rotation': {
-                                'label': 'Screen Rotation',
+                                'label': this.localization('Screen Rotation'),
                                 'options': {
                                     0: '0°',
                                     90: '90°',
                                     180: '180°',
                                     270: '270°'
                                 },
-                                'default': 0x0
+                                'default': 0
                             },
                             'desmume_frameskip': {
-                                'label': 'Frameskip',
+                                'label': this.localization('Frameskip'),
                                 'options': ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
                                 'default': '0'
                             }
@@ -4372,19 +4780,25 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'segaCD':
                         _0xa88a13 = {
                             'genesis_plus_gx_no_sprite_limit': {
-                                'label': 'No Sprite Limit',
-                                'options': ['disabled', 'enabled'],
+                                'label': this.localization('No Sprite Limit'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled'
                             },
                             'genesis_plus_gx_overclock': {
-                                'label': 'CPU speed',
+                                'label': this.localization('CPU speed'),
                                 'options': ['100%', '125%', '150%', '175%', '200%'],
                                 'default': '100%',
                                 'netplay': true
                             },
                             'genesis_plus_gx_sound_output': {
-                                'label': 'Sound output',
-                                'options': ['stereo', 'mono'],
+                                'label': this.localization('Sound output'),
+                                'options': {
+                                    'stereo': this.localization('stereo'),
+                                    'mono': this.localization('mono')
+                                },
                                 'default': 'stereo'
                             }
                         };
@@ -4392,8 +4806,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'sega32x':
                         _0xa88a13 = {
                             'picodrive_sprlim': {
-                                'label': 'No sprite limit',
-                                'options': ['disabled', 'enabled'],
+                                'label': this.localization('No sprite limit'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled'
                             }
                         };
@@ -4401,8 +4818,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'segaSaturn':
                         _0xa88a13 = {
                             'yabause_frameskip': {
-                                'label': 'Frameskip',
-                                'options': ['disabled', 'enabled'],
+                                'label': this.localization('Frameskip'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled'
                             }
                         };
@@ -4410,8 +4830,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'msx':
                         _0xa88a13 = {
                             'bluemsx_nospritelimits': {
-                                'label': 'No Sprite Limit',
-                                'options': ['OFF', 'ON'],
+                                'label': this.localization('No Sprite Limit'),
+                                'options': {
+                                    'OFF': this.localization('OFF'),
+                                    'ON': this.localization('ON')
+                                },
                                 'default': 'OFF'
                             }
                         };
@@ -4423,13 +4846,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'jaguar':
                         _0xa88a13 = {
                             'virtualjaguar_usefastblitter': {
-                                'label': 'Fast Blitter',
-                                'options': ['disabled', 'enabled'],
+                                'label': this.localization('Fast Blitter'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled'
                             },
                             'virtualjaguar_bios': {
-                                'label': 'Bios',
-                                'options': ['disabled', 'enabled'],
+                                'label': this.localization('Bios'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled'
                             }
                         };
@@ -4437,62 +4866,101 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'psx':
                         _0xa88a13 = {
                             'pcsx_rearmed_frameskip': {
-                                'label': 'Frameskip',
-                                'options': [0x0, 0x1, 0x2, 0x3],
-                                'default': 0x0,
+                                'label': this.localization('Frameskip'),
+                                'options': [0, 1, 2, 3],
+                                'default': 0,
                                 'netplay': true
                             },
                             'pcsx_rearmed_memcard2': {
-                                'label': 'Enable second memory card',
-                                'options': ['enabled', 'disabled'],
+                                'label': this.localization('Enable second memory card'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'enabled',
                                 'netplay': true
                             },
                             'pcsx_rearmed_pad1type': {
-                                'label': 'Pad 1 Type',
-                                'options': ['default', 'none', 'standard', 'analog', 'negcon'],
+                                'label': this.localization('Pad 1 Type'),
+                                'options': {
+                                    'default': this.localization('default'),
+                                    'none': this.localization('none'),
+                                    'standard': this.localization('standard'),
+                                    'analog': this.localization('analog'),
+                                    'negcon': this.localization('negcon')
+                                },
                                 'default': 'default',
                                 'netplay': true
                             },
                             'pcsx_rearmed_pad2type': {
-                                'label': 'Pad 2 Type',
-                                'options': ['default', 'none', 'standard', 'analog', 'negcon'],
+                                'label': this.localization('Pad 2 Type'),
+                                'options': {
+                                    'default': this.localization('default'),
+                                    'none': this.localization('none'),
+                                    'standard': this.localization('standard'),
+                                    'analog': this.localization('analog'),
+                                    'negcon': this.localization('negcon')
+                                },
                                 'default': 'default',
                                 'netplay': true
                             },
                             'pcsx_rearmed_pad3type': {
-                                'label': 'Pad 3 Type',
-                                'options': ['default', 'none', 'standard', 'analog', 'negcon'],
+                                'label': this.localization('Pad 3 Type'),
+                                'options': {
+                                    'default': this.localization('default'),
+                                    'none': this.localization('none'),
+                                    'standard': this.localization('standard'),
+                                    'analog': this.localization('analog'),
+                                    'negcon': this.localization('negcon')
+                                },
                                 'default': 'default',
                                 'netplay': true
                             },
                             'pcsx_rearmed_pad4type': {
-                                'label': 'Pad 4 Type',
-                                'options': ['default', 'none', 'standard', 'analog', 'negcon'],
+                                'label': this.localization('Pad 4 Type'),
+                                'options': {
+                                    'default': this.localization('default'),
+                                    'none': this.localization('none'),
+                                    'standard': this.localization('standard'),
+                                    'analog': this.localization('analog'),
+                                    'negcon': this.localization('negcon')
+                                },
                                 'default': 'default',
                                 'netplay': true
                             },
                             'pcsx_rearmed_vibration': {
-                                'label': 'Enable Vibration',
-                                'options': ['enabled', 'disabled'],
+                                'label': this.localization('Enable Vibration'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'enabled',
                                 'netplay': true
                             },
                             'pcsx_rearmed_neon_interlace_enable': {
-                                'label': 'Enable interlacing mode(s)',
-                                'options': ['enabled', 'disabled'],
+                                'label': this.localization('Enable interlacing mode(s)'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled',
                                 'netplay': true
                             },
                             'pcsx_rearmed_neon_enhancement_enable': {
-                                'label': 'Enhanced resolution (slow)',
-                                'options': ['enabled', 'disabled'],
+                                'label': this.localization('Enhanced resolution (slow)'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled',
                                 'netplay': true
                             },
                             'pcsx_rearmed_neon_enhancement_no_main': {
-                                'label': 'Enhanced resolution speed hack',
-                                'options': ['enabled', 'disabled'],
+                                'label': this.localization('Enhanced resolution speed hack'),
+                                'options': {
+                                    'disabled': this.localization('disabled'),
+                                    'enabled': this.localization('enabled')
+                                },
                                 'default': 'disabled',
                                 'netplay': true
                             }
@@ -4502,30 +4970,30 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     case 'fba0.2.97.29':
                         _0xa88a13 = {
                             'fba-aspect': {
-                                'label': 'Aspect ratio',
+                                'label': this.localization('Aspect ratio'),
                                 'options': ['DAR', 'PAR'],
                                 'default': 'DAR'
                             },
                             'fba-frameskip': {
-                                'label': 'Frameskip',
+                                'label': this.localization('Frameskip'),
                                 'options': ['0', '1', '2', '3', '4', '5'],
                                 'default': '0',
                                 'netplay': true
                             },
                             'fba-cpu-speed-adjust': {
-                                'label': 'CPU overclock',
+                                'label': this.localization('CPU overclock'),
                                 'options': ['100', '110', '120', '130', '140', '150', '160', '170', '180', '190', '200'],
                                 'default': '100',
                                 'netplay': true
                             },
                             'fba-diagnostic-input': {
-                                'label': 'Diagnostic Input',
+                                'label': this.localization('Diagnostic Input'),
                                 'options': ['None', 'Hold Start', 'Start + A + B', 'Hold Start + A + B', 'Start + L + R', 'Hold Start + L + R', 'Hold Select', 'Select + A + B', 'Hold Select + A + B', 'Select + L + R', 'Hold Select + L + R'],
                                 'default': 'None',
                                 'netplay': true
                             },
                             'fba-neogeo-mode': {
-                                'label': 'Force Neo Geo mode',
+                                'label': this.localization('Force Neo Geo mode'),
                                 'options': ['MVS', 'AES', 'UNIBIOS', 'DIPSWITCH'],
                                 'default': 'MVS',
                                 'netplay': true
@@ -4542,19 +5010,20 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 if (this.statesSupported === true) {
                     _0xa88a13['save-state-slot'] = {
-                        'label': 'Save State Slot',
+                        'label': this.localization('Save State Slot'),
                         'options': [1, 2, 3, 4, 5, 6, 7, 8, 9],
-                        'default': 1,
-                        'netplay': false
+                        'default': 1
                     }
                 }
                 if (this.statesSupported === true && window.indexedDB &&
                     (typeof this.gameName == 'string' || !this.config.gameUrl.startsWith('blob:'))) {
                     _0xa88a13['save-state-location'] = {
-                        'label': 'Save State Location',
-                        'options': ['download', 'keep in browser'],
-                        'default': 'download',
-                        'netplay': false
+                        'label': this.localization('Save State Location'),
+                        'options': {
+                            'download': this.localization('download'),
+                            'keep in browser': this.localization('keep in browser')
+                        },
+                        'default': 'download'
                     }
                 }
                 _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
@@ -5179,16 +5648,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         contextHtml.splice(i, 0, '<li><a href="#" onclick="return false">'+title+'</a></li>')
                     }
                 }
-                addContextHtml('Take Screenshot', false, function(_0x20faaa) {
+                addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
                     var _0x4e898a = _0x378b5c.getScreenData();
                     _0x4e4ca6()(new Blob([_0x4e898a]), 'game.png');
                     return false;
                 })
-                addContextHtml('Cache Manage', true, function(_0x275730) {
+                addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
                     if (_0x27f4c4.romdb) {
                         _0x132da7(_0xa88a13.elements.dialogs.cache, !0x1);
                         var _0x3360eb = _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content']));
-                        _0x3360eb.innerHTML = '<div>Loading</div>', _0x27f4c4.romdb.getAll(function(_0x43586d) {
+                        _0x3360eb.innerHTML = '<div>'+_0xa88a13.localization('Loading')+'</div>', _0x27f4c4.romdb.getAll(function(_0x43586d) {
                             if (_0x43586d) {
                                 var _0x275730 = _0x428003('table', {
                                     'style': 'width:100%;padding-left:10px;text-align:left'
@@ -5215,17 +5684,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             return _0x16f22a.stopPropagation(), !0x1;
                                         };
                                     }
-                                }), _0x275730.appendChild(_0x1ab9e9), _0x3360eb.appendChild(_0x275730)) : _0x3360eb.innerHTML = '<div style="text-align:center">Empty</div>';
-                            } else _0x3360eb.innerHTML = '<div style="text-align:center">Empty</div>';
+                                }), _0x275730.appendChild(_0x1ab9e9), _0x3360eb.appendChild(_0x275730)) : _0x3360eb.innerHTML = '<div style="text-align:center">'+_0xa88a13.localization('Empty')+'</div>';
+                            } else _0x3360eb.innerHTML = '<div style="text-align:center">'+_0xa88a13.localization('Empty')+'</div>';
                         }, function() {});
                     }
                     return false;
                 })
-                addContextHtml('Quick Save (F2)', false, function(_0x395c73) {
+                addContextHtml(_0xa88a13.localization('Quick Save')+' (F2)', false, function(_0x395c73) {
                     _0x378b5c.quickSaveState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
-                addContextHtml('Quick Load (F4)', false, function(_0x124f69) {
+                addContextHtml(_0xa88a13.localization('Quick Load')+' (F4)', false, function(_0x124f69) {
                     _0x378b5c.quickLoadState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
@@ -5557,13 +6026,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             container: function() {
                 var _0x31e271, _0x17edbf = this.emulator,
                     _0x2c1832 = _0x17edbf.elements,
-                    _0x45d275 = _0x17edbf;
+                    _0x45d275 = _0x17edbf,
+                    setFullscreenInterval = null;
                 _0x1093f4.call(_0x45d275, _0x2c1832.container, 'mousemove mouseleave touchstart touchmove enterfullscreen exitfullscreen start-game', function(_0x1ac81c) {
                     var _0x3953b5 = _0x2c1832.controls;
                     _0x3953b5 && 'enterfullscreen' === _0x1ac81c.type && (_0x3953b5.pressed = !0x1, _0x3953b5.hover = !0x1);
                     var _0x2c3de3 = 0x0;
                     if (['touchstart', 'touchmove', 'mousemove', 'start-game'].includes(_0x1ac81c.type)) {
-                        if (_0x17edbf.system == 'nds' && ['touchstart', 'touchmove', 'mousemove'].includes(_0x1ac81c.type) && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && (document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas)) {
+                        if (_0x17edbf.system == 'nds' && _0x1ac81c.type == 'mousemove' && _0x27f4c4 && _0x27f4c4.Module && _0x27f4c4.Module.canvas && (document.pointerLockElement === _0x27f4c4.Module.canvas || document.mozPointerLockElement === _0x27f4c4.Module.canvas)) {
                             _0x5ab74d.toggleControls.call(_0x45d275, false);
                             return;
                         }
@@ -5590,10 +6060,25 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'portrait': true
                     }), !0x1);
                 }), _0xbae705.call(_0x45d275, window, 'resize'), _0x1093f4.call(_0x45d275, _0x45d275.elements.container, 'enterfullscreen', function(_0x586586) {
+                    if (_0x45d275.coreVer === 2 && _0x27f4c4.Module) {
+                        var repeat = 50;
+                        clearInterval(setFullscreenInterval);
+                        setFullscreenInterval = setInterval(function() {
+                            _0x27f4c4.Module.setCanvasSize(window.innerWidth, window.innerHeight);
+                            if (repeat < 0) {
+                                clearInterval(setFullscreenInterval);
+                            }
+                            repeat--;
+                        }, 100)
+                    }
                     setTimeout(function() {
                         _0xbae705.call(_0x45d275, window, 'resize');
                     }, 0x12c);
                 }), _0x1093f4.call(_0x45d275, _0x45d275.elements.container, 'exitfullscreen', function(_0x4de2f3) {
+                    if (_0x45d275.coreVer === 2 && _0x27f4c4.Module) {
+                        clearInterval(setFullscreenInterval);
+                        _0x27f4c4.Module.setCanvasSize(800, 600);
+                    }
                     setTimeout(function() {
                         _0xbae705.call(_0x45d275, window, 'resize');
                     }, 0x12c);
@@ -5678,11 +6163,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x5ab74d.toggleControls.call(_0x17edbf, !0x1), _0x132da7(_0x2c1832.dialogs.gamepad, !0x1);
                     }, 'mute'), this.bind(_0x2c1832.buttons.saveState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', !0x1, {});
-                        var _0x31e271 = _0xdcec2a.saveState(),
-                            _0x2c1832 = _0xdcec2a.getScreenData();
-                        _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
-                            'state': _0x31e271,
-                            'screenshot': _0x2c1832
+                        _0xdcec2a.saveState().then(function(_0x31e271) {
+                            var _0x2c1832 = _0xdcec2a.getScreenData();
+                            _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
+                                'state': _0x31e271,
+                                'screenshot': _0x2c1832
+                            });
                         });
                     }, 'mute'), this.bind(_0x2c1832.buttons.loadState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'loadstate', !0x1, {});
@@ -5776,7 +6262,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         split1.push(split3[i])
                     }
                 }
-                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1) {
+                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1 && path.split('blob:').length == 1) {
                     for (var w=0; w<split2.length; w++) {
                         if (split2[w] == '' || split2[w] == '.') {
                         } else if (split2[w] == '..') {
@@ -5810,80 +6296,117 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 return path
             }
-            if (function(_0x154660, _0x15626f) {
-                    if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
-                }(this, _0x6954aa), 
-                this.version = _0x3d61f9.a,
-                this.system = '',
-                this.adUrl = null,
-                this.gameName = null,
-                this.loadStateOnStart = false,
-                this.statesSupported = true,
-                this.listUrl = 'https://ws.emulatorjs.com/',
-                this.socketUrl = 'wss://ws.emulatorjs.com/',
-                this.mameCore = null,
-                this.startOnLoad = false,
-                this.dataPath = '',
-                this.customPaths = null,
-                this.hash = '',
-                this.lightgun = false,
-                this.mouse = false,
-                this.multitap = false,
-                this.ready = false,
-                this.paused = true,
-                this.started = !0x1,
-                this.touch = _0x2d904a.touch,
-                this.game = _0x28cce1,
-                _0x1e2c68.string(this.game) && (this.game = document.querySelectorAll(this.game)),
-                (window.jQuery && this.game instanceof jQuery || _0x1e2c68.nodeList(this.game) || _0x1e2c68.array(this.game)) && (this.game = this.game[0x0]),
-                this.game = this.game,
-                this.game.innerHTML = '',
-                this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {}),
-                this.lightgun = this.config.lightgun,
-                this.loadStateOnStart = this.config.loadStateOnStart || false,
-                this.adUrl = this.config.adUrl || null,
-                this.gameName = this.config.gameName || null,
-                this.mouse = this.config.mouse,
-                this.multitap = this.config.multitap,
-                this.cheats = this.config.cheats,
-                this.cheats || (this.cheats = []),
-                this.listUrl = this.config.netplayUrl || 'https://ws.emulatorjs.com/',
-                this.socketUrl = this.config.netplayUrl || 'wss://ws.emulatorjs.com/',
-                this.mameCore = this.config.mameCore || null,
-                this.color = this.config.color,
-                this.startOnLoad = this.config.startOnLoad || false,
-                this.statesSupported = this.config.statesSupported || true,
-                this.customPaths = function(paths) {
-                    if (! paths) return null;
-                    var newPaths = {};
-                    for (var k in paths) {
-                        if (typeof paths[k] == 'string') {
-                            newPaths[k] = _0x2136bc(paths[k]);
-                        }
+            var a = function(_0x154660, _0x15626f) {
+                if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
+            }(this, _0x6954aa);
+            this.version = '1.0';
+            this.system = '';
+            this.adUrl = null;
+            this.gameName = null;
+            this.loadStateOnStart = false;
+            this.statesSupported = true;
+            this.mameCore = null;
+            this.startOnLoad = false;
+            this.dataPath = '';
+            this.customPaths = null;
+            this.hash = '';
+            this.lightgun = false;
+            this.mouse = false;
+            this.multitap = false;
+            this.ready = false;
+            this.paused = true;
+            this.started = false;
+            this.touch = _0x2d904a.touch;
+            this.game = _0x28cce1;
+            _0x1e2c68.string(this.game) && (this.game = document.querySelectorAll(this.game));
+            (window.jQuery && this.game instanceof jQuery || _0x1e2c68.nodeList(this.game) || _0x1e2c68.array(this.game)) && (this.game = this.game[0x0]);
+            this.game = this.game;
+            this.game.innerHTML = '';
+            this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
+            this.coreVer = function(core, useBeta) {
+                if (useBeta === true) {
+                    if (window.WebAssembly) {
+                        var supportedCores = ['nes', 'snes'];
+                        return supportedCores.includes(core) ? 2 : 1;
                     }
-                    return newPaths;
-                }(this.config.paths),
-                this.dataPath = function(path) {
-                    if (typeof path != 'string') {
-                        return function(origpath) {
-                            var fullrequestpath = origpath
-                            var finpath = fullrequestpath.split('/').pop()
-                            var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
-                            if (origpath == '/') {
-                                return window.location.protocol + '//' + window.location.host + '/';
-                            } else {
-                                if (finalpath.startsWith('/')) {
-                                    finalpath = window.location.protocol + '//' + window.location.host + finalpath;
-                                }
-                                if (! finalpath.endsWith('/')) {
-                                    finalpath = finalpath + '/';
-                                }
-                                return finalpath
+                }
+                return 1;
+            }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
+            this.lightgun = this.config.lightgun;
+            this.loadStateOnStart = this.config.loadStateOnStart || false;
+            this.adUrl = this.config.adUrl || null;
+            this.gameName = this.config.gameName || null;
+            this.mouse = this.config.mouse;
+            this.multitap = this.config.multitap;
+            this.cheats = this.config.cheats;
+            this.cheats || (this.cheats = []);
+            var u = function(a, b) {
+                if (typeof b === 'string') {
+                    return b;
+                } else if (a === true) {
+                    return 'https://ws.emulatorjs.com/'
+                } else {
+                    return 'https://emulatorjs.herokuapp.com/';
+                }
+            }(this.config.oldNetplayServer, this.config.netplayUrl);
+            this.listUrl = u;
+            this.socketUrl = u;
+            this.mameCore = this.config.mameCore || null;
+            this.color = this.config.color;
+            this.startOnLoad = this.config.startOnLoad || false;
+            this.statesSupported = this.config.statesSupported || true;
+            this.customPaths = function(paths) {
+                if (! paths) return {};
+                var newPaths = {};
+                for (var k in paths) {
+                    if (typeof paths[k] == 'string') {
+                        newPaths[k] = _0x2136bc(paths[k]);
+                    }
+                }
+                return newPaths;
+            }(this.config.paths);
+            this.dataPath = function(path) {
+                if (typeof path != 'string') {
+                    return function(origpath) {
+                        var fullrequestpath = origpath
+                        var finpath = fullrequestpath.split('/').pop()
+                        var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
+                        if (origpath == '/') {
+                            return window.location.protocol + '//' + window.location.host + '/';
+                        } else {
+                            if (finalpath.startsWith('/')) {
+                                finalpath = window.location.protocol + '//' + window.location.host + finalpath;
                             }
-                        }(window.location.href);
+                            if (! finalpath.endsWith('/')) {
+                                finalpath = finalpath + '/';
+                            }
+                            return finalpath
+                        }
+                    }(window.location.href);
+                }
+                return _0x2136bc(path, true);
+            }(this.config.dataPath);
+            (async function(dataPath, customPath, lang) {
+                var localJson = {};
+                if (lang && typeof lang == 'string' && lang !== 'en-US') {
+                    var url = (customPath && typeof customPath[lang+'.json'] == 'string') ? customPath[lang+'.json'] : dataPath+'localization/'+lang+'.json';
+                    try {
+                        var res = await fetch(url);
+                        var text = await res.text();
+                        var localJson = JSON.parse(text);
+                        _0x39ca5e.i18n = localJson.i18n;
+                        _0x7f9f36.normalOptions = localJson.normalOptions;
+                    } catch(e) {
+                        console.error(e);
+                        console.warn('error setting localization');
                     }
-                    return _0x2136bc(path, true);
-                }(this.config.dataPath),
+                }
+                return function(engText) {
+                    return (typeof localJson[engText] == 'string') ? localJson[engText] : engText;
+                }
+            }(this.dataPath, this.customPaths, this.config.lang)).then(function(a) {
+                this.localization = a;
+                this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
                 Object.keys(this.config.classNames).forEach(function(_0x1d6b41) {
                     var _0x28cce1 = _0x5938bc;
                     if (_0x1e2c68.object(_0x28cce1.config.classNames[_0x1d6b41])) Object.keys(_0x28cce1.config.classNames[_0x1d6b41]).forEach(function(_0x42f7f2) {
@@ -5894,11 +6417,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x2ba0e6 = {};
                         _0x2ba0e6[_0x5938bc.config.classNames[_0x1d6b41]] = true, _0x5938bc.config.classNames[_0x1d6b41] = _0x449eac(_0x2ba0e6);
                     }
-                }), this.config.selectors.controls.wrapper = '.' .concat(_0x449eac({
+                });
+                this.config.selectors.controls.wrapper = '.' .concat(_0x449eac({
                     'ejs__controls': true
-                })), this.config.selectors.container = '.' .concat(_0x449eac({
+                }));
+                this.config.selectors.container = '.' .concat(_0x449eac({
                     'ejs': true
-                })), this.system = this.config.system, this.elements = {
+                }));
+                this.system = this.config.system;
+                this.elements = {
                     'container': null,
                     'buttons': {},
                     'display': {},
@@ -5915,27 +6442,42 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'netplay': null
                     },
                     'widgets': {}
-                }, this.fullscreen = {
+                };
+                this.fullscreen = {
                     'active': false
-                }, this.game.emulator) console.warn('Target already setup');
-            else {
-                this.config.mute = true, this.eventListeners = [], this.listeners = new _0x37093c(this), this.storage = new _0x2f61ba(this, 'ejs_settings'), this.game.emulator = this, _0x1e2c68.element(this.elements.container) || (this.elements.container = _0x428003('div'), _0x580edd(this.game, this.elements.container));
-                var _0x5e63f0 = _0x428003('div', {
-                    'class': _0x449eac({
-                        'ejs__widgets': true
-                    })
-                });
-                this.elements.container.appendChild(_0x5e63f0);
-                var _0x32c8af = _0x428003('div', {
-                    'class': _0x449eac({
-                        'ejs__dialogs': true
-                    })
-                });
-                this.elements.container.appendChild(_0x32c8af), _0x5ab74d.addStyleHook.call(this), _0xdcec2a.setup.call(this), _0x5ab74d.build.call(this), this.listeners.container(), this.listeners.global(), this.fullscreen = new _0x335854(this), _0x27f4c4.create.call(this);
-                var _0x446e06 = document.createElement('script');
-                _0x446e06.src = (this.customPaths && typeof this.customPaths['webrtc-adapter.js'] == 'string') ? this.customPaths['webrtc-adapter.js'] : (this.dataPath + 'webrtc-adapter.js');
-                document.body.appendChild(_0x446e06);
-            }
+                }
+                if (this.game.emulator) console.warn('Target already setup');
+                else {
+                    this.config.mute = true;
+                    this.eventListeners = [];
+                    this.listeners = new _0x37093c(this);
+                    this.storage = new _0x2f61ba(this, 'ejs_settings');
+                    this.game.emulator = this;
+                    _0x1e2c68.element(this.elements.container) || (this.elements.container = _0x428003('div'), _0x580edd(this.game, this.elements.container));
+                    var _0x5e63f0 = _0x428003('div', {
+                        'class': _0x449eac({
+                            'ejs__widgets': true
+                        })
+                    });
+                    this.elements.container.appendChild(_0x5e63f0);
+                    var _0x32c8af = _0x428003('div', {
+                        'class': _0x449eac({
+                            'ejs__dialogs': true
+                        })
+                    });
+                    this.elements.container.appendChild(_0x32c8af);
+                    _0x5ab74d.addStyleHook.call(this);
+                    _0xdcec2a.setup.call(this);
+                    _0x5ab74d.build.call(this);
+                    this.listeners.container();
+                    this.listeners.global();
+                    this.fullscreen = new _0x335854(this);
+                    _0x27f4c4.create.call(this);
+                    var _0x446e06 = document.createElement('script');
+                    _0x446e06.src = (this.customPaths && typeof this.customPaths['webrtc-adapter.js'] == 'string') ? this.customPaths['webrtc-adapter.js'] : (this.dataPath + 'webrtc-adapter.js');
+                    document.body.appendChild(_0x446e06);
+                }
+            }.bind(this))
         }
         var _0x17edbf, _0x2c1832, _0x423c42;
         _0x17edbf = _0x6954aa, _0x423c42 = [{
