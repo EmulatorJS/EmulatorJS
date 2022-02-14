@@ -6313,7 +6313,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 if (false) {
                     return 2;
                 }
-                var supportedCores = ['nes'];
+                var supportedCores = ['nes', 'snes'];
                 return supportedCores.includes(core) ? 2 : 1;
             }(this.config.system); // 2 = beta cores, 1 = old cores
             this.lightgun = this.config.lightgun;
