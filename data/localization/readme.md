@@ -3,9 +3,11 @@
 
 Supported languages
 
-`en-US`
-`pt-BR`
-`es-ES`
+`en-US` <br>
+`pt-BR` <br>
+`es-ES` <br>
+`el-GR` <br>
+
 
 default: `en-US`
 
@@ -21,9 +23,9 @@ If the language file is not found or there was an error fetching the file, the e
 
 ## credits
 
-translated for `pt-BR` by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira)
-
-translated for `es-ES` by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira)
+translated for `pt-BR` by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) <br>
+translated for `es-ES` by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) <br>
+translated for `el-GR` by [@imneckro](https://github.com/imneckro)
 
 
 ## contributing
