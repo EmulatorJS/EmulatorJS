@@ -4038,8 +4038,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var options = {};
                         }
                         _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
-                        _0xa88a13.recordData.audiostreamfile = _0x2d904a.audioContext;
-                        _0xa88a13.recordData.audiostream = _0xa88a13.recordData.audiostreamfile.createMediaStreamDestination();
+                        _0xa88a13.recordData.audiostream = _0x2d904a.audioContext;
+                        //_0xa88a13.recordData.audiostream = _0xa88a13.recordData.audiostreamfile.createMediaStreamDestination();
                         _0xa88a13.recordData.stream.addTrack(_0xa88a13.recordData.audiostream);
                         _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
                         _0xa88a13.recordData.recorder.ondataavailable = function(e) {
@@ -4052,7 +4052,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 if (typeof _0xa88a13.gameName == 'string') {
                                     var aname = _0xa88a13.gameName
                                 }
-                                a.download = aname ? '' .concat(_0x51d471, '-recording.webm') : 'record.webm';
+                                a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
                                 a.click()
                                 window.URL.revokeObjectURL(a.href)
                                 delete _0xa88a13.recordData
