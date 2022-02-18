@@ -4040,8 +4040,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
                         _0xa88a13.recordData.audiostreamfile = _0x2d904a.audioContext;
                         _0xa88a13.recordData.audiostream = _0xa88a13.recordData.audiostreamfile.createMediaStreamDestination();
+                        _0xa88a13.recordData.stream.addTrack(_0xa88a13.recordData.audiostream);
                         _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
-                        _0xa88a13.recordData.recorder.addTrack(_0xa88a13.recordData.audiostream);
                         _0xa88a13.recordData.recorder.ondataavailable = function(e) {
                             if (e.data.size > 0) {
                                 _0xa88a13.recordData.data.push(e.data)
