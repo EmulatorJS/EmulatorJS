@@ -9,25 +9,18 @@ Self-hosted **Javascript** emulation for various system.
 
 *The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
 
-Beta: https://emulatorjs.netlify.app/beta/
+The **beta** version of the emulator core files are now avaliable. (For limited systems) <br>
+If you would like to use it, please add the following line to your code.
+
+```js
+EJS_BETA = true;
+```
+
+When reporting bugs, please specify that you are using the beta version
 
 ---
 
 **⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
-
----
-
-## Where Did I Get This?
-
-> So I found this website called [EmulatorJS.com][EJS] and <br>
-> I went into inspect and downloaded the resources.<br>
-> <br>
-> I removed the ad server, and made everything work within your own domain.<br>
-> <br>
-> [This repository] may soon make it possible to use all this open source.<br>
-> <br>
-> The emulator is not illegal - the rom is - I am not responsible <br>
-> for what people decide to do with this software.
 
 ---
 
@@ -86,8 +79,15 @@ EJS_gameID = 1;
 
 <br>
 
-*I have successfully rewrote the server side portion* <br>
-*of netplay, which you can now use to self host!*
+by default, the netplay server url will be `emulatorjs.herokuapp.com`, but to default to the default `ws.emulatorjs.com` server add the following line
+
+```js
+EJS_oldEJSNetplayServer = true;
+```
+
+<br>
+
+*To self host:*
 
 1. Download the **[Server]**.
 
@@ -99,13 +99,13 @@ EJS_netplayUrl = 'http://localhost:3000/'; // Absolute Url To Your Netplay Serve
 
 <br>
 
-##### Custom Saves
+##### Custom Save Filename
 
 To customize the filename of save states <br>
 simply add the following lines of code.
 
 ```js
-EJS_gameName = `Game Name`;
+EJS_gameName = 'Game Name';
 ```
 
 **➞ Save Filename:** `Game Name.state`
@@ -118,7 +118,7 @@ To place an advertisement in front of the <br>
 `play now` screen, include the following line:
 
 ```js
-EJS_AdUrl = `URL`;
+EJS_AdUrl = 'URL';
 ```
 
 <br>
@@ -162,17 +162,23 @@ EJS_paths = {
 
 <br>
 
+##### Localization
+
+please see [data/localization/readme.md](the localization readme)
+
+<br>
+
 ##### USING MAME SYSTEM
 
 you must add the line
 
-```
+```js
 EJS_core = 'mame';
 ```
 
 and the line
 
-```
+```js
 EJS_mameCore = '' // mame core options (example: '4|0')
 ```
 set the mame core value to the mame core number (`1` - `6`) + `|` + save states supported (`0` or `1`)
@@ -182,6 +188,8 @@ set the mame core value to the mame core number (`1` - `6`) + `|` + save states 
 # LICENSE
 
 Licenced under the Apache License 2.0
+
+Please state changes and the licence when re-distributing
 
 Read the whole license [here](LICENSE)
 
