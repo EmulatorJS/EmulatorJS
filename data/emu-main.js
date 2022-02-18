@@ -1350,7 +1350,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     RA.context.resume();
                                     var _0xa88a13 = RA.context.createBufferSource();
                                     window.ESJ_mainaudio =  _0xa88a13;
-                                    console.log(_0xa88a13);
+                                    alert(_0xa88a13);
                                     _0xa88a13.connect(RA.context.destination), _0xa88a13.start();
                                 }
                             }, !0x1)) : _0xdcec2a.setVolume();
