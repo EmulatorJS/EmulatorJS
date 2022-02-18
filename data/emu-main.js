@@ -4047,7 +4047,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             if (_0xa88a13.recordData.stopped) {
                                 var a = document.createElement("a")
                                 a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
-                                a.download = 'record.webm'
+                                if (typeof _0xa88a13.gameName == 'string') {
+                                    var a-name = _0xa88a13.gameName
+                                }
+                                a.download = a-game ? '' .concat(_0x51d471, '-recording.webm') : 'record.webm';
                                 a.click()
                                 window.URL.revokeObjectURL(a.href)
                                 delete _0xa88a13.recordData
