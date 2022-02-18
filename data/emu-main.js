@@ -1349,7 +1349,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 if (RA.context) {
                                     RA.context.resume();
                                     var _0xa88a13 = RA.context.createBufferSource();
-                                    _0xa88a13.connect(RA.context.destination), //_0xa88a13.start();
+                                    _//0xa88a13.connect(RA.context.destination), _0xa88a13.start();
                                 }
                             }, !0x1)) : _0xdcec2a.setVolume();
                         }, 0x1f4), setTimeout(function() {
