@@ -4048,9 +4048,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 var a = document.createElement("a")
                                 a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
                                 if (typeof _0xa88a13.gameName == 'string') {
-                                    var a-name = _0xa88a13.gameName
+                                    var aname = _0xa88a13.gameName
                                 }
-                                a.download = a-game ? '' .concat(_0x51d471, '-recording.webm') : 'record.webm';
+                                a.download = aname ? '' .concat(_0x51d471, '-recording.webm') : 'record.webm';
                                 a.click()
                                 window.URL.revokeObjectURL(a.href)
                                 delete _0xa88a13.recordData
@@ -5653,7 +5653,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
                     var _0x4e898a = _0x378b5c.getScreenData();
-                    _0x4e4ca6()(new Blob([_0x4e898a]), 'game.png');
+                    if (typeof _0xa88a13.gameName == 'string') {
+                       var gamep = _0xa88a13.gameName
+                    }
+                    var gamepng = gamep ? '' .concat(_0x51d471, '-screenshot.png') : 'game.png';
+                    _0x4e4ca6()(new Blob([_0x4e898a]), gamepng);
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
