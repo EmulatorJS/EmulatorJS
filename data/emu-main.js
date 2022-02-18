@@ -5656,7 +5656,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     if (typeof _0xa88a13.gameName == 'string') {
                        var gamep = _0xa88a13.gameName
                     }
-                    var gamepng = gamep ? '' .concat(_0x51d471, '-screenshot.png') : 'game.png';
+                    var gamepng = gamep ? '' .concat(gamep, '-screenshot.png') : 'game.png';
                     _0x4e4ca6()(new Blob([_0x4e898a]), gamepng);
                     return false;
                 })
