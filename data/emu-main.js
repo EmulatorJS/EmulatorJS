@@ -1349,7 +1349,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 if (RA.context) {
                                     RA.context.resume();
                                     var _0xa88a13 = RA.context.createBufferSource();
-                                    0xa88a13.connect(RA.context.destination), _0xa88a13.start();
+                                    _0xa88a13.connect(RA.context.destination), _0xa88a13.start();
                                 }
                             }, !0x1)) : _0xdcec2a.setVolume();
                         }, 0x1f4), setTimeout(function() {
@@ -4038,7 +4038,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var options = {};
                         }
                         _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
-                        //_0xa88a13.recordData.stream.addTrack();
+                        //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
                         _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
                         _0xa88a13.recordData.recorder.ondataavailable = function(e) {
                             if (e.data.size > 0) {
