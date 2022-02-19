@@ -1,7 +1,7 @@
 {
     "i18n": {
         "restart": "Επανεκκίνηση",
-        "play": "Παίξε",
+        "play": "Συνέχισε",
         "pause": "Παύση",
         "played": "Παίχτηκε",
         "volume": "Ένταση",
@@ -89,9 +89,9 @@
     "Room Name": "Όνομα online παιχνιδιού",
     "Create a Room": "Δημιουργία online παιχνιδιού",
     "Password (optional)": "Κωδικός (προαιρετικά)",
-    "Select": "Επιλογή",
-    "Start": "Εκκίνηση",
-    "Menu": "Μενού",
+    "Select": "Select",
+    "Start": "Start",
+    "Menu": "Menu",
     "Decompress Game Core": "Αποσυμπίεση αρχείου πυρήνα παιχνιδιού",
     "Decompress Game Data": "Αποσυμπίεση αρχείων παιχνιδιού",
     "Decompress Game Patch": "Αποσυμπίεση πρόσθετων αρχείων παιχνιδιού",
