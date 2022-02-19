@@ -3804,10 +3804,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     }
                     _0x17edbf.on('end', function(_0x27f006, _0x1fb527) {
-                        _0x378b5c.syncInput(0, inputs[4], 0);
-                        _0x378b5c.syncInput(0, inputs[5], 0);
-                        _0x378b5c.syncInput(0, inputs[6], 0);
-                        _0x378b5c.syncInput(0, inputs[7], 0);
+                        _0x378b5c.syncInput(0, inputs()[4], 0);
+                        _0x378b5c.syncInput(0, inputs()[5], 0);
+                        _0x378b5c.syncInput(0, inputs()[6], 0);
+                        _0x378b5c.syncInput(0, inputs()[7], 0);
                     });
                     _0x17edbf.on('move', function(_0x1b060e, _0x4ae7d6) {
                         var _0x2c1832 = _0x4ae7d6.angle.degree;
