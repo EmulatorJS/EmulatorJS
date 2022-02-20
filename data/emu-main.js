@@ -455,7 +455,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'wasm': 'undefined' != typeof WebAssembly && _0x1e2c68.object(WebAssembly),
             'audioContext': 'undefined' != typeof AudioContext
         };
-
+    
     function _0x55cbbe(_0x43ca9d, _0x1fbf80, _0x332d13) {
         return _0x1fbf80 in _0x43ca9d ? Object.defineProperty(_0x43ca9d, _0x1fbf80, {
             'value': _0x332d13,
@@ -4038,8 +4038,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var options = {};
                         }
                         _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
+                        //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
                         _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
-                        //_0xa88a13.recordData.recorder.addTrack() // TODO - find audio element
                         _0xa88a13.recordData.recorder.ondataavailable = function(e) {
                             if (e.data.size > 0) {
                                 _0xa88a13.recordData.data.push(e.data)
@@ -4047,7 +4047,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             if (_0xa88a13.recordData.stopped) {
                                 var a = document.createElement("a")
                                 a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
-                                a.download = 'record.webm'
+                                if (typeof _0xa88a13.gameName == 'string') {
+                                    var aname = _0xa88a13.gameName
+                                }
+                                a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
                                 a.click()
                                 window.URL.revokeObjectURL(a.href)
                                 delete _0xa88a13.recordData
@@ -5649,7 +5652,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
                     var _0x4e898a = _0x378b5c.getScreenData();
-                    _0x4e4ca6()(new Blob([_0x4e898a]), 'game.png');
+                    if (typeof _0xa88a13.gameName == 'string') {
+                       var gamep = _0xa88a13.gameName
+                    }
+                    var gamepng = gamep ? '' .concat(gamep, '-screenshot.png') : 'game.png';
+                    _0x4e4ca6()(new Blob([_0x4e898a]), gamepng);
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
