@@ -455,7 +455,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'wasm': 'undefined' != typeof WebAssembly && _0x1e2c68.object(WebAssembly),
             'audioContext': 'undefined' != typeof AudioContext
         };
-
+    
     function _0x55cbbe(_0x43ca9d, _0x1fbf80, _0x332d13) {
         return _0x1fbf80 in _0x43ca9d ? Object.defineProperty(_0x43ca9d, _0x1fbf80, {
             'value': _0x332d13,
@@ -2082,7 +2082,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
                                             _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
-                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167 && false) {
+                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
                                                     if (_0xc6823.coreVer === 2) {
                                                         _0x4f0fcc(_0x47a6fd.data);
                                                     } else {
@@ -2529,14 +2529,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                         if (type === 'save') {
                             try {
-                                if (this.coreVer === 2) {
-                                    _0x378b5c.saveState().then(function(data) {
-                                        _0x378b5c.saveLoaddbDB.put(key, data);
-                                    })
-                                } else {
-                                    var data = _0x378b5c.saveState();
-                                    _0x378b5c.saveLoaddbDB.put(key, data);
-                                }
+                                var data = _0x378b5c.saveState();
+                                _0x378b5c.saveLoaddbDB.put(key, data);
                             } catch(e) {return false;};
                         } else {
                             _0x378b5c.saveLoaddbDB.get(key).then(function(data) {
@@ -3804,10 +3798,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     }
                     _0x17edbf.on('end', function(_0x27f006, _0x1fb527) {
-                        _0x378b5c.syncInput(0, inputs[4], 0);
-                        _0x378b5c.syncInput(0, inputs[5], 0);
-                        _0x378b5c.syncInput(0, inputs[6], 0);
-                        _0x378b5c.syncInput(0, inputs[7], 0);
+                        _0x378b5c.syncInput(0, inputs()[4], 0);
+                        _0x378b5c.syncInput(0, inputs()[5], 0);
+                        _0x378b5c.syncInput(0, inputs()[6], 0);
+                        _0x378b5c.syncInput(0, inputs()[7], 0);
                     });
                     _0x17edbf.on('move', function(_0x1b060e, _0x4ae7d6) {
                         var _0x2c1832 = _0x4ae7d6.angle.degree;
@@ -4038,8 +4032,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var options = {};
                         }
                         _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
+                        //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
                         _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
-                        //_0xa88a13.recordData.recorder.addTrack() // TODO - find audio element
                         _0xa88a13.recordData.recorder.ondataavailable = function(e) {
                             if (e.data.size > 0) {
                                 _0xa88a13.recordData.data.push(e.data)
@@ -4047,7 +4041,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             if (_0xa88a13.recordData.stopped) {
                                 var a = document.createElement("a")
                                 a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
-                                a.download = 'record.webm'
+                                if (typeof _0xa88a13.gameName == 'string') {
+                                    var aname = _0xa88a13.gameName
+                                }
+                                a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
                                 a.click()
                                 window.URL.revokeObjectURL(a.href)
                                 delete _0xa88a13.recordData
@@ -4186,93 +4183,48 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return _0x762355(_0x433182);
                 }
                 _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
-                if (_0xa88a13.coreVer === 2) {
-                    _0x378b5c.saveStateToFile = _0x27f4c4.Module.cwrap('cmd_save_state', 'null', []);
-                }
                 _0x378b5c.saveState = function() {
-                    if (_0xa88a13.coreVer === 2) {
-                        _0x378b5c.saveStateToFile();
-                        var length;
-                        var asd = 50;
-                        return new Promise(function(resolve, reject) {
-                            var a = setInterval(function() {
-                                try {
-                                    var data = _0x27f4c4.FS.readFile('save.state');
-                                } catch(e) {return;}
-                                if (data.length === 0 || length === 0 || length !== data.length) {
-                                    length = data.length;
-                                    asd = 50;
-                                    return;
-                                }
-                                if (asd > 0) {
-                                    asd--;
-                                    return;
-                                }
-                                clearInterval(a);
-                                _0x27f4c4.FS.unlink('save.state');
-                                resolve(data);
-                            }, 100)
-                        })
-                    } else {
-                        var _0xa88a14, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
-                            _0x2c1832 = _0x17edbf[0x0] >> 0x0;
-                        if (_0x2c1832 > 0x0) {
-                            _0xa88a14 = new Uint8Array(_0x2c1832);
-                            for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a14[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
-                        }
-                        return _0xa88a14;
+                    var _0xa88a14, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
+                        _0x2c1832 = _0x17edbf[0x0] >> 0x0;
+                    if (_0x2c1832 > 0x0) {
+                        _0xa88a14 = new Uint8Array(_0x2c1832);
+                        for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a14[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
                     }
+                    return _0xa88a14;
                 };
                 var _0x25a7a2 = _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number']);
                 _0x378b5c.loadState = function(_0x4389ae, _0x1d4918) {
                     var _0x91cd69;
                     _0x91cd69 = _0x4389ae;
+                    try {
+                        _0x27f4c4.FS.unlink('game.state');
+                    } catch(e){}
                     _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
                     null === _0x1d4918 && (_0x1d4918 = 0);
-                    if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
+                    if ('arcade' === _0x17edbf) {
                         setTimeout(function() {
                             _0x378b5c.getStateInfo();
                             _0x25a7a2('game.state', _0x1d4918);
                             _0x27f4c4.FS.unlink('game.state');
                         }, 0xa)
-                    } else if (_0xa88a13.coreVer === 2) {
-                        setTimeout(function() {
-                            _0x25a7a2('game.state', _0x1d4918);
-                            setTimeout(function() {
-                                _0x27f4c4.FS.unlink('game.state');
-                            }, 100)
-                        }, 10)
                     } else {
                         _0x25a7a2('game.state', _0x1d4918);
-                        _0x27f4c4.FS.unlink('game.state');
+                        setTimeout(function() {
+                            _0x27f4c4.FS.unlink('game.state');
+                        }, 100)
                     }
-                    if (_0xa88a13.coreVer === 2) {
-                        if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
-                            var _0x227419 = new File([_0x91cd69], '0-game.state', {
-                                'type': '',
-                                'lastModified': new Date()
-                            });
-                            _0x378b5c.connection.shareFile(_0x227419);
-                            _0x378b5c.inputsData = {};
-                            _0x378b5c.wait = true;
-                            _0x378b5c.systemPause(0x1);
-                            _0x27f4c4.Module.pauseMainLoop();
-                            _0x378b5c.disableControl(true);
-                        }
-                    } else {
-                        if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
-                            for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
-                            var _0x227419 = new File([_0xce58ec], '0-game.state', {
-                                'type': '',
-                                'lastModified': new Date()
-                            });
-                            _0x378b5c.connection.shareFile(_0x227419);
-                            _0x378b5c.inputsData = {};
-                            _0x378b5c.wait = true;
-                            _0x378b5c.systemPause(0x1);
-                            _0x27f4c4.Module.pauseMainLoop();
-                            _0x378b5c.disableControl(true);
-                        }
+                    if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
+                        for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
+                        var _0x227419 = new File([_0xce58ec], '0-game.state', {
+                            'type': '',
+                            'lastModified': new Date()
+                        });
+                        _0x378b5c.connection.shareFile(_0x227419);
+                        _0x378b5c.inputsData = {};
+                        _0x378b5c.wait = true;
+                        _0x378b5c.systemPause(0x1);
+                        _0x27f4c4.Module.pauseMainLoop();
+                        _0x378b5c.disableControl(true);
                     }
                     _0xa88a13.elements.container.focus();
                 };
@@ -4301,25 +4253,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x27f4c4.FS.unlink(name);
                         } catch (_0x4b4d4c) {}
                         try {
-                            if (_0xa88a13.coreVer === 2) {
-                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'SAVING STATE TO SLOT ' + slot;
-                                _0x378b5c.saveState().then(function(data) {
-                                    _0x27f4c4._FS.createDataFile('/', name, data, true, true);
-                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
-                                    clearTimeout(_0x378b5c.saveMsgTransitions);
-                                    _0x378b5c.saveMsgTransitions = setTimeout(function() {
-                                        _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                                    }, 1500)
-                                });
-                            } else {
-                                var _0x17edbf = _0x378b5c.saveState();
-                                _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
-                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
-                                clearTimeout(_0x378b5c.saveMsgTransitions);
-                                _0x378b5c.saveMsgTransitions = setTimeout(function() {
-                                    _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
-                                }, 1500)
-                            }
+                            var _0x17edbf = _0x378b5c.saveState();
+                            _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                            _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
+                            clearTimeout(_0x378b5c.saveMsgTransitions);
+                            _0x378b5c.saveMsgTransitions = setTimeout(function() {
+                                _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
+                            }, 1500)
                         } catch(e) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO SAVE STATE TO SLOT ' + slot;
                             clearTimeout(_0x378b5c.saveMsgTransitions);
@@ -4351,19 +4291,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var name = slot + '-quick.state';
                         var success = true;
                         try {
-                            if (_0xa88a13.coreVer === 2) {
-                                var data = _0x27f4c4.FS.readFile(name);
-                                _0x27f4c4.FS.writeFile('/game.state', data);
-                                setTimeout(function() {
-                                    _0x25a7a2(name, 0);
-                                    setTimeout(function() {
-                                        _0x27f4c4.FS.unlink('game.state');
-                                    }, 100)
-                                }, 10)
-                            } else {
-                                _0x25a7a2(name, 0);
-                            }
-                            if ('arcade' === _0x17edbf && _0xa88a13.coreVer !== 2) {
+                            _0x25a7a2(name, 0);
+                            if ('arcade' === _0x17edbf) {
                                 setTimeout(function() {
                                     _0x378b5c.getStateInfo();
                                     _0x25a7a2(name, 0x0);
@@ -5008,6 +4937,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     default:
                         _0xa88a13 = {}, console.warn('Unsupported emulator');
                 }
+                if (this.coreVer === 2) {
+                    _0xa88a13 = {};
+                }
                 if (this.statesSupported === true) {
                     _0xa88a13['save-state-slot'] = {
                         'label': this.localization('Save State Slot'),
@@ -5650,7 +5582,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
                     var _0x4e898a = _0x378b5c.getScreenData();
-                    _0x4e4ca6()(new Blob([_0x4e898a]), 'game.png');
+                    if (typeof _0xa88a13.gameName == 'string') {
+                       var gamep = _0xa88a13.gameName
+                    }
+                    var gamepng = gamep ? '' .concat(gamep, '-screenshot.png') : 'game.png';
+                    _0x4e4ca6()(new Blob([_0x4e898a]), gamepng);
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
@@ -6163,12 +6099,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x5ab74d.toggleControls.call(_0x17edbf, !0x1), _0x132da7(_0x2c1832.dialogs.gamepad, !0x1);
                     }, 'mute'), this.bind(_0x2c1832.buttons.saveState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', !0x1, {});
-                        _0xdcec2a.saveState().then(function(_0x31e271) {
-                            var _0x2c1832 = _0xdcec2a.getScreenData();
-                            _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
-                                'state': _0x31e271,
-                                'screenshot': _0x2c1832
-                            });
+                        var _0x31e271 = _0xdcec2a.saveState(),
+                            _0x2c1832 = _0xdcec2a.getScreenData();
+                        _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
+                            'state': _0x31e271,
+                            'screenshot': _0x2c1832
                         });
                     }, 'mute'), this.bind(_0x2c1832.buttons.loadState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'loadstate', !0x1, {});
@@ -6299,14 +6234,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = _0x3d61f9.a;
+            this.version = '1.0';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
             this.loadStateOnStart = false;
             this.statesSupported = true;
-            this.listUrl = 'https://ws.emulatorjs.com/';
-            this.socketUrl = 'wss://ws.emulatorjs.com/';
             this.mameCore = null;
             this.startOnLoad = false;
             this.dataPath = '';
@@ -6325,13 +6258,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.game = this.game;
             this.game.innerHTML = '';
             this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
-            this.coreVer = function(core) {
-                if (false) {
-                    return 2;
+            this.coreVer = function(core, useBeta) {
+                if (useBeta === true) {
+                    if (window.WebAssembly) {
+                        var supportedCores = ['nes', 'snes'];
+                        return supportedCores.includes(core) ? 2 : 1;
+                    }
                 }
-                var supportedCores = ['nes', 'snes'];
-                return supportedCores.includes(core) ? 2 : 1;
-            }(this.config.system); // 2 = beta cores, 1 = old cores
+                return 1;
+            }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
             this.lightgun = this.config.lightgun;
             this.loadStateOnStart = this.config.loadStateOnStart || false;
             this.adUrl = this.config.adUrl || null;
@@ -6340,8 +6275,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.multitap = this.config.multitap;
             this.cheats = this.config.cheats;
             this.cheats || (this.cheats = []);
-            this.listUrl = this.config.netplayUrl || 'https://ws.emulatorjs.com/';
-            this.socketUrl = this.config.netplayUrl || 'wss://ws.emulatorjs.com/';
+            var u = function(a, b) {
+                if (typeof b === 'string') {
+                    return b;
+                } else if (a === true) {
+                    return 'https://ws.emulatorjs.com/'
+                } else {
+                    return 'https://emulatorjs.herokuapp.com/';
+                }
+            }(this.config.oldNetplayServer, this.config.netplayUrl);
+            this.listUrl = u;
+            this.socketUrl = u;
             this.mameCore = this.config.mameCore || null;
             this.color = this.config.color;
             this.startOnLoad = this.config.startOnLoad || false;

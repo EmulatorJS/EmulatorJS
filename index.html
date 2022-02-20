@@ -1,0 +1,111 @@
+<html>
+    <body>
+        <script>
+            window.addEventListener('load', function() {
+                document.getElementById('file').onchange = async function(e) {
+                    var ce = function(e) {return document.createElement(e);};
+                    var br = function(e) {e.appendChild(ce('br'))};
+                    var gameUrl = URL.createObjectURL(new Blob([e.target.files[0]]))
+                    var extension = e.target.files[0].name.split('.').pop()
+                    var gameName = e.target.files[0].name.replaceAll("'", "\\'")
+                    var gameName = gameName.substr(0, gameName.length - extension.length - 1)
+                    e.target.remove()
+                    while(document.body.firstChild) {
+                        document.body.removeChild(document.body.firstChild);
+                    };
+                    if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
+                        var core = 'nes';
+                    } else if (['z64'].includes(extension)) {
+                        var core = 'n64';
+                    } else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
+                        var core = 'snes';
+                    } else if (['nds'].includes(extension)) {
+                        var core = 'nds';
+                    } else if (['gba'].includes(extension)) {
+                        var core = 'gba';
+                    } else if (['gb'].includes(extension)) {
+                        var core = 'gb';
+                    } else {
+                        var core = await function() {
+                            return new Promise(function(resolve, reject) {
+                                var cores = {"NES / Nintendo Entertainment System / Famicon": "nes",
+                                             "SNES / Super Nintendo Entertainment System": "snes",
+                                             "Nintendo 64": "n64",
+                                             "Nintendo Game Boy": "gb",
+                                             "Nintendo Game Boy Advance": "gba",
+                                             "Nintendo DS": "nds",
+                                             "PlayStation": "psx",
+                                             "Virtual Boy": "vb",
+                                             "Sega Mega Drive": "segaMD",
+                                             "Sega Master System": "segaMS",
+                                             "Sega CD": "segaCD",
+                                             "Atari Lynx": "lynx",
+                                             "Sega 32X": "sega32x",
+                                             "Atari Jaguar": "jaguar",
+                                             "Sega Game Gear": "segaGG",
+                                             "Sega Saturn": "segaSaturn",
+                                             "Atari 7800": "atari7800",
+                                             "Atari 2600": "atari2600"};
+                                var a = ce('div');
+                                a.style = 'padding: 50px;';
+                                var p = ce('h2');
+                                p.innerHTML = 'Unable to auto-detect system. Please select the desired system.';
+                                a.appendChild(p);
+                                br(a);
+                                for (var k in cores) {
+                                    var input = ce('input');
+                                    input.type = 'radio';
+                                    input.id = 'game-' + cores[k];
+                                    input.name = 'game';
+                                    input.value = cores[k];
+                                    a.appendChild(input);
+                                    var label = ce('label');
+                                    label.for = 'game-' + cores[k];
+                                    label.innerHTML = k;
+                                    a.appendChild(label);
+                                    br(a);
+                                };
+                                br(a);
+                                var submit = ce('input');
+                                submit.type = 'submit';
+                                submit.value = 'Load Game';
+                                submit.onclick = function(e) {
+                                    var q = false;
+                                    var radios = document.getElementsByName('game');
+                                    for (var i=0; i<radios.length; i++) {
+                                        if (radios[i].checked) {
+                                            var q = radios[i].value;
+                                            break;
+                                        };
+                                    };
+                                    if (! q) {
+                                        return;
+                                    };
+                                    while(document.body.firstChild) {
+                                        document.body.removeChild(document.body.firstChild);
+                                    };
+                                    resolve(q);
+                                };
+                                a.appendChild(submit);
+                                document.body.appendChild(a);
+                            });
+                        }();
+                    };
+                    var a = document.createElement('div');
+                    a.style = "width:640px;height:480px;max-width:100%";
+                    var b = document.createElement('div');
+                    b.id = 'game';
+                    a.appendChild(b);
+                    document.body.appendChild(a);
+                    var script = document.createElement('script');
+                    script.innerHTML = "EJS_player = '#game'; EJS_gameName = '" + gameName + "'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; ";
+                    document.body.appendChild(script);
+                    var script = document.createElement('script');
+                    script.src = 'data/loader.js';
+                    document.body.appendChild(script);
+                }
+            })
+        </script>
+        Select Game Rom: <input type="file" id="file">
+    </body>
+</html>
