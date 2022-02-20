@@ -1,13 +1,13 @@
 {
     "nes": {
-        "version":"16",
+        "version":"17",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
         "wasm": 1
     },
     "snes": {
-        "version":"13",
+        "version":"14",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
