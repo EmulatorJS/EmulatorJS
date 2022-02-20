@@ -2,13 +2,15 @@
   <body>
     <script>
 	window.addEventListener('load', function() {
-	  document.getElementById('file').onchange = function(e) {
-	    var gameUrl = URL.createObjectURL(new Blob([e.target.files[0]]))
+	  document.getElementById('file').onchange = async function(e) {
+	        var gameUrl = URL.createObjectURL(new Blob([e.target.files[0]]))
 		var extension = e.target.files[0].name.split('.').pop()
 		var gameName = e.target.files[0].name.replaceAll("'", "\\'")
 		var gameName = gameName.substr(0, gameName.length - extension.length - 1)
 		e.target.remove()
-		document.body.innerHTML = ''
+		while(document.body.firstChild) {
+		    document.body.removeChild(document.body.firstChild);
+		};
 		if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
 		    var core = 'nes';
 		} else if (['z64'].includes(extension)) {
@@ -22,7 +24,70 @@
 		} else if (['gb'].includes(extension)) {
 		    var core = 'gb';
 		} else {
-		    var core = prompt('Input core (examples: nes, snes, n64, gb, gba, psx)');
+		    var core = await function() {
+			return new Promise(function(resolve, reject) {
+			    var cores = {"NES / Nintendo Entertainment System / Famicon": "nes",
+					 "SNES / Super Nintendo Entertainment System": "snes",
+					 "Nintendo 64": "n64",
+					 "Nintendo Game Boy": "gb",
+					 "Nintendo Game Boy Advance": "gba",
+					 "Nintendo DS": "nds",
+					 "PlayStation": "psx",
+					 "Virtual Boy": "vb",
+					 "Sega Mega Drive": "segaMD",
+					 "Sega Master System": "segaMS",
+					 "Sega CD": "segaCD",
+					 "Atari Lynx": "lynx",
+					 "Sega 32X": "sega32x",
+					 "Atari Jaguar": "jaguar",
+					 "Sega Game Gear": "segaGG",
+					 "Sega Saturn": "segaSaturn",
+					 "Atari 7800": "atari7800",
+					 "Atari 2600": "atari2600"};
+			    var a = ce('div');
+			    a.style = 'padding: 50px;';
+			    var p = ce('h2');
+			    p.innerHTML = 'Unable to auto-detect system. Please select the desired system.';
+			    a.appendChild(p);
+			    br(a);
+			    for (var k in cores) {
+				var input = ce('input');
+				input.type = 'radio';
+				input.id = 'game-' + cores[k];
+				input.name = 'game';
+				input.value = cores[k];
+				a.appendChild(input);
+				var label = ce('label');
+				label.for = 'game-' + cores[k];
+				label.innerHTML = k;
+				a.appendChild(label);
+				br(a);
+			    };
+			    br(a);
+			    var submit = ce('input');
+			    submit.type = 'submit';
+			    submit.value = 'Load Game';
+			    submit.onclick = function(e) {
+				var q = false;
+				var radios = document.getElementsByName('game');
+				for (var i=0; i<radios.length; i++) {
+				    if (radios[i].checked) {
+					var q = radios[i].value;
+					break;
+				    };
+				};
+				if (! q) {
+				    return;
+				};
+				while(document.body.firstChild) {
+				    document.body.removeChild(document.body.firstChild);
+				};
+				resolve(q);
+			    };
+			    a.appendChild(submit);
+			    document.body.appendChild(a);
+			});
+		    }();
 		};
 		var a = document.createElement('div');
 		a.style = "width:640px;height:480px;max-width:100%";
