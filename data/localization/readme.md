@@ -1,12 +1,12 @@
 
-# localization
+# Localization
 
 Supported languages
 
-`en-US` <br>
-`pt-BR` <br>
-`es-ES` <br>
-`el-GR` <br>
+`en-US` - English US<br>
+`pt-BR` - Portuguese Brasil<br>
+`es-ES` - Spanish<br>
+`el-GR` - Greek<br>
 
 
 default: `en-US`
