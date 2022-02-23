@@ -2,7 +2,7 @@
 <img src="https://user-images.githubusercontent.com/74841470/155255251-0a0840ee-51d7-4f9e-878b-1be287d9a984.png" width="250">
 </p>
 
-# Emulatorjs
+# Allancoding's Version of Emulatorjs
 
 Self-hosted **Javascript** emulation for various system.
 
