@@ -1813,9 +1813,32 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
                         var _0x17edbf = _0xa88a13.config.biosUrl,
                             _0x2c1832 = _0xa88a13;
-                        _0xdcec2a.bindFunction.call(_0xa88a13), _0xdcec2a.setGamepadDialog.call(_0xa88a13), _0xdcec2a.setCacheDialog.call(_0xa88a13), _0xdcec2a.setLoadingDialog.call(_0xa88a13), _0xdcec2a.setNetplayDialog.call(_0xa88a13), _0xdcec2a.setCheatDialog.call(_0xa88a13), _0xdcec2a.initGamepad.call(_0xa88a13), _0xdcec2a.initKeyboard.call(_0xa88a13), _0xdcec2a.listeners.call(_0xa88a13), _0x4d7024._FS.createFolder('/', 'etc', true, true), _0x4d7024.FS.mkdir('/data'), _0x4d7024.FS.mkdir('/data/saves'), 'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves'), _0x4d7024.FS.mkdir('/shader'), _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {}), _0xdcec2a.initShaders();
+                        _0xdcec2a.bindFunction.call(_0xa88a13);
+                        _0xdcec2a.setGamepadDialog.call(_0xa88a13);
+                        _0xdcec2a.setCacheDialog.call(_0xa88a13);
+                        _0xdcec2a.setLoadingDialog.call(_0xa88a13);
+                        _0xdcec2a.setNetplayDialog.call(_0xa88a13);
+                        _0xdcec2a.setCheatDialog.call(_0xa88a13);
+                        _0xdcec2a.initGamepad.call(_0xa88a13);
+                        _0xdcec2a.initKeyboard.call(_0xa88a13);
+                        _0xdcec2a.listeners.call(_0xa88a13);
+                        _0x4d7024._FS.createFolder('/', 'etc', true, true);
+                        _0x4d7024.FS.mkdir('/data');
+                        _0x4d7024.FS.mkdir('/data/saves');
+                        'undefined' != typeof IDBFS ? _0x4d7024.FS.mount(IDBFS, {}, '/data/saves') : _0x4d7024.FS.mount(_0x4d7024.FS.filesystems.IDBFS, {}, '/data/saves');
+                        _0x4d7024.FS.mkdir('/shader');
+                        _0x4d7024.FS.syncfs(true, function(_0x1a8f12) {});
+                        _0xdcec2a.initShaders();
                         var _0x14d39f = '';
-                        _0x14d39f += 'savefile_directory = /data/saves\n', _0x14d39f += 'video_vsync = true\n', _0x14d39f += 'screenshot_directory = /\n', _0x14d39f += 'video_shader = /shader/shader.glslp\n', _0x14d39f += 'video_shader_enable = true\n', _0x14d39f += 'video_font_enable = false\n', _0x14d39f += 'video_scale = 1.0\n', _0x14d39f += 'video_gpu_screenshot = false\n', _0x14d39f += 'audio_latency = 96\n';
+                        _0x14d39f += 'savefile_directory = /data/saves\n';
+                        _0x14d39f += 'video_vsync = true\n';
+                        _0x14d39f += 'screenshot_directory = /\n';
+                        _0x14d39f += 'video_shader = /shader/shader.glslp\n';
+                        _0x14d39f += 'video_shader_enable = true\n';
+                        _0x14d39f += 'video_font_enable = false\n';
+                        _0x14d39f += 'video_scale = 1.0\n';
+                        _0x14d39f += 'video_gpu_screenshot = false\n';
+                        _0x14d39f += 'audio_latency = 96\n';
                         var _0x36edb7 = _0x2593da.defaultCoreOptionsValues.call(_0xa88a13);
                         _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n')), _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n')), _0x2c1832.multitap && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = 257\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n')), 'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n'), _0x2c1832.system, _0x14d39f += 'fastforward_ratio = 1.0\n', _0x14d39f += 'video_smooth = false\n';
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
@@ -2092,6 +2115,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     }
                                                 } else _0x3641d6(_0x2458d5, _0x124167);
                                             }) : _0x3641d6(_0x2458d5, _0x124167);
+                                        }
+                                        if (_0x2c1832.coreVer === 2) {
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.cheat) && _0x132da7(_0x2c1832.elements.buttons.cheat, true);
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.gamepad) && _0x132da7(_0x2c1832.elements.buttons.gamepad, true);
+                                            _0x1e2c68.element(_0x2c1832.elements.buttons.mute) && _0x132da7(_0x2c1832.elements.buttons.mute, true);
+                                            _0x1e2c68.element(_0x2c1832.elements.inputs.volume) && _0x132da7(_0x2c1832.elements.inputs.volume, true);
+                                            if (Array.isArray(_0x2c1832.elements.buttons.play)) {
+                                                for (var i=0; i<_0x2c1832.elements.buttons.play.length; i++) {
+                                                    _0x1e2c68.element(_0x2c1832.elements.buttons.play[i]) && _0x132da7(_0x2c1832.elements.buttons.play[i], true);
+                                                }
+                                            } else {
+                                                _0x1e2c68.element(_0x2c1832.elements.buttons.play) && _0x132da7(_0x2c1832.elements.buttons.play, true);
+                                            }
                                         }
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                         _0xc6823.setStatesSupported(_0x5b1dcd);
@@ -6234,7 +6270,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = '1.0';
+            this.version = '1.1.0';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
@@ -6332,8 +6368,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x39ca5e.i18n = localJson.i18n;
                         _0x7f9f36.normalOptions = localJson.normalOptions;
                     } catch(e) {
-                        console.error(e);
-                        console.warn('error setting localization');
+                        console.warn('error setting localization', e);
                     }
                 }
                 return function(engText) {
