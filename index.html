@@ -7,6 +7,8 @@
 	<style>
 body{
   background: #c4bdff;
+	margin: 0;
+	padding: 0;
 }
 .form{
   position: absolute;
@@ -38,6 +40,9 @@ body{
 .eimg{
 width: 250px;
 }
+#uploadf, #uploadf1{
+	display: block;	
+}
 			 </style>
         <script>
             window.addEventListener('load', function() {
@@ -48,10 +53,8 @@ width: 250px;
                     var extension = e.target.files[0].name.split('.').pop()
                     var gameName = e.target.files[0].name.replaceAll("'", "\\'")
                     var gameName = gameName.substr(0, gameName.length - extension.length - 1)
-                    e.target.remove()
-                    while(document.body.firstChild) {
-                        document.body.removeChild(document.body.firstChild);
-                    };
+                    e.target.remove();
+document.getElementById('uploadf').style.display = "none"; document.getElementById('uploadf1').style.display = "none";
                     if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
                         var core = 'nes';
                     } else if (['z64'].includes(extension)) {
@@ -131,13 +134,13 @@ width: 250px;
                         }();
                     };
                     var a = document.createElement('div');
-                    a.style = "width:640px;height:480px;max-width:100%";
+                    a.style = "width:65%;height:100%;max-width:100%";
                     var b = document.createElement('div');
                     b.id = 'game';
                     a.appendChild(b);
-                    document.body.appendChild(a);
+                    document.getElementById("cont").appendChild(a);
                     var script = document.createElement('script');
-                    script.innerHTML = "EJS_player = '#game'; EJS_gameName = '" + gameName + "'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/'; ";
+                    script.innerHTML = "EJS_player = '#game'; EJS_gameName = '" + gameName + "'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/';";
                     document.body.appendChild(script);
                     var script = document.createElement('script');
                     script.src = 'data/loader.js';
@@ -145,10 +148,10 @@ width: 250px;
                 }
             })
         </script>
-		 <center>
-		 <img class="eimg" src="docs/Emulatorjs Logo.png">
+		 <center id="cont">
+		 <img id="uploadf1" class="eimg" src="docs/Emulatorjs Logo.png">
 			 </center>
-		 <div class="form">
+		 <div id="uploadf" class="form">
 		 <input type="file" id="file">
   <b><p>Select Game Rom: Drag your files here or click in this area.</p></b>
 			 </div>
