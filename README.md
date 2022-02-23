@@ -1,4 +1,4 @@
-# Allancoding's Version of Emulatorjs
+
 
 Self-hosted **Javascript** emulation for various system.
 
