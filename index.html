@@ -123,9 +123,7 @@ document.getElementById('uploadf').style.display = "none"; document.getElementBy
                                     if (! q) {
                                         return;
                                     };
-                                    while(document.body.firstChild) {
-                                        document.body.removeChild(document.body.firstChild);
-                                    };
+                                    a.remove();
                                     resolve(q);
                                 };
                                 a.appendChild(submit);
