@@ -24,7 +24,7 @@ When reporting bugs, please specify that you are using the beta version
 
 ---
 
-**⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
+**⸢ [EmulatorJS Website] ⸥ ⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
 
 ---
 
@@ -83,7 +83,7 @@ EJS_gameID = 1;
 
 <br>
 
-by default, the netplay server url will be `emulatorjs.herokuapp.com`, but to default to the default `ws.emulatorjs.com` server add the following line
+by default, the netplay server url will be `emuserver.emulatorjs.ga`, but to default to the default `ws.emulatorjs.com` server add the following line
 
 ```js
 EJS_oldEJSNetplayServer = true;
@@ -202,9 +202,10 @@ If I find a repository that does not follow the licence, I will report it.
 
 <!----------------------------------------------------------------------------->
 
+[EmulatorJS Website]: https://emulatorjs.ga/
 [Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
-[Emulator Demo]: https://ethanaobrien.github.io/emulatorjs/
-[Beta]: https://emulatorjs.netlify.app/
+[Emulator Demo]: https://emulatorjs.ga/demo/
+[Beta]: https://emulatorjs.ga/beta/
 
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 [This repository]: https://github.com/linuxserver/emulatorjs
