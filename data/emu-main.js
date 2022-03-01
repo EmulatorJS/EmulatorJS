@@ -6317,7 +6317,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 } else if (a === true) {
                     return 'https://ws.emulatorjs.com/'
                 } else {
-                    return 'https://emulatorjs.herokuapp.com/';
+                    return 'https://emuserver.emulatorjs.ga/';
                 }
             }(this.config.oldNetplayServer, this.config.netplayUrl);
             this.listUrl = u;
