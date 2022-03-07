@@ -6297,7 +6297,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             this.coreVer = function(core, useBeta) {
                 if (useBeta === true) {
                     if (window.WebAssembly) {
-                        var supportedCores = ['nes', 'snes'];
+                        var supportedCores = ['nes', 'snes', 'nds'];
                         return supportedCores.includes(core) ? 2 : 1;
                     }
                 }
