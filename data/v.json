@@ -134,11 +134,11 @@
         "wasm": 1
     },
     "gb": {
-        "version":"4",
+        "version":"5",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
-        "wasm": 0
+        "wasm": 1
     },
     "gbc": {
         "version":"4",
@@ -204,7 +204,7 @@
         "wasm": 0
     },
     "nds": {
-        "version":"9",
+        "version":"10",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
