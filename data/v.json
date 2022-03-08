@@ -137,6 +137,7 @@
         "version":"5",
         "netplay": 0,
         "state": 1,
+        "old": {"wasm":0, "asmjs":1 },
         "asmjs": 1,
         "wasm": 1
     },

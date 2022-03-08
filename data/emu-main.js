@@ -2035,6 +2035,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             _0x5b1dcd = Boolean(_0x28ee7f.state),
                                             _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
                                             _0x3e4345 = Boolean(_0x28ee7f.wasm);
+                                        if (_0xc6823.coreVer !== 2 && _0x28ee7f.old) {
+                                            _0x9a1f1 = Boolean(_0x28ee7f.old.asmjs);
+                                            _0x3e4345 = Boolean(_0x28ee7f.old.wasm);
+                                        }
                                         if ('nds' == _0x2c1832.system && ! _0x2d904a.wasm) {
                                             _0x5b1dcd = !0x1;
                                         };
