@@ -1,5 +1,5 @@
 (async function() {
-    var VERSION = 1.1;
+    var VERSION = 1.2;
     if (window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
             if (response.ok) {
