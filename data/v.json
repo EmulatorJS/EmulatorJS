@@ -1,13 +1,13 @@
 {
     "nes": {
-        "version":"17",
+        "version":"18",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
         "wasm": 1
     },
     "snes": {
-        "version":"14",
+        "version":"15",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
@@ -134,7 +134,7 @@
         "wasm": 1
     },
     "gb": {
-        "version":"5",
+        "version":"6",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
@@ -204,7 +204,7 @@
         "wasm": 0
     },
     "nds": {
-        "version":"10",
+        "version":"11",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
@@ -243,6 +243,13 @@
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
+        "wasm": 1
+    },
+    "dos": {
+        "version":"1",
+        "netplay": 0,
+        "state": 0,
+        "asmjs": 0,
         "wasm": 1
     }
 }
