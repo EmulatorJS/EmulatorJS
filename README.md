@@ -1,3 +1,6 @@
+<p align="center">
+<img src="https://user-images.githubusercontent.com/74841470/155255251-0a0840ee-51d7-4f9e-878b-1be287d9a984.png" width="250">
+</p>
 
 # EmulatorJS
 
@@ -21,7 +24,7 @@ When reporting bugs, please specify that you are using the beta version
 
 ---
 
-**⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
+**⸢ [EmulatorJS Website] ⸥ ⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
 
 ---
 
@@ -80,7 +83,7 @@ EJS_gameID = 1;
 
 <br>
 
-by default, the netplay server url will be `emulatorjs.herokuapp.com`, but to default to the default `ws.emulatorjs.com` server add the following line
+by default, the netplay server url will be `emuserver.emulatorjs.ga`, but to default to the default `ws.emulatorjs.com` server add the following line
 
 ```js
 EJS_oldEJSNetplayServer = true;
@@ -165,7 +168,7 @@ EJS_paths = {
 
 ##### Localization
 
-please see [data/localization/readme.md](the localization readme)
+please see [the localization readme]
 
 <br>
 
@@ -188,25 +191,29 @@ set the mame core value to the mame core number (`1` - `6`) + `|` + save states 
 
 # LICENSE
 
-Licenced under the Apache License 2.0
+Licenced under the GNU General Public License v3.0
 
 Please state changes and the licence when re-distributing
 
-Read the whole license [here](LICENSE)
+[Read the whole license here]
+
+If I find a repository that does not follow the licence, I will report it.
 
 
 <!----------------------------------------------------------------------------->
 
+[EmulatorJS Website]: https://emulatorjs.ga/
 [Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
-[Emulator Demo]: https://ethanaobrien.github.io/emulatorjs/
-[Beta]: https://emulatorjs.netlify.app/
+[Emulator Demo]: https://emulatorjs.ga/demo/
+[Beta]: https://emulatorjs.ga/beta/
 
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 [This repository]: https://github.com/linuxserver/emulatorjs
 
-[EJS]: https://www.emulatorjs.com/
-
 [Server]: https://github.com/ethanaobrien/emuserver/releases
+
+[the localization readme]: data/localization/
+[Read the whole license here]: LICENSE
 
 [NES / Famicom]: docs/NES-Famicom.md
 [SNES]: docs/SNES.md
