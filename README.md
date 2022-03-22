@@ -203,7 +203,7 @@ set the mame core value to the mame core number (`1` - `6`) + `|` + save states 
 
 # LICENSE
 
-Licenced under the Apache License 2.0
+Licenced under the GNU General Public License v3.0
 
 Please state changes and the licence when re-distributing
 
