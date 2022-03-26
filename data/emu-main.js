@@ -20,9 +20,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'enterFullscreen': 'Enter fullscreen',
                 'exitFullscreen': 'Exit fullscreen',
                 'settings': 'Settings',
-                'saveState': 'Save State (Shift + F2)',
-                'loadState': 'Load State (Shift + F4)',
-                'screenRecord': 'Start Screen Recording',
                 'netplay': 'Netplay',
                 'gamepad': 'Control Settings',
                 'cheat': 'Cheats',
@@ -55,9 +52,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     'play': '[data-btn="play"]',
                     'pause': '[data-btn="pause"]',
                     'mute': '[data-btn="mute"]',
+                    'fullscreen': '[data-btn="fullscreen"]',
                     'settings': '[data-btn="settings"]',
                     'gamepad': '[data-btn="gamepad"]',
                     'netplay': '[data-btn="netplay"]',
+                    'cheat': '[data-btn="cheat"]'
                 },
                 'inputs': {
                     'volume': '[data-range="volume"]'
