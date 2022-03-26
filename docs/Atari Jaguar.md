@@ -1,20 +1,41 @@
-<h2>Atari Jaguar</h2>
+# Atari Jaguar
 
-Code example
 
-```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
+I do not know the file extension limits for this system. <br>
+There is no bios for this system.
+
+
+## Code example
+
+```html
+<div style='width:640px;height:480px;max-width:100%'>
+    <div id='game'></div>
+</div>
+
+<script type='text/javascript'>
+
     EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
     EJS_core = 'jaguar';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
+
+    // URL to Bios file
+
+    EJS_biosUrl = '';
+    
+    // URL to Game rom
+     
+    EJS_gameUrl = '';
+    
+    /*
+     *  Path to the WASM / JS files
+     *  HAS TO BE in the same directory.
+     */
+    
+    EJS_pathtodata = 'data/';
+    
 </script>
-<script src="data/loader.js"></script>
+
+<script src='data/loader.js'></script>
 ```
 
-I do not know the file extension limits for this system.
 
-There is no bios for this system
+
