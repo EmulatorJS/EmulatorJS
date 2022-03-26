@@ -16,10 +16,6 @@ There is no bios for this system.
 
     EJS_player = '#game';
     EJS_core = 'jaguar';
-
-    // URL to Bios file
-
-    EJS_biosUrl = '';
     
     // URL to Game rom
      
