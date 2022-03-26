@@ -1,4 +1,4 @@
-<h2>3DO</h2>
+# 3DO
 
 ## Code example
 
