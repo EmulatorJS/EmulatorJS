@@ -37,7 +37,7 @@
     "arcade": {
         "version":"14",
         "netplay": 1,
-        "state": 1,
+        "state": 0,
         "asmjs": 1,
         "wasm": 1
     },
