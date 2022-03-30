@@ -1,19 +1,35 @@
-<h2>Nintendo 64</h2>
+# Nintendo 64
 
-Code Example
-
-```
-<div style="width:640px;height:480px;max-width:100%">
-        <div id="game"></div>
-      </div>
-<script type="text/javascript">
-    EJS_player = '#game';
-    EJS_gameUrl = ''; // Url to Game rom
-    EJS_core = 'n64';
-    EJS_pathtodata = 'data/'; //path to all of the wasm and js files. MUST all be in the same directory!!
-</script>
-<script src="data/loader.js"></script>
-```
-I do not know the file extension limits for this system. I know the `.z64` roms work.
-
+I do not know the file extension limits for this system. <br>
+I know the `.z64` roms work. <br>
 There is no bios for this system
+
+## Code Example
+
+```html
+<div style='width:640px;height:480px;max-width:100%'>
+    <div id='game'></div>
+</div>
+
+<script type='text/javascript'>
+
+    EJS_player = '#game';
+    EJS_core = 'n64';
+
+    // URL to Game rom
+     
+    EJS_gameUrl = '';
+    
+    /*
+     *  Path to the WASM / JS files
+     *  HAS TO BE in the same directory.
+     */
+    
+    EJS_pathtodata = 'data/';
+    
+</script>
+
+<script src='data/loader.js'></script>
+```
+
+
