@@ -1,4 +1,3 @@
-[![Badge License]][License]
 
 <p align = 'center'>
     <img src = 'docs/Emulatorjs%20Logo.png' width = '300px'>
@@ -17,13 +16,16 @@
 ---
 
 <p align = 'center'>
-    ⸢ <a href = 'https://emulatorjs.ga/'><b>EmulatorJS Website</b></a> ⸥ 
-    ⸢ <a href = 'https://coldcast.org/games/1/Super-Mario-Bros'><b>Example Use</b></a> ⸥ 
-    ⸢ <a href = 'https://emulatorjs.ga/demo/'><b>Emulator Demo</b></a> ⸥ 
+    ⸢ <a href = 'https://emulatorjs.ga/'><b>Website</b></a> ⸥ 
+    ⸢ <a href = 'docs/Usage.md'><b>Usage</b></a> ⸥ 
+    ⸢ <a href = 'https://coldcast.org/games/1/Super-Mario-Bros'><b>Example</b></a> ⸥ 
+    ⸢ <a href = 'https://emulatorjs.ga/demo/'><b>Demo</b></a> ⸥ 
     ⸢ <a href = 'https://emulatorjs.ga/beta/'><b>Beta</b></a> ⸥
 </p>
 
 ---
+
+<br>
 
 *If something doesn't work, please consider opening an* ***[Issue]*** <br>
 *with as many details as possible, as well as the console log.*
@@ -39,32 +41,41 @@ EJS_BETA = true;
 
 When reporting bugs, please specify that you are using the beta version
 
+<br>
+
 ---
 
-## Supported Systems
+<br>
+
+<h2 align = 'center'>Supported Systems</h2>
+
+<br>
 
 #### Nintendo
 
 **[Game Boy Advance][Nintendo Game Boy Advance]** | **[Famicom / NES][NES / Famicom]** | **[Virtual Boy][Virtual Boy]** | **[Game Boy][Nintendo Game Boy]** | **[SNES]** | **[DS][Nintendo DS]** | **[64][Nintendo 64]**
 
+<br>
+
 #### Sega
 **[Master System][Sega Master System]** | **[Mega Drive][Sega Mega Drive]** | **[Game Gear][Sega Game Gear]** | **[Saturn][Sega Saturn]** | **[32X][Sega 32X]** | **[CD][Sega CD]**
+
+<br>
 
 #### Atari
 
 **[Jaguar][Atari Jaguar]** | **[Lynx][Atari Lynx]** | **[7800][Atari 7800]** | **[2600][Atari 2600]**
 
+<br>
+
 #### Other
 
 **[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]** | **[WanderSwan Color][WanderSwan / Color]** | **[Neo Geo Poket][Neo Geo Poket]** | **[PlayStation]** | **[Arcade]** | **[MSX]** | **[3DO]**
 
----
-
-
-
 
 <!----------------------------------------------------------------------------->
 
+[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 
 [NES / Famicom]: docs/NES-Famicom.md
 [SNES]: docs/SNES.md
