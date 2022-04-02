@@ -13,8 +13,6 @@
     Self-hosted <b>Javascript</b> emulation for various system.
 </p>
 
----
-
 <p align = 'center'>
     ⸢ <a href = 'https://emulatorjs.ga/'><b>Website</b></a> ⸥ 
     ⸢ <a href = 'docs/Usage.md'><b>Usage</b></a> ⸥ 
@@ -25,17 +23,24 @@
 
 <br>
 <br>
+<br>
 
-<h2 align = 'center'>Info</h2>
+<h1 align = 'center'>Info</h1>
+
+<br>
 
 ### Issues
 
 *If something doesn't work, please consider opening an* ***[Issue]*** <br>
 *with as many details as possible, as well as the console log.*
 
+<br>
+
 ### Audio
 
 *The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
+
+<br>
 
 ### Beta
 
@@ -50,8 +55,9 @@ EJS_BETA = true;
 
 <br>
 <br>
+<br>
 
-<h2 align = 'center'>Supported Systems</h2>
+<h1 align = 'center'>Supported Systems</h1>
 
 <br>
 
