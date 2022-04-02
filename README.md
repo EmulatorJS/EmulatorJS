@@ -102,27 +102,27 @@ EJS_BETA = true;
 
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 
-[NES / Famicom]: docs/NES-Famicom.md
-[SNES]: docs/SNES.md
-[Nintendo 64]: docs/Nintendo%2064.md
-[Nintendo Game Boy]: docs/Nintendo%20Game%20Boy.md
-[Nintendo Game Boy Advance]: docs/Nintendo%20Game%20Boy%20Advance.md
-[Nintendo DS]: docs/Nintendo%20DS.md
-[PlayStation]: docs/PlayStation.md
-[Virtual Boy]: docs/Virtual%20Boy.md
-[Sega Mega Drive]: docs/Sega%20Mega%20Drive.md
-[Sega Master System]: docs/Sega%20Master%20System.md
-[Sega CD]: docs/Sega%20CD.md
-[Atari Lynx]: docs/Atari%20Lynx.md
-[MSX]: docs/MSX.md
-[3DO]: docs/3DO.md
-[Sega 32X]: docs/Sega%2032X.md
-[Atari Jaguar]: docs/Atari%20Jaguar.md
-[Neo Geo Poket]: docs/Neo%20Geo%20Poket.md
-[Sega Game Gear]: docs/Sega%20Game%20Gear.md
-[Sega Saturn]: docs/Sega%20Saturn.md
-[Atari 7800]: docs/Atari%207800.md
-[WanderSwan / Color]: docs/WanderSwan-Color.md
-[TurboGrafs-16 / PC Engine]: docs/TurboGrafs%2016-PC%20Engine.md
-[Arcade]: docs/Arcade.md
-[Atari 2600]: docs/Atari%202600.md
+[NES / Famicom]: docs/Systems/NES-Famicom.md
+[SNES]: docs/Systems/SNES.md
+[Nintendo 64]: docs/Systems/Nintendo%2064.md
+[Nintendo Game Boy]: docs/Systems/Nintendo%20Game%20Boy.md
+[Nintendo Game Boy Advance]: docs/Systems/Nintendo%20Game%20Boy%20Advance.md
+[Nintendo DS]: docs/Systems/Nintendo%20DS.md
+[PlayStation]: docs/Systems/PlayStation.md
+[Virtual Boy]: docs/Systems/Virtual%20Boy.md
+[Sega Mega Drive]: docs/Systems/Sega%20Mega%20Drive.md
+[Sega Master System]: docs/Systems/Sega%20Master%20System.md
+[Sega CD]: docs/Systems/Sega%20CD.md
+[Atari Lynx]: docs/Systems/Atari%20Lynx.md
+[MSX]: docs/Systems/MSX.md
+[3DO]: docs/Systems/3DO.md
+[Sega 32X]: docs/Systems/Sega%2032X.md
+[Atari Jaguar]: docs/Systems/Atari%20Jaguar.md
+[Neo Geo Poket]: docs/Systems/Neo%20Geo%20Poket.md
+[Sega Game Gear]: docs/Systems/Sega%20Game%20Gear.md
+[Sega Saturn]: docs/Systems/Sega%20Saturn.md
+[Atari 7800]: docs/Systems/Atari%207800.md
+[WanderSwan / Color]: docs/Systems/WanderSwan-Color.md
+[TurboGrafs-16 / PC Engine]: docs/Systems/TurboGrafs%2016-PC%20Engine.md
+[Arcade]: docs/Systems/Arcade.md
+[Atari 2600]: docs/Systems/Atari%202600.md
