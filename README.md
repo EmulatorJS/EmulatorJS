@@ -26,6 +26,31 @@
 <br>
 <br>
 
+<h2 align = 'center'>Info</h2>
+
+### Issues
+
+*If something doesn't work, please consider opening an* ***[Issue]*** <br>
+*with as many details as possible, as well as the console log.*
+
+### Audio
+
+*The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
+
+### Beta
+
+The **beta** of the emulator core is now available for *some* systems. <br>
+To use it, please add the following line to your code.
+
+```js
+EJS_BETA = true;
+```
+
+**>> When reporting bugs, please specify that you are using the beta version**
+
+<br>
+<br>
+
 <h2 align = 'center'>Supported Systems</h2>
 
 <br>
@@ -72,32 +97,6 @@
 **[3DO]**
 
 <br>
-<br>
-
-<h2 align = 'center'>Info</h2>
-
-### Issues
-
-*If something doesn't work, please consider opening an* ***[Issue]*** <br>
-*with as many details as possible, as well as the console log.*
-
-### Audio
-
-*The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
-
-### Beta
-
-The **beta** of the emulator core is now available for *some* systems. <br>
-To use it, please add the following line to your code.
-
-```js
-EJS_BETA = true;
-```
-
-**>> When reporting bugs, please specify that you are using the beta version**
-
-<br>
-
 
 <!----------------------------------------------------------------------------->
 
