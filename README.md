@@ -22,12 +22,6 @@
 </p>
 
 <br>
-<br>
-<br>
-
-<h1 align = 'center'>Info</h1>
-
-<br>
 
 ### Issues
 
