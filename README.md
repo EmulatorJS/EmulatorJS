@@ -1,6 +1,6 @@
 
 <p align = 'center'>
-    <img src = 'docs/Emulatorjs%20Logo.png' width = '300px'>
+    <img src = 'docs/Logo.png' width = '300px'>
     <br>
     <br>
     <a href = './LICENSE'>
