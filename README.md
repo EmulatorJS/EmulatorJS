@@ -1,3 +1,5 @@
+[![Badge License]][License]
+
 <p align="center">
 <img src="https://user-images.githubusercontent.com/74841470/155255251-0a0840ee-51d7-4f9e-878b-1be287d9a984.png" width="250">
 </p>
@@ -187,20 +189,13 @@ EJS_mameCore = '' // mame core options (example: '4|0')
 ```
 set the mame core value to the mame core number (`1` - `6`) + `|` + save states supported (`0` or `1`)
 
-<br>
-
-# LICENSE
-
-Licenced under the GNU General Public License v3.0
-
-Please state changes and the licence when re-distributing
-
-[Read the whole license here]
-
-If I find a repository that does not follow the licence, I will report it.
-
 
 <!----------------------------------------------------------------------------->
+
+
+[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg
+
+[License]: LICENSE
 
 [EmulatorJS Website]: https://emulatorjs.ga/
 [Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
@@ -213,7 +208,6 @@ If I find a repository that does not follow the licence, I will report it.
 [Server]: https://github.com/ethanaobrien/emuserver/releases
 
 [the localization readme]: data/localization/
-[Read the whole license here]: LICENSE
 
 [NES / Famicom]: docs/NES-Famicom.md
 [SNES]: docs/SNES.md
