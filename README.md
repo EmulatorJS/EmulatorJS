@@ -23,8 +23,7 @@
     ⸢ <a href = 'https://emulatorjs.ga/beta/'><b>Beta</b></a> ⸥
 </p>
 
----
-
+<br>
 <br>
 
 <h2 align = 'center'>Supported Systems</h2>
@@ -73,9 +72,6 @@
 **[3DO]**
 
 <br>
-
----
-
 <br>
 
 <h2 align = 'center'>Info</h2>
