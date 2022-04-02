@@ -1,10 +1,10 @@
-## Usage
+# Usage
 
 *For questions please use the* ***[Issue]*** *tab.*
 
 <br>
 
-##### Setup
+## Setup
 
 1. Download this repository.<br>
     *`Code ➞ Download As Zip`*
@@ -15,13 +15,13 @@
 
 <br>
 
-##### ROMs
+## ROMs
 
 **ROMs** can be used as `zip` / `rar` / `7z` archives.
 
 <br>
 
-##### Netplay
+## Netplay
 
 By default **Netplay** is ***disabled***, <br>
 to enable it, add the following:
@@ -53,7 +53,7 @@ EJS_netplayUrl = 'http://localhost:3000/'; // Absolute Url To Your Netplay Serve
 
 <br>
 
-##### Custom Save Filename
+## Custom Save Filename
 
 To customize the filename of save states <br>
 simply add the following lines of code.
@@ -66,7 +66,7 @@ EJS_gameName = 'Game Name';
 
 <br>
 
-##### AD
+## AD
 
 To place an advertisement in front of the <br>
 `play now` screen, include the following line:
@@ -77,7 +77,7 @@ EJS_AdUrl = 'URL';
 
 <br>
 
-##### Interface Color
+## Interface Color
 
 To use a different color for the emulator interface, use:
 
@@ -87,7 +87,7 @@ EJS_color = '#FF0000'; // Hex Color Code
 
 <br>
 
-##### Direct Start
+## Direct Start
 
 To start the emulator immediately, add this line:
 
@@ -100,7 +100,7 @@ EJS_startOnLoaded = true;
 
 <br>
 
-##### Custom Paths
+## Custom Paths
 
 Paths to emulator files can be customized with:
 
@@ -116,26 +116,24 @@ EJS_paths = {
 
 <br>
 
-##### Localization
+## Localization
 
-please see [the localization readme]
+Please see [the localization README].
 
 <br>
 
-##### USING MAME SYSTEM
+## Using MAME
 
-you must add the line
+To use the **MAME** system you will have to add:
 
 ```js
 EJS_core = 'mame';
-```
-
-and the line
-
-```js
 EJS_mameCore = '' // mame core options (example: '4|0')
 ```
-set the mame core value to the mame core number (`1` - `6`) + `|` + save states supported (`0` or `1`)
+
+to your code.
+
+Set the mame core value to the mame core number ( `1` - `6` ) + `|` + save states supported ( `0` or `1` )
 
 
 <!----------------------------------------------------------------------------->
