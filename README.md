@@ -1,14 +1,29 @@
 [![Badge License]][License]
 
-<p align="center">
-<img src="https://user-images.githubusercontent.com/74841470/155255251-0a0840ee-51d7-4f9e-878b-1be287d9a984.png" width="250">
+<p align = 'center'>
+    <img src = 'docs/Emulatorjs%20Logo.png' width = '300px'>
+    <br>
+    <br>
+    <a href = './LICENSE'>
+        <img src = 'https://img.shields.io/badge/License-GPLv3-blue.svg'>
+    </a>
+    <br>
 </p>
 
-# EmulatorJS
+<p align = 'center'>
+    Self-hosted <b>Javascript</b> emulation for various system.
+</p>
 
-Self-hosted **Javascript** emulation for various system.
+---
 
-<br>
+<p align = 'center'>
+    ⸢ <a href = 'https://emulatorjs.ga/'><b>EmulatorJS Website</b></a> ⸥ 
+    ⸢ <a href = 'https://coldcast.org/games/1/Super-Mario-Bros'><b>Example Use</b></a> ⸥ 
+    ⸢ <a href = 'https://emulatorjs.ga/demo/'><b>Emulator Demo</b></a> ⸥ 
+    ⸢ <a href = 'https://emulatorjs.ga/beta/'><b>Beta</b></a> ⸥
+</p>
+
+---
 
 *If something doesn't work, please consider opening an* ***[Issue]*** <br>
 *with as many details as possible, as well as the console log.*
@@ -23,10 +38,6 @@ EJS_BETA = true;
 ```
 
 When reporting bugs, please specify that you are using the beta version
-
----
-
-**⸢ [EmulatorJS Website] ⸥ ⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
 
 ---
 
@@ -191,16 +202,6 @@ set the mame core value to the mame core number (`1` - `6`) + `|` + save states 
 
 
 <!----------------------------------------------------------------------------->
-
-
-[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg
-
-[License]: LICENSE
-
-[EmulatorJS Website]: https://emulatorjs.ga/
-[Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
-[Emulator Demo]: https://emulatorjs.ga/demo/
-[Beta]: https://emulatorjs.ga/beta/
 
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 [This repository]: https://github.com/linuxserver/emulatorjs
