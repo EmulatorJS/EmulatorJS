@@ -45,6 +45,8 @@ To use it, please add the following line to your code.
 EJS_BETA = true;
 ```
 
+<br>
+
 **>> When reporting bugs, please specify that you are using the beta version**
 
 <br>
