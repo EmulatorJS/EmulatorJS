@@ -1,25 +1,25 @@
 
-<p align = 'center'>
-    <img src = 'docs/Logo.png' width = '300px'>
-    <br>
-    <br>
-    <a href = './LICENSE'>
-        <img src = 'https://img.shields.io/badge/License-GPLv3-blue.svg'>
-    </a>
-    <br>
-</p>
+<div align = center>
+    
+<img src = docs/Logo.png width = 300>
+    
+<br>
+<br>
+    
+[![Badge License]][License]
+    
+<br>
+    
+Self-hosted **Javascript** emulation for various system.
 
-<p align = 'center'>
-    Self-hosted <b>Javascript</b> emulation for various system.
-</p>
 
-<p align = 'center'>
-    ⸢ <a href = 'https://emulatorjs.ga/'><b>Website</b></a> ⸥ 
-    ⸢ <a href = 'docs/Usage.md'><b>Usage</b></a> ⸥ 
-    ⸢ <a href = 'https://coldcast.org/games/1/Super-Mario-Bros'><b>Example</b></a> ⸥ 
-    ⸢ <a href = 'https://emulatorjs.ga/demo/'><b>Demo</b></a> ⸥ 
-    ⸢ <a href = 'https://emulatorjs.ga/beta/'><b>Beta</b></a> ⸥
-</p>
+**⸢ [Website] ⸥**  
+**⸢ [Usage] ⸥**  
+**⸢ [Example] ⸥**  
+**⸢ [Demo] ⸥**  
+**⸢ [Beta] ⸥**
+    
+</div>
 
 <br>
 
@@ -51,7 +51,7 @@ EJS_BETA = true;
 <br>
 <br>
 
-<h1 align = 'center'>Supported Systems</h1>
+<h1 align = center>Supported Systems</h1>
 
 <br>
 
@@ -100,7 +100,17 @@ EJS_BETA = true;
 
 <!----------------------------------------------------------------------------->
 
+[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg
+
+[License]: LICENSE
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
+
+
+[Example]: https://coldcast.org/games/1/Super-Mario-Bros
+[Website]: https://emulatorjs.ga/
+[Usage]: docs/Usage.md
+[Demo]: https://emulatorjs.ga/demo/
+[Beta]: https://emulatorjs.ga/beta/
 
 [NES / Famicom]: docs/Systems/NES-Famicom.md
 [SNES]: docs/Systems/SNES.md
