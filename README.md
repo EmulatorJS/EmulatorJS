@@ -1,25 +1,25 @@
 
-<p align = 'center'>
-    <img src = 'docs/Logo.png' width = '300px'>
-    <br>
-    <br>
-    <a href = './LICENSE'>
-        <img src = 'https://img.shields.io/badge/License-GPLv3-blue.svg'>
-    </a>
-    <br>
-</p>
+<div align = center>
+    
+<img src = docs/Logo.png width = 300>
+    
+<br>
+<br>
+    
+[![Badge License]][License]
+    
+<br>
+    
+Self-hosted **Javascript** emulation for various system.
 
-<p align = 'center'>
-    Self-hosted <b>Javascript</b> emulation for various system.
-</p>
 
-<p align = 'center'>
-    ⸢ <a href = 'https://emulatorjs.ga/'><b>Website</b></a> ⸥ 
-    ⸢ <a href = 'docs/Usage.md'><b>Usage</b></a> ⸥ 
-    ⸢ <a href = 'https://coldcast.org/games/1/Super-Mario-Bros'><b>Example</b></a> ⸥ 
-    ⸢ <a href = 'https://emulatorjs.ga/demo/'><b>Demo</b></a> ⸥ 
-    ⸢ <a href = 'https://emulatorjs.ga/beta/'><b>Beta</b></a> ⸥
-</p>
+**⸢ [Website] ⸥**  
+**⸢ [Usage] ⸥**  
+**⸢ [Example] ⸥**  
+**⸢ [Demo] ⸥**  
+**⸢ [Beta] ⸥**
+    
+</div>
 
 <br>
 
@@ -45,39 +45,48 @@ To use it, please add the following line to your code.
 EJS_BETA = true;
 ```
 
+<br>
+
 **>> When reporting bugs, please specify that you are using the beta version**
 
 <br>
 <br>
 <br>
 
-<h1 align = 'center'>Supported Systems</h1>
+<h1 align = center>Supported Systems</h1>
 
 <br>
 
-#### Nintendo
+<div align = center>
+
+### Nintendo
 
 **[Game Boy Advance][Nintendo Game Boy Advance]**   | 
 **[Famicom / NES][NES / Famicom]**   | 
-**[Virtual Boy][Virtual Boy]**   | 
+**[Virtual Boy][Virtual Boy]**
+    
 **[Game Boy][Nintendo Game Boy]**   | 
 **[SNES]**   | 
 **[DS][Nintendo DS]**   | 
 **[64][Nintendo 64]**
 
 <br>
+<br>
 
-#### Sega
+### Sega
+
 **[Master System][Sega Master System]**   | 
 **[Mega Drive][Sega Mega Drive]**   | 
-**[Game Gear][Sega Game Gear]**   | 
+**[Game Gear][Sega Game Gear]**
+    
 **[Saturn][Sega Saturn]**   | 
 **[32X][Sega 32X]**   | 
 **[CD][Sega CD]**
-
+    
+<br>
 <br>
 
-#### Atari
+### Atari
 
 **[Jaguar][Atari Jaguar]**   | 
 **[Lynx][Atari Lynx]**   | 
@@ -85,22 +94,36 @@ EJS_BETA = true;
 **[2600][Atari 2600]**
 
 <br>
+<br>
 
-#### Other
+### Other
 
 **[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]**   | 
 **[WanderSwan Color][WanderSwan / Color]**   | 
-**[Neo Geo Poket][Neo Geo Poket]**   | 
+**[Neo Geo Poket][Neo Geo Poket]**
+    
 **[PlayStation]**   | 
 **[Arcade]**   | 
 **[MSX]**   | 
 **[3DO]**
+    
+</div>
 
 <br>
 
 <!----------------------------------------------------------------------------->
 
+[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg
+
+[License]: LICENSE
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
+
+
+[Example]: https://coldcast.org/games/1/Super-Mario-Bros
+[Website]: https://emulatorjs.ga/
+[Usage]: docs/Usage.md
+[Demo]: https://emulatorjs.ga/demo/
+[Beta]: https://emulatorjs.ga/beta/
 
 [NES / Famicom]: docs/Systems/NES-Famicom.md
 [SNES]: docs/Systems/SNES.md
