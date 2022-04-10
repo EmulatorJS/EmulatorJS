@@ -57,9 +57,9 @@ EJS_BETA = true;
 
 <br>
 
-### Nintendo
-
 <div align = center>
+
+### Nintendo
 
 **[Game Boy Advance][Nintendo Game Boy Advance]**   | 
 **[Famicom / NES][NES / Famicom]**   | 
@@ -70,13 +70,10 @@ EJS_BETA = true;
 **[DS][Nintendo DS]**   | 
 **[64][Nintendo 64]**
 
-</div>
 <br>
 <br>
 
 ### Sega
-
-<div align = center>
 
 **[Master System][Sega Master System]**   | 
 **[Mega Drive][Sega Mega Drive]**   | 
@@ -86,26 +83,20 @@ EJS_BETA = true;
 **[32X][Sega 32X]**   | 
 **[CD][Sega CD]**
     
-</div>
 <br>
 <br>
 
 ### Atari
-
-<div align = center>
 
 **[Jaguar][Atari Jaguar]**   | 
 **[Lynx][Atari Lynx]**   | 
 **[7800][Atari 7800]**   | 
 **[2600][Atari 2600]**
 
-</div>
 <br>
 <br>
 
 ### Other
-
-<div align = center>
 
 **[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]**   | 
 **[WanderSwan Color][WanderSwan / Color]**   | 
