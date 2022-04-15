@@ -15,8 +15,9 @@ Self-hosted **Javascript** emulation for various system.
 
 **⸢ [Website] ⸥**  
 **⸢ [Usage] ⸥**  
-**⸢ [Example] ⸥**  
-**⸢ [Demo] ⸥**  
+**⸢ [Old Example] ⸥**  
+**⸢ [Demo] ⸥** 
+**⸢ [Code Creater] ⸥**   
 **⸢ [Beta] ⸥**
     
 </div>
@@ -119,11 +120,12 @@ EJS_BETA = true;
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 
 
-[Example]: https://coldcast.org/games/1/Super-Mario-Bros
+[Old Example]: https://coldcast.org/games/1/Super-Mario-Bros
 [Website]: https://emulatorjs.ga/
 [Usage]: docs/Usage.md
 [Demo]: https://emulatorjs.ga/demo/
 [Beta]: https://emulatorjs.ga/beta/
+[Code Creater]: https://emulatorjs.ga/codehelper
 
 [NES / Famicom]: docs/Systems/NES-Famicom.md
 [SNES]: docs/Systems/SNES.md
