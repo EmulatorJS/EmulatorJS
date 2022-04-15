@@ -16,9 +16,9 @@ Self-hosted **Javascript** emulation for various system.
 **⸢ [Website] ⸥**  
 **⸢ [Usage] ⸥**  
 **⸢ [Old Example] ⸥**  
-**⸢ [Demo] ⸥** 
-**⸢ [Code Creater] ⸥**   
-**⸢ [Beta] ⸥**
+**⸢ [Demo] ⸥**  
+**⸢ [Code Creater] ⸥**  
+**⸢ [Beta] ⸥**  
     
 </div>
 
