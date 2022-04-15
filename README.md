@@ -15,9 +15,8 @@ Self-hosted **Javascript** emulation for various system.
 
 **⸢ [Website] ⸥**  
 **⸢ [Usage] ⸥**  
-**⸢ [Old Example] ⸥**  
+**⸢ [Example] ⸥**  
 **⸢ [Demo] ⸥** 
-**⸢ [Code Creater] ⸥** 
 **⸢ [Beta] ⸥**
     
 </div>
@@ -136,7 +135,6 @@ EJS_BETA = true;
 [Website]: https://emulatorjs.ga/
 [Usage]: docs/Usage.md
 [Demo]: https://emulatorjs.ga/demo/
-[Code Creater]: https://emulatorjs.ga/codehelper
 [Beta]: https://emulatorjs.ga/beta/
 
 [NES / Famicom]: docs/Systems/NES-Famicom.md
