@@ -34,7 +34,15 @@ Self-hosted **Javascript** emulation for various system.
 
 ### Audio
 
-*The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
+*The **Screen Recording** option currently doesn't support **Audio** .*
+
+<br>
+
+### Extensions
+
+ **[GameLibrary]**
+
+   *A library overview for your **ROM** folder.*
 
 <br>
 
@@ -118,6 +126,11 @@ EJS_BETA = true;
 
 [License]: LICENSE
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
+
+
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Extensions   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+
+[GameLibrary]: https://github.com/Ramaerel/emulatorjs-GameLibrary
 
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
