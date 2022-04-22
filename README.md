@@ -12,13 +12,14 @@
     
 Self-hosted **Javascript** emulation for various system.
 
+<br>
 
-**⸢ [Website] ⸥**  
-**⸢ [Usage] ⸥**  
-**⸢ [Old Example] ⸥**  
-**⸢ [Demo] ⸥**  
-**⸢ [Code Creater] ⸥**  
-**⸢ [Beta] ⸥**  
+[![Badge Website]][Website] 
+[![Badge Usage]][Usage]<br>
+[![Badge Configurator]][Configurator]<br>
+[![Badge Demo]][Demo] 
+[![Badge Legacy]][Legacy] 
+[![Badge Beta]][Beta] 
     
 </div>
 
@@ -33,7 +34,15 @@ Self-hosted **Javascript** emulation for various system.
 
 ### Audio
 
-*The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
+*The **Screen Recording** option currently doesn't support **Audio** .*
+
+<br>
+
+### Extensions
+
+ **[GameLibrary]**
+
+   *A library overview for your **ROM** folder.*
 
 <br>
 
@@ -112,42 +121,67 @@ EJS_BETA = true;
 
 <br>
 
-<!----------------------------------------------------------------------------->
 
-[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
 [License]: LICENSE
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 
 
-[Old Example]: https://coldcast.org/games/1/Super-Mario-Bros
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Extensions   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+
+[GameLibrary]: https://github.com/Ramaerel/emulatorjs-GameLibrary
+
+
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+
+[Configurator]: https://emulatorjs.ga/codehelper
 [Website]: https://emulatorjs.ga/
+[Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
 [Usage]: docs/Usage.md
 [Demo]: https://emulatorjs.ga/demo/
 [Beta]: https://emulatorjs.ga/beta/
-[Code Creater]: https://emulatorjs.ga/codehelper
+
+
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
+
+[Nintendo Game Boy Advance]: docs/Systems/Nintendo%20Game%20Boy%20Advance.md
+[Nintendo Game Boy]: docs/Systems/Nintendo%20Game%20Boy.md
+[Nintendo 64]: docs/Systems/Nintendo%2064.md
+[Nintendo DS]: docs/Systems/Nintendo%20DS.md
+
+[Sega Master System]: docs/Systems/Sega%20Master%20System.md
+[Sega Mega Drive]: docs/Systems/Sega%20Mega%20Drive.md
+[Sega Game Gear]: docs/Systems/Sega%20Game%20Gear.md
+[Sega Saturn]: docs/Systems/Sega%20Saturn.md
+[Sega 32X]: docs/Systems/Sega%2032X.md
+[Sega CD]: docs/Systems/Sega%20CD.md
+
+[Atari Jaguar]: docs/Systems/Atari%20Jaguar.md
+[Atari Lynx]: docs/Systems/Atari%20Lynx.md
+[Atari 7800]: docs/Systems/Atari%207800.md
+[Atari 2600]: docs/Systems/Atari%202600.md
 
 [NES / Famicom]: docs/Systems/NES-Famicom.md
 [SNES]: docs/Systems/SNES.md
-[Nintendo 64]: docs/Systems/Nintendo%2064.md
-[Nintendo Game Boy]: docs/Systems/Nintendo%20Game%20Boy.md
-[Nintendo Game Boy Advance]: docs/Systems/Nintendo%20Game%20Boy%20Advance.md
-[Nintendo DS]: docs/Systems/Nintendo%20DS.md
+
+[TurboGrafs-16 / PC Engine]: docs/Systems/TurboGrafs%2016-PC%20Engine.md
+[WanderSwan / Color]: docs/Systems/WanderSwan-Color.md
+[Neo Geo Poket]: docs/Systems/Neo%20Geo%20Poket.md
 [PlayStation]: docs/Systems/PlayStation.md
 [Virtual Boy]: docs/Systems/Virtual%20Boy.md
-[Sega Mega Drive]: docs/Systems/Sega%20Mega%20Drive.md
-[Sega Master System]: docs/Systems/Sega%20Master%20System.md
-[Sega CD]: docs/Systems/Sega%20CD.md
-[Atari Lynx]: docs/Systems/Atari%20Lynx.md
+[Arcade]: docs/Systems/Arcade.md
 [MSX]: docs/Systems/MSX.md
 [3DO]: docs/Systems/3DO.md
-[Sega 32X]: docs/Systems/Sega%2032X.md
-[Atari Jaguar]: docs/Systems/Atari%20Jaguar.md
-[Neo Geo Poket]: docs/Systems/Neo%20Geo%20Poket.md
-[Sega Game Gear]: docs/Systems/Sega%20Game%20Gear.md
-[Sega Saturn]: docs/Systems/Sega%20Saturn.md
-[Atari 7800]: docs/Systems/Atari%207800.md
-[WanderSwan / Color]: docs/Systems/WanderSwan-Color.md
-[TurboGrafs-16 / PC Engine]: docs/Systems/TurboGrafs%2016-PC%20Engine.md
-[Arcade]: docs/Systems/Arcade.md
-[Atari 2600]: docs/Systems/Atari%202600.md
+
+
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+
+[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge
+
+[Badge Configurator]: https://img.shields.io/badge/Configurator-992cb3?style=for-the-badge
+[Badge Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
+[Badge Legacy]: https://img.shields.io/badge/Legacy-ab910b?style=for-the-badge
+[Badge Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
+[Badge Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
+[Badge Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
