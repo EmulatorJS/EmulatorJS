@@ -5,7 +5,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         window.EJS_RESET_VARS.push(k);
     }
     _0x2c1832.r(_0x17edbf);
-    _0x2c1832(0xa2), _0x2c1832(0x16c), _0x2c1832(0x16d);
+    _0x2c1832(0xa2);
+    _0x2c1832(0x16c);
+    _0x2c1832(0x16d);
     var _0x39ca5e = {
             'volume': 0.5,
             'muted': false,
@@ -4052,7 +4054,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.recordData = {started:false, data:[], stopped: false}
                     }
                     if (! _0xa88a13.recordData.started) { //start recording
-                        _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Stop Screen Recording');
                         if (MediaRecorder.isTypeSupported('video/webm; codecs=h264')) {
                             var options = {mimeType: 'video/webm; codecs=h264'}; // video/webm; codecs=h264,opus
                         } else if (MediaRecorder.isTypeSupported('video/webm; codecs=H264')) {
@@ -4070,28 +4071,51 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } else {
                             var options = {};
                         }
-                        _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
-                        //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
-                        _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
-                        _0xa88a13.recordData.recorder.ondataavailable = function(e) {
-                            if (e.data.size > 0) {
-                                _0xa88a13.recordData.data.push(e.data)
-                            }
-                            if (_0xa88a13.recordData.stopped) {
-                                var a = document.createElement("a")
-                                a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
-                                if (typeof _0xa88a13.gameName == 'string') {
-                                    var aname = _0xa88a13.gameName
+                        function gotStreams(stream) {
+                            _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Stop Screen Recording');
+                            _0xa88a13.recordData.stream = stream;
+                            //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
+                            _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
+                            _0xa88a13.recordData.recorder.ondataavailable = function(e) {
+                                if (e.data.size > 0) {
+                                    _0xa88a13.recordData.data.push(e.data)
                                 }
-                                a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
-                                a.click()
-                                window.URL.revokeObjectURL(a.href)
-                                delete _0xa88a13.recordData
-                                _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Start Screen Recording');
+                                if (_0xa88a13.recordData.stopped) {
+                                    var a = document.createElement("a")
+                                    a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
+                                    if (typeof _0xa88a13.gameName == 'string') {
+                                        var aname = _0xa88a13.gameName
+                                    }
+                                    a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
+                                    a.click()
+                                    window.URL.revokeObjectURL(a.href)
+                                    delete _0xa88a13.recordData
+                                    _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Start Screen Recording');
+                                }
                             }
+                            _0xa88a13.recordData.recorder.start()
+                            _0xa88a13.recordData.started = true
                         }
-                        _0xa88a13.recordData.recorder.start()
-                        _0xa88a13.recordData.started = true
+                        _0x27f4c4.Module.pauseMainLoop();
+                        alert('please check "share system audio" to have audio in the recording. We only need the audio stream so your entire screen will not be recorded');
+                        var canvasStream = _0x27f4c4.Module.canvas.captureStream(30);
+                        var time = setTimeout(function() {
+                            _0x27f4c4.Module.resumeMainLoop();
+                        }, 20000);
+                        navigator.mediaDevices.getDisplayMedia({
+                            audio: true,  //we only need the audio, we dont use the video stream at all
+                            video: {mediaSource: "screen"}
+                        }).then(function(stream) {
+                            try {
+                                clearTimeout(time);
+                            }catch(e){}
+                            var audio = stream.getAudioTracks();
+                            for (var i=0; i<audio.length; i++) {
+                                canvasStream.addTrack(audio[i]);
+                            }
+                            gotStreams(canvasStream);
+                            _0x27f4c4.Module.resumeMainLoop();
+                        })
                     } else if (_0xa88a13.recordData.started) { //stop recording
                         _0xa88a13.recordData.recorder.stop()
                         _0xa88a13.recordData.stopped = true

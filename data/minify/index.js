@@ -14,6 +14,8 @@ function minify(source){
     var ast = UglifyJS.parse(source); 
     return UglifyJS.minify(ast).code;
 }
+console.log('minifying')
 var min = minify(code);
+console.log('done!')
 
 fs.writeFileSync('../emu-min.js', min);
