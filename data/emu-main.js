@@ -5,9 +5,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         window.EJS_RESET_VARS.push(k);
     }
     _0x2c1832.r(_0x17edbf);
-    _0x2c1832(0xa2);
-    _0x2c1832(0x16c);
-    _0x2c1832(0x16d);
     var _0x39ca5e = {
             'volume': 0.5,
             'muted': false,
@@ -101,7 +98,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'tabFocus': 'ejs__tab-focus'
             }
         },
-        _0x3d61f9 = _0x2c1832(0x38),
         _0x5127f4 = _0x2c1832(0x9d),
         _0x48e5ff = _0x2c1832.n(_0x5127f4),
         _0x406e79 = function(_0x2aa74f) {
@@ -4074,7 +4070,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         function gotStreams(stream) {
                             _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Stop Screen Recording');
                             _0xa88a13.recordData.stream = stream;
-                            //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
                             _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
                             _0xa88a13.recordData.recorder.ondataavailable = function(e) {
                                 if (e.data.size > 0) {
@@ -4097,9 +4092,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xa88a13.recordData.started = true
                         }
                         _0x27f4c4.Module.pauseMainLoop();
+                        _0xa88a13.playing = false;
                         alert('please check "share system audio" to have audio in the recording. We only need the audio stream so your entire screen will not be recorded');
                         var canvasStream = _0x27f4c4.Module.canvas.captureStream(30);
                         var time = setTimeout(function() {
+                            _0xa88a13.playing = true;
                             _0x27f4c4.Module.resumeMainLoop();
                         }, 20000);
                         navigator.mediaDevices.getDisplayMedia({
@@ -4114,6 +4111,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 canvasStream.addTrack(audio[i]);
                             }
                             gotStreams(canvasStream);
+                            _0xa88a13.playing = true;
                             _0x27f4c4.Module.resumeMainLoop();
                         })
                     } else if (_0xa88a13.recordData.started) { //stop recording
@@ -6263,19 +6261,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         split1.push(split3[i])
                     }
                 }
-                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1 && path.split('blob:').length == 1) {
+                if (! path.startsWith('/') && path.includes('://') && path.includes('http:') && path.includes('https:') && path.includes('file:') && path.includes('blob:')) {
                     for (var w=0; w<split2.length; w++) {
                         if (split2[w] == '' || split2[w] == '.') {
                         } else if (split2[w] == '..') {
                             if (split1.length > 0) {
                                 var split1 = function(origpath) {
-                                    var fullrequestpath = origpath
-                                    var finpath = fullrequestpath.split('/').pop()
-                                    var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
-                                    if (origpath == '/') {
+                                    if (origpath === '/') {
                                         return '/'
                                     } else {
-                                        return finalpath
+                                        return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
                                     }
                                 }(split1.join('/')).split('/');
                             }
@@ -6580,4 +6575,3 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     _0x3dbc76.defaults = {};
     _0x17edbf.default = _0x3dbc76;
 }
-
