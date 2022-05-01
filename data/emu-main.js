@@ -6261,7 +6261,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         split1.push(split3[i])
                     }
                 }
-                if (! path.startsWith('/') && path.includes('://') && path.includes('http:') && path.includes('https:') && path.includes('file:') && path.includes('blob:')) {
+                if (! path.startsWith('/') && !path.includes('://') && !path.includes('http:') && !path.includes('https:') && !path.includes('file:') && !path.includes('blob:')) {
                     for (var w=0; w<split2.length; w++) {
                         if (split2[w] == '' || split2[w] == '.') {
                         } else if (split2[w] == '..') {
