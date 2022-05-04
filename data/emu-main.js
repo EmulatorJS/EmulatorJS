@@ -582,10 +582,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         }]) && _0x4c97b0(_0x17edbf.prototype, _0x2c1832), _0x4496fc && _0x4c97b0(_0x17edbf, _0x4496fc), _0x566dbe;
     }();
-    var _0x13fb79, _0x569918 = _0x2c1832(0x6c),
+    var _0x13fb79, _0x569918 = _0x2c1832(108),
         _0x4e4ca6 = _0x2c1832.n(_0x569918),
-        _0x4ad1c6 = _0x2c1832(0x6),
-        _0x4704b1 = _0x2c1832(0x9f),
+        _0x4ad1c6 = _0x2c1832(6),
+        _0x4704b1 = _0x2c1832(159),
         _0x3a58c8 = _0x2c1832.n(_0x4704b1),
         _0x5032e6 = {
             '2xScaleHQ.glslp': 'shaders = 1\n\nshader0 = "2xScaleHQ.glsl"\nfilter_linear0 = false\nscale_type_0 = source\n',
@@ -602,7 +602,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         _0x5bb4c9 = _0x2c1832(0x39),
         _0x50f370 = _0x2c1832.n(_0x5bb4c9),
         _0x246d02 = _0x2c1832(0xb),
-        _0x550f17 = _0x2c1832.n(_0x246d02),
+        _0x550f17 = _0x2c1832.n(_0x246d02).a,
         _0x5ab74d = {
             'addStyleHook': function() {
                 _0x3a8e2f(this.elements.container, this.config.selectors.container.replace('.', ''), true), _0x3a8e2f(this.elements.container, this.config.classNames.uiSupported, true), _0x3a8e2f(this.elements.container, this.config.classNames.hideControls, true);
@@ -1561,16 +1561,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x139f1c = _0x154dc5[_0x154dc5.length - 0x1];
                         _0x139f1c.indexOf('?') > -0x1 && (_0x139f1c = _0x139f1c.substr(0x0, _0x139f1c.indexOf('?')));
                         _0x139f1c.split('.').pop();
-                        _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data'), ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl && (_0x2c1832.innerHTML += ' (2/2)'), _0x17edbf.config.gamePatchUrl && (_0x2c1832.innerHTML += ' (2/2)');
-                        new Promise(async function(resolve, reject) {
+                        _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data');
+                        if (['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl) {
+                            _0x2c1832.innerHTML += ' (2/2)';
+                        }
+                        if (_0x17edbf.config.gamePatchUrl) {
+                            _0x2c1832.innerHTML += ' (2/2)';
+                        }
+                        (function() {
                             if (! _0x3cf3cf.startsWith('blob:')) {
-                                resolve(await _0x550f17.a.head(_0x3cf3cf, {}))
+                                return _0x550f17.a.head(_0x3cf3cf, {});
                             } else {
-                                var a = await fetch(_0x3cf3cf)
-                                var a = await a.blob()
-                                resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}})
+                                return new Promise(async function(resolve, reject) {
+                                    var a = await fetch(_0x3cf3cf);
+                                    var a = await a.blob();
+                                    resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}});
+                                })
                             }
-                        }).then(function(_0x3d703e) {
+                        })().then(function(_0x3d703e) {
                             var _0x21b526 = _0x3d703e.headers['content-length'],
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
                                 _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
@@ -1618,7 +1626,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 });
                                         _0x3512e9(_0x139f1c, _0x17edbf);
                                     }).catch(function(_0x2e4d62) {
-                                        console.log(_0x2e4d62), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                        void 0 === _0x2e4d62.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                     });
                                 };
                             _0x1ffb98.db ? _0x1ffb98.get(_0x107e8a, function(_0x5afc4a) {
@@ -1642,7 +1650,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 else _0x43a689();
                             }) : _0x43a689();
                         }).catch(function(_0x5ec6be) {
-                            _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                            void 0 === _0x5ec6be.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                         });
                     },
                     _0x139f68 = function() {
@@ -1653,7 +1661,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x179b43 = _0x227b23[_0x227b23.length - 0x1];
                             _0x179b43.indexOf('?') > -0x1 && (_0x179b43 = _0x179b43.substr(0x0, _0x179b43.indexOf('?')));
                             _0x179b43.split('.').pop();
-                            _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2)', _0x550f17.a.get(_0x5c896f, {
+                            _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2)';
+                            _0x550f17.a.get(_0x5c896f, {
                                 'onDownloadProgress': function(_0x3da9ab) {
                                     _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2) ';
                                     var _0x17edbf = _0x3da9ab.total ? '' .concat(Math.floor(_0x3da9ab.loaded / _0x3da9ab.total * 0x64), '%') : '';
@@ -1691,7 +1700,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     }), _0x4c332a = true), _0x4c332a || (_0x468801 += _0x1097ca.length, _0x4d7024.gamePatch = '/' .concat(_0xe531f0), _0x4d7024._FS.createDataFile('/', _0xe531f0, _0x1097ca, true, !0x1), _0x5048db());
                                 }(_0x179b43, _0x39a81f);
                             }).catch(function(_0x314293) {
-                                console.log(_0x314293), _0x2591d9.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                void 0 === _0x314293.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x5048db();
                     },
@@ -1756,7 +1765,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 console.log(_0x125736);
                                             }
                                         }).catch(function(_0x516cc3) {
-                                            console.log(_0x516cc3), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                            void 0 === _0x516cc3.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                 _0x1ffb98.db ? _0x1ffb98.get(_0x316472, function(_0x3e612b) {
@@ -1776,7 +1785,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
-                                _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                               void 0 === _0x20f2e3.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x139f68();
                     },
@@ -1885,14 +1894,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 'data': _0x17edbf
                                             }), _0x57d85d(_0x103241, _0x17edbf);
                                         }).catch(function(_0x58e374) {
-                                            _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                            void 0 === _0x58e374.response ? _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                 _0xa884ea.db ? _0xa884ea.get(_0x51bfef, function(_0x5cac21) {
                                     _0x5cac21 && _0x5cac21.filename === _0x103241 && _0x5cac21.filesize - _0x8e30bf == 0x0 && _0x5cac21.filetype === _0x14309b ? _0x57d85d(_0x5cac21.filename, _0x5cac21.data) : _0x574747();
                                 }) : _0x574747();
                             }).catch(function(_0x4f39c1) {
-                                _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                void 0 === _0x4f39c1.response ? _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x452592();
                     },
@@ -2024,7 +2033,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             
                                         }).catch(function(_0x2e06c8) {
-                                            _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Network Error')+'</strong>';
+                                            void 0 === _0x2e06c8.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                     _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
@@ -2133,7 +2142,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                         _0xc6823.setStatesSupported(_0x5b1dcd);
                                     }).catch(function(_0x2d06a9) {
-                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Network Error')+'</strong>';
+                                        void 0 === _0x2d06a9.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                     }), clearInterval(_0x1c9c57), _0x4d7024.romdb = _0x4e171c;
                                 }
                             }, 0x1f4);
@@ -3450,7 +3459,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
                     _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay)),
-                    _0x181250 = new _0x4ad1c6[('Gamepad')]();
+                    _0x181250 = new _0x4ad1c6.Gamepad();
                 _0x378b5c.gamepad = _0x181250, _0x181250.init() && (_0x181250.bind(_0x4ad1c6.Gamepad.Event.TICK, function(_0x2fe35d) {
                     _0x2fe35d.forEach(function(_0x2b21f8) {
                         var _0x17edbf;
