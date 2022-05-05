@@ -1574,7 +1574,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             } else {
                                 return new Promise(async function(resolve, reject) {
                                     var a = await fetch(_0x3cf3cf);
-                                    var a = await a.blob();
+                                    a = await a.blob();
                                     resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}});
                                 })
                             }
@@ -1583,13 +1583,23 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
                                 _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
                                 _0x43a689 = function() {
-                                    _0x550f17.a.get(_0x3cf3cf, {
-                                        'onDownloadProgress': function(_0x4e7133) {
-                                            var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
-                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
-                                        },
-                                        'responseType': 'arraybuffer'
-                                    }).then(function(_0x22a1f4) {
+                                    (function() {
+                                        if (_0x3cf3cf.startsWith('blob:')) {
+                                            return new Promise(async function(resolve, reject) {
+                                                var a = await fetch(_0x3cf3cf);
+                                                a = await a.arrayBuffer();
+                                                resolve({data:a});
+                                            })
+                                        } else {
+                                            return _0x550f17.a.get(_0x3cf3cf, {
+                                                'onDownloadProgress': function(_0x4e7133) {
+                                                    var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
+                                                    ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
+                                                },
+                                                'responseType': 'arraybuffer'
+                                            })
+                                        }
+                                    })().then(function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4.data);
                                         if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
                                         if (_0x107e8a && _0x4e171c.db)
@@ -2033,7 +2043,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             
                                         }).catch(function(_0x2e06c8) {
-                                            void 0 === _0x2e06c8.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                            void 0 === _0x2e06c8.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xc6823.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xc6823.localization('Network Error')+'</strong>';
                                         });
                                     };
                                     _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
@@ -2142,7 +2152,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                         _0xc6823.setStatesSupported(_0x5b1dcd);
                                     }).catch(function(_0x2d06a9) {
-                                        void 0 === _0x2d06a9.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                        void 0 === _0x2d06a9.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xc6823.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xc6823.localization('Network Error')+'</strong>';
                                     }), clearInterval(_0x1c9c57), _0x4d7024.romdb = _0x4e171c;
                                 }
                             }, 0x1f4);
