@@ -102,6 +102,9 @@
                     if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
                         return "snes"
 
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
+
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
 
