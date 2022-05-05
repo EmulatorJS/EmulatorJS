@@ -1,241 +1,187 @@
-<p align="center">
-<img src="https://user-images.githubusercontent.com/74841470/155255251-0a0840ee-51d7-4f9e-878b-1be287d9a984.png" width="250">
-</p>
 
-# EmulatorJS
-
+<div align = center>
+    
+<img src = docs/Logo.png width = 300>
+    
+<br>
+<br>
+    
+[![Badge License]][License]
+    
+<br>
+    
 Self-hosted **Javascript** emulation for various system.
 
 <br>
 
+[![Badge Website]][Website] 
+[![Badge Usage]][Usage]<br>
+[![Badge Configurator]][Configurator]<br>
+[![Badge Demo]][Demo] 
+[![Badge Legacy]][Legacy] 
+[![Badge Beta]][Beta] 
+    
+</div>
+
+<br>
+
+### Issues
+
 *If something doesn't work, please consider opening an* ***[Issue]*** <br>
 *with as many details as possible, as well as the console log.*
 
-*The* ***Screen Recording*** *option currently doesn't support* ***Audio*** *.*
+<br>
 
-The **beta** version of the emulator core files are now avaliable. (For limited systems) <br>
-If you would like to use it, please add the following line to your code.
+### Audio
+
+*The **Screen Recording** option currently doesn't support **Audio** .*
+
+<br>
+
+### Extensions
+
+ **[GameLibrary]**
+
+   *A library overview for your **ROM** folder.*
+
+<br>
+
+### Beta
+
+The **beta** of the emulator core is now available for *some* systems. <br>
+To use it, please add the following line to your code.
 
 ```js
 EJS_BETA = true;
 ```
 
-When reporting bugs, please specify that you are using the beta version
+<br>
 
----
+**>> When reporting bugs, please specify that you are using the beta version**
 
-**⸢ [EmulatorJS Website] ⸥ ⸢ [Example Use] ⸥ ⸢ [Emulator Demo] ⸥ ⸢ [Beta] ⸥**
+<br>
+<br>
+<br>
 
----
-
-## Supported Systems
-
-#### Nintendo
-
-**[Game Boy Advance][Nintendo Game Boy Advance]** | **[Famicom / NES][NES / Famicom]** | **[Virtual Boy][Virtual Boy]** | **[Game Boy][Nintendo Game Boy]** | **[SNES]** | **[DS][Nintendo DS]** | **[64][Nintendo 64]**
-
-#### Sega
-**[Master System][Sega Master System]** | **[Mega Drive][Sega Mega Drive]** | **[Game Gear][Sega Game Gear]** | **[Saturn][Sega Saturn]** | **[32X][Sega 32X]** | **[CD][Sega CD]**
-
-#### Atari
-
-**[Jaguar][Atari Jaguar]** | **[Lynx][Atari Lynx]** | **[7800][Atari 7800]** | **[2600][Atari 2600]**
-
-#### Other
-
-**[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]** | **[WanderSwan Color][WanderSwan / Color]** | **[Neo Geo Poket][Neo Geo Poket]** | **[PlayStation]** | **[Arcade]** | **[MSX]** | **[3DO]**
-
----
-
-
-## Usage
-
-*For questions please use the* ***[Issue]*** *tab.*
+<h1 align = center>Supported Systems</h1>
 
 <br>
 
-##### Setup
+<div align = center>
 
-1. Download this repository.<br>
-    *`Code ➞ Download As Zip`*
+### Nintendo
 
-2. Use a **WebServer** to host the emulator.
+**[Game Boy Advance][Nintendo Game Boy Advance]**   | 
+**[Famicom / NES][NES / Famicom]**   | 
+**[Virtual Boy][Virtual Boy]**
+    
+**[Game Boy][Nintendo Game Boy]**   | 
+**[SNES]**   | 
+**[DS][Nintendo DS]**   | 
+**[64][Nintendo 64]**
 
-3. Use your **Browser** to navigate to `localhost`
+<br>
+<br>
+
+### Sega
+
+**[Master System][Sega Master System]**   | 
+**[Mega Drive][Sega Mega Drive]**   | 
+**[Game Gear][Sega Game Gear]**
+    
+**[Saturn][Sega Saturn]**   | 
+**[32X][Sega 32X]**   | 
+**[CD][Sega CD]**
+    
+<br>
+<br>
+
+### Atari
+
+**[Jaguar][Atari Jaguar]**   | 
+**[Lynx][Atari Lynx]**   | 
+**[7800][Atari 7800]**   | 
+**[2600][Atari 2600]**
+
+<br>
+<br>
+
+### Other
+
+**[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]**   | 
+**[WanderSwan Color][WanderSwan / Color]**   | 
+**[Neo Geo Poket][Neo Geo Poket]**
+    
+**[PlayStation]**   | 
+**[Arcade]**   | 
+**[MSX]**   | 
+**[3DO]**
+    
+</div>
 
 <br>
 
-##### ROMs
 
-**ROMs** can be used as `zip` / `rar` / `7z` archives.
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
-<br>
-
-##### Netplay
-
-By default **Netplay** is ***disabled***, <br>
-to enable it, add the following:
-
-```js
-// ID in your website, required for netplay. Each game in your site should have a different ID
-EJS_gameID = 1;
-```
-
-<br>
-
-by default, the netplay server url will be `emuserver.emulatorjs.ga`, but to default to the default `ws.emulatorjs.com` server add the following line
-
-```js
-EJS_oldEJSNetplayServer = true;
-```
-
-<br>
-
-*To self host:*
-
-1. Download the **[Server]**.
-
-2. Specify the servers address with:
-
-```js
-EJS_netplayUrl = 'http://localhost:3000/'; // Absolute Url To Your Netplay Server
-```
-
-<br>
-
-##### Custom Save Filename
-
-To customize the filename of save states <br>
-simply add the following lines of code.
-
-```js
-EJS_gameName = 'Game Name';
-```
-
-**➞ Save Filename:** `Game Name.state`
-
-<br>
-
-##### AD
-
-To place an advertisement in front of the <br>
-`play now` screen, include the following line:
-
-```js
-EJS_AdUrl = 'URL';
-```
-
-<br>
-
-##### Interface Color
-
-To use a different color for the emulator interface, use:
-
-```js
-EJS_color = '#FF0000'; // Hex Color Code
-```
-
-<br>
-
-##### Direct Start
-
-To start the emulator immediately, add this line:
-
-```js
-EJS_startOnLoaded = true;
-```
-
-*For audio to play the user still* <br>
-*needs to interact with the page.*
-
-<br>
-
-##### Custom Paths
-
-Paths to emulator files can be customized with:
-
-```js
-EJS_paths = {
-    'fileName' : '/somepath',
-    'emulator.js' : 'https://example.com/emulator.js',
-    'n64-asmjs.data' : '/asdfds.data'
-};
-```
-
-*If a file is not defined, the default is used.*
-
-<br>
-
-##### Localization
-
-please see [the localization readme]
-
-<br>
-
-##### USING MAME SYSTEM
-
-you must add the line
-
-```js
-EJS_core = 'mame';
-```
-
-and the line
-
-```js
-EJS_mameCore = '' // mame core options (example: '4|0')
-```
-set the mame core value to the mame core number (`1` - `6`) + `|` + save states supported (`0` or `1`)
-
-<br>
-
-# LICENSE
-
-Licenced under the GNU General Public License v3.0
-
-Please state changes and the licence when re-distributing
-
-[Read the whole license here]
-
-If I find a repository that does not follow the licence, I will report it.
+[License]: LICENSE
+[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
 
 
-<!----------------------------------------------------------------------------->
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Extensions   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
-[EmulatorJS Website]: https://emulatorjs.ga/
-[Example Use]: https://coldcast.org/games/1/Super-Mario-Bros
-[Emulator Demo]: https://emulatorjs.ga/demo/
+[GameLibrary]: https://github.com/Ramaerel/emulatorjs-GameLibrary
+
+
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+
+[Configurator]: https://emulatorjs.ga/codehelper
+[Website]: https://emulatorjs.ga/
+[Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
+[Usage]: docs/Usage.md
+[Demo]: https://emulatorjs.ga/demo/
 [Beta]: https://emulatorjs.ga/beta/
 
-[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
-[This repository]: https://github.com/linuxserver/emulatorjs
 
-[Server]: https://github.com/ethanaobrien/emuserver/releases
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
 
-[the localization readme]: data/localization/
-[Read the whole license here]: LICENSE
+[Nintendo Game Boy Advance]: docs/Systems/Nintendo%20Game%20Boy%20Advance.md
+[Nintendo Game Boy]: docs/Systems/Nintendo%20Game%20Boy.md
+[Nintendo 64]: docs/Systems/Nintendo%2064.md
+[Nintendo DS]: docs/Systems/Nintendo%20DS.md
 
-[NES / Famicom]: docs/NES-Famicom.md
-[SNES]: docs/SNES.md
-[Nintendo 64]: docs/Nintendo%2064.md
-[Nintendo Game Boy]: docs/Nintendo%20Game%20Boy.md
-[Nintendo Game Boy Advance]: docs/Nintendo%20Game%20Boy%20Advance.md
-[Nintendo DS]: docs/Nintendo%20DS.md
-[PlayStation]: docs/PlayStation.md
-[Virtual Boy]: docs/Virtual%20Boy.md
-[Sega Mega Drive]: docs/Sega%20Mega%20Drive.md
-[Sega Master System]: docs/Sega%20Master%20System.md
-[Sega CD]: docs/Sega%20CD.md
-[Atari Lynx]: docs/Atari%20Lynx.md
-[MSX]: docs/MSX.md
-[3DO]: docs/3DO.md
-[Sega 32X]: docs/Sega%2032X.md
-[Atari Jaguar]: docs/Atari%20Jaguar.md
-[Neo Geo Poket]: docs/Neo%20Geo%20Poket.md
-[Sega Game Gear]: docs/Sega%20Game%20Gear.md
-[Sega Saturn]: docs/Sega%20Saturn.md
-[Atari 7800]: docs/Atari%207800.md
-[WanderSwan / Color]: docs/WanderSwan-Color.md
-[TurboGrafs-16 / PC Engine]: docs/TurboGrafs%2016-PC%20Engine.md
-[Arcade]: docs/Arcade.md
-[Atari 2600]: docs/Atari%202600.md
+[Sega Master System]: docs/Systems/Sega%20Master%20System.md
+[Sega Mega Drive]: docs/Systems/Sega%20Mega%20Drive.md
+[Sega Game Gear]: docs/Systems/Sega%20Game%20Gear.md
+[Sega Saturn]: docs/Systems/Sega%20Saturn.md
+[Sega 32X]: docs/Systems/Sega%2032X.md
+[Sega CD]: docs/Systems/Sega%20CD.md
+
+[Atari Jaguar]: docs/Systems/Atari%20Jaguar.md
+[Atari Lynx]: docs/Systems/Atari%20Lynx.md
+[Atari 7800]: docs/Systems/Atari%207800.md
+[Atari 2600]: docs/Systems/Atari%202600.md
+
+[NES / Famicom]: docs/Systems/NES-Famicom.md
+[SNES]: docs/Systems/SNES.md
+
+[TurboGrafs-16 / PC Engine]: docs/Systems/TurboGrafs%2016-PC%20Engine.md
+[WanderSwan / Color]: docs/Systems/WanderSwan-Color.md
+[Neo Geo Poket]: docs/Systems/Neo%20Geo%20Poket.md
+[PlayStation]: docs/Systems/PlayStation.md
+[Virtual Boy]: docs/Systems/Virtual%20Boy.md
+[Arcade]: docs/Systems/Arcade.md
+[MSX]: docs/Systems/MSX.md
+[3DO]: docs/Systems/3DO.md
+
+
+<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+
+[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge
+
+[Badge Configurator]: https://img.shields.io/badge/Configurator-992cb3?style=for-the-badge
+[Badge Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
+[Badge Legacy]: https://img.shields.io/badge/Legacy-ab910b?style=for-the-badge
+[Badge Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
+[Badge Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
+[Badge Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge

@@ -5,7 +5,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         window.EJS_RESET_VARS.push(k);
     }
     _0x2c1832.r(_0x17edbf);
-    _0x2c1832(0xa2), _0x2c1832(0x16c), _0x2c1832(0x16d);
     var _0x39ca5e = {
             'volume': 0.5,
             'muted': false,
@@ -99,7 +98,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'tabFocus': 'ejs__tab-focus'
             }
         },
-        _0x3d61f9 = _0x2c1832(0x38),
         _0x5127f4 = _0x2c1832(0x9d),
         _0x48e5ff = _0x2c1832.n(_0x5127f4),
         _0x406e79 = function(_0x2aa74f) {
@@ -584,10 +582,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         }]) && _0x4c97b0(_0x17edbf.prototype, _0x2c1832), _0x4496fc && _0x4c97b0(_0x17edbf, _0x4496fc), _0x566dbe;
     }();
-    var _0x13fb79, _0x569918 = _0x2c1832(0x6c),
+    var _0x13fb79, _0x569918 = _0x2c1832(108),
         _0x4e4ca6 = _0x2c1832.n(_0x569918),
-        _0x4ad1c6 = _0x2c1832(0x6),
-        _0x4704b1 = _0x2c1832(0x9f),
+        _0x4ad1c6 = _0x2c1832(6),
+        _0x4704b1 = _0x2c1832(159),
         _0x3a58c8 = _0x2c1832.n(_0x4704b1),
         _0x5032e6 = {
             '2xScaleHQ.glslp': 'shaders = 1\n\nshader0 = "2xScaleHQ.glsl"\nfilter_linear0 = false\nscale_type_0 = source\n',
@@ -604,7 +602,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         _0x5bb4c9 = _0x2c1832(0x39),
         _0x50f370 = _0x2c1832.n(_0x5bb4c9),
         _0x246d02 = _0x2c1832(0xb),
-        _0x550f17 = _0x2c1832.n(_0x246d02),
+        _0x550f17 = _0x2c1832.n(_0x246d02).a,
         _0x5ab74d = {
             'addStyleHook': function() {
                 _0x3a8e2f(this.elements.container, this.config.selectors.container.replace('.', ''), true), _0x3a8e2f(this.elements.container, this.config.classNames.uiSupported, true), _0x3a8e2f(this.elements.container, this.config.classNames.hideControls, true);
@@ -1563,27 +1561,45 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x139f1c = _0x154dc5[_0x154dc5.length - 0x1];
                         _0x139f1c.indexOf('?') > -0x1 && (_0x139f1c = _0x139f1c.substr(0x0, _0x139f1c.indexOf('?')));
                         _0x139f1c.split('.').pop();
-                        _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data'), ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl && (_0x2c1832.innerHTML += ' (2/2)'), _0x17edbf.config.gamePatchUrl && (_0x2c1832.innerHTML += ' (2/2)');
-                        new Promise(async function(resolve, reject) {
+                        _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data');
+                        if (['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl) {
+                            _0x2c1832.innerHTML += ' (2/2)';
+                        }
+                        if (_0x17edbf.config.gamePatchUrl) {
+                            _0x2c1832.innerHTML += ' (2/2)';
+                        }
+                        (function() {
                             if (! _0x3cf3cf.startsWith('blob:')) {
-                                resolve(await _0x550f17.a.head(_0x3cf3cf, {}))
+                                return _0x550f17.a.head(_0x3cf3cf, {});
                             } else {
-                                var a = await fetch(_0x3cf3cf)
-                                var a = await a.blob()
-                                resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}})
+                                return new Promise(async function(resolve, reject) {
+                                    var a = await fetch(_0x3cf3cf);
+                                    a = await a.blob();
+                                    resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}});
+                                })
                             }
-                        }).then(function(_0x3d703e) {
+                        })().then(function(_0x3d703e) {
                             var _0x21b526 = _0x3d703e.headers['content-length'],
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
                                 _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
                                 _0x43a689 = function() {
-                                    _0x550f17.a.get(_0x3cf3cf, {
-                                        'onDownloadProgress': function(_0x4e7133) {
-                                            var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
-                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
-                                        },
-                                        'responseType': 'arraybuffer'
-                                    }).then(function(_0x22a1f4) {
+                                    (function() {
+                                        if (_0x3cf3cf.startsWith('blob:')) {
+                                            return new Promise(async function(resolve, reject) {
+                                                var a = await fetch(_0x3cf3cf);
+                                                a = await a.arrayBuffer();
+                                                resolve({data:a});
+                                            })
+                                        } else {
+                                            return _0x550f17.a.get(_0x3cf3cf, {
+                                                'onDownloadProgress': function(_0x4e7133) {
+                                                    var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
+                                                    ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
+                                                },
+                                                'responseType': 'arraybuffer'
+                                            })
+                                        }
+                                    })().then(function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4.data);
                                         if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
                                         if (_0x107e8a && _0x4e171c.db)
@@ -1620,7 +1636,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 });
                                         _0x3512e9(_0x139f1c, _0x17edbf);
                                     }).catch(function(_0x2e4d62) {
-                                        console.log(_0x2e4d62), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                        void 0 === _0x2e4d62.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                     });
                                 };
                             _0x1ffb98.db ? _0x1ffb98.get(_0x107e8a, function(_0x5afc4a) {
@@ -1644,7 +1660,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 else _0x43a689();
                             }) : _0x43a689();
                         }).catch(function(_0x5ec6be) {
-                            _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                            void 0 === _0x5ec6be.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                         });
                     },
                     _0x139f68 = function() {
@@ -1655,7 +1671,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x179b43 = _0x227b23[_0x227b23.length - 0x1];
                             _0x179b43.indexOf('?') > -0x1 && (_0x179b43 = _0x179b43.substr(0x0, _0x179b43.indexOf('?')));
                             _0x179b43.split('.').pop();
-                            _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2)', _0x550f17.a.get(_0x5c896f, {
+                            _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2)';
+                            _0x550f17.a.get(_0x5c896f, {
                                 'onDownloadProgress': function(_0x3da9ab) {
                                     _0x2591d9.innerHTML = _0xa88a13.localization('Download Game Data')+' (1/2) ';
                                     var _0x17edbf = _0x3da9ab.total ? '' .concat(Math.floor(_0x3da9ab.loaded / _0x3da9ab.total * 0x64), '%') : '';
@@ -1693,7 +1710,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     }), _0x4c332a = true), _0x4c332a || (_0x468801 += _0x1097ca.length, _0x4d7024.gamePatch = '/' .concat(_0xe531f0), _0x4d7024._FS.createDataFile('/', _0xe531f0, _0x1097ca, true, !0x1), _0x5048db());
                                 }(_0x179b43, _0x39a81f);
                             }).catch(function(_0x314293) {
-                                console.log(_0x314293), _0x2591d9.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                void 0 === _0x314293.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x5048db();
                     },
@@ -1758,7 +1775,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 console.log(_0x125736);
                                             }
                                         }).catch(function(_0x516cc3) {
-                                            console.log(_0x516cc3), _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                            void 0 === _0x516cc3.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                 _0x1ffb98.db ? _0x1ffb98.get(_0x316472, function(_0x3e612b) {
@@ -1778,7 +1795,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
-                                _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                               void 0 === _0x20f2e3.response ? _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x2c1832.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x139f68();
                     },
@@ -1887,14 +1904,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 'data': _0x17edbf
                                             }), _0x57d85d(_0x103241, _0x17edbf);
                                         }).catch(function(_0x58e374) {
-                                            _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                            void 0 === _0x58e374.response ? _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                                         });
                                     };
                                 _0xa884ea.db ? _0xa884ea.get(_0x51bfef, function(_0x5cac21) {
                                     _0x5cac21 && _0x5cac21.filename === _0x103241 && _0x5cac21.filesize - _0x8e30bf == 0x0 && _0x5cac21.filetype === _0x14309b ? _0x57d85d(_0x5cac21.filename, _0x5cac21.data) : _0x574747();
                                 }) : _0x574747();
                             }).catch(function(_0x4f39c1) {
-                                _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
+                                void 0 === _0x4f39c1.response ? _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xa88a13.localization('CORS Error')+'</a></strong>' : _0x1f8424.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xa88a13.localization('Network Error')+'</strong>';
                             });
                         } else _0x452592();
                     },
@@ -2026,7 +2043,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             
                                         }).catch(function(_0x2e06c8) {
-                                            _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Network Error')+'</strong>';
+                                            void 0 === _0x2e06c8.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xc6823.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xc6823.localization('Network Error')+'</strong>';
                                         });
                                     };
                                     _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
@@ -2135,7 +2152,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                         _0xc6823.setStatesSupported(_0x5b1dcd);
                                     }).catch(function(_0x2d06a9) {
-                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Network Error')+'</strong>';
+                                        void 0 === _0x2d06a9.response ? _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_0xc6823.localization('CORS Error')+'</a></strong>' : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0xc6823.localization('Network Error')+'</strong>';
                                     }), clearInterval(_0x1c9c57), _0x4d7024.romdb = _0x4e171c;
                                 }
                             }, 0x1f4);
@@ -3452,7 +3469,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
                     _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay)),
-                    _0x181250 = new _0x4ad1c6[('Gamepad')]();
+                    _0x181250 = new _0x4ad1c6.Gamepad();
                 _0x378b5c.gamepad = _0x181250, _0x181250.init() && (_0x181250.bind(_0x4ad1c6.Gamepad.Event.TICK, function(_0x2fe35d) {
                     _0x2fe35d.forEach(function(_0x2b21f8) {
                         var _0x17edbf;
@@ -4052,7 +4069,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.recordData = {started:false, data:[], stopped: false}
                     }
                     if (! _0xa88a13.recordData.started) { //start recording
-                        _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Stop Screen Recording');
                         if (MediaRecorder.isTypeSupported('video/webm; codecs=h264')) {
                             var options = {mimeType: 'video/webm; codecs=h264'}; // video/webm; codecs=h264,opus
                         } else if (MediaRecorder.isTypeSupported('video/webm; codecs=H264')) {
@@ -4070,28 +4086,53 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } else {
                             var options = {};
                         }
-                        _0xa88a13.recordData.stream = _0x27f4c4.Module.canvas.captureStream(30);
-                        //_0xa88a13.recordData.stream.addTrack(); // TODO - find audio element
-                        _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
-                        _0xa88a13.recordData.recorder.ondataavailable = function(e) {
-                            if (e.data.size > 0) {
-                                _0xa88a13.recordData.data.push(e.data)
-                            }
-                            if (_0xa88a13.recordData.stopped) {
-                                var a = document.createElement("a")
-                                a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
-                                if (typeof _0xa88a13.gameName == 'string') {
-                                    var aname = _0xa88a13.gameName
+                        function gotStreams(stream) {
+                            _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Stop Screen Recording');
+                            _0xa88a13.recordData.stream = stream;
+                            _0xa88a13.recordData.recorder = new MediaRecorder(_0xa88a13.recordData.stream, options);
+                            _0xa88a13.recordData.recorder.ondataavailable = function(e) {
+                                if (e.data.size > 0) {
+                                    _0xa88a13.recordData.data.push(e.data)
                                 }
-                                a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
-                                a.click()
-                                window.URL.revokeObjectURL(a.href)
-                                delete _0xa88a13.recordData
-                                _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Start Screen Recording');
+                                if (_0xa88a13.recordData.stopped) {
+                                    var a = document.createElement("a")
+                                    a.href = window.URL.createObjectURL(new Blob(_0xa88a13.recordData.data, {type: "video/webm"}))
+                                    if (typeof _0xa88a13.gameName == 'string') {
+                                        var aname = _0xa88a13.gameName
+                                    }
+                                    a.download = aname ? '' .concat(aname, '-recording.webm') : 'record.webm';
+                                    a.click()
+                                    window.URL.revokeObjectURL(a.href)
+                                    delete _0xa88a13.recordData
+                                    _0xa88a13.elements.buttons.screenRecord.getElementsByClassName('ejs--74c6d4176d27e37a19d2e9e61de8f4')[0].innerHTML = _0xa88a13.localization('Start Screen Recording');
+                                }
                             }
+                            _0xa88a13.recordData.recorder.start()
+                            _0xa88a13.recordData.started = true
                         }
-                        _0xa88a13.recordData.recorder.start()
-                        _0xa88a13.recordData.started = true
+                        _0x27f4c4.Module.pauseMainLoop();
+                        _0xa88a13.playing = false;
+                        alert('please check "share system audio" to have audio in the recording. We only need the audio stream so your entire screen will not be recorded');
+                        var canvasStream = _0x27f4c4.Module.canvas.captureStream(30);
+                        var time = setTimeout(function() {
+                            _0xa88a13.playing = true;
+                            _0x27f4c4.Module.resumeMainLoop();
+                        }, 20000);
+                        navigator.mediaDevices.getDisplayMedia({
+                            audio: true,  //we only need the audio, we dont use the video stream at all
+                            video: {mediaSource: "screen"}
+                        }).then(function(stream) {
+                            try {
+                                clearTimeout(time);
+                            }catch(e){}
+                            var audio = stream.getAudioTracks();
+                            for (var i=0; i<audio.length; i++) {
+                                canvasStream.addTrack(audio[i]);
+                            }
+                            gotStreams(canvasStream);
+                            _0xa88a13.playing = true;
+                            _0x27f4c4.Module.resumeMainLoop();
+                        })
                     } else if (_0xa88a13.recordData.started) { //stop recording
                         _0xa88a13.recordData.recorder.stop()
                         _0xa88a13.recordData.stopped = true
@@ -6239,19 +6280,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         split1.push(split3[i])
                     }
                 }
-                if (! path.startsWith('/') && path.split('://').length == 1 && path.split('http:').length == 1 && path.split('https:').length == 1 && path.split('file:').length == 1 && path.split('blob:').length == 1) {
+                if (! path.startsWith('/') && !path.includes('://') && !path.includes('http:') && !path.includes('https:') && !path.includes('file:') && !path.includes('blob:')) {
                     for (var w=0; w<split2.length; w++) {
                         if (split2[w] == '' || split2[w] == '.') {
                         } else if (split2[w] == '..') {
                             if (split1.length > 0) {
                                 var split1 = function(origpath) {
-                                    var fullrequestpath = origpath
-                                    var finpath = fullrequestpath.split('/').pop()
-                                    var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
-                                    if (origpath == '/') {
+                                    if (origpath === '/') {
                                         return '/'
                                     } else {
-                                        return finalpath
+                                        return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
                                     }
                                 }(split1.join('/')).split('/');
                             }
@@ -6276,7 +6314,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = '1.1.0';
+            this.version = '1.1.2';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
@@ -6556,4 +6594,3 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     _0x3dbc76.defaults = {};
     _0x17edbf.default = _0x3dbc76;
 }
-
