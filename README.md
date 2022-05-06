@@ -32,12 +32,6 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-### Audio
-
-*The **Screen Recording** option currently doesn't support **Audio** .*
-
-<br>
-
 ### Extensions
 
  **[GameLibrary]**
