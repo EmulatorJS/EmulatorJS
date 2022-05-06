@@ -645,7 +645,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 return new Promise(async function(resolve, reject) {
                     var a = await fetch(url);
                     a = await a.arrayBuffer();
-                    resolve({data:a});
+                    resolve({headers:{'content-length': a.size}});
                 })
             } else {
                 return oldHead.apply(null, arguments);
