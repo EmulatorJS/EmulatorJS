@@ -626,6 +626,32 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
             }
         };
+    _0x550f17.a.get = function(oldGet) {
+        return function(url) {
+            if (url.startsWith('blob:')) {
+                return new Promise(async function(resolve, reject) {
+                    var a = await fetch(url);
+                    a = await a.arrayBuffer();
+                    resolve({data:a});
+                })
+            } else {
+                return oldGet.apply(null, arguments);
+            }
+        }
+    }(_0x550f17.a.get);
+    _0x550f17.a.head = function(oldHead) {
+        return function(url) {
+            if (url.startsWith('blob:')) {
+                return new Promise(async function(resolve, reject) {
+                    var a = await fetch(url);
+                    a = await a.arrayBuffer();
+                    resolve({data:a});
+                })
+            } else {
+                return oldHead.apply(null, arguments);
+            }
+        }
+    }(_0x550f17.a.head);
 
     function _0x5272a8(_0x4d422a) {
         return (_0x5272a8 = 'function' == typeof Symbol && 'symbol' == typeof Symbol.iterator ? function(_0x241239) {
@@ -1569,38 +1595,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (_0x17edbf.config.gamePatchUrl) {
                             _0x2c1832.innerHTML += ' (2/2)';
                         }
-                        (function() {
-                            if (! _0x3cf3cf.startsWith('blob:')) {
-                                return _0x550f17.a.head(_0x3cf3cf, {});
-                            } else {
-                                return new Promise(async function(resolve, reject) {
-                                    var a = await fetch(_0x3cf3cf);
-                                    a = await a.blob();
-                                    resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}});
-                                })
-                            }
-                        })().then(function(_0x3d703e) {
+                        _0x550f17.a.head(_0x3cf3cf, {}).then(function(_0x3d703e) {
                             var _0x21b526 = _0x3d703e.headers['content-length'],
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
                                 _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
                                 _0x43a689 = function() {
-                                    (function() {
-                                        if (_0x3cf3cf.startsWith('blob:')) {
-                                            return new Promise(async function(resolve, reject) {
-                                                var a = await fetch(_0x3cf3cf);
-                                                a = await a.arrayBuffer();
-                                                resolve({data:a});
-                                            })
-                                        } else {
-                                            return _0x550f17.a.get(_0x3cf3cf, {
-                                                'onDownloadProgress': function(_0x4e7133) {
-                                                    var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
-                                                    ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
-                                                },
-                                                'responseType': 'arraybuffer'
-                                            })
-                                        }
-                                    })().then(function(_0x22a1f4) {
+                                    _0x550f17.a.get(_0x3cf3cf, {
+                                        'onDownloadProgress': function(_0x4e7133) {
+                                            var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
+                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
+                                        },
+                                        'responseType': 'arraybuffer'
+                                    }).then(function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4.data);
                                         if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
                                         if (_0x107e8a && _0x4e171c.db)
@@ -6237,7 +6243,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = '1.1.5';
+            this.version = '1.1.6';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
