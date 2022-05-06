@@ -1,5 +1,5 @@
 (async function() {
-    var VERSION = 1.2;
+    var VERSION = 1.5;
     if (window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
             if (response.ok) {
@@ -12,7 +12,7 @@
             }
         })
     }
-    var scriptTag = document.getElementsByTagName('script')[0]
+    var scriptTag = document.getElementsByTagName('script')[0];
     function loadScript(file) {
         return new Promise(function (resolve, reject) {
             var script = document.createElement('script');
