@@ -63,8 +63,17 @@ var EJS = function(_0x574f5e) {
         return Object.prototype.hasOwnProperty.call(_0x1ed01a, _0x4abf0b);
     };
     _0x1d686b.p = '';
-    return _0x1d686b(_0x1d686b.s = 0x18c);
-}([null, null, null, null, null, null, function(_0x3982a1, _0x519c5e, _0x21c4c0) {
+    _0x1d686b.s = 0x18c;
+    return _0x1d686b(_0x1d686b.s);
+}([function(a) {
+    a.exports = function(error, element, _this) {
+        if (error.response.status === 0) {
+            element.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_this.localization('CORS Error')+'</a></strong>';
+        } else {
+            element.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Network Error')+'</strong>';
+        }
+    }
+}, null, null, null, null, null, function(_0x3982a1, _0x519c5e, _0x21c4c0) {
     ! function(_0x36fa8f) {
         'use strict';
         var _0x519c5e = function() {},
