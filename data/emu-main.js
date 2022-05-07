@@ -627,11 +627,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         };
     _0x550f17.a.get = function(oldGet) {
-        return function(url) {
+        return function(url, set) {
             if (url.startsWith('blob:')) {
                 return new Promise(async function(resolve, reject) {
                     var a = await fetch(url);
-                    a = await a.arrayBuffer();
+                    if (set && set.responseType && set.responseType.toLowerCase() === 'arraybuffer') {
+                        a = await a.arrayBuffer();
+                    } else {
+                        a = await a.text();
+                        try {
+                            a = JSON.parse(a);
+                        } catch(e) {}
+                    }
                     resolve({data:a});
                 })
             } else {

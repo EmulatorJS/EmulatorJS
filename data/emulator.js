@@ -67,6 +67,7 @@ var EJS = function(_0x574f5e) {
     return _0x1d686b(_0x1d686b.s);
 }([function(a) {
     a.exports = function(error, element, _this) {
+        console.warn(error)
         if (error.response.status === 0) {
             element.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;"><a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors">'+_this.localization('CORS Error')+'</a></strong>';
         } else {
