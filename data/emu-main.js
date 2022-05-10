@@ -5,7 +5,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         window.EJS_RESET_VARS.push(k);
     }
     _0x2c1832.r(_0x17edbf);
-    _0x2c1832.r(_0x17edbf);
     var _0x39ca5e = {
             'volume': 0.5,
             'muted': false,
