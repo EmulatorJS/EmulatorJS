@@ -1,6 +1,7 @@
 (async function() {
-    var VERSION = 1.2;
-    if (window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) {
+    var VERSION = 1.6;
+    if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
+       'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
@@ -12,7 +13,7 @@
             }
         })
     }
-    var scriptTag = document.getElementsByTagName('script')[0]
+    var scriptTag = document.getElementsByTagName('script')[0];
     function loadScript(file) {
         return new Promise(function (resolve, reject) {
             var script = document.createElement('script');

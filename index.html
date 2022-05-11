@@ -1,157 +1,179 @@
+<!DOCTYPE html>
 <html>
-	<head>
-  <title>Emulatorjs | Select Game Rom</title>
-  <link rel="icon" type="image/png" href="docs/Emulatorjs Logo.png">
-</head>
+    <head>
+        <title>EmulatorJS</title>
+
+        <link rel = icon href = docs/Logo.png>
+        <meta name = viewport content = "width = device-width, initial-scale = 1">
+
+        <style>
+            body, html {
+                height: 100%;
+            }
+
+            body {
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 0;
+                overflow: hidden;
+                background-color: #222
+            }
+
+            body, #box {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #box {
+                color: #aaa;
+                height: 20em;
+                width: 30em;
+                max-width: 80%;
+                max-height: 80%;
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                position: relative;
+                flex-direction: column;
+                transition-duration: 0.2s;
+                overflow: hidden
+            }
+
+            #box:hover, #box[drag] {
+                border-color: #38f;
+                color: #ddd
+            }
+
+            #input {
+                cursor: pointer;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0
+            }
+
+            #display {
+                width: 100%;
+                height: 100%
+            }
+
+            select, button {
+                padding: 0.6em 0.4em;
+                margin: 0.5em;
+                width: 15em;
+                max-width: 100%;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 16px;
+                background-color: #444;
+                color: #aaa;
+                border-radius: 0.4em;
+                border: 1px solid #555;
+                cursor: pointer;
+                transition-duration: 0.2s
+            }
+
+            select:hover, button:hover {
+                background-color: #666;
+                color: #ddd
+            }
+        </style>
+    </head>
+
     <body>
-	<style>
-body{
-  background: #c4bdff;
-	margin: 0;
-	padding: 0;
-}
-.form{
-  position: absolute;
-  top: 450px;
-  left: 50%;
-  margin-top: -150px;
-  margin-left: -250px;
-  width: 500px;
-  height: 200px;
-  border: 4px dashed #111;
-}
-.form p{
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  line-height: 170px;
-  color: #111;
-  font-family: Arial;
-}
-.form input{
-  position: absolute;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  outline: none;
-  opacity: 0;
-}
-.eimg{
-width: 250px;
-}
-#uploadf, #uploadf1{
-	display: block;	
-}
-			 </style>
+        <div id = box>
+            <input type = file id = input>
+            Drag ROM file or click here
+        </div>
+
         <script>
-            window.addEventListener('load', function() {
-                document.getElementById('file').onchange = async function(e) {
-                    var ce = function(e) {return document.createElement(e);};
-                    var br = function(e) {e.appendChild(ce('br'))};
-                    var gameUrl = URL.createObjectURL(new Blob([e.target.files[0]]))
-                    var extension = e.target.files[0].name.split('.').pop()
-                    var gameName = e.target.files[0].name.replaceAll("'", "\\'")
-                    var gameName = gameName.substr(0, gameName.length - extension.length - 1)
-                    e.target.remove();
-document.getElementById('uploadf').style.display = "none"; document.getElementById('uploadf1').style.display = "none";
-                    if (['fds', 'nes', 'unif', 'unf'].includes(extension)) {
-                        var core = 'nes';
-                    } else if (['z64'].includes(extension)) {
-                        var core = 'n64';
-                    } else if (['smc', 'fig', 'sfc', 'gd3', 'gd7', 'dx2', 'bsx', 'swc'].includes(extension)) {
-                        var core = 'snes';
-                    } else if (['nds'].includes(extension)) {
-                        var core = 'nds';
-                    } else if (['gba'].includes(extension)) {
-                        var core = 'gba';
-                    } else if (['gb'].includes(extension)) {
-                        var core = 'gb';
-                    } else {
-                        var core = await function() {
-                            return new Promise(function(resolve, reject) {
-                                var cores = {"NES / Nintendo Entertainment System / Famicon": "nes",
-                                             "SNES / Super Nintendo Entertainment System": "snes",
-                                             "Nintendo 64": "n64",
-                                             "Nintendo Game Boy": "gb",
-                                             "Nintendo Game Boy Advance": "gba",
-                                             "Nintendo DS": "nds",
-                                             "PlayStation": "psx",
-                                             "Virtual Boy": "vb",
-                                             "Sega Mega Drive": "segaMD",
-                                             "Sega Master System": "segaMS",
-                                             "Sega CD": "segaCD",
-                                             "Atari Lynx": "lynx",
-                                             "Sega 32X": "sega32x",
-                                             "Atari Jaguar": "jaguar",
-                                             "Sega Game Gear": "segaGG",
-                                             "Sega Saturn": "segaSaturn",
-                                             "Atari 7800": "atari7800",
-                                             "Atari 2600": "atari2600"};
-                                var a = ce('div');
-                                a.style = 'padding: 50px;';
-                                var p = ce('h2');
-                                p.innerHTML = 'Unable to auto-detect system. Please select the desired system.';
-                                a.appendChild(p);
-                                br(a);
-                                for (var k in cores) {
-                                    var input = ce('input');
-                                    input.type = 'radio';
-                                    input.id = 'game-' + cores[k];
-                                    input.name = 'game';
-                                    input.value = cores[k];
-                                    a.appendChild(input);
-                                    var label = ce('label');
-                                    label.for = 'game-' + cores[k];
-                                    label.innerHTML = k;
-                                    a.appendChild(label);
-                                    br(a);
-                                };
-                                br(a);
-                                var submit = ce('input');
-                                submit.type = 'submit';
-                                submit.value = 'Load Game';
-                                submit.onclick = function(e) {
-                                    var q = false;
-                                    var radios = document.getElementsByName('game');
-                                    for (var i=0; i<radios.length; i++) {
-                                        if (radios[i].checked) {
-                                            var q = radios[i].value;
-                                            break;
-                                        };
-                                    };
-                                    if (! q) {
-                                        return;
-                                    };
-                                    a.remove();
-                                    resolve(q);
-                                };
-                                a.appendChild(submit);
-                                document.body.appendChild(a);
-                            });
-                        }();
-                    };
-                    var a = document.createElement('div');
-                    a.style = "width:65%;height:100%;max-width:100%";
-                    var b = document.createElement('div');
-                    b.id = 'game';
-                    a.appendChild(b);
-                    document.getElementById("cont").appendChild(a);
-                    var script = document.createElement('script');
-                    script.innerHTML = "EJS_player = '#game'; EJS_gameName = '" + gameName + "'; EJS_biosUrl = ''; EJS_gameUrl = '" + gameUrl + "'; EJS_core = '" + core + "'; EJS_pathtodata = 'data/';";
-                    document.body.appendChild(script);
-                    var script = document.createElement('script');
-                    script.src = 'data/loader.js';
-                    document.body.appendChild(script);
-                }
-            })
+            input.onchange = async () => {
+                const url = URL.createObjectURL(new Blob([input.files[0]]))
+                const parts = input.files[0].name.split(".")
+
+                const core = await (async (ext) => {
+                    if (["fds", "nes", "unif", "unf"].includes(ext))
+                        return "nes"
+
+                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
+                        return "snes"
+
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
+
+                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
+                        return ext
+
+                    return await new Promise(resolve => {
+                        const cores = {
+                            "Nintendo 64": "n64",
+                            "Nintendo Game Boy": "gb",
+                            "Nintendo Game Boy Advance": "gba",
+                            "Nintendo DS": "nds",
+                            "Nintendo Entertainment System": "nes",
+                            "Super Nintendo Entertainment System": "snes",
+                            "PlayStation": "psx",
+                            "Virtual Boy": "vb",
+                            "Sega Mega Drive": "segaMD",
+                            "Sega Master System": "segaMS",
+                            "Sega CD": "segaCD",
+                            "Atari Lynx": "lynx",
+                            "Sega 32X": "sega32x",
+                            "Atari Jaguar": "jaguar",
+                            "Sega Game Gear": "segaGG",
+                            "Sega Saturn": "segaSaturn",
+                            "Atari 7800": "atari7800",
+                            "Atari 2600": "atari2600"
+                        }
+
+                        const button = document.createElement("button")
+                        const select = document.createElement("select")
+
+                        for (const type in cores) {
+                            const option = document.createElement("option")
+
+                            option.value = cores[type]
+                            option.textContent = type
+                            select.appendChild(option)
+                        }
+
+                        button.onclick = () => resolve(select[select.selectedIndex].value)
+                        button.textContent = "Load game"
+                        box.innerHTML = ""
+
+                        box.appendChild(select)
+                        box.appendChild(button)
+                    })
+                })(parts.pop())
+
+                const div = document.createElement("div")
+                const sub = document.createElement("div")
+                const script = document.createElement("script")
+
+                sub.id = "game"
+                div.id = "display"
+
+                box.remove()
+                div.appendChild(sub)
+                document.body.appendChild(div)
+
+                window.EJS_player = "#game"
+                window.EJS_gameName = parts.shift()
+                window.EJS_biosUrl = ""
+                window.EJS_gameUrl = url
+                window.EJS_core = core
+                window.EJS_pathtodata = "data/"
+
+                script.src = "data/loader.js"
+                document.body.appendChild(script)
+            }
+
+            box.ondragover = () => box.setAttribute("drag", true)
+            box.ondragleave = () => box.removeAttribute("drag")
         </script>
-		 <center id="cont">
-		 <img id="uploadf1" class="eimg" src="docs/Emulatorjs Logo.png">
-			 </center>
-		 <div id="uploadf" class="form">
-		 <input type="file" id="file">
-  <b><p>Select Game Rom: Drag your files here or click in this area.</p></b>
-			 </div>
     </body>
 </html>
