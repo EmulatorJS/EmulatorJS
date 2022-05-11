@@ -8,7 +8,6 @@
     
 [![Badge License]][License]
     
-<br>
     
 Self-hosted **Javascript** emulation for various system.
 
