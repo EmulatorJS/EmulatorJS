@@ -14,12 +14,14 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-[![Badge Website]][Website] 
-[![Badge Usage]][Usage]<br>
-[![Badge Configurator]][Configurator]<br>
-[![Badge Demo]][Demo] 
-[![Badge Legacy]][Legacy] 
-[![Badge Beta]][Beta] 
+[![Button Website]][Website] 
+[![Button Usage]][Usage]<br>
+[![Button Configurator]][Configurator]<br>
+[![Button Demo]][Demo] 
+[![Button Legacy]][Legacy] 
+[![Button Beta]][Beta]
+    
+[![Button Contributors]][Contributors]   
     
 </div>
 
@@ -130,6 +132,7 @@ EJS_BETA = true;
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
 [Configurator]: https://emulatorjs.ga/codehelper
+[Contributors]: docs/Contributors.md
 [Website]: https://emulatorjs.ga/
 [Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
 [Usage]: docs/Usage.md
@@ -173,9 +176,10 @@ EJS_BETA = true;
 
 [Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge
 
-[Badge Configurator]: https://img.shields.io/badge/Configurator-992cb3?style=for-the-badge
-[Badge Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
-[Badge Legacy]: https://img.shields.io/badge/Legacy-ab910b?style=for-the-badge
-[Badge Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
-[Badge Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
-[Badge Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
+[Button Configurator]: https://img.shields.io/badge/Configurator-992cb3?style=for-the-badge
+[Button Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
+[Button Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
+[Button Legacy]: https://img.shields.io/badge/Legacy-ab910b?style=for-the-badge
+[Button Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
+[Button Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
+[Button Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
