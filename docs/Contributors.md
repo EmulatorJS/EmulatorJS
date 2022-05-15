@@ -68,7 +68,7 @@
 
 <!----------------------------------{ Ethan }----------------------------------->
 
-[Badge Ethan GitHub]: https://img.shields.io/badge/luni64-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white
+[Badge Ethan GitHub]: https://img.shields.io/badge/Ethan_O'_Brien-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white
 
 [Ethan Avatar]: https://avatars.githubusercontent.com/u/77750390?s=80 'Ethan O\'Brien'
 [Ethan GitHub]: https://github.com/ethanaobrien
