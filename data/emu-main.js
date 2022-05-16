@@ -602,8 +602,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         },
         _0x5bb4c9 = _0x2c1832(0x39),
         _0x50f370 = _0x2c1832.n(_0x5bb4c9),
-        _0x246d02 = _0x2c1832(0xb),
-        _0x550f17 = _0x2c1832.n(_0x246d02).a,
+        _0x550f17 = _0x2c1832(0xb),
         _0x5ab74d = {
             'addStyleHook': function() {
                 _0x3a8e2f(this.elements.container, this.config.selectors.container.replace('.', ''), true), _0x3a8e2f(this.elements.container, this.config.classNames.uiSupported, true), _0x3a8e2f(this.elements.container, this.config.classNames.hideControls, true);
@@ -1154,11 +1153,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 var _0x18a437 = window.URL || window.webkitURL;
-                _0x550f17.a.interceptors.request.use(function(_0x1cd992) {
-                    return _0x1cd992.headers['Content-Type'] = 'application/x-www-form-urlencoded', 'options' === _0x1cd992.method.toLowerCase() && (_0x1cd992.method = 'get'), _0x1cd992;
-                }, function(_0x5150c8) {
-                    return Promise.reject(_0x5150c8);
-                });
                 var _0x394c59 = function(_0x571737) {
                         var _0x17edbf;
                         return 0x50 === _0x571737[0x0] && 0x4b === _0x571737[0x1] && 0x3 === _0x571737[0x2] && 0x4 === _0x571737[0x3] ? _0x17edbf = 'zip' : 0x50 === _0x571737[0x0] && 0x4b === _0x571737[0x1] && 0x5 === _0x571737[0x2] && 0x6 === _0x571737[0x3] ? _0x17edbf = 'zip' : 0x50 === _0x571737[0x0] && 0x4b === _0x571737[0x1] && 0x7 === _0x571737[0x2] && 0x8 === _0x571737[0x3] ? _0x17edbf = 'zip' : 0x37 === _0x571737[0x0] && 0x7a === _0x571737[0x1] && 0xbc === _0x571737[0x2] && 0xaf === _0x571737[0x3] && 0x27 === _0x571737[0x4] && 0x1c === _0x571737[0x5] ? _0x17edbf = '7z' : 0x52 === _0x571737[0x0] && 0x61 === _0x571737[0x1] && 0x72 === _0x571737[0x2] && 0x21 === _0x571737[0x3] && 0x1a === _0x571737[0x4] && 0x7 === _0x571737[0x5] && 0x0 == _0x571737[0x6] && (_0x17edbf = 'rar'), _0x17edbf;
@@ -1252,9 +1246,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x3a8e2f(_0x10efa5, _0x2c1832, !0x1);
                     }, 0x1388)
                     if (typeof _0xc6823.adUrl === 'string') {
-                        _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['close-ad'])), !0x1), setTimeout(function() {
-                            _0xc6823.started && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)) && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)).parentNode.removeChild(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)));
-                        }, 0x2710)
+                        _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['close-ad'])), !0x1);
+                        if (_0xc6823.config.noAutoAdClose !== true) {
+                            setTimeout(function() {
+                                _0xc6823.started && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)) && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)).parentNode.removeChild(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)));
+                            }, 0x2710)
+                        }
                     }
                     _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), true);
                     var _0x30fd44 = _0x5dc0c0(_0x2593da.defaultCoreOptionsValues.call(_0xa88a13), _0x2593da.storage.get('core-options') || {});
@@ -1440,6 +1437,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xb0c5d8 = -0x1,
                             _0x567713 = '',
                             _0x567717 = function() {
+                                if (_0x55627a.coreVer === 2) {
+                                	var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
+                                    _0x4d7024.Module.resumeMainLoop = function() {
+                                        mainLoop(1);
+                                    }
+                                    _0x4d7024.Module.pauseMainLoop = function() {
+                                        mainLoop(0);
+                                    }
+                                }
                                 if (typeof _0x55627a.loadStateOnStart == 'string') {
                                     fetch(_0x55627a.loadStateOnStart).then(function(response) {
                                         response.arrayBuffer().then(function(ab) {
@@ -1569,38 +1575,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (_0x17edbf.config.gamePatchUrl) {
                             _0x2c1832.innerHTML += ' (2/2)';
                         }
-                        (function() {
-                            if (! _0x3cf3cf.startsWith('blob:')) {
-                                return _0x550f17.a.head(_0x3cf3cf, {});
-                            } else {
-                                return new Promise(async function(resolve, reject) {
-                                    var a = await fetch(_0x3cf3cf);
-                                    a = await a.blob();
-                                    resolve({headers:{'content-length': a.size, 'content-type': 'text/plain'}});
-                                })
-                            }
-                        })().then(function(_0x3d703e) {
+                        _0x550f17.a.head(_0x3cf3cf, {}).then(function(_0x3d703e) {
                             var _0x21b526 = _0x3d703e.headers['content-length'],
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
                                 _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
                                 _0x43a689 = function() {
-                                    (function() {
-                                        if (_0x3cf3cf.startsWith('blob:')) {
-                                            return new Promise(async function(resolve, reject) {
-                                                var a = await fetch(_0x3cf3cf);
-                                                a = await a.arrayBuffer();
-                                                resolve({data:a});
-                                            })
-                                        } else {
-                                            return _0x550f17.a.get(_0x3cf3cf, {
-                                                'onDownloadProgress': function(_0x4e7133) {
-                                                    var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
-                                                    ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
-                                                },
-                                                'responseType': 'arraybuffer'
-                                            })
-                                        }
-                                    })().then(function(_0x22a1f4) {
+                                    _0x550f17.a.get(_0x3cf3cf, {
+                                        'onDownloadProgress': function(_0x4e7133) {
+                                            var _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
+                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _0xa88a13.localization('Download Game Data')+' ' .concat(_0x13b999);
+                                        },
+                                        'responseType': 'arraybuffer'
+                                    }).then(function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4.data);
                                         if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
                                         if (_0x107e8a && _0x4e171c.db)
@@ -2021,7 +2007,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     var _0xa88a13, _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
                                     var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
                                     var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
+                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+'cores/'+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
                                         _0x550f17.a.get(path, {
                                             'onDownloadProgress': function(_0x117e6b) {
                                                 var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
@@ -2140,15 +2126,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 } else _0x3641d6(_0x2458d5, _0x124167);
                                             }) : _0x3641d6(_0x2458d5, _0x124167);
                                         }
-                                        if (_0x2c1832.coreVer === 2) {
+                                        if (_0x2c1832.coreVer === 2 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
                                             _0x1e2c68.element(_0x2c1832.elements.buttons.gamepad) && _0x132da7(_0x2c1832.elements.buttons.gamepad, true);
-                                            if (Array.isArray(_0x2c1832.elements.buttons.play)) {
-                                                for (var i=0; i<_0x2c1832.elements.buttons.play.length; i++) {
-                                                    _0x1e2c68.element(_0x2c1832.elements.buttons.play[i]) && _0x132da7(_0x2c1832.elements.buttons.play[i], true);
-                                                }
-                                            } else {
-                                                _0x1e2c68.element(_0x2c1832.elements.buttons.play) && _0x132da7(_0x2c1832.elements.buttons.play, true);
-                                            }
                                         }
                                         _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                         _0xc6823.setStatesSupported(_0x5b1dcd);
@@ -6237,7 +6216,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = '1.1.5';
+            this.version = '1.1.6';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
