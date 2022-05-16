@@ -6216,7 +6216,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             var a = function(_0x154660, _0x15626f) {
                 if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
             }(this, _0x6954aa);
-            this.version = '1.1.6';
+            this.version = '1.2.1';
             this.system = '';
             this.adUrl = null;
             this.gameName = null;
