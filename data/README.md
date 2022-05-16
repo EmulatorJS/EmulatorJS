@@ -1,57 +1,87 @@
-# Data
+# Data Folder
 
 <br>
 
-## Core Files    [![Badge GPLv3]][GPLv3]
+## Cores    [![Badge GPLv3]][GPLv3]
 
 All files ending in `.data` have been compiled with **[RetroArch]**.
 
 *Check my **[Fork]** for changes made to the original software.*
 
 <br>
+<br>
 
-### compiling the cores
+## Building
 
-I have only ever gotten this to work on ubuntu.
+*Instructions have only been confirmed working for **Ubuntu**.*
 
+<br>
 
-First, install dependencies
+### Dependencies
 
-```
-sudo apt install -y binutils-mips-linux-gnu build-essential git pkgconf python3
-```
-
-To build wasm:
-
-clone the repository
-
-```
-git clone https://github.com/ethanaobrien/RetroArch.git
-```
-
-then, navigate to the `/dist-scripts/` direcotry, then, from here run
-
-```
-emmake ./dist-cores.sh emscripten
+```sh
+sudo apt install -y         \
+    binutils-mips-linux-gnu \
+    build-essential         \
+    pkgconf                 \
+    python3                 \
+    git 
 ```
 
-to build files to build the wasm:
+<br>
 
-clone the repository
+### WASM
 
-```
-git clone https://github.com/libretro/libretro-fceumm.git
-```
+1. **Clone** the repository.
 
-then, enter whatever directory the Makefile.libretro is located in (there may not be a Makefile.libretro). In this case it is the base directory
+    ```sh
+    git clone https://github.com/ethanaobrien/RetroArch.git
+    ```
+    
+2. Navigate to `/dist-scripts/`
 
-then, run
-```
-emmake make -f Makefile.libretro platform=emscripten
-```
-if there is no Makefile.libretro file, then remove `-f Makefile.libretro`
+3. Build with:
 
-Then, copy the `.bc` file to the dist-cores directory (see above)
+    ```sh
+    emmake ./dist-cores.sh emscripten
+    ```
+
+<br>
+
+### LibRetro
+
+1. **Clone** the repository.
+
+    ```sh
+    git clone https://github.com/libretro/libretro-fceumm.git
+    ```
+
+2. The next steps depend on whether or <br>
+   not you have a `Makefile.libretro` .
+   
+   #### With
+   
+   1. Navigate to the folder with the makefile.
+   
+   2. Build with:
+   
+       ```sh
+       emmake make -f Makefile.libretro platform=emscripten
+       ```
+   
+   #### Without
+   
+   1. Stay in the base directory of the project.
+   
+   2. Build with:
+   
+       ```sh
+       emmake make platform=emscripten
+       ```
+
+3. Copy the `.bc` file to the `/dist-cores/` folder.
+
+<br>
 
 
 <!----------------------------------------------------------------------------->
