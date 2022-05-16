@@ -1,12 +1,14 @@
-## data directory
+# Data
 
+<br>
 
-This is a note, All core files (files that end with `.data`) are compiled versions on [retroarch](https://github.com/libretro/RetroArch)
+## Core Files    [![Badge GPLv3]][GPLv3]
 
-Changes from the original software can be viewed [here](https://github.com/ethanaobrien/RetroArch).
+All files ending in `.data` have been compiled with **[RetroArch]**.
 
-All core files are licensed with the GNU General Public License version 3.0
+*Check my **[Fork]** for changes made to the original software.*
 
+<br>
 
 ### compiling the cores
 
@@ -50,3 +52,12 @@ emmake make -f Makefile.libretro platform=emscripten
 if there is no Makefile.libretro file, then remove `-f Makefile.libretro`
 
 Then, copy the `.bc` file to the dist-cores directory (see above)
+
+
+<!----------------------------------------------------------------------------->
+
+[RetroArch]: https://github.com/libretro/RetroArch
+[Fork]: https://github.com/ethanaobrien/RetroArch
+
+[Badge GPLv3]: https://img.shields.io/badge/License-GPL_3-blue.svg?style=for-the-badge
+[GPLv3]: cores/LICENSE
