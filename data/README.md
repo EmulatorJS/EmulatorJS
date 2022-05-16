@@ -20,6 +20,14 @@ All files ending in `.data` have been compiled with **[RetroArch]**.
 
 ### Dependencies
 
+- **[Build Essential]**
+- **[BinUtils]**
+- **[PkgConf]**
+- **[Python]**
+- **[Git]**
+
+<br>
+
 ```sh
 sudo apt install -y         \
     binutils-mips-linux-gnu \
@@ -104,5 +112,16 @@ sudo apt install -y         \
 [RetroArch]: https://github.com/libretro/RetroArch
 [Fork]: https://github.com/ethanaobrien/RetroArch
 
-[Badge GPLv3]: https://img.shields.io/badge/License-GPL_3-blue.svg?style=flat
 [GPLv3]: cores/LICENSE
+
+<!-------------------------------{ Dependencies }------------------------------>
+
+[Build Essential]: https://packages.ubuntu.com/focal/build-essential
+[BinUtils]: https://www.gnu.org/software/binutils/
+[PkgConf]: http://pkgconf.org/
+[Python]: https://www.python.org/
+[Git]: https://git-scm.com/
+
+<!---------------------------------{ Badges }---------------------------------->
+
+[Badge GPLv3]: https://img.shields.io/badge/License-GPL_3-blue.svg?style=flat
