@@ -1,3 +1,5 @@
+<br>
+
 # Data Folder
 
 <br>
@@ -21,8 +23,8 @@ All files ending in `.data` have been compiled with **[RetroArch]**.
 ### Dependencies
 
 - **[Build Essential]**
-- **[BinUtils]**
 - **[PkgConf]**
+- **[BinUtils]**
 - **[Python]**
 - **[Git]**
 
