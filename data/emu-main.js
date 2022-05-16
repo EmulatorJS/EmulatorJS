@@ -1473,12 +1473,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xb0c5d8 = -0x1,
                             _0x567713 = '',
                             _0x567717 = function() {
-                                var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
-                                _0x4d7024.Module.resumeMainLoop = function() {
-                                    mainLoop(1);
-                                }
-                                _0x4d7024.Module.pauseMainLoop = function() {
-                                    mainLoop(0);
+                                if (_0x55627a.coreVer === 2) {
+                                	var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
+                                    _0x4d7024.Module.resumeMainLoop = function() {
+                                        mainLoop(1);
+                                    }
+                                    _0x4d7024.Module.pauseMainLoop = function() {
+                                        mainLoop(0);
+                                    }
                                 }
                                 if (typeof _0x55627a.loadStateOnStart == 'string') {
                                     fetch(_0x55627a.loadStateOnStart).then(function(response) {
