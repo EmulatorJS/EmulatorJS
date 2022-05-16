@@ -104,5 +104,5 @@ sudo apt install -y         \
 [RetroArch]: https://github.com/libretro/RetroArch
 [Fork]: https://github.com/ethanaobrien/RetroArch
 
-[Badge GPLv3]: https://img.shields.io/badge/License-GPL_3-blue.svg?style=for-the-badge
+[Badge GPLv3]: https://img.shields.io/badge/License-GPL_3-blue.svg?style=flat
 [GPLv3]: cores/LICENSE
