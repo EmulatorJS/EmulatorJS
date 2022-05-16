@@ -10,6 +10,7 @@ All files ending in `.data` have been compiled with **[RetroArch]**.
 
 <br>
 <br>
+<br>
 
 ## Building
 
@@ -29,6 +30,7 @@ sudo apt install -y         \
 ```
 
 <br>
+<br>
 
 ### WASM
 
@@ -38,7 +40,11 @@ sudo apt install -y         \
     git clone https://github.com/ethanaobrien/RetroArch.git
     ```
     
+<br>    
+
 2. Navigate to `/dist-scripts/`
+
+<br>
 
 3. Build with:
 
@@ -46,6 +52,7 @@ sudo apt install -y         \
     emmake ./dist-cores.sh emscripten
     ```
 
+<br>
 <br>
 
 ### LibRetro
@@ -56,28 +63,36 @@ sudo apt install -y         \
     git clone https://github.com/libretro/libretro-fceumm.git
     ```
 
+<br>
+
 2. The next steps depend on whether or <br>
    not you have a `Makefile.libretro` .
    
+   <br>
+   
    #### With
    
-   1. Navigate to the folder with the makefile.
+   - Navigate to the folder with the makefile.
    
-   2. Build with:
+   - Build with:
    
        ```sh
        emmake make -f Makefile.libretro platform=emscripten
        ```
    
+   <br>
+   
    #### Without
    
-   1. Stay in the base directory of the project.
+   - Stay in the base directory of the project.
    
-   2. Build with:
+   - Build with:
    
        ```sh
        emmake make platform=emscripten
        ```
+
+<br>
 
 3. Copy the `.bc` file to the `/dist-cores/` folder.
 
