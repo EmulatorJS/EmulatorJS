@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/ethanaobrien/emulatorjs#readme",
   "dependencies": {
-    "uglify-js": "^3.15.3"
+    "uglify-js": "^3.15.3",
+    "uglifycss": "0.0.29"
   }
 }

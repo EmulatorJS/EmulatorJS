@@ -1,5 +1,6 @@
 const UglifyJS = require("uglify-js");
 const fs = require('fs');
+const uglifycss = require('uglifycss');
 
 if (!String.prototype.replaceAll) {
     String.prototype.replaceAll = function(a, b) {
@@ -14,8 +15,10 @@ function minify(source){
     var ast = UglifyJS.parse(source); 
     return UglifyJS.minify(ast).code;
 }
-console.log('minifying')
+console.log('minifying');
+var css = fs.readFileSync('../emu-css.css', 'utf8');
+fs.writeFileSync('../emu-css.min.css', uglifycss.processString(css));
 var min = minify(code);
-console.log('done!')
+console.log('done!');
 
-fs.writeFileSync('../emu-min.js', min);
+fs.writeFileSync('../emulator.min.js', min);

@@ -1,5 +1,5 @@
 (async function() {
-    var VERSION = 1.6;
+    var VERSION = 1.7;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
@@ -14,6 +14,24 @@
         })
     }
     var scriptTag = document.getElementsByTagName('script')[0];
+    function loadStyle(file) {
+        return new Promise(function(resolve, reject) {
+            var css = document.createElement('link');
+            css.rel = 'stylesheet';
+            css.href = function() {
+                if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] == 'string') {
+                    return EJS_paths[file];
+                } else if ('undefined' != typeof EJS_pathtodata) {
+                    if (!EJS_pathtodata.endsWith('/')) EJS_pathtodata+='/';
+                    return EJS_pathtodata+file+'?v='+VERSION;
+                } else {
+                    return file+'?v='+VERSION;
+                }
+            }();
+            css.onload = resolve;
+            document.head.appendChild(css);
+        })
+    }
     function loadScript(file) {
         return new Promise(function (resolve, reject) {
             var script = document.createElement('script');
@@ -21,22 +39,23 @@
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] == 'string') {
                     return EJS_paths[file];
                 } else if ('undefined' != typeof EJS_pathtodata) {
+                    if (!EJS_pathtodata.endsWith('/')) EJS_pathtodata+='/';
                     return EJS_pathtodata+file+'?v='+VERSION;
                 } else {
                     return file+'?v='+VERSION;
                 }
             }();
             scriptTag.parentNode.insertBefore(script, scriptTag);
-            script.onload = function() {
-                resolve();
-            }
+            script.onload = resolve;
         })
     }
     if ('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
+        await loadStyle('emu-css.css');
         await loadScript('emu-main.js');
         await loadScript('emulator.js');
     } else {
-        await loadScript('emu-min.js');
+        await loadStyle('emu-css.min.css');
+        await loadScript('emulator.min.js');
     }
     var config = {};
     config.gameUrl = EJS_gameUrl;
@@ -52,6 +71,7 @@
     'undefined' != typeof EJS_core && (config.system = EJS_core);
     'undefined' != typeof EJS_loadStateURL && (config.loadStateOnStart = EJS_loadStateURL);
     'undefined' != typeof EJS_language && (config.lang = EJS_language);
+    'undefined' != typeof EJS_noAutoCloseAd && (config.noAutoAdClose = EJS_noAutoCloseAd);
     'undefined' != typeof EJS_oldEJSNetplayServer && (config.oldNetplayServer = EJS_oldEJSNetplayServer);
     'undefined' != typeof EJS_BETA && (config.useBeta = EJS_BETA);
     config.onsavestate = null;
