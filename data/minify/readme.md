@@ -1,11 +1,35 @@
-## Minifying
 
-It is recommended to minify the javascript files before putting them on your server for production. This will make the emulator load faster (and use less bandwidth)
+# Minifying
 
-to minify, first, if you do not have nodejs, please install it from [here](https://nodejs.org/en/download/)
+Before pushing the script files onto your production <br>
+server it is recommended to minify them to save on <br>
+load times as well as bandwidth.
 
-then, open a terminal window and navigate to the minify directory
+<br>
 
-then, run `npm i`
+## Requirements
 
-then, run `node index.js`
+- **[NodeJS]**
+
+<br>
+
+## Steps
+
+1. Open a terminal in `/data/minify` .
+
+2. Install the dependencies with:
+
+    ```sh
+    npm install
+    ```
+
+3. Start the minification with:
+
+    ```sh
+    node index.js
+    ```
+
+
+<!----------------------------------------------------------------------------->
+
+[NodeJS]: https://nodejs.org/en/download/

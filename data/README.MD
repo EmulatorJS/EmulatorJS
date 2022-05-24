@@ -1,52 +1,129 @@
-## data directory
+<br>
 
+# Data Folder
 
-This is a note, All core files (files that end with `.data`) are compiled versions on [retroarch](https://github.com/libretro/RetroArch)
+<br>
 
-Changes from the original software can be viewed [here](https://github.com/ethanaobrien/RetroArch).
+## Cores    [![Badge GPLv3]][GPLv3]
 
-All core files are licensed with the GNU General Public License version 3.0
+All files ending in `.data` have been compiled with **[RetroArch]**.
 
+*Check my **[Fork]** for changes made to the original software.*
 
-### compiling the cores
+<br>
+<br>
+<br>
 
-I have only ever gotten this to work on ubuntu.
+## Building
 
+*Instructions have only been confirmed working for **Ubuntu**.*
 
-First, install dependencies
+<br>
 
-```
-sudo apt install -y binutils-mips-linux-gnu build-essential git pkgconf python3
-```
+### Dependencies
 
-To build wasm:
+- **[Build Essential]**
+- **[PkgConf]**
+- **[BinUtils]**
+- **[Python]**
+- **[Git]**
 
-clone the repository
+<br>
 
-```
-git clone https://github.com/ethanaobrien/RetroArch.git
-```
-
-then, navigate to the `/dist-scripts/` direcotry, then, from here run
-
-```
-emmake ./dist-cores.sh emscripten
-```
-
-to build files to build the wasm:
-
-clone the repository
-
-```
-git clone https://github.com/libretro/libretro-fceumm.git
+```sh
+sudo apt install -y         \
+    binutils-mips-linux-gnu \
+    build-essential         \
+    pkgconf                 \
+    python3                 \
+    git 
 ```
 
-then, enter whatever directory the Makefile.libretro is located in (there may not be a Makefile.libretro). In this case it is the base directory
+<br>
+<br>
 
-then, run
-```
-emmake make -f Makefile.libretro platform=emscripten
-```
-if there is no Makefile.libretro file, then remove `-f Makefile.libretro`
+### WASM
 
-Then, copy the `.bc` file to the dist-cores directory (see above)
+1. **Clone** the repository.
+
+    ```sh
+    git clone https://github.com/ethanaobrien/RetroArch.git
+    ```
+    
+<br>    
+
+2. Navigate to `/dist-scripts/`
+
+<br>
+
+3. Build with:
+
+    ```sh
+    emmake ./dist-cores.sh emscripten
+    ```
+
+<br>
+<br>
+
+### LibRetro
+
+1. **Clone** the repository.
+
+    ```sh
+    git clone https://github.com/libretro/libretro-fceumm.git
+    ```
+
+<br>
+
+2. The next steps depend on whether or <br>
+   not you have a `Makefile.libretro` .
+   
+   <br>
+   
+   #### With
+   
+   - Navigate to the folder with the makefile.
+   
+   - Build with:
+   
+       ```sh
+       emmake make -f Makefile.libretro platform=emscripten
+       ```
+   
+   <br>
+   
+   #### Without
+   
+   - Stay in the base directory of the project.
+   
+   - Build with:
+   
+       ```sh
+       emmake make platform=emscripten
+       ```
+
+<br>
+
+3. Copy the `.bc` file to the `/dist-cores/` folder.
+
+<br>
+
+
+<!----------------------------------------------------------------------------->
+
+[RetroArch]: https://github.com/libretro/RetroArch
+[Fork]: https://github.com/ethanaobrien/RetroArch
+
+[GPLv3]: cores/LICENSE
+
+<!-------------------------------{ Dependencies }------------------------------>
+
+[Build Essential]: https://packages.ubuntu.com/focal/build-essential
+[BinUtils]: https://www.gnu.org/software/binutils/
+[PkgConf]: http://pkgconf.org/
+[Python]: https://www.python.org/
+[Git]: https://git-scm.com/
+
+<!---------------------------------{ Badges }---------------------------------->
+
+[Badge GPLv3]: https://img.shields.io/badge/License-GPL_3-blue.svg?style=flat

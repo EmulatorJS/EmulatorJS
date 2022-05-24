@@ -1,5 +1,5 @@
 (async function() {
-    var VERSION = 1.6;
+    var VERSION = 1.7;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
@@ -49,7 +49,6 @@
             script.onload = resolve;
         })
     }
-    window.onerror = function(e) {alert(e)}
     if ('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         await loadStyle('emu-css.css');
         await loadScript('emu-main.js');
