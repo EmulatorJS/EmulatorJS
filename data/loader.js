@@ -1,5 +1,5 @@
 (async function() {
-    var VERSION = 1.7;
+    var VERSION = 1.8;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
@@ -86,6 +86,6 @@
     'undefined' != typeof EJS_playerName && (config.playerName = EJS_playerName);
     'undefined' != typeof EJS_cheats && (config.cheats = EJS_cheats);
     'undefined' != typeof EJS_color && (config.color = EJS_color);
-    window.EJS_emulator = new EJS(EJS_player, config);
+    window.EJS_emulator = await new EJS(EJS_player, config);
     'undefined' != typeof EJS_onGameStart && EJS_emulator.on('start-game', EJS_onGameStart);
 })();

@@ -50,6 +50,21 @@
     -ms-user-select:none;
     user-select:none
 }
+.ejs--666d4296310579687cf3cf3d2cf951{
+    display:inline-block;
+    width:30px;
+    height:30px;
+    color:#fff;
+    position:absolute;
+    top:5px;
+    right:5px;
+    opacity:0.5;
+    z-index:999
+}
+.ejs--666d4296310579687cf3cf3d2cf951 svg{
+    fill:currentColor
+}
+​
 .ejs--7a5f920ceffb2913f6dbda780573cf a{
     color:#ddd;
     text-decoration:none

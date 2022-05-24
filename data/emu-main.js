@@ -1384,6 +1384,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x96b13f instanceof MouseEvent && _0xc6823.started && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)) && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)).parentNode.removeChild(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad))), _0xc6823.elements.container.focus();
                     });
                 }
+                var _0xa88a13 = this;
                 var _0x16cf3e = function() {
                         _0x4e171c.db && _0x4e171c.getAll(function(_0x1a4eaf) {
                             Array.isArray(_0x1a4eaf) && _0x1a4eaf.length > 0xa && _0x1a4eaf.sort(function(_0x155e15, _0x4a9e7f) {
@@ -1954,193 +1955,190 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x48c633.onmessage = _0x21d6a1, _0x48c633.postMessage(_0x18cb26);
                         });
                     },
+                    _this = this,
                     _0x26d6a1 = function(_0x3787ba) {
-                        return _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), true),
-                        function() {
-                            var _0x3787ba = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)),
-                                _0x2c1832 = _0xa88a13;
-                            _0x3787ba.innerHTML = _0x2c1832.localization('Loading')+'...';
-                            var _0x1c9c57 = setInterval(function() {
-                                if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
-                                    window.Module = {
-                                        'TOTAL_MEMORY': 0x10000000,
-                                        'noInitialRun': true,
-                                        'arguments': [],
-                                        'preRun': [],
-                                        'postRun': [],
-                                        'canvas': _0xb2be2a,
-                                        'print': function(_0x4a8983) {
-                                            if (window.EJS_DEBUG_XX === true) {
-                                                console.log(_0x4a8983);
-                                            }
-                                        },
-                                        'printErr': function(_0x367bee) {
-                                            if (window.EJS_DEBUG_XX === true) {
-                                                console.log(_0x367bee);
-                                            }
-                                        },
-                                        'totalDependencies': 0x0,
-                                        'monitorRunDependencies': function(_0x5d4b07) {},
-                                        'locateFile': function(_0x3fe7ca) {
-                                            var _0x3787ba = null;
-                                            if (_0x3fe7ca.includes('.worker.js')) {
-                                                Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]);
-                                                var _0x2c1832 = new Blob([''], {
-                                                    'type': 'application/javascript'
-                                                });
-                                                return window.URL.createObjectURL(_0x2c1832);
-                                            }
-                                            return _0x3fe7ca.includes('.js.mem') && (Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]), _0x3787ba) ? (_0x4d7024.memData = null, _0x3787ba.buffer) : _0x3fe7ca;
-                                        },
-                                        'readAsync': function(_0x20d016, _0x9d2de4, _0x1425ee) {
-                                            if (_0x20d016 instanceof ArrayBuffer) setTimeout(function() {
-                                                _0x9d2de4(_0x20d016);
-                                            }, 0x1f4);
-                                            else {
-                                                var _0x164012 = new XMLHttpRequest();
-                                                _0x164012.open('GET', _0x20d016, true), _0x164012.responseType = 'arraybuffer', _0x164012.onload = function() {
-                                                    0xc8 == _0x164012.status || 0x0 == _0x164012.status && _0x164012.response ? _0x9d2de4(_0x164012.response) : _0x1425ee();
-                                                }, _0x164012.onerror = _0x1425ee, _0x164012.send(null);
-                                            }
-                                        }
-                                    };
-                                    var _0xa88a13, _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
-                                    var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
-                                    var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                        var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+'cores/'+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
-                                        _0x550f17.a.get(path, {
-                                            'onDownloadProgress': function(_0x117e6b) {
-                                                var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
-                                                _0x3787ba.innerHTML = _0x2c1832.localization('Download Game Core')+' ' .concat(_0x55a075);
-                                            },
-                                            'responseType': 'arraybuffer'
-                                        }).then(function(_0x5eb80b) {
-                                            var _0x519406 = new Uint8Array(_0x5eb80b.data);
-                                            _0x24de8d.db && _0x24de8d.put(_0x16049b, {
-                                                'version': _0x55a075,
-                                                'data': _0x519406
-                                            });
-                                            if (_0xc6823.coreVer === 2) {
-                                                _0x4f0fcc(_0x519406);
-                                            } else {
-                                                var _0xea4c63 = _0x519406.slice ? _0x519406.slice(0xc) : _0x519406.subarray(0xc);
-                                                _0xea4c63.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                                _0x519406 = null;
-                                                _0x4f0fcc(_0xea4c63);
-                                            }
-                                            
-                                        }).catch(function(_0x2e06c8) {
-                                            renderErrorPage(_0x2e06c8, _0x3787ba, _0xc6823);
+                        _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), true);
+                        var _0x3787ba = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1))
+                        _0x3787ba.innerHTML = _this.localization('Loading')+'...';
+                        if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
+                            window.Module = {
+                                'TOTAL_MEMORY': 0x10000000,
+                                'noInitialRun': true,
+                                'arguments': [],
+                                'preRun': [],
+                                'postRun': [],
+                                'canvas': _0xb2be2a,
+                                'print': function(_0x4a8983) {
+                                    if (window.EJS_DEBUG_XX === true) {
+                                        console.log(_0x4a8983);
+                                    }
+                                },
+                                'printErr': function(_0x367bee) {
+                                    if (window.EJS_DEBUG_XX === true) {
+                                        console.log(_0x367bee);
+                                    }
+                                },
+                                'totalDependencies': 0x0,
+                                'monitorRunDependencies': function(_0x5d4b07) {},
+                                'locateFile': function(_0x3fe7ca) {
+                                    var _0x3787ba = null;
+                                    if (_0x3fe7ca.includes('.worker.js')) {
+                                        Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]);
+                                        var _0x2c1832 = new Blob([''], {
+                                            'type': 'application/javascript'
                                         });
-                                    };
-                                    _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
-                                        var _0x2458d5, _0x5d075f = _0x29078e[_0x2c1832.system],
-                                            _0x28ee7f = _0x578a2b.data[_0x2c1832.system],
-                                            _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 0x1,
-                                            _0x254bc2 = Boolean(_0x28ee7f.netplay),
-                                            _0x5b1dcd = Boolean(_0x28ee7f.state),
-                                            _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
-                                            _0x3e4345 = Boolean(_0x28ee7f.wasm);
-                                        if (_0xc6823.coreVer !== 2 && _0x28ee7f.old) {
-                                            _0x9a1f1 = Boolean(_0x28ee7f.old.asmjs);
-                                            _0x3e4345 = Boolean(_0x28ee7f.old.wasm);
-                                        }
-                                        if ('nds' == _0x2c1832.system && ! _0x2d904a.wasm) {
-                                            _0x5b1dcd = !0x1;
-                                        };
-                                        //alert(_0x5b1dcd) // is save/load state supported
-                                        if (_0xc6823.statesSupported === false) {
-                                            _0x5b1dcd = false;
-                                        };
-                                        _0x4d7024.coreFileVersion = _0x124167;
-                                        _0x4d7024.coreFileName = _0x5d075f;
-                                        var _0x2eb141 = !0x1;
-                                        ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
-                                        'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
-                                        if ('mame' == _0x2c1832.system) {
-                                            var data = _0x2c1832.mameCore;
-                                            if (! data || data === null || data.split('|').length !== 2) {
-                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Missing mame config')+'</strong>';
-                                                return;
-                                            }
-                                            var _0x3787ba = data.split('|');
-                                            _0x4d7024.coreFileName = ''.concat(_0x2c1832.system, '-').concat(_0x3787ba[0x0]);
-                                            _0x5b1dcd = '1' === _0x3787ba[0x1];
-                                            _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd);
-                                            _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd);
-                                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd);
-                                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
-                                            if (_0x2c1832.coreVer === 2) {
-                                                _0x2458d5 = '';
-                                            } else {
-                                                _0x2458d5 = _0x2c1832.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
-                                            }
-                                            _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
-                                                if (_0x655c87 && _0x655c87.version === _0x124167) {
-                                                    if (_0xc6823.coreVer === 2) {
-                                                        _0x4f0fcc(_0x655c87.data);
-                                                    } else {
-                                                        var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
-                                                        _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                                        _0x4f0fcc(_0x3787ba);
-                                                    }
-                                                } else _0x3641d6(_0x2458d5, _0x124167);
-                                            }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Unsupported Game')+'</strong>';
-                                        } else {
-                                            _0x2458d5 = false;
-                                            var type;
-                                            if (_0x2d904a.wasm && _0x3e4345) {
-                                                type = 'wasm';
-                                                _0x2458d5 = true;
-                                                if ('n64' === _0x2c1832.system && !_0x2eb141) {
-                                                    type = 'legacy-wasm';
-                                                }
-                                                _0x31a5b3 = true;
-                                            } else if (_0x9a1f1) {
-                                                _0x2458d5 = true;
-                                                type = 'asmjs';
-                                                if ('n64' === _0x2c1832.system && !_0x2eb141) {
-                                                    type = 'legacy-asmjs';
-                                                }
-                                            }
-                                            'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
-                                            if (_0x2458d5 !== true) {
-                                                _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_0x2c1832.localization('Please upgrade your browser to the latest version')+'</strong>';
-                                                return;
-                                            }
-                                            if (_0x2c1832.coreVer === 2) {
-                                                _0x2458d5 = _0x5d075f + '-' + type + '.data';
-                                            } else {
-                                                _0x2458d5 = _0x5d075f + '-old-' + type + '.data';
-                                            }
-                                            'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
-                                            _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
-                                                if (_0x47a6fd && _0x47a6fd.version === _0x124167 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
-                                                    if (_0xc6823.coreVer === 2) {
-                                                        _0x4f0fcc(_0x47a6fd.data);
-                                                    } else {
-                                                        var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
-                                                        _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                                        _0x4f0fcc(_0x3787ba);
-                                                    }
-                                                } else _0x3641d6(_0x2458d5, _0x124167);
-                                            }) : _0x3641d6(_0x2458d5, _0x124167);
-                                        }
-                                        if (_0x2c1832.coreVer === 2 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
-                                            _0x1e2c68.element(_0x2c1832.elements.buttons.gamepad) && _0x132da7(_0x2c1832.elements.buttons.gamepad, true);
-                                        }
-                                        _0x254bc2 || _0x1e2c68.element(_0x2c1832.elements.buttons.netplay) && _0x132da7(_0x2c1832.elements.buttons.netplay, true), _0x1e2c68.element(_0x2c1832.elements.buttons.saveState) && _0x132da7(_0x2c1832.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_0x2c1832.elements.buttons.loadState) && _0x132da7(_0x2c1832.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
-                                        _0xc6823.setStatesSupported(_0x5b1dcd);
-                                    }).catch(function(_0x2d06a9) {
-                                        renderErrorPage(_0x2d06a9, _0x3787ba, _0xc6823);
-                                    }), clearInterval(_0x1c9c57), _0x4d7024.romdb = _0x4e171c;
+                                        return window.URL.createObjectURL(_0x2c1832);
+                                    }
+                                    return _0x3fe7ca.includes('.js.mem') && (Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]), _0x3787ba) ? (_0x4d7024.memData = null, _0x3787ba.buffer) : _0x3fe7ca;
+                                },
+                                'readAsync': function(_0x20d016, _0x9d2de4, _0x1425ee) {
+                                    if (_0x20d016 instanceof ArrayBuffer) setTimeout(function() {
+                                        _0x9d2de4(_0x20d016);
+                                    }, 0x1f4);
+                                    else {
+                                        var _0x164012 = new XMLHttpRequest();
+                                        _0x164012.open('GET', _0x20d016, true), _0x164012.responseType = 'arraybuffer', _0x164012.onload = function() {
+                                            0xc8 == _0x164012.status || 0x0 == _0x164012.status && _0x164012.response ? _0x9d2de4(_0x164012.response) : _0x1425ee();
+                                        }, _0x164012.onerror = _0x1425ee, _0x164012.send(null);
+                                    }
                                 }
-                            }, 0x1f4);
-                        }(), !0x1;
+                            };
+                            var _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
+                            var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
+                            var _0x3641d6 = function(_0x16049b, _0x55a075) {
+                                var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+'cores/'+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
+                                _0x550f17.a.get(path, {
+                                    'onDownloadProgress': function(_0x117e6b) {
+                                        var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
+                                        _0x3787ba.innerHTML = _this.localization('Download Game Core')+' ' .concat(_0x55a075);
+                                    },
+                                    'responseType': 'arraybuffer'
+                                }).then(function(_0x5eb80b) {
+                                    var _0x519406 = new Uint8Array(_0x5eb80b.data);
+                                    _0x24de8d.db && _0x24de8d.put(_0x16049b, {
+                                        'version': _0x55a075,
+                                        'data': _0x519406
+                                    });
+                                    if (_0xc6823.coreVer === 2) {
+                                        _0x4f0fcc(_0x519406);
+                                    } else {
+                                        var _0xea4c63 = _0x519406.slice ? _0x519406.slice(0xc) : _0x519406.subarray(0xc);
+                                        _0xea4c63.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                        _0x519406 = null;
+                                        _0x4f0fcc(_0xea4c63);
+                                    }
+                                    
+                                }).catch(function(_0x2e06c8) {
+                                    renderErrorPage(_0x2e06c8, _0x3787ba, _0xc6823);
+                                });
+                            };
+                            _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
+                                var _0x2458d5, _0x5d075f = _0x29078e[_this.system],
+                                    _0x28ee7f = _0x578a2b.data[_this.system],
+                                    _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 0x1,
+                                    _0x254bc2 = Boolean(_0x28ee7f.netplay),
+                                    _0x5b1dcd = Boolean(_0x28ee7f.state),
+                                    _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
+                                    _0x3e4345 = Boolean(_0x28ee7f.wasm);
+                                if (_0xc6823.coreVer !== 2 && _0x28ee7f.old) {
+                                    _0x9a1f1 = Boolean(_0x28ee7f.old.asmjs);
+                                    _0x3e4345 = Boolean(_0x28ee7f.old.wasm);
+                                }
+                                if ('nds' == _this.system && ! _0x2d904a.wasm) {
+                                    _0x5b1dcd = !0x1;
+                                };
+                                //alert(_0x5b1dcd) // is save/load state supported
+                                if (_0xc6823.statesSupported === false) {
+                                    _0x5b1dcd = false;
+                                };
+                                _0x4d7024.coreFileVersion = _0x124167;
+                                _0x4d7024.coreFileName = _0x5d075f;
+                                var _0x2eb141 = !0x1;
+                                ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
+                                'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
+                                if ('mame' == _this.system) {
+                                    var data = _this.mameCore;
+                                    if (! data || data === null || data.split('|').length !== 2) {
+                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Missing mame config')+'</strong>';
+                                        return;
+                                    }
+                                    var _0x3787ba = data.split('|');
+                                    _0x4d7024.coreFileName = ''.concat(_this.system, '-').concat(_0x3787ba[0x0]);
+                                    _0x5b1dcd = '1' === _0x3787ba[0x1];
+                                    _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd);
+                                    _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd);
+                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd);
+                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
+                                    if (_this.coreVer === 2) {
+                                        _0x2458d5 = '';
+                                    } else {
+                                        _0x2458d5 = _this.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
+                                    }
+                                    _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
+                                        if (_0x655c87 && _0x655c87.version === _0x124167) {
+                                            if (_0xc6823.coreVer === 2) {
+                                                _0x4f0fcc(_0x655c87.data);
+                                            } else {
+                                                var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
+                                                _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                                _0x4f0fcc(_0x3787ba);
+                                            }
+                                        } else _0x3641d6(_0x2458d5, _0x124167);
+                                    }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Unsupported Game')+'</strong>';
+                                } else {
+                                    _0x2458d5 = false;
+                                    var type;
+                                    if (_0x2d904a.wasm && _0x3e4345) {
+                                        type = 'wasm';
+                                        _0x2458d5 = true;
+                                        if ('n64' === _this.system && !_0x2eb141) {
+                                            type = 'legacy-wasm';
+                                        }
+                                        _0x31a5b3 = true;
+                                    } else if (_0x9a1f1) {
+                                        _0x2458d5 = true;
+                                        type = 'asmjs';
+                                        if ('n64' === _this.system && !_0x2eb141) {
+                                            type = 'legacy-asmjs';
+                                        }
+                                    }
+                                    'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                    if (_0x2458d5 !== true) {
+                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Please upgrade your browser to the latest version')+'</strong>';
+                                        return;
+                                    }
+                                    if (_this.coreVer === 2) {
+                                        _0x2458d5 = _0x5d075f + '-' + type + '.data';
+                                    } else {
+                                        _0x2458d5 = _0x5d075f + '-old-' + type + '.data';
+                                    }
+                                    'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                    _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
+                                        if (_0x47a6fd && _0x47a6fd.version === _0x124167 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
+                                            if (_0xc6823.coreVer === 2) {
+                                                _0x4f0fcc(_0x47a6fd.data);
+                                            } else {
+                                                var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
+                                                _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
+                                                _0x4f0fcc(_0x3787ba);
+                                            }
+                                        } else _0x3641d6(_0x2458d5, _0x124167);
+                                    }) : _0x3641d6(_0x2458d5, _0x124167);
+                                }
+                                if (_this.coreVer === 2 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
+                                    _0x1e2c68.element(_this.elements.buttons.gamepad) && _0x132da7(_this.elements.buttons.gamepad, true);
+                                }
+                                _0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true), _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
+                                _0xc6823.setStatesSupported(_0x5b1dcd);
+                            }).catch(function(_0x2d06a9) {
+                                renderErrorPage(_0x2d06a9, _0x3787ba, _0xc6823);
+                            }), _0x4d7024.romdb = _0x4e171c;
+                        }
+                        return false;
                     };
                 _0x455c85(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), 'click touchstart', _0x26d6a1);
                 if (_0xc6823.startOnLoad === true) {
-                    _0x26d6a1()
+                    _0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])).click();
                 }
             }
         },
@@ -3759,12 +3757,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     
                     html += '<div class="'+_0x449eac({'center': true})+'">';
                     if (_0xa88a13.system === 'n64') {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:65px;">'+_0xa88a13.localization('Menu')+'</div>';
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:0px;">'+_0xa88a13.localization('Start')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:40px;">'+_0xa88a13.localization('Start')+'</div>';
                     } else {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:30px;">'+_0xa88a13.localization('Start')+'</div>';
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_c': true})+'" style="left:95px;">'+_0xa88a13.localization('Menu')+'</div>';
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-35px;">'+_0xa88a13.localization('Select')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:60px;">'+_0xa88a13.localization('Start')+'</div>';
+                        html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-5px;">'+_0xa88a13.localization('Select')+'</div>';
                     }
                     html += '</div>';
                     
@@ -3864,25 +3860,29 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     ].forEach((a) => {
                         _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
                                        'touchstart touchend mousedown mouseup mouseout', function(e) {
+                            if (e.sourceCapabilities.firesTouchEvents && e.type.includes('mouse')) return;
                             ['touchend', 'mouseup', 'mouseout'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
                                 _0x378b5c.syncInput(0, a.number, 0);
                             }, 30)) : (_0x3a8e2f(e.target, _0x2ec721, true), _0x378b5c.syncInput(0, a.number, 1)), e.stopPropagation();
                         })
                     });
+                    var menuButton = _0x428003('div', {
+                        'class': _0x449eac({
+                            'ejs__widget': true,
+                            'ejs__widget_controls_toggle': true
+                        })
+                    }, '');
+                    menuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 78.33 14.33 64 32 64H416C433.7 64 448 78.33 448 96C448 113.7 433.7 128 416 128H32C14.33 128 0 113.7 0 96zM0 256C0 238.3 14.33 224 32 224H416C433.7 224 448 238.3 448 256C448 273.7 433.7 288 416 288H32C14.33 288 0 273.7 0 256zM416 448H32C14.33 448 0 433.7 0 416C0 398.3 14.33 384 32 384H416C433.7 384 448 398.3 448 416C448 433.7 433.7 448 416 448z"/></svg>';
+                    _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
                     var hideTimeout;
-                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832, ' .').concat(_0x449eac({
-                        'b_c': true
-                    }))), 'touchstart touchend mousedown mouseup mouseout', function(_0x47af91) {
-                        if (['touchend', 'mouseup', 'mouseout'].includes(_0x47af91.type)) {
-                            _0x3a8e2f(_0x47af91.target, _0x2ec721, false);
-                        } else {
-                            _0x3a8e2f(_0x47af91.target, _0x2ec721, true);
-                            clearTimeout(hideTimeout);
-                            _0x5ab74d.toggleControls.call(_0xa88a13, true);
-                            hideTimeout = setTimeout(function() {
-                                _0x5ab74d.toggleControls.call(_0xa88a13, false);
-                            }, 5000)
-                        }
+                    _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
+                        if (e.sourceCapabilities.firesTouchEvents && e.type.includes('mouse')) return;
+                        _0x3a8e2f(e.target, _0x2ec721, true);
+                        clearTimeout(hideTimeout);
+                        _0x5ab74d.toggleControls.call(_0xa88a13, true);
+                        hideTimeout = setTimeout(function() {
+                            _0x5ab74d.toggleControls.call(_0xa88a13, false);
+                        }, 5000)
                     });
                 } else _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
             },
@@ -5981,6 +5981,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'portrait': true
                     }), !0x1);
                 }), _0xbae705.call(_0x45d275, window, 'resize'), _0x1093f4.call(_0x45d275, _0x45d275.elements.container, 'enterfullscreen', function(_0x586586) {
+                    if (_0x27f4c4.isMobileDevice && window.screen && screen.orientation && typeof screen.orientation.lock == 'function') {
+                        try {
+                            screen.orientation.lock("landscape");
+                        }catch(e){}
+                    } else if (_0x27f4c4.isMobileDevice && window.ScreenOrientation && typeof ScreenOrientation.lock == 'function') {
+                        try {
+                            ScreenOrientation.lock("landscape");
+                        }catch(e){}
+                    }
                     if (_0x45d275.coreVer === 2 && _0x27f4c4.Module) {
                         var repeat = 50;
                         clearInterval(setFullscreenInterval);
@@ -5996,6 +6005,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xbae705.call(_0x45d275, window, 'resize');
                     }, 0x12c);
                 }), _0x1093f4.call(_0x45d275, _0x45d275.elements.container, 'exitfullscreen', function(_0x4de2f3) {
+                    if (_0x27f4c4.isMobileDevice && window.screen && screen.orientation && typeof screen.orientation.unlock == 'function') {
+                        try {
+                            screen.orientation.unlock();
+                        }catch(e){}
+                    } else if (_0x27f4c4.isMobileDevice && window.ScreenOrientation && typeof ScreenOrientation.unlock == 'function') {
+                        try {
+                            ScreenOrientation.unlock();
+                        }catch(e){}
+                    }
                     if (_0x45d275.coreVer === 2 && _0x27f4c4.Module) {
                         clearInterval(setFullscreenInterval);
                         _0x27f4c4.Module.setCanvasSize(800, 600);
@@ -6170,159 +6188,162 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     }
     var _0x3dbc76 = function() {
         function _0x6954aa(_0x28cce1, _0x2ba0e6) {
-            var _0x5938bc = this;
-            var _0x2136bc = function(path, isDirectory) {
-                var finpath = window.location.pathname.split('/').pop();
-                var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
-                var split3 = finalpath.split('/')
-                var split2 = path.split('/')
-                var split1 = [ ]
-                for (var i=0; i<split3.length; i++) {
-                    if (split3[i] != '') {
-                        split1.push(split3[i])
-                    }
-                }
-                if (! path.startsWith('/') && !path.includes('://') && !path.includes('http:') && !path.includes('https:') && !path.includes('file:') && !path.includes('blob:')) {
-                    for (var w=0; w<split2.length; w++) {
-                        if (split2[w] == '' || split2[w] == '.') {
-                        } else if (split2[w] == '..') {
-                            if (split1.length > 0) {
-                                var split1 = function(origpath) {
-                                    if (origpath === '/') {
-                                        return '/'
-                                    } else {
-                                        return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
-                                    }
-                                }(split1.join('/')).split('/');
-                            }
-                        } else {
-                            split1.push(split2[w]);
+            return new Promise(async function(resolve, reject) {
+                var _0x5938bc = this;
+                var _0x2136bc = function(path, isDirectory) {
+                    var finpath = window.location.pathname.split('/').pop();
+                    var finalpath = window.location.pathname.substring(0, window.location.pathname.length - finpath.length);
+                    var split3 = finalpath.split('/')
+                    var split2 = path.split('/')
+                    var split1 = [ ]
+                    for (var i=0; i<split3.length; i++) {
+                        if (split3[i] != '') {
+                            split1.push(split3[i])
                         }
                     }
-                    var path = split1.join('/')
-                    if (! path.startsWith('/')) {
-                        var path = '/' + path;
-                    }
-                    path = window.location.protocol + '//' + window.location.host + path;
-                }
-                if (path.startsWith('/')) {
-                    path = window.location.protocol + '//' + window.location.host + path;
-                }
-                if (! path.endsWith('/') && isDirectory) {
-                    path = path + '/';
-                }
-                return path
-            }
-            var a = function(_0x154660, _0x15626f) {
-                if (!(_0x154660 instanceof _0x15626f)) throw new TypeError('Cannot call a class as a function');
-            }(this, _0x6954aa);
-            this.version = '1.2.1';
-            this.system = '';
-            this.adUrl = null;
-            this.gameName = null;
-            this.loadStateOnStart = false;
-            this.statesSupported = true;
-            this.mameCore = null;
-            this.startOnLoad = false;
-            this.dataPath = '';
-            this.customPaths = null;
-            this.hash = '';
-            this.lightgun = false;
-            this.mouse = false;
-            this.multitap = false;
-            this.ready = false;
-            this.paused = true;
-            this.started = false;
-            this.touch = _0x2d904a.touch;
-            this.game = _0x28cce1;
-            _0x1e2c68.string(this.game) && (this.game = document.querySelectorAll(this.game));
-            (window.jQuery && this.game instanceof jQuery || _0x1e2c68.nodeList(this.game) || _0x1e2c68.array(this.game)) && (this.game = this.game[0x0]);
-            this.game = this.game;
-            this.game.innerHTML = '';
-            this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
-            this.coreVer = function(core, useBeta) {
-                /*if (['dos'].includes(core)) {
-                    return 2;
-                }*/
-                if (useBeta === true && window.WebAssembly) {
-                    var supportedCores = ['nes', 'snes', 'gb', 'nds'];
-                    return supportedCores.includes(core) ? 2 : 1;
-                }
-                return 1;
-            }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
-            this.lightgun = this.config.lightgun;
-            this.loadStateOnStart = this.config.loadStateOnStart || false;
-            this.adUrl = this.config.adUrl || null;
-            this.gameName = this.config.gameName || null;
-            this.mouse = this.config.mouse;
-            this.multitap = this.config.multitap;
-            this.cheats = this.config.cheats;
-            this.cheats || (this.cheats = []);
-            var u = function(a, b) {
-                if (typeof b === 'string') {
-                    return b;
-                } else if (a === true) {
-                    return 'https://ws.emulatorjs.com/'
-                } else {
-                    return 'https://emuserver.emulatorjs.ga/';
-                }
-            }(this.config.oldNetplayServer, this.config.netplayUrl);
-            this.listUrl = u;
-            this.socketUrl = u;
-            this.mameCore = this.config.mameCore || null;
-            this.color = this.config.color;
-            this.startOnLoad = this.config.startOnLoad || false;
-            this.statesSupported = this.config.statesSupported || true;
-            this.customPaths = function(paths) {
-                if (! paths) return {};
-                var newPaths = {};
-                for (var k in paths) {
-                    if (typeof paths[k] == 'string') {
-                        newPaths[k] = _0x2136bc(paths[k]);
-                    }
-                }
-                return newPaths;
-            }(this.config.paths);
-            this.dataPath = function(path) {
-                if (typeof path != 'string') {
-                    return function(origpath) {
-                        var fullrequestpath = origpath
-                        var finpath = fullrequestpath.split('/').pop()
-                        var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
-                        if (origpath == '/') {
-                            return window.location.protocol + '//' + window.location.host + '/';
-                        } else {
-                            if (finalpath.startsWith('/')) {
-                                finalpath = window.location.protocol + '//' + window.location.host + finalpath;
+                    if (! path.startsWith('/') && !path.includes('://') && !path.includes('http:') && !path.includes('https:') && !path.includes('file:') && !path.includes('blob:')) {
+                        for (var w=0; w<split2.length; w++) {
+                            if (split2[w] == '' || split2[w] == '.') {
+                            } else if (split2[w] == '..') {
+                                if (split1.length > 0) {
+                                    var split1 = function(origpath) {
+                                        if (origpath === '/') {
+                                            return '/'
+                                        } else {
+                                            return origpath.substring(0, origpath.length - origpath.split('/').pop().length);
+                                        }
+                                    }(split1.join('/')).split('/');
+                                }
+                            } else {
+                                split1.push(split2[w]);
                             }
-                            if (! finalpath.endsWith('/')) {
-                                finalpath = finalpath + '/';
-                            }
-                            return finalpath
                         }
-                    }(window.location.href);
-                }
-                return _0x2136bc(path, true);
-            }(this.config.dataPath);
-            (async function(dataPath, customPath, lang) {
-                var localJson = {};
-                if (lang && typeof lang == 'string' && lang !== 'en-US') {
-                    var url = (customPath && typeof customPath[lang+'.json'] == 'string') ? customPath[lang+'.json'] : dataPath+'localization/'+lang+'.json';
-                    try {
-                        var res = await fetch(url);
-                        var text = await res.text();
-                        var localJson = JSON.parse(text);
-                        _0x39ca5e.i18n = localJson.i18n;
-                        _0x7f9f36.normalOptions = localJson.normalOptions;
-                    } catch(e) {
-                        console.warn('error setting localization', e);
+                        var path = split1.join('/')
+                        if (! path.startsWith('/')) {
+                            var path = '/' + path;
+                        }
+                        path = window.location.protocol + '//' + window.location.host + path;
                     }
+                    if (path.startsWith('/')) {
+                        path = window.location.protocol + '//' + window.location.host + path;
+                    }
+                    if (! path.endsWith('/') && isDirectory) {
+                        path = path + '/';
+                    }
+                    return path
                 }
-                return function(engText) {
-                    return (typeof localJson[engText] == 'string') ? localJson[engText] : engText;
-                }
-            }(this.dataPath, this.customPaths, this.config.lang)).then(function(a) {
-                this.localization = a;
+                this.version = '1.2.2';
+                this.system = '';
+                this.adUrl = null;
+                this.gameName = null;
+                this.loadStateOnStart = false;
+                this.statesSupported = true;
+                this.mameCore = null;
+                this.startOnLoad = false;
+                this.dataPath = '';
+                this.customPaths = null;
+                this.hash = '';
+                this.lightgun = false;
+                this.mouse = false;
+                this.multitap = false;
+                this.ready = false;
+                this.paused = true;
+                this.started = false;
+                this.touch = _0x2d904a.touch;
+                this.game = _0x28cce1;
+                _0x1e2c68.string(this.game) && (this.game = document.querySelectorAll(this.game));
+                (window.jQuery && this.game instanceof jQuery || _0x1e2c68.nodeList(this.game) || _0x1e2c68.array(this.game)) && (this.game = this.game[0x0]);
+                this.game = this.game;
+                this.game.innerHTML = '';
+                this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
+                this.coreVer = function(core, useBeta) {
+                    /*if (['dos'].includes(core)) {
+                        return 2;
+                    }*/
+                    if (useBeta === true && window.WebAssembly) {
+                        var supportedCores = ['nes', 'snes', 'gb', 'nds'];
+                        return supportedCores.includes(core) ? 2 : 1;
+                    }
+                    return 1;
+                }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
+                this.lightgun = this.config.lightgun;
+                this.loadStateOnStart = this.config.loadStateOnStart || false;
+                this.adUrl = this.config.adUrl || null;
+                this.gameName = this.config.gameName || null;
+                this.mouse = this.config.mouse;
+                this.multitap = this.config.multitap;
+                this.cheats = this.config.cheats;
+                this.cheats || (this.cheats = []);
+                var u = function(a, b) {
+                    if (typeof b === 'string') {
+                        return b;
+                    } else if (a === true) {
+                        return 'https://ws.emulatorjs.com/'
+                    } else {
+                        return 'https://emuserver.emulatorjs.ga/';
+                    }
+                }(this.config.oldNetplayServer, this.config.netplayUrl);
+                this.listUrl = u;
+                this.socketUrl = u;
+                this.mameCore = this.config.mameCore || null;
+                this.color = this.config.color;
+                this.startOnLoad = this.config.startOnLoad || false;
+                this.statesSupported = this.config.statesSupported || true;
+                this.customPaths = function(paths) {
+                    if (! paths) return {};
+                    var newPaths = {};
+                    for (var k in paths) {
+                        if (typeof paths[k] == 'string') {
+                            newPaths[k] = _0x2136bc(paths[k]);
+                        }
+                    }
+                    return newPaths;
+                }(this.config.paths);
+                this.dataPath = function(path) {
+                    if (typeof path != 'string') {
+                        return function(origpath) {
+                            var fullrequestpath = origpath
+                            var finpath = fullrequestpath.split('/').pop()
+                            var finalpath = fullrequestpath.substring(0, fullrequestpath.length - finpath.length)
+                            if (origpath == '/') {
+                                return window.location.protocol + '//' + window.location.host + '/';
+                            } else {
+                                if (finalpath.startsWith('/')) {
+                                    finalpath = window.location.protocol + '//' + window.location.host + finalpath;
+                                }
+                                if (! finalpath.endsWith('/')) {
+                                    finalpath = finalpath + '/';
+                                }
+                                return finalpath
+                            }
+                        }(window.location.href);
+                    }
+                    return _0x2136bc(path, true);
+                }(this.config.dataPath);
+                this.localization = await (async function(dataPath, customPath, lang) {
+                    var localJson = {};
+                    if (lang && typeof lang == 'string' && lang !== 'en-US') {
+                        var url = (customPath && typeof customPath[lang+'.json'] == 'string') ? customPath[lang+'.json'] : dataPath+'localization/'+lang+'.json';
+                        try {
+                            var res = await fetch(url);
+                            var text = await res.text();
+                            var localJson = JSON.parse(text);
+                            _0x39ca5e.i18n = localJson.i18n;
+                            _0x7f9f36.normalOptions = localJson.normalOptions;
+                        } catch(e) {
+                            console.warn('error setting localization', e);
+                        }
+                    }
+                    return function(engText) {
+                        if (typeof localJson[engText] == 'string') {
+                            return localJson[engText];
+                        }
+                        if (lang && lang !== 'en-US' && ('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
+                            console.warn('Missing translation for "'+engText+'". Language is set to "'+lang+'"')
+                        }
+                        return engText;
+                    }
+                }(this.dataPath, this.customPaths, this.config.lang));
                 this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
                 Object.keys(this.config.classNames).forEach(function(_0x1d6b41) {
                     var _0x28cce1 = _0x5938bc;
@@ -6363,37 +6384,35 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.fullscreen = {
                     'active': false
                 }
-                if (this.game.emulator) console.warn('Target already setup');
-                else {
-                    this.config.mute = true;
-                    this.eventListeners = [];
-                    this.listeners = new _0x37093c(this);
-                    this.storage = new _0x2f61ba(this, 'ejs_settings');
-                    this.game.emulator = this;
-                    _0x1e2c68.element(this.elements.container) || (this.elements.container = _0x428003('div'), _0x580edd(this.game, this.elements.container));
-                    var _0x5e63f0 = _0x428003('div', {
-                        'class': _0x449eac({
-                            'ejs__widgets': true
-                        })
-                    });
-                    this.elements.container.appendChild(_0x5e63f0);
-                    var _0x32c8af = _0x428003('div', {
-                        'class': _0x449eac({
-                            'ejs__dialogs': true
-                        })
-                    });
-                    this.elements.container.appendChild(_0x32c8af);
-                    _0x5ab74d.addStyleHook.call(this);
-                    _0xdcec2a.setup.call(this);
-                    _0x5ab74d.build.call(this);
-                    this.listeners.container();
-                    this.listeners.global();
-                    this.fullscreen = new _0x335854(this);
-                    _0x27f4c4.create.call(this);
-                    var _0x446e06 = document.createElement('script');
-                    _0x446e06.src = (this.customPaths && typeof this.customPaths['webrtc-adapter.js'] == 'string') ? this.customPaths['webrtc-adapter.js'] : (this.dataPath + 'webrtc-adapter.js');
-                    document.body.appendChild(_0x446e06);
-                }
+                this.config.mute = true;
+                this.eventListeners = [];
+                this.listeners = new _0x37093c(this);
+                this.storage = new _0x2f61ba(this, 'ejs_settings');
+                this.game.emulator = this;
+                _0x1e2c68.element(this.elements.container) || (this.elements.container = _0x428003('div'), _0x580edd(this.game, this.elements.container));
+                var _0x5e63f0 = _0x428003('div', {
+                    'class': _0x449eac({
+                        'ejs__widgets': true
+                    })
+                });
+                this.elements.container.appendChild(_0x5e63f0);
+                var _0x32c8af = _0x428003('div', {
+                    'class': _0x449eac({
+                        'ejs__dialogs': true
+                    })
+                });
+                this.elements.container.appendChild(_0x32c8af);
+                _0x5ab74d.addStyleHook.call(this);
+                _0xdcec2a.setup.call(this);
+                _0x5ab74d.build.call(this);
+                this.listeners.container();
+                this.listeners.global();
+                this.fullscreen = new _0x335854(this);
+                _0x27f4c4.create.call(this);
+                var _0x446e06 = document.createElement('script');
+                _0x446e06.src = (this.customPaths && typeof this.customPaths['webrtc-adapter.js'] == 'string') ? this.customPaths['webrtc-adapter.js'] : (this.dataPath + 'webrtc-adapter.js');
+                document.body.appendChild(_0x446e06);
+                resolve(this);
             }.bind(this))
         }
         var _0x17edbf, _0x2c1832, _0x423c42;

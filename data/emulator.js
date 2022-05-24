@@ -2219,6 +2219,7 @@ var EJS = function(_0x574f5e) {
         'cheat-name-input': 'ejs--a7d7f80c8999469c991ea452a85dd9',
         'ejs__widgets': 'ejs--952c974392296e7f643d51db380157',
         'ejs__widget': 'ejs--0d7e216cf12ae73705b5d5bb0452fc',
+        'ejs__widget_controls_toggle': 'ejs--666d4296310579687cf3cf3d2cf951',
         'ejs__widget_netplay': 'ejs--c0a5e71f6613caab66d6ae15a5a00f',
         'virtual-gamepad': 'ejs--2440e3b831017ff8327c939e2a4413',
         'top': 'ejs--b8d8b771d0bbb94e2bbd03054f53fd',
