@@ -10,7 +10,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'muted': false,
             'i18n': {
                 'restart': 'Restart',
-                'play': 'Play',
+                'play': 'Start Game',
                 'pause': 'Pause',
                 'played': 'Played',
                 'volume': 'Volume',
