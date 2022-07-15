@@ -3859,9 +3859,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         {id: {"b_cr":true},number: 20}
                     ].forEach((a) => {
                         _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
-                                       'touchstart touchend mousedown mouseup mouseout', function(e) {
-                            if (e.sourceCapabilities.firesTouchEvents && e.type.includes('mouse')) return;
-                            ['touchend', 'mouseup', 'mouseout'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
+                                       'touchstart touchend', function(e) {
+                            ['touchend'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
                                 _0x378b5c.syncInput(0, a.number, 0);
                             }, 30)) : (_0x3a8e2f(e.target, _0x2ec721, true), _0x378b5c.syncInput(0, a.number, 1)), e.stopPropagation();
                         })
@@ -3876,7 +3875,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
                     var hideTimeout;
                     _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
-                        if (e.sourceCapabilities.firesTouchEvents && e.type.includes('mouse')) return;
                         _0x3a8e2f(e.target, _0x2ec721, true);
                         clearTimeout(hideTimeout);
                         _0x5ab74d.toggleControls.call(_0xa88a13, true);
@@ -5532,6 +5530,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x2a1dda.appendChild(_0x14264d);
                                 _0x2a1dda.setAttribute('menu', '');
                             }
+                            _0x550f17.a.check(_0x2a1dda);
                             _0x2c1832 && clearTimeout(_0x2c1832), _0x2c1832 = setTimeout(function() {}, 0xfa0), _0x7f9f36.contextMenu.timer = _0x2c1832;
                         } else _0x7f9f36.contextMenu.style.display = 'none';
                     }
@@ -5563,6 +5562,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
+                    try{_0x550f17.a.check(_0x20faaa.target.parentElement.parentElement);}catch(e){};
                     var _0x4e898a = _0x378b5c.getScreenData();
                     if (typeof _0xa88a13.gameName == 'string') {
                        var gamep = _0xa88a13.gameName
@@ -5572,6 +5572,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
+                    try{_0x550f17.a.check(_0x275730.target.parentElement.parentElement);}catch(e){};
                     if (_0x27f4c4.romdb) {
                         _0x132da7(_0xa88a13.elements.dialogs.cache, !0x1);
                         var _0x3360eb = _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content']));
@@ -5609,10 +5610,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Quick Save')+' (F2)', false, function(_0x395c73) {
+                    try{_0x550f17.a.check(_0x395c73.target.parentElement.parentElement);}catch(e){};
                     _0x378b5c.quickSaveState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
                 addContextHtml(_0xa88a13.localization('Quick Load')+' (F4)', false, function(_0x124f69) {
+                    try{_0x550f17.a.check(_0x124f69.target.parentElement.parentElement);}catch(e){};
                     _0x378b5c.quickLoadState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
@@ -6045,7 +6048,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0x1093f4.call(_0x2c1832, _0x2c1832.game, 'volumechange', function(_0x3099fe) {
                     return _0x2593da.updateVolume.call(_0x2c1832, _0x3099fe);
                 }), _0x1093f4.call(_0x2c1832, _0x17edbf.container, 'contextmenu', function(_0x5c22bc) {
-                    _0x2c1832.touch || _0x2c1832.lightgun || _0x2593da.toggleContextMenu.call(_0x2c1832, _0x5c22bc, true), _0x5c22bc.preventDefault();
+                    _0x2c1832.touch || _0x2c1832.lightgun || _0x2593da.toggleContextMenu.call(_0x2c1832, _0x5c22bc, true);
+                    _0x5c22bc.preventDefault();
                 }, !0x1), _0x1093f4.call(_0x2c1832, _0x17edbf.container, 'mousewheel', function(_0x49c974) {
                     _0x49c974.stopPropagation();
                 }, !0x1), _0x1093f4.call(_0x2c1832, _0x17edbf.container, 'mousedown', function(_0x53ee35) {
