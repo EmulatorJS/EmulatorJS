@@ -22,6 +22,21 @@
 <br>
 <br>
 
+![Allan Avatar]
+
+### Co-Owner
+
+***Various Fixes & Additions***
+
+**[![Badge Allan GitHub]][Allan GitHub]** 
+
+**[![Badge Allan Website]][Allan Website]** 
+
+<br>
+<br>
+<br>
+
+
 ![Archiver Avatar]
 
 ***Documentation Design***
@@ -33,19 +48,7 @@
 <br>
 <br>
 <br>
-  
-  
-![Allan Avatar]
 
-***Various Fixes & Additions***
-
-**[![Badge Allan GitHub]][Allan GitHub]** 
-
-**[![Badge Allan Website]][Allan Website]** 
-
-<br>
-<br>
-<br>
 
 [![Avatar Nekro]][GitHub Nekro]   
 [![Avatar Grey]][GitHub Grey]   
