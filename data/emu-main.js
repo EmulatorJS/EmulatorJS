@@ -3859,8 +3859,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         {id: {"b_cr":true},number: 20}
                     ].forEach((a) => {
                         _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
-                                       'touchstart touchend', function(e) {
-                            ['touchend'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
+                                       'touchstart touchend mousedown mouseup mouseout', function(e) {
+                            if (e.sourceCapabilities.firesTouchEvents && e.type.includes('mouse')) return;
+                            ['touchend', 'mouseup', 'mouseout'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
                                 _0x378b5c.syncInput(0, a.number, 0);
                             }, 30)) : (_0x3a8e2f(e.target, _0x2ec721, true), _0x378b5c.syncInput(0, a.number, 1)), e.stopPropagation();
                         })
@@ -3875,6 +3876,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
                     var hideTimeout;
                     _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
+                        if (e.sourceCapabilities.firesTouchEvents && e.type.includes('mouse')) return;
                         _0x3a8e2f(e.target, _0x2ec721, true);
                         clearTimeout(hideTimeout);
                         _0x5ab74d.toggleControls.call(_0xa88a13, true);
