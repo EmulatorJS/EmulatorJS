@@ -2,13 +2,12 @@
 <div align = center>
     
 <img src = docs/Logo.png width = 300>
-    
+ 
 <br>
 <br>
-    
+
 [![Badge License]][License]
     
-<br>
     
 Self-hosted **Javascript** emulation for various system.
 
@@ -131,7 +130,7 @@ EJS_BETA = true;
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
-[Configurator]: https://emulatorjs.ga/codehelper
+[Configurator]: https://emulatorjs.ga/editor.html
 [Contributors]: docs/Contributors.md
 [Website]: https://emulatorjs.ga/
 [Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
