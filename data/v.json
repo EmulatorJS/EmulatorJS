@@ -198,11 +198,12 @@
         "wasm": 1
     },
     "n64": {
-        "version":"6",
+        "version":"7",
         "netplay": 1,
         "state": 1,
-        "asmjs": 1,
-        "wasm": 0
+        "asmjs": 0,
+        "old": {"wasm":0, "asmjs":1 },
+        "wasm": 1
     },
     "nds": {
         "version":"11",
