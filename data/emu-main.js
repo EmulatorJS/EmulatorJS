@@ -2091,14 +2091,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     if (_0x2d904a.wasm && _0x3e4345) {
                                         type = 'wasm';
                                         _0x2458d5 = true;
-                                        if ('n64' === _this.system && !_0x2eb141) {
+                                        if ('n64' === _this.system && !_0x2eb141 && _this.coreVer !== 2) {
                                             type = 'legacy-wasm';
                                         }
                                         _0x31a5b3 = true;
                                     } else if (_0x9a1f1) {
                                         _0x2458d5 = true;
                                         type = 'asmjs';
-                                        if ('n64' === _this.system && !_0x2eb141) {
+                                        if ('n64' === _this.system && !_0x2eb141 && _this.coreVer !== 2) {
                                             type = 'legacy-asmjs';
                                         }
                                     }
@@ -6265,7 +6265,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         return 2;
                     }*/
                     if (useBeta === true && window.WebAssembly) {
-                        var supportedCores = ['nes', 'snes', 'gb', 'nds'];
+                        var supportedCores = ['nes', 'snes', 'gb', 'nds', 'n64'];
                         return supportedCores.includes(core) ? 2 : 1;
                     }
                     return 1;
