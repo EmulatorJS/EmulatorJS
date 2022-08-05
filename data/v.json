@@ -1,13 +1,13 @@
 {
     "nes": {
-        "version":"18",
+        "version":"19",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
         "wasm": 1
     },
     "snes": {
-        "version":"15",
+        "version":"16",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
@@ -91,7 +91,7 @@
         "wasm": 1
     },
     "vb": {
-        "version":"1",
+        "version":"2",
         "netplay": 0,
         "state": 1,
         "asmjs": 1,
@@ -134,7 +134,7 @@
         "wasm": 1
     },
     "gb": {
-        "version":"6",
+        "version":"7",
         "netplay": 0,
         "state": 1,
         "old": {"wasm":0, "asmjs":1 },
@@ -149,11 +149,12 @@
         "wasm": 0
     },
     "gba": {
-        "version":"4",
+        "version":"5",
         "netplay": 0,
+        "old": {"wasm":0, "asmjs":1 },
         "state": 1,
-        "asmjs": 1,
-        "wasm": 0
+        "asmjs": 0,
+        "wasm": 1
     },
     "segaGG": {
         "version":"9",
@@ -198,7 +199,7 @@
         "wasm": 1
     },
     "n64": {
-        "version":"7",
+        "version":"8",
         "netplay": 1,
         "state": 1,
         "asmjs": 0,

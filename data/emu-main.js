@@ -1439,7 +1439,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x567713 = '',
                             _0x567717 = function() {
                                 if (_0x55627a.coreVer === 2) {
-                                	var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
+                                    var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
                                     _0x4d7024.Module.resumeMainLoop = function() {
                                         mainLoop(1);
                                     }
@@ -1502,7 +1502,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                                         } catch (_0x4a1471) {
-                                            console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
+                                            console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Doesn\'t look like your browser is supported</strong>';
                                         }
                                         try{_0x567717();}catch(e){}
                                     }
@@ -1544,8 +1544,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             try {
                                 var _0x4dd87f = [_0x55627a.startName,
                                         [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
-                                    ];	
-                                'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v');	
+                                    ];
+                                'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v');
                                 _0x4d7024.Module.callMain(_0x4dd87f);
                                 if (_0xc6823.coreVer === 2) {
                                     _0x4d7024.Module.resumeMainLoop();
@@ -1553,7 +1553,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 }
                                 _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                             } catch (_0x42970c) {
-                                console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
+                                console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Doesn\'t look like your browser is supported</strong>';
                             }
                             try{_0x567717();}catch(e){}
                         }
@@ -1850,16 +1850,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n')), _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n')), _0x2c1832.multitap && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = 257\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n')), 'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n'), _0x2c1832.system, _0x14d39f += 'fastforward_ratio = 1.0\n', _0x14d39f += 'video_smooth = false\n';
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
                             _0x32dd27 = '';
-                        if (_0x2c1832.coreVer === 2) {	
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);	
-                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);	
+                        if (_0x2c1832.coreVer === 2) {
+                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);
+                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);
                         } else {
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);	
-                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);	
+                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);
+                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);
                         }
                         if (_0x55117c && Object.keys(_0x55117c).forEach(function(_0x2950d3) {
                                 if (_0x2c1832.lightgun && 'nes' === _0x2c1832.system && 'system_type' === _0x2950d3) return !0x1;
@@ -2124,9 +2124,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                         } else _0x3641d6(_0x2458d5, _0x124167);
                                     }) : _0x3641d6(_0x2458d5, _0x124167);
-                                }
-                                if (_this.coreVer === 2 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
-                                    _0x1e2c68.element(_this.elements.buttons.gamepad) && _0x132da7(_this.elements.buttons.gamepad, true);
                                 }
                                 _0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true), _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                 _0xc6823.setStatesSupported(_0x5b1dcd);
@@ -2768,8 +2765,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 
                 var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Gamepad')+'</div>\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Keyboard')+'</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
                     _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">'+_0xa88a13.localization('Set')+'</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
+                var _0x48ee51;
                 if ('nes' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         2: 'SELECT',
                         3: 'START',
@@ -2783,7 +2781,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     }
                 } else if ('snes' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -2801,7 +2799,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else if ('n64' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         3: 'START',
                         4: 'UP',
@@ -2824,8 +2822,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         25: _0xa88a13.localization('QUICK LOAD STATE'),
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
+                    if (_0xa88a13.coreVer === 2) {
+                        _0x48ee51[0] = 'A';
+                        _0x48ee51[1] = 'B';
+                        delete _0x48ee51[8];
+                    }
                 } else if ('nds' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -2844,7 +2847,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -3843,7 +3846,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x2ae626.stopPropagation();
                         });
                     }
-                    [
+                    var keys = [
                         {id: {"b_a":true},number: 8},
                         {id: {"b_b":true},number: 0},
                         {id: {"b_x":true},number: 9},
@@ -3857,7 +3860,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         {id: {"b_cd":true},number: 22},
                         {id: {"b_cl":true},number: 21},
                         {id: {"b_cr":true},number: 20}
-                    ].forEach((a) => {
+                    ]
+                    if (_0xa88a13.system === 'n64') {
+                        keys[0].number = 0;
+                        keys[1].number = 1;
+                    }
+                    keys.forEach((a) => {
                         _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
                                        'touchstart touchend', function(e) {
                             ['touchend'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
@@ -4096,7 +4104,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.volume < 0x1 && (_0x17edbf = 0x0 === _0xa88a13.volume ? -0x50 : 0x1e * _0xa88a13.volume - 0x1e, _0x2c1832(_0x17edbf)), _0xa88a13.muted && (_0x17edbf = -0x50), _0x2c1832(_0x17edbf);
                     };
                 }
-                _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']), _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
+                _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']);
+                _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
                 var _0x2c63cc = {
                     0: null,
                     1: null,
@@ -5530,7 +5539,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x2a1dda.appendChild(_0x14264d);
                                 _0x2a1dda.setAttribute('menu', '');
                             }
-                            _0x550f17.a.check(_0x2a1dda);
                             _0x2c1832 && clearTimeout(_0x2c1832), _0x2c1832 = setTimeout(function() {}, 0xfa0), _0x7f9f36.contextMenu.timer = _0x2c1832;
                         } else _0x7f9f36.contextMenu.style.display = 'none';
                     }
@@ -5562,7 +5570,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
-                    try{_0x550f17.a.check(_0x20faaa.target.parentElement.parentElement);}catch(e){};
                     var _0x4e898a = _0x378b5c.getScreenData();
                     if (typeof _0xa88a13.gameName == 'string') {
                        var gamep = _0xa88a13.gameName
@@ -5572,7 +5579,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
-                    try{_0x550f17.a.check(_0x275730.target.parentElement.parentElement);}catch(e){};
                     if (_0x27f4c4.romdb) {
                         _0x132da7(_0xa88a13.elements.dialogs.cache, !0x1);
                         var _0x3360eb = _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content']));
@@ -5610,12 +5616,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Quick Save')+' (F2)', false, function(_0x395c73) {
-                    try{_0x550f17.a.check(_0x395c73.target.parentElement.parentElement);}catch(e){};
                     _0x378b5c.quickSaveState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
                 addContextHtml(_0xa88a13.localization('Quick Load')+' (F4)', false, function(_0x124f69) {
-                    try{_0x550f17.a.check(_0x124f69.target.parentElement.parentElement);}catch(e){};
                     _0x378b5c.quickLoadState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
@@ -6236,7 +6240,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '1.2.2';
+                this.version = '2.0.1';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6260,16 +6264,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.game = this.game;
                 this.game.innerHTML = '';
                 this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
-                this.coreVer = function(core, useBeta) {
+                this.coreVer = function(core, oldCores) {
                     /*if (['dos'].includes(core)) {
                         return 2;
                     }*/
-                    if (useBeta === true && window.WebAssembly) {
-                        var supportedCores = ['nes', 'snes', 'gb', 'nds', 'n64'];
+                    if (oldCores !== true && window.WebAssembly) {
+                        var supportedCores = ['nes', 'snes', 'gb', 'gba', 'nds', 'n64', 'vb'];
                         return supportedCores.includes(core) ? 2 : 1;
                     }
                     return 1;
-                }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
+                }(this.config.system, this.config.oldCores); // 2 = beta cores, 1 = old cores
                 this.lightgun = this.config.lightgun;
                 this.loadStateOnStart = this.config.loadStateOnStart || false;
                 this.adUrl = this.config.adUrl || null;

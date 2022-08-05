@@ -1,5 +1,5 @@
 (async function() {
-    var VERSION = 1.8;
+    var VERSION = 2.0;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
@@ -69,11 +69,11 @@
     'undefined' != typeof EJS_netplayUrl && (config.netplayUrl = EJS_netplayUrl);
     'undefined' != typeof EJS_startOnLoaded && (config.startOnLoad = EJS_startOnLoaded);
     'undefined' != typeof EJS_core && (config.system = EJS_core);
+    'undefined' != typeof EJS_oldCores && (config.oldCores = EJS_oldCores);
     'undefined' != typeof EJS_loadStateURL && (config.loadStateOnStart = EJS_loadStateURL);
     'undefined' != typeof EJS_language && (config.lang = EJS_language);
     'undefined' != typeof EJS_noAutoCloseAd && (config.noAutoAdClose = EJS_noAutoCloseAd);
     'undefined' != typeof EJS_oldEJSNetplayServer && (config.oldNetplayServer = EJS_oldEJSNetplayServer);
-    'undefined' != typeof EJS_BETA && (config.useBeta = EJS_BETA);
     config.onsavestate = null;
     config.onloadstate = null;
     'undefined' != typeof EJS_onSaveState && (config.onsavestate = EJS_onSaveState);
