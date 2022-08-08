@@ -97,6 +97,7 @@ EJS_BETA = true;
 **[Lynx][Atari Lynx]**   | 
 **[7800][Atari 7800]**   | 
 **[2600][Atari 2600]**
+**[5200][Atari 5200]**
 
 <br>
 <br>
@@ -157,6 +158,7 @@ EJS_BETA = true;
 [Atari Lynx]: docs/Systems/Atari%20Lynx.md
 [Atari 7800]: docs/Systems/Atari%207800.md
 [Atari 2600]: docs/Systems/Atari%202600.md
+[Atari 5200]: docs/Systems/Atari%205200.md
 
 [NES / Famicom]: docs/Systems/NES-Famicom.md
 [SNES]: docs/Systems/SNES.md
