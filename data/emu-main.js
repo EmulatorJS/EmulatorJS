@@ -1441,6 +1441,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x567713 = '',
                             _0x567717 = function() {
                                 if (_0x55627a.coreVer === 2) {
+                                    _0x55627a.elements.settings.panels.home.querySelector('[role="menu"]').innerHTML = "";
+                                    _0x7f9f36.setNormalOptionsMenu.call(_0x55627a);
+                                    _0x7f9f36.setCoreOptionsMenu.call(_0x55627a);
                                     var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
                                     _0x4d7024.Module.resumeMainLoop = function() {
                                         mainLoop(1);
@@ -4988,16 +4991,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'default': 'download'
                     }
                 }
+                var _this = this;
                 _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
                     var _0x5995db = _0x2bef5a.split('; '),
                         _0x16274c = _0x5995db[0x0];
-                    if (0x0 === _0x16274c.indexOf('fba-dipswitch-')) {
+                    if (0x0 === _0x16274c.indexOf('fba-dipswitch-') || _this.coreVer === 2) {
                         var _0x757776 = _0x5995db[0x1].split('|'),
-                            _0x1f895e = _0x16274c.replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
-                        _0xa88a13[_0x16274c] = {
+                            _0x1f895e = _0x16274c.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
+                        _0x757776.slice(1, -1);
+                        if (_0x757776.length === 1) return;
+                        _0xa88a13[_0x16274c.split("|")[0]] = {
                             'label': _0x1f895e,
-                            'options': _0x757776.slice(0x1, -0x1),
-                            'default': _0x757776[0x0].replace('(Default) ', ''),
+                            'options': _0x757776,
+                            'default': (_0x16274c.split("|").length > 1) ? _0x16274c.split("|")[1] : _0x757776[0].replace('(Default) ', ''),
                             'netplay': true
                         };
                     }
@@ -5319,13 +5325,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x4a987e, _0x10bd7a) {
                         var _0x2c1832 = _0x4a987e.split('; '),
                             _0x1ddc5f = _0x2c1832[0x0];
-                        if (0x0 === _0x1ddc5f.indexOf('fba-dipswitch-')) {
+                        if (0x0 === _0x1ddc5f.indexOf('fba-dipswitch-')/* || _0x17edbf.coreVer === 2*/) {
                             var _0xbd808 = _0x2c1832[0x1].split('|'),
-                                _0x3c4b1a = _0x1ddc5f.replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
-                            _0x42a7b1[_0x1ddc5f] = {
+                                _0x3c4b1a = _0x1ddc5f.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
+                            _0xbd808.slice(1, -1);
+                            if (_0xbd808.length === 1) return;
+                            _0x42a7b1[_0x1ddc5f.split("|")[0]] = {
                                 'label': _0x3c4b1a,
-                                'options': _0xbd808.slice(0x1, -0x1),
-                                'default': _0xbd808[0x0].replace('(Default) ', ''),
+                                'options': _0xbd808,
+                                'default': (_0x1ddc5f.split("|").length > 1) ? _0x1ddc5f.split("|")[1] : _0xbd808[0].replace('(Default) ', ''),
                                 'netplay': true
                             };
                         }
@@ -6310,7 +6318,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.0.1';
+                this.version = '2.2.1';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
