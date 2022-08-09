@@ -1046,6 +1046,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'lynx': ['lnx'],
                         'jaguar': ['j64', 'jag', 'rom', 'abs', 'cof', 'bin', 'prg'],
                         'a7800': ['a78', 'bin'],
+                        'a5200': ['a52', 'bin'],
                         'a2600': ['a26', 'bin'],
                         'ngp': ['ngp', 'ngc'],
                         'n64': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd'],
@@ -1089,6 +1090,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'msx': 'bluemsx',
                         'atari2600': 'a2600',
                         'atari7800': 'a7800',
+                        'atari5200': 'a5200',
                         'lynx': 'lynx',
                         'ws': 'ws',
                         'arcade': 'arcade',
@@ -1439,7 +1441,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x567713 = '',
                             _0x567717 = function() {
                                 if (_0x55627a.coreVer === 2) {
-                                	var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
+                                    var mainLoop = _0x4d7024.Module.cwrap('toggleMainLoop', 'null', ['number']);
                                     _0x4d7024.Module.resumeMainLoop = function() {
                                         mainLoop(1);
                                     }
@@ -1502,7 +1504,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             }
                                             _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                                         } catch (_0x4a1471) {
-                                            console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
+                                            console.log(_0x4a1471), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Doesn\'t look like your browser is supported</strong>';
                                         }
                                         try{_0x567717();}catch(e){}
                                     }
@@ -1544,8 +1546,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             try {
                                 var _0x4dd87f = [_0x55627a.startName,
                                         [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
-                                    ];	
-                                'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v');	
+                                    ];
+                                'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x4dd87f.unshift('-v');
                                 _0x4d7024.Module.callMain(_0x4dd87f);
                                 if (_0xc6823.coreVer === 2) {
                                     _0x4d7024.Module.resumeMainLoop();
@@ -1553,7 +1555,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 }
                                 _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                             } catch (_0x42970c) {
-                                console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Failed to start game</strong>';
+                                console.log(_0x42970c), _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Doesn\'t look like your browser is supported</strong>';
                             }
                             try{_0x567717();}catch(e){}
                         }
@@ -1847,19 +1849,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x14d39f += 'video_gpu_screenshot = false\n';
                         _0x14d39f += 'audio_latency = 96\n';
                         var _0x36edb7 = _0x2593da.defaultCoreOptionsValues.call(_0xa88a13);
-                        _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n')), _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n')), _0x2c1832.multitap && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = 257\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n')), 'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n'), _0x2c1832.system, _0x14d39f += 'fastforward_ratio = 1.0\n', _0x14d39f += 'video_smooth = false\n';
+                        _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'));
+                        _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n'));
+                        _0x2c1832.multitap && (['snes2002', 'snes2005', 'snes2010', 'snesnext', 'snes'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n'));
+                        'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n');
+                        _0x14d39f += 'fastforward_ratio = 1.0\n';
+                        _0x14d39f += 'video_smooth = false\n';
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
                             _0x32dd27 = '';
-                        if (_0x2c1832.coreVer === 2) {	
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);	
-                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);	
+                        if (_0x2c1832.coreVer === 2) {
+                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);
+                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);
                         } else {
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);	
-                            _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);	
-                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);	
+                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);
+                            _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);
+                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);
                         }
                         if (_0x55117c && Object.keys(_0x55117c).forEach(function(_0x2950d3) {
                                 if (_0x2c1832.lightgun && 'nes' === _0x2c1832.system && 'system_type' === _0x2950d3) return !0x1;
@@ -1927,15 +1934,28 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             'src': _0x18a437.createObjectURL(_0x17edbf)
                                         });
                                     document.body.appendChild(_0x2c1832), _0x2c1832.onload = function() {
-                                        void 0x0 === window.addRunDependency && 'undefined' != typeof EmulatorJS && (_0x4d7024.Module = EmulatorJS(_0x18cb26), EmulatorJS = void 0x0), null !== _0x4d7024.memData && _0x29b999(_0x4d7024.memData), _0x4d7024.Module || (_0x4d7024.Module = window.Module), _0x4d7024.Module && _0x4d7024.Module.FS ? _0x4d7024.FS = _0x4d7024.Module.FS : _0x4d7024.FS = window.FS;
+                                        void 0x0 === window.addRunDependency && 'undefined' != typeof EmulatorJS && (_0x4d7024.Module = EmulatorJS(_0x18cb26), EmulatorJS = void 0x0);
+                                        null !== _0x4d7024.memData && (_0xc6823.coreVer !== 2) && _0x29b999(_0x4d7024.memData);
+                                        _0x4d7024.Module || (_0x4d7024.Module = window.Module);
+                                        _0x4d7024.Module && _0x4d7024.Module.FS ? _0x4d7024.FS = _0x4d7024.Module.FS : _0x4d7024.FS = window.FS;
                                     };
-                                } else _0x247459 = function(_0x3df03e) {
-                                    for (var _0x17edbf = [], _0x2c1832 = 0x0; _0x2c1832 < _0x3df03e.length; _0x2c1832 += 0x1) {
-                                        var _0xcf0289 = _0x3df03e[_0x2c1832];
-                                        _0xcf0289 > 0xff && (_0xcf0289 &= 0xff), _0x17edbf.push(String.fromCharCode(_0xcf0289));
-                                    }
-                                    return _0x17edbf.join('');
-                                }(_0x247459), window.eval(_0x247459), void 0x0 === window.addRunDependency && 'undefined' != typeof EmulatorJS && (_0x4d7024.Module = EmulatorJS(_0x18cb26), EmulatorJS = void 0x0), null !== _0x4d7024.memData && _0x29b999(_0x4d7024.memData), _0x4d7024.Module || (_0x4d7024.Module = window.Module), _0x4d7024.Module && _0x4d7024.Module.FS ? _0x4d7024.FS = _0x4d7024.Module.FS : _0x4d7024.FS = window.FS, window.EJS_MODULE = _0x4d7024.Module, window.ejs_loader = _0x4d7024, window.ejs_media = _0xdcec2a;
+                                } else {
+                                    _0x247459 = function(_0x3df03e) {
+                                        for (var _0x17edbf = [], _0x2c1832 = 0x0; _0x2c1832 < _0x3df03e.length; _0x2c1832 += 0x1) {
+                                            var _0xcf0289 = _0x3df03e[_0x2c1832];
+                                            _0xcf0289 > 0xff && (_0xcf0289 &= 0xff), _0x17edbf.push(String.fromCharCode(_0xcf0289));
+                                        }
+                                        return _0x17edbf.join('');
+                                    }(_0x247459);
+                                    window.eval(_0x247459);
+                                    void 0x0 === window.addRunDependency && 'undefined' != typeof EmulatorJS && (_0x4d7024.Module = EmulatorJS(_0x18cb26), EmulatorJS = void 0x0);
+                                    null !== _0x4d7024.memData && (_0xc6823.coreVer !== 2) && _0x29b999(_0x4d7024.memData);
+                                    _0x4d7024.Module || (_0x4d7024.Module = window.Module);
+                                    _0x4d7024.Module && _0x4d7024.Module.FS ? _0x4d7024.FS = _0x4d7024.Module.FS : _0x4d7024.FS = window.FS;
+                                    window.EJS_MODULE = _0x4d7024.Module;
+                                    window.ejs_loader = _0x4d7024;
+                                    window.ejs_media = _0xdcec2a;
+                                }
                                 _0x247459 = null;
                             };
                         _0x1093f4.call(_0xc6823, _0xc6823.elements.container, 'script-loaded', function(_0x467eee) {
@@ -1958,7 +1978,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _this = this,
                     _0x26d6a1 = function(_0x3787ba) {
                         _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), true);
-                        var _0x3787ba = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1))
+                        var _0x3787ba = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
                         _0x3787ba.innerHTML = _this.localization('Loading')+'...';
                         if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
                             window.Module = {
@@ -1989,7 +2009,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         });
                                         return window.URL.createObjectURL(_0x2c1832);
                                     }
-                                    return _0x3fe7ca.includes('.js.mem') && (Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]), _0x3787ba) ? (_0x4d7024.memData = null, _0x3787ba.buffer) : _0x3fe7ca;
+                                    if (_0x3fe7ca.includes('.js.mem') && Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca)) {
+                                        _0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca];
+                                        return URL.createObjectURL(new Blob([_0x3787ba.buffer]));
+                                    }
+                                    return null;
                                 },
                                 'readAsync': function(_0x20d016, _0x9d2de4, _0x1425ee) {
                                     if (_0x20d016 instanceof ArrayBuffer) setTimeout(function() {
@@ -2035,31 +2059,38 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
                                 var _0x2458d5, _0x5d075f = _0x29078e[_this.system],
                                     _0x28ee7f = _0x578a2b.data[_this.system],
-                                    _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 0x1,
+                                    _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 1,
                                     _0x254bc2 = Boolean(_0x28ee7f.netplay),
                                     _0x5b1dcd = Boolean(_0x28ee7f.state),
                                     _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
                                     _0x3e4345 = Boolean(_0x28ee7f.wasm);
-                                if (_0xc6823.coreVer !== 2 && _0x28ee7f.old) {
+                                var status = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
+                                if (!(_this.config.oldCores && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1)) {
+                                    _this.coreVer = 2;
+                                    _this.elements.settings.panels.home.querySelector('[role="menu"]').innerHTML = "";
+                                    _0x7f9f36.setNormalOptionsMenu.call(_this);
+                                    _0x7f9f36.setCoreOptionsMenu.call(_this);
+                                }
+                                if (_this.coreVer !== 2 && _0x28ee7f.old) {
                                     _0x9a1f1 = Boolean(_0x28ee7f.old.asmjs);
                                     _0x3e4345 = Boolean(_0x28ee7f.old.wasm);
                                 }
-                                if ('nds' == _this.system && ! _0x2d904a.wasm) {
-                                    _0x5b1dcd = !0x1;
+                                if ('nds' == _this.system && !_0x2d904a.wasm) {
+                                    _0x5b1dcd = false;
                                 };
                                 //alert(_0x5b1dcd) // is save/load state supported
-                                if (_0xc6823.statesSupported === false) {
+                                if (_this.statesSupported === false) {
                                     _0x5b1dcd = false;
                                 };
                                 _0x4d7024.coreFileVersion = _0x124167;
                                 _0x4d7024.coreFileName = _0x5d075f;
-                                var _0x2eb141 = !0x1;
+                                var _0x2eb141 = false;
                                 ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
                                 'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
                                 if ('mame' == _this.system) {
                                     var data = _this.mameCore;
                                     if (! data || data === null || data.split('|').length !== 2) {
-                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Missing mame config')+'</strong>';
+                                        status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Missing mame config')+'</strong>';
                                         return;
                                     }
                                     var _0x3787ba = data.split('|');
@@ -2074,7 +2105,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     } else {
                                         _0x2458d5 = _this.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
                                     }
-                                    _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (_0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
+                                    _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
                                         if (_0x655c87 && _0x655c87.version === _0x124167) {
                                             if (_0xc6823.coreVer === 2) {
                                                 _0x4f0fcc(_0x655c87.data);
@@ -2084,7 +2115,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 _0x4f0fcc(_0x3787ba);
                                             }
                                         } else _0x3641d6(_0x2458d5, _0x124167);
-                                    }) : _0x3641d6(_0x2458d5, _0x124167))) : _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Unsupported Game')+'</strong>';
+                                    }) : _0x3641d6(_0x2458d5, _0x124167))) : status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Unsupported Game')+'</strong>';
                                 } else {
                                     _0x2458d5 = false;
                                     var type;
@@ -2104,7 +2135,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     }
                                     'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
                                     if (_0x2458d5 !== true) {
-                                        _0x3787ba.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Please upgrade your browser to the latest version')+'</strong>';
+                                        status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Please upgrade your browser to the latest version')+'</strong>';
                                         return;
                                     }
                                     if (_this.coreVer === 2) {
@@ -2125,9 +2156,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         } else _0x3641d6(_0x2458d5, _0x124167);
                                     }) : _0x3641d6(_0x2458d5, _0x124167);
                                 }
-                                if (_this.coreVer === 2 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
-                                    _0x1e2c68.element(_this.elements.buttons.gamepad) && _0x132da7(_this.elements.buttons.gamepad, true);
-                                }
                                 _0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true), _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
                                 _0xc6823.setStatesSupported(_0x5b1dcd);
                             }).catch(function(_0x2d06a9) {
@@ -2138,7 +2166,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     };
                 _0x455c85(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), 'click touchstart', _0x26d6a1);
                 if (_0xc6823.startOnLoad === true) {
-                    _0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])).click();
+                    if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
+                        _0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])).click();
+                    } else {
+                        console.warn('Start on load attempted, but user has not yet interacted with the document');
+                    }
                 }
             }
         },
@@ -2548,29 +2580,31 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'saveLoadDB': function(type) {
                 try {
                     if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
+                        if ((!this.gameName && this.config.gameUrl.startsWith('blob:')) || !window.indexedDB) {
+                            return false;
+                        }
                         var location = _0x2593da.getCoreOptionsValues()['save-state-location'];
+                        if (!location || location === 'download') {
+                            return false;
+                        }
                         var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
                         var game = this.config.gameUrl.split('/').pop();
                         if (this.gameName) {
                             game = this.gameName;
                         };
-                        if ((!this.gameName && this.config.gameUrl.startsWith('blob:')) || !window.indexedDB) {
-                            return false;
-                        }
                         var key = game + '-' + slot;
-                        if (!location || location === 'download') {
-                            return false;
-                        }
-                        if (type === 'save') {
-                            try {
-                                var data = _0x378b5c.saveState();
-                                _0x378b5c.saveLoaddbDB.put(key, data);
-                            } catch(e) {return false;};
-                        } else {
-                            _0x378b5c.saveLoaddbDB.get(key).then(function(data) {
-                                EJS_loadState(data);
-                            });
-                        }
+                        (async function() {
+                            if (type === 'save') {
+                                try {
+                                    var data = await _0x378b5c.saveState();
+                                    _0x378b5c.saveLoaddbDB.put(key, data);
+                                } catch(e) {return false;};
+                            } else {
+                                _0x378b5c.saveLoaddbDB.get(key).then(function(data) {
+                                    EJS_loadState(data);
+                                });
+                            }
+                        })();
                         return true;
                     } else {
                         return false;
@@ -2768,8 +2802,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 
                 var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Gamepad')+'</div>\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Keyboard')+'</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
                     _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">'+_0xa88a13.localization('Set')+'</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
+                var _0x48ee51;
                 if ('nes' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         2: 'SELECT',
                         3: 'START',
@@ -2783,7 +2818,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     }
                 } else if ('snes' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -2801,7 +2836,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else if ('n64' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         3: 'START',
                         4: 'UP',
@@ -2824,8 +2859,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         25: _0xa88a13.localization('QUICK LOAD STATE'),
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
+                    if (_0xa88a13.coreVer === 2) {
+                        _0x48ee51[0] = 'A';
+                        _0x48ee51[1] = 'B';
+                        delete _0x48ee51[8];
+                    }
                 } else if ('nds' === _0xa88a13.system) {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -2844,7 +2884,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         26: _0xa88a13.localization('CHANGE STATE SLOT')
                     };
                 } else {
-                    var _0x48ee51 = {
+                    _0x48ee51 = {
                         0: 'B',
                         1: 'Y',
                         2: 'SELECT',
@@ -3843,7 +3883,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x2ae626.stopPropagation();
                         });
                     }
-                    [
+                    var keys = [
                         {id: {"b_a":true},number: 8},
                         {id: {"b_b":true},number: 0},
                         {id: {"b_x":true},number: 9},
@@ -3857,7 +3897,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         {id: {"b_cd":true},number: 22},
                         {id: {"b_cl":true},number: 21},
                         {id: {"b_cr":true},number: 20}
-                    ].forEach((a) => {
+                    ]
+                    if (_0xa88a13.system === 'n64') {
+                        keys[0].number = 0;
+                        keys[1].number = 1;
+                    }
+                    keys.forEach((a) => {
                         _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
                                        'touchstart touchend', function(e) {
                             ['touchend'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
@@ -4050,27 +4095,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }), _0xa88a13.elements.buttons.cheat && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.cheat, 'click', function(_0x44b01a) {
                     _0x132da7(_0xa88a13.elements.dialogs.cheat, !0x1);
                 });
-                _0x1093f4.call(_0xa88a13, _0xa88a13.elements.container, 'savestate', function(_0x25b541) {
-                    if (_0x378b5c.saveLoadDB.call(_0xa88a13, 'save')) {
-                        return
-                    }
-                    var _0x2c1832 = _0x25b541.detail.state;
-                    if (_0x1e2c68.function(_0xa88a13.config.onsavestate)) _0xa88a13.config.onsavestate.call(null, {
-                        'screenshot': _0x25b541.detail.screenshot,
-                        'state': _0x2c1832
-                    });
-                    else {
-                        var _0x2b5fc8 = new Blob([_0x2c1832]),
-                            _0x152605 = _0xa88a13.startName.split('/').pop().split('.'),
-                            _0x51d471 = _0x152605.slice(0x0, _0x152605.length - 0x1).join('.')
-                        if (typeof _0xa88a13.gameName == 'string') {
-                            var _0x51d471 = _0xa88a13.gameName
-                        }
-                        var _0x49f6b6 = _0x51d471 ? '' .concat(_0x51d471, '.state') : 'game.state';
-                        _0x4e4ca6()(_0x2b5fc8, _0x49f6b6);
-                    }
-                    _0xa88a13.elements.container.focus();
-                });
                 _0xa88a13.game.stateloadField = _0x428003('input'), _0xa88a13.game.stateloadField.type = 'file', _0xa88a13.game.stateloadField.onchange = function _0x17edbf(_0xcd4599) {
                     var _0xfd246e, _0x3fdd71 = _0xcd4599.target.files;
                     _0x3fdd71.length > 0x0 && ((_0xfd246e = new FileReader()).file_name = _0x3fdd71[0x0].name, _0xfd246e.onload = function() {
@@ -4079,7 +4103,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }, _0xfd246e.readAsArrayBuffer(_0x3fdd71[0x0])), _0xa88a13.game.stateloadField = _0x428003('input'), _0xa88a13.game.stateloadField.type = 'file', _0xa88a13.game.stateloadField.onchange = _0x17edbf;
                 }, _0x1093f4.call(_0xa88a13, _0xa88a13.elements.container, 'loadstate', function(_0x13504c) {
                     if (_0x378b5c.saveLoadDB.call(_0xa88a13, 'load')) {
-                        return
+                        return;
                     }
                     _0x1e2c68.function(_0xa88a13.config.onloadstate) ? _0xa88a13.config.onloadstate.call(null, _0xa88a13.loadState) : _0xa88a13.game.stateloadField.click(), _0xa88a13.elements.container.focus();
                 }), document.addEventListener('visibilitychange', function() {
@@ -4096,7 +4120,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13.volume < 0x1 && (_0x17edbf = 0x0 === _0xa88a13.volume ? -0x50 : 0x1e * _0xa88a13.volume - 0x1e, _0x2c1832(_0x17edbf)), _0xa88a13.muted && (_0x17edbf = -0x50), _0x2c1832(_0x17edbf);
                     };
                 }
-                _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']), _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
+                _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']);
+                _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
                 var _0x2c63cc = {
                     0: null,
                     1: null,
@@ -4155,10 +4180,38 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0x378b5c.toggleShader = function(_0x433182) {
                     return _0x762355(_0x433182);
                 }
-                _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
-                _0x378b5c.saveState = function() {
-                    var _0xa88a14, _0x17edbf = _0x378b5c.getStateInfo().split('|'),
-                        _0x2c1832 = _0x17edbf[0x0] >> 0x0;
+                if (_0xa88a13.coreVer !== 2) {
+                    _0x378b5c.getStateInfo = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
+                } else {
+                    _0x378b5c.getInfoOfState = _0x27f4c4.Module.cwrap('get_state_info', 'string', []);
+                    _0x378b5c.getStateInfo1 = _0x27f4c4.Module.cwrap('save_state_info', 'null', []);
+                    _0x378b5c.getStateInfo = function() {
+                        _0x378b5c.getStateInfo1();
+                        return new Promise(function(resolve, reject) {
+                            var a = _0x378b5c.getInfoOfState();
+                            if (a) {
+                                resolve(a);
+                                return;
+                            }
+                            var b = setInterval(function() {
+                                a = _0x378b5c.getInfoOfState();
+                                if (a) {
+                                    clearInterval(b);
+                                    resolve(a);
+                                }
+                            }, 50)
+                        });
+                    }
+                }
+                _0x378b5c.saveState = async function() {
+                    var _0xa88a14;
+                    var _0x17edbf;
+                    if (_0xa88a13.coreVer !== 2) {
+                        _0x17edbf = _0x378b5c.getStateInfo().split('|');
+                    } else {
+                        _0x17edbf = (await _0x378b5c.getStateInfo()).split('|');
+                    }
+                    var _0x2c1832 = _0x17edbf[0x0] >> 0x0;
                     if (_0x2c1832 > 0x0) {
                         _0xa88a14 = new Uint8Array(_0x2c1832);
                         for (var _0x2ef6be = _0x17edbf[0x1] >> 0x0, _0x3cc34b = 0x0; _0x3cc34b < _0x2c1832; _0x3cc34b++) _0xa88a14[_0x3cc34b] = _0x27f4c4.Module.getValue(_0x2ef6be + _0x3cc34b);
@@ -4203,7 +4256,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 };
                 _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string']));
                 _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat);
-                _0x378b5c.quickSaveState = function() {
+                _0x378b5c.quickSaveState = async function() {
                     if (_0xa88a13.started && !_0x378b5c.connected) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY SAVE STATE';
@@ -4226,7 +4279,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x27f4c4.FS.unlink(name);
                         } catch (_0x4b4d4c) {}
                         try {
-                            var _0x17edbf = _0x378b5c.saveState();
+                            var _0x17edbf = await _0x378b5c.saveState();
                             _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
                             clearTimeout(_0x378b5c.saveMsgTransitions);
@@ -4234,6 +4287,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                             }, 1500)
                         } catch(e) {
+                            console.warn(e);
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'FAILED TO SAVE STATE TO SLOT ' + slot;
                             clearTimeout(_0x378b5c.saveMsgTransitions);
                             _0x378b5c.saveMsgTransitions = setTimeout(function() {
@@ -4911,7 +4965,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13 = {};
                         break;
                     default:
-                        _0xa88a13 = {}, console.warn('Unsupported emulator');
+                        _0xa88a13 = {};
                 }
                 if (this.coreVer === 2) {
                     _0xa88a13 = {};
@@ -5530,7 +5584,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x2a1dda.appendChild(_0x14264d);
                                 _0x2a1dda.setAttribute('menu', '');
                             }
-                            _0x550f17.a.check(_0x2a1dda);
                             _0x2c1832 && clearTimeout(_0x2c1832), _0x2c1832 = setTimeout(function() {}, 0xfa0), _0x7f9f36.contextMenu.timer = _0x2c1832;
                         } else _0x7f9f36.contextMenu.style.display = 'none';
                     }
@@ -5562,7 +5615,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 addContextHtml(_0xa88a13.localization('Take Screenshot'), false, function(_0x20faaa) {
-                    try{_0x550f17.a.check(_0x20faaa.target.parentElement.parentElement);}catch(e){};
                     var _0x4e898a = _0x378b5c.getScreenData();
                     if (typeof _0xa88a13.gameName == 'string') {
                        var gamep = _0xa88a13.gameName
@@ -5572,7 +5624,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
-                    try{_0x550f17.a.check(_0x275730.target.parentElement.parentElement);}catch(e){};
                     if (_0x27f4c4.romdb) {
                         _0x132da7(_0xa88a13.elements.dialogs.cache, !0x1);
                         var _0x3360eb = _0xa88a13.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content']));
@@ -5610,12 +5661,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Quick Save')+' (F2)', false, function(_0x395c73) {
-                    try{_0x550f17.a.check(_0x395c73.target.parentElement.parentElement);}catch(e){};
                     _0x378b5c.quickSaveState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
                 addContextHtml(_0xa88a13.localization('Quick Load')+' (F4)', false, function(_0x124f69) {
-                    try{_0x550f17.a.check(_0x124f69.target.parentElement.parentElement);}catch(e){};
                     _0x378b5c.quickLoadState();
                     _0x2593da.contextMenu.style.display = 'none';
                 })
@@ -5701,22 +5750,22 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x17f3cb = _0x428003('div', {
                         'role': 'menu'
                     });
-                _0x174c46.appendChild(_0x17f3cb)
-                _0x3f3385.appendChild(_0x174c46)
-                this.elements.settings.panels.home = _0x174c46
-                _0x262fb8.appendChild(_0x3f3385)
-                _0x2746ab.appendChild(_0x262fb8)
-                _0x17edbf.appendChild(_0x2746ab)
-                this.elements.settings.popup = _0x262fb8
-                this.elements.settings.menu = _0x2746ab
+                _0x174c46.appendChild(_0x17f3cb);
+                _0x3f3385.appendChild(_0x174c46);
+                this.elements.settings.panels.home = _0x174c46;
+                _0x262fb8.appendChild(_0x3f3385);
+                _0x2746ab.appendChild(_0x262fb8);
+                _0x17edbf.appendChild(_0x2746ab);
+                this.elements.settings.popup = _0x262fb8;
+                this.elements.settings.menu = _0x2746ab;
                 _0x17edbf.appendChild(_0x7f9f36.createButton.call(this, 'fullscreen'))
                 var _0x19edbf = this;
                 _0x17edbf.addEventListener('mousedown', function() {
                     _0x19edbf.onButtonDiv = true;
                 })
-                this.elements.controls = _0x17edbf
-                _0x7f9f36.setNormalOptionsMenu.call(this)
-                _0x7f9f36.setCoreOptionsMenu.call(this)
+                this.elements.controls = _0x17edbf;
+                _0x7f9f36.setNormalOptionsMenu.call(this);
+                _0x7f9f36.setCoreOptionsMenu.call(this);
                 return _0x17edbf;
             },
             'inject': function() {
@@ -6105,13 +6154,38 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }, 'fullscreen'), this.bind(_0x2c1832.buttons.gamepad, 'click', function() {
                         _0x5ab74d.toggleControls.call(_0x17edbf, !0x1), _0x132da7(_0x2c1832.dialogs.gamepad, !0x1);
                     }, 'mute'), this.bind(_0x2c1832.buttons.saveState, 'click', function() {
-                        _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', !0x1, {});
-                        var _0x31e271 = _0xdcec2a.saveState(),
-                            _0x2c1832 = _0xdcec2a.getScreenData();
-                        _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate', !0x1, {
-                            'state': _0x31e271,
-                            'screenshot': _0x2c1832
-                        });
+                        (async function() {
+                            _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', false, {});
+                            var _0x31e271 = await _0xdcec2a.saveState(),
+                                _0x2c1832 = _0xdcec2a.getScreenData();
+                                
+                            if (_0x378b5c.saveLoadDB.call(_0x17edbf, 'save')) {
+                                console.log('a');
+                                return;
+                            }
+                            var _0x2c1832 = _0x31e271;
+                            if (_0x1e2c68.function(_0x17edbf.config.onsavestate)) _0x17edbf.config.onsavestate.call(null, {
+                                'screenshot': _0x2c1832,
+                                'state': _0x2c1832
+                            });
+                            else {
+                                var _0x2b5fc8 = new Blob([_0x2c1832]),
+                                    _0x152605 = _0x17edbf.startName.split('/').pop().split('.'),
+                                    _0x51d471 = _0x152605.slice(0x0, _0x152605.length - 0x1).join('.');
+                                if (typeof _0x17edbf.gameName == 'string') {
+                                    var _0x51d471 = _0x17edbf.gameName
+                                }
+                                var _0x49f6b6 = _0x51d471 ? '' .concat(_0x51d471, '.state') : 'game.state';
+                                var a = document.createElement('a');
+                                a.download = _0x49f6b6;
+                                a.href = URL.createObjectURL(_0x2b5fc8);
+                                a.click();
+                                setTimeout(function() {
+                                    URL.revokeObjectURL(a.href);
+                                }, 2000);
+                            }
+                            _0x17edbf.elements.container.focus();
+                        })();
                     }, 'mute'), this.bind(_0x2c1832.buttons.loadState, 'click', function() {
                         _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'loadstate', !0x1, {});
                     }, 'mute'), this.bind(_0x2c1832.buttons.settings, 'click', function(_0x1396ee) {
@@ -6236,7 +6310,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '1.2.2';
+                this.version = '2.0.1';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6260,16 +6334,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.game = this.game;
                 this.game.innerHTML = '';
                 this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
-                this.coreVer = function(core, useBeta) {
-                    /*if (['dos'].includes(core)) {
-                        return 2;
-                    }*/
-                    if (useBeta === true && window.WebAssembly) {
-                        var supportedCores = ['nes', 'snes', 'gb', 'nds', 'n64'];
-                        return supportedCores.includes(core) ? 2 : 1;
-                    }
-                    return 1;
-                }(this.config.system, this.config.useBeta); // 2 = beta cores, 1 = old cores
+                this.coreVer = 1;
                 this.lightgun = this.config.lightgun;
                 this.loadStateOnStart = this.config.loadStateOnStart || false;
                 this.adUrl = this.config.adUrl || null;
