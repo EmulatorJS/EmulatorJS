@@ -257,12 +257,13 @@
         "oldCores": 1
     },
     "psx": {
-        "version":"10",
+        "version":"11",
+        "old": {"wasm":1, "asmjs":0 },
         "netplay": 0,
         "state": 1,
         "asmjs": 0,
         "wasm": 1,
-        "newCores": 0,
+        "newCores": 1,
         "oldCores": 1
     },
     "n64": {
@@ -304,12 +305,13 @@
         "oldCores": 1
     },
     "mame2003": {
-        "version":"1",
+        "version":"2",
+        "old": {"wasm":1, "asmjs":1 },
         "netplay": 1,
         "state": 1,
-        "asmjs": 1,
-        "wasm": 0,
-        "newCores": 0,
+        "asmjs": 0,
+        "wasm": 1,
+        "newCores": 1,
         "oldCores": 1
     },
     "mame": {
