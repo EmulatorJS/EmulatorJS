@@ -1849,7 +1849,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x14d39f += 'video_gpu_screenshot = false\n';
                         _0x14d39f += 'audio_latency = 96\n';
                         var _0x36edb7 = _0x2593da.defaultCoreOptionsValues.call(_0xa88a13);
-                        _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n')), _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n')), _0x2c1832.multitap && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = 257\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n')), 'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n'), _0x2c1832.system, _0x14d39f += 'fastforward_ratio = 1.0\n', _0x14d39f += 'video_smooth = false\n';
+                        _0x2c1832.lightgun && ('nes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "258"\n'), 'segaMS' !== _0xa88a13.system && 'segaMD' !== _0xa88a13.system && 'segaCD' !== _0xa88a13.system || (_0x36edb7.genesis_plus_gx_gun_cursor = 'yes', _0x36edb7.genesis_plus_gx_invert_mouse = 'yes', _0x36edb7.genesis_plus_gx_bram = 'per game', _0x14d39f += 'input_libretro_device_p2 = "260"\n'), 'snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = "260"\n'));
+                        _0x2c1832.mouse && ('snes' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 2\n'), ['snes2002', 'snes2005', 'snes2010', 'snesnext'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p1 = 2\n'));
+                        _0x2c1832.multitap && (['snes2002', 'snes2005', 'snes2010', 'snesnext', 'snes'].includes(_0xa88a13.system) && (_0x14d39f += 'input_libretro_device_p2 = 257\n'));
+                        'n64' === _0xa88a13.system && (_0x14d39f += 'input_libretro_device_p1 = 5\n');
+                        _0x14d39f += 'fastforward_ratio = 1.0\n';
+                        _0x14d39f += 'video_smooth = false\n';
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
                             _0x32dd27 = '';
                         if (_0x2c1832.coreVer === 2) {
@@ -2063,6 +2068,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 if (!(_this.config.oldCores && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1)) {
                                     _this.coreVer = 2;
                                     _this.elements.settings.panels.home.querySelector('[role="menu"]').innerHTML = "";
+                                    _0x7f9f36.setNormalOptionsMenu.call(_this);
                                     _0x7f9f36.setCoreOptionsMenu.call(_this);
                                 }
                                 if (_this.coreVer !== 2 && _0x28ee7f.old) {
