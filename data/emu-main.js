@@ -6338,7 +6338,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.1';
+                this.version = '2.2.3';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
