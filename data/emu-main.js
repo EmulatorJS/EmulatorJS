@@ -968,7 +968,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             '_FS': {
                 'createPath': function(parent, path, canRead, canWrite) {
                     if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.createPath != 'function') {
+                    if (typeof _0x4d7024.FS.mkdir == 'function') {
                         _0x4d7024.FS.mkdir(path);
                     } else {
                         _0x4d7024.FS.createPath(parent, path, canRead, canWrite);
@@ -976,7 +976,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 },
                 'createDataFile': function(parent, name, data, canRead, canWrite, canOwn) {
                     if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.createDataFile != 'function') {
+                    if (typeof _0x4d7024.FS.writeFile == 'function') {
                         var path = function(parent, name) {
                             if (parent.endsWith('/') || name.startsWith('/')) {
                                 return parent + name;
@@ -991,7 +991,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 },
                 'createFolder': function(parent, name, a, b) {
                     if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.createFolder != 'function') {
+                    if (typeof _0x4d7024.FS.mkdir == 'function') {
                         var path = function(parent, name) {
                             if (parent.endsWith('/') || name.startsWith('/')) {
                                 return parent + name;
@@ -1431,7 +1431,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     },
                     _0x4bd781 = function() {
-                        _0x31a5b3 ? (window.Module.TOTAL_MEMORY = 0x10000000, ['jaguar'].includes(_0xa88a13.system) && (window.Module.TOTAL_MEMORY = 0x10000000), ['nds', 'nes', 'snes', 'arcade', 'mame'].includes(_0xa88a13.system) && (window.Module.TOTAL_MEMORY = 0x0), ['snes2002', 'snes2005', 'snes2010'].includes(_0xa88a13.system) && (window.Module.TOTAL_MEMORY = 0x0), 'gba' == _0xa88a13.system && (window.Module.TOTAL_MEMORY = 0x0), '3do' == _0xa88a13.system && (window.Module.TOTAL_MEMORY = 0x0), 'n64' == _0xa88a13.system && (window.Module.TOTAL_MEMORY = 0x0)) : ('nes' === _0xa88a13.system && (window.Module.TOTAL_MEMORY = 0x8000000), window.Module.TOTAL_MEMORY = _0x468801 + 0x4000000, ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0xa88a13.system) && (window.Module.TOTAL_MEMORY = _0x468801 + 0x10000000, _0x4d7024.isMobileDevice && (window.Module.TOTAL_MEMORY = 0x12c00000)), ['n64', 'nds', 'jaguar'].includes(_0xa88a13.system) && (window.Module.TOTAL_MEMORY = _0x468801 + 0x10000000, _0x4d7024.isMobileDevice && (window.Module.TOTAL_MEMORY = 0x12c00000)), 'gba' == _0xa88a13.system && (window.Module.TOTAL_MEMORY = 0x10000000)), 'undefined' != typeof EJS_MEMORY && (window.Module.TOTAL_MEMORY = EJS_MEMORY);
+                        var key = (_0xa88a13.coreVer===2)?"INITIAL_MEMORY":"TOTAL_MEMORY"
+                        _0x31a5b3 ? (window.Module[key] = 0x10000000, ['jaguar'].includes(_0xa88a13.system) && (window.Module[key] = 0x10000000), ['nds', 'nes', 'snes', 'arcade', 'mame'].includes(_0xa88a13.system) && (window.Module[key] = 0x0), ['snes2002', 'snes2005', 'snes2010'].includes(_0xa88a13.system) && (window.Module[key] = 0x0), 'gba' == _0xa88a13.system && (window.Module[key] = 0x0), '3do' == _0xa88a13.system && (window.Module[key] = 0x0), 'n64' == _0xa88a13.system && (window.Module[key] = 0x0)) : ('nes' === _0xa88a13.system && (window.Module[key] = 0x8000000), window.Module[key] = _0x468801 + 0x4000000, ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0xa88a13.system) && (window.Module[key] = _0x468801 + 0x10000000, _0x4d7024.isMobileDevice && (window.Module[key] = 0x12c00000)), ['n64', 'nds', 'jaguar'].includes(_0xa88a13.system) && (window.Module[key] = _0x468801 + 0x10000000, _0x4d7024.isMobileDevice && (window.Module[key] = 0x12c00000)), 'gba' == _0xa88a13.system && (window.Module[key] = 0x10000000)), 'undefined' != typeof EJS_MEMORY && (window.Module[key] = EJS_MEMORY);
                     },
                     _0x3512e9 = function(_0x1bc287, _0x1844e3) {
                         var _0x55627a = _0xa88a13,
@@ -1983,197 +1984,216 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), true);
                         var _0x3787ba = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
                         _0x3787ba.innerHTML = _this.localization('Loading')+'...';
-                        if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
-                            window.Module = {
-                                'TOTAL_MEMORY': 0x10000000,
-                                'noInitialRun': true,
-                                'arguments': [],
-                                'preRun': [],
-                                'postRun': [],
-                                'canvas': _0xb2be2a,
-                                'print': function(_0x4a8983) {
-                                    if (window.EJS_DEBUG_XX === true) {
-                                        console.log(_0x4a8983);
-                                    }
-                                },
-                                'printErr': function(_0x367bee) {
-                                    if (window.EJS_DEBUG_XX === true) {
-                                        console.log(_0x367bee);
-                                    }
-                                },
-                                'totalDependencies': 0x0,
-                                'monitorRunDependencies': function(_0x5d4b07) {},
-                                'locateFile': function(_0x3fe7ca) {
-                                    var _0x3787ba = null;
-                                    if (_0x3fe7ca.includes('.worker.js')) {
-                                        Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]);
-                                        var _0x2c1832 = new Blob([''], {
-                                            'type': 'application/javascript'
-                                        });
-                                        return window.URL.createObjectURL(_0x2c1832);
-                                    }
-                                    if (_0x3fe7ca.includes('.js.mem') && Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca)) {
-                                        _0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca];
-                                        return URL.createObjectURL(new Blob([_0x3787ba.buffer]));
-                                    }
-                                    return null;
-                                },
-                                'readAsync': function(_0x20d016, _0x9d2de4, _0x1425ee) {
-                                    if (_0x20d016 instanceof ArrayBuffer) setTimeout(function() {
-                                        _0x9d2de4(_0x20d016);
-                                    }, 0x1f4);
-                                    else {
-                                        var _0x164012 = new XMLHttpRequest();
-                                        _0x164012.open('GET', _0x20d016, true), _0x164012.responseType = 'arraybuffer', _0x164012.onload = function() {
-                                            0xc8 == _0x164012.status || 0x0 == _0x164012.status && _0x164012.response ? _0x9d2de4(_0x164012.response) : _0x1425ee();
-                                        }, _0x164012.onerror = _0x1425ee, _0x164012.send(null);
-                                    }
-                                }
-                            };
-                            var _0x1dedcd = Math.ceil(new Date().valueOf() / 0x3e8);
-                            var _0xa88a13 = (_0xc6823.customPaths && typeof _0xc6823.customPaths['v.json'] == 'string') ? _0xc6823.customPaths['v.json'] : (_0xc6823.dataPath + 'v.json?t='+_0x1dedcd);
-                            var _0x3641d6 = function(_0x16049b, _0x55a075) {
-                                var path = (_0xc6823.customPaths && typeof _0xc6823.customPaths[_0x16049b] == 'string') ? _0xc6823.customPaths[_0x16049b] : ((_0xc6823.coreVer === 2) ? (_0xc6823.dataPath+'cores/'+_0x16049b+'?v='+_0x55a075) : (_0xc6823.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
-                                _0x550f17.a.get(path, {
-                                    'onDownloadProgress': function(_0x117e6b) {
-                                        var _0x55a075 = _0x117e6b.total ? '' .concat(Math.floor(_0x117e6b.loaded / _0x117e6b.total * 0x64), '%') : '';
-                                        _0x3787ba.innerHTML = _this.localization('Download Game Core')+' ' .concat(_0x55a075);
-                                    },
-                                    'responseType': 'arraybuffer'
-                                }).then(function(_0x5eb80b) {
-                                    var _0x519406 = new Uint8Array(_0x5eb80b.data);
-                                    _0x24de8d.db && _0x24de8d.put(_0x16049b, {
-                                        'version': _0x55a075,
-                                        'data': _0x519406
-                                    });
-                                    if (_0xc6823.coreVer === 2) {
-                                        _0x4f0fcc(_0x519406);
-                                    } else {
-                                        var _0xea4c63 = _0x519406.slice ? _0x519406.slice(0xc) : _0x519406.subarray(0xc);
-                                        _0xea4c63.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                        _0x519406 = null;
-                                        _0x4f0fcc(_0xea4c63);
-                                    }
-                                    
-                                }).catch(function(_0x2e06c8) {
-                                    renderErrorPage(_0x2e06c8, _0x3787ba, _0xc6823);
-                                });
-                            };
-                            _0x550f17.a.get(_0xa88a13, {}).then(function(_0x578a2b) {
-                                var _0x2458d5, _0x5d075f = _0x29078e[_this.system],
-                                    _0x28ee7f = _0x578a2b.data[_this.system],
-                                    _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 1,
-                                    _0x254bc2 = Boolean(_0x28ee7f.netplay),
-                                    _0x5b1dcd = Boolean(_0x28ee7f.state),
-                                    _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
-                                    _0x3e4345 = Boolean(_0x28ee7f.wasm);
-                                var status = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
-                                if (!(_this.config.oldCores && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1)) {
-                                    _this.coreVer = 2;
-                                    _this.elements.settings.panels.home.querySelector('[role="menu"]').innerHTML = "";
-                                    _0x7f9f36.setNormalOptionsMenu.call(_this);
-                                    _0x7f9f36.setCoreOptionsMenu.call(_this);
-                                }
-                                if (_this.coreVer !== 2 && _0x28ee7f.old) {
-                                    _0x9a1f1 = Boolean(_0x28ee7f.old.asmjs);
-                                    _0x3e4345 = Boolean(_0x28ee7f.old.wasm);
-                                }
-                                if ('nds' == _this.system && !_0x2d904a.wasm) {
-                                    _0x5b1dcd = false;
-                                };
-                                //alert(_0x5b1dcd) // is save/load state supported
-                                if (_this.statesSupported === false) {
-                                    _0x5b1dcd = false;
-                                };
-                                _0x4d7024.coreFileVersion = _0x124167;
-                                _0x4d7024.coreFileName = _0x5d075f;
-                                var _0x2eb141 = false;
-                                ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
-                                'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
-                                if ('mame' == _this.system) {
-                                    var data = _this.mameCore;
-                                    if (! data || data === null || data.split('|').length !== 2) {
-                                        status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Missing mame config')+'</strong>';
-                                        return;
-                                    }
-                                    var _0x3787ba = data.split('|');
-                                    _0x4d7024.coreFileName = ''.concat(_this.system, '-').concat(_0x3787ba[0x0]);
-                                    _0x5b1dcd = '1' === _0x3787ba[0x1];
-                                    _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd);
-                                    _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd);
-                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd);
-                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
-                                    if (_this.coreVer === 2) {
-                                        _0x2458d5 = '';
-                                    } else {
-                                        _0x2458d5 = _this.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
-                                    }
-                                    _0x3787ba[0x0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
-                                        if (_0x655c87 && _0x655c87.version === _0x124167) {
-                                            if (_0xc6823.coreVer === 2) {
-                                                _0x4f0fcc(_0x655c87.data);
-                                            } else {
-                                                var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
-                                                _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                                _0x4f0fcc(_0x3787ba);
-                                            }
-                                        } else _0x3641d6(_0x2458d5, _0x124167);
-                                    }) : _0x3641d6(_0x2458d5, _0x124167))) : status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Unsupported Game')+'</strong>';
-                                } else {
-                                    _0x2458d5 = false;
-                                    var type;
-                                    if (_0x2d904a.wasm && _0x3e4345) {
-                                        type = 'wasm';
-                                        _0x2458d5 = true;
-                                        if ('n64' === _this.system && !_0x2eb141 && _this.coreVer !== 2) {
-                                            type = 'legacy-wasm';
-                                        }
-                                        _0x31a5b3 = true;
-                                    } else if (_0x9a1f1) {
-                                        _0x2458d5 = true;
-                                        type = 'asmjs';
-                                        if ('n64' === _this.system && !_0x2eb141 && _this.coreVer !== 2) {
-                                            type = 'legacy-asmjs';
-                                        }
-                                    }
-                                    'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
-                                    if (_0x2458d5 !== true) {
-                                        status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Please upgrade your browser to the latest version')+'</strong>';
-                                        return;
-                                    }
-                                    if (_this.coreVer === 2) {
-                                        _0x2458d5 = _0x5d075f + '-' + type + '.data';
-                                    } else {
-                                        _0x2458d5 = _0x5d075f + '-old-' + type + '.data';
-                                    }
-                                    'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
-                                    _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
-                                        if (_0x47a6fd && _0x47a6fd.version === _0x124167 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
-                                            if (_0xc6823.coreVer === 2) {
-                                                _0x4f0fcc(_0x47a6fd.data);
-                                            } else {
-                                                var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(0xc) : _0x47a6fd.data.subarray(0xc);
-                                                _0x3787ba.set([0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c, 0x0, 0x3], 0x0);
-                                                _0x4f0fcc(_0x3787ba);
-                                            }
-                                        } else _0x3641d6(_0x2458d5, _0x124167);
-                                    }) : _0x3641d6(_0x2458d5, _0x124167);
-                                }
-                                _0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true), _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd), _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !_0x5b1dcd), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !_0x5b1dcd);
-                                _0xc6823.setStatesSupported(_0x5b1dcd);
-                            }).catch(function(_0x2d06a9) {
-                                renderErrorPage(_0x2d06a9, _0x3787ba, _0xc6823);
-                            }), _0x4d7024.romdb = _0x4e171c;
+                        
+                        if (!(true === _0x528f2b && true === _0x547484 && true === _0x5e24fa)) {
+                            setTimeout(_0x26d6a1, 50);
+                            return;
                         }
+                        window.Module = {
+                            'TOTAL_MEMORY': 0x10000000,
+                            'noInitialRun': true,
+                            'arguments': [],
+                            'preRun': [],
+                            'postRun': [],
+                            'canvas': _0xb2be2a,
+                            'print': function(msg) {
+                                if (window.EJS_DEBUG_XX === true) {
+                                    console.log(msg);
+                                }
+                            },
+                            'printErr': function(msg) {
+                                if (window.EJS_DEBUG_XX === true) {
+                                    console.log(msg);
+                                }
+                            },
+                            'totalDependencies': 0,
+                            'monitorRunDependencies': function(_0x5d4b07) {},
+                            'locateFile': function(_0x3fe7ca) {
+                                var _0x3787ba = null;
+                                if (_0x3fe7ca.includes('.worker.js')) {
+                                    Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca) && (_0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca]);
+                                    var _0x2c1832 = new Blob([''], {
+                                        'type': 'application/javascript'
+                                    });
+                                    return window.URL.createObjectURL(_0x2c1832);
+                                }
+                                if (_0x3fe7ca.includes('.js.mem') && Object.keys(_0x4d7024.coreFileData).includes(_0x3fe7ca)) {
+                                    _0x3787ba = _0x4d7024.coreFileData[_0x3fe7ca];
+                                    return URL.createObjectURL(new Blob([_0x3787ba.buffer]));
+                                }
+                                return null;
+                            },
+                            'readAsync': function(_0x20d016, _0x9d2de4, _0x1425ee) {
+                                if (_0x20d016 instanceof ArrayBuffer) setTimeout(function() {
+                                    _0x9d2de4(_0x20d016);
+                                }, 500);
+                                else {
+                                    var _0x164012 = new XMLHttpRequest();
+                                    _0x164012.open('GET', _0x20d016, true);
+                                    _0x164012.responseType = 'arraybuffer';
+                                    _0x164012.onload = function() {
+                                        if (200 == _0x164012.status || 0 == _0x164012.status && _0x164012.response) {
+                                            _0x9d2de4(_0x164012.response);
+                                        } else {
+                                            _0x1425ee();
+                                        }
+                                    };
+                                    _0x164012.onerror = _0x1425ee;
+                                    _0x164012.send();
+                                }
+                            }
+                        };
+                        var _0x3641d6 = function(_0x16049b, _0x55a075) {
+                            var path = (_this.customPaths && typeof _this.customPaths[_0x16049b] == 'string') ? _this.customPaths[_0x16049b] : ((_this.coreVer === 2) ? (_this.dataPath+'cores/'+_0x16049b+'?v='+_0x55a075) : (_this.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
+                            _0x550f17.a.get(path, {
+                                'onDownloadProgress': function(e) {
+                                    var progress = e.total ? Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
+                                    _0x3787ba.innerHTML = _this.localization('Download Game Core')+_0x55a075;
+                                },
+                                'responseType': 'arraybuffer'
+                            }).then(function(e) {
+                                var data = new Uint8Array(e.data);
+                                _0x24de8d.db && _0x24de8d.put(_0x16049b, {
+                                    'version': _0x55a075,
+                                    'data': data
+                                });
+                                if (_this.coreVer === 2) {
+                                    _0x4f0fcc(data);
+                                } else {
+                                    var data1 = data.slice ? data.slice(12) : data.subarray(12);
+                                    data1.set([55, 122, 188, 175, 39, 28, 0, 3], 0);
+                                    data = null;
+                                    _0x4f0fcc(data1);
+                                }
+                                
+                            }).catch(function(e) {
+                                renderErrorPage(e, _0x3787ba, _this);
+                            });
+                        };
+                        var _0xa88a13 = (_this.customPaths && typeof _this.customPaths['v.json'] == 'string') ? _this.customPaths['v.json'] : (_this.dataPath + 'v.json');
+                        _0x550f17.a.get(_0xa88a13, {}).then(function(e) {
+                            var _0x2458d5, _0x5d075f = _0x29078e[_this.system],
+                                _0x28ee7f = e.data[_this.system];
+                            if (!_0x28ee7f) {
+                                status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Invalid System')+'</strong>';
+                                return;
+                            }
+                            var _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 1,
+                                _0x254bc2 = Boolean(_0x28ee7f.netplay),
+                                _0x5b1dcd = Boolean(_0x28ee7f.state),
+                                _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
+                                _0x3e4345 = Boolean(_0x28ee7f.wasm);
+                            var status = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
+                            if (!(_this.config.oldCores && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1) && !(_0x4d7024.isMobileDevice && _0x28ee7f.oldCores === 1)) {
+                                _this.coreVer = 2;
+                                delete Module.readAsync;
+                                Module.INITIAL_MEMORY = Module.TOTAL_MEMORY;
+                                delete Module.TOTAL_MEMORY;
+                                _this.elements.settings.panels.home.querySelector('[role="menu"]').innerHTML = "";
+                                _0x7f9f36.setNormalOptionsMenu.call(_this);
+                                _0x7f9f36.setCoreOptionsMenu.call(_this);
+                            }
+                            if (_this.coreVer !== 2 && _0x28ee7f.old) {
+                                _0x9a1f1 = Boolean(_0x28ee7f.old.asmjs);
+                                _0x3e4345 = Boolean(_0x28ee7f.old.wasm);
+                            }
+                            if ('nds' == _this.system && !_0x2d904a.wasm && _this.coreVer !== 2) {
+                                _0x5b1dcd = false;
+                            };
+                            if (_this.statesSupported === false) {
+                                _0x5b1dcd = false;
+                            };
+                            _0x4d7024.coreFileVersion = _0x124167;
+                            _0x4d7024.coreFileName = _0x5d075f;
+                            var _0x2eb141 = false;
+                            ['webgl2', 'experimental-webgl2'].includes(_0x2d904a.webgl.WEBGL_CONTEXT) && (_0x2eb141 = true);
+                            'undefined' != typeof EJS_N64_LEGACY && 0x1 == EJS_N64_LEGACY && (_0x2eb141 = !0x1);
+                            if ('mame' == _this.system) {
+                                var data = _this.mameCore;
+                                if (! data || data === null || data.split('|').length !== 2) {
+                                    status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Missing mame config')+'</strong>';
+                                    return;
+                                }
+                                var _0x3787ba = data.split('|');
+                                _0x4d7024.coreFileName = ''.concat(_this.system, '-').concat(_0x3787ba[0x0]);
+                                _0x5b1dcd = '1' === _0x3787ba[1];
+                                _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd);
+                                _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd);
+                                _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_0x5b1dcd);
+                                _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_0x5b1dcd);
+                                if (_this.coreVer === 2) {
+                                    _0x2458d5 = '';
+                                } else {
+                                    _0x2458d5 = _this.system.concat('-old-').concat(_0x3787ba[0], '-wasm.data');
+                                }
+                                _0x3787ba[0] ? (_0x2d904a.wasm && _0x3e4345 ? (_0x31a5b3 = true) : (status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Webassembly support is not detected in this browser')+'</strong>', _0x2458d5 = ''), _0x2458d5 && (_0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x655c87) {
+                                    if (_0x655c87 && _0x655c87.version === _0x124167) {
+                                        if (_0xc6823.coreVer === 2) {
+                                            _0x4f0fcc(_0x655c87.data);
+                                        } else {
+                                            var _0x3787ba = _0x655c87.data.slice ? _0x655c87.data.slice(0xc) : _0x655c87.data.subarray(0xc);
+                                            _0x3787ba.set([55, 122, 188, 175, 39, 28, 0, 3], 0);
+                                            _0x4f0fcc(_0x3787ba);
+                                        }
+                                    } else _0x3641d6(_0x2458d5, _0x124167);
+                                }) : _0x3641d6(_0x2458d5, _0x124167))) : status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Unsupported Game')+'</strong>';
+                            } else {
+                                _0x2458d5 = false;
+                                var type;
+                                if (_0x2d904a.wasm && _0x3e4345) {
+                                    type = 'wasm';
+                                    _0x2458d5 = true;
+                                    if ('n64' === _this.system && !_0x2eb141 && _this.coreVer !== 2) {
+                                        type = 'legacy-wasm';
+                                    }
+                                    _0x31a5b3 = true;
+                                } else if (_0x9a1f1) {
+                                    _0x2458d5 = true;
+                                    type = 'asmjs';
+                                    if ('n64' === _this.system && !_0x2eb141 && _this.coreVer !== 2) {
+                                        type = 'legacy-asmjs';
+                                    }
+                                }
+                                'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                if (_0x2458d5 !== true) {
+                                    status.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Please upgrade your browser to the latest version')+'</strong>';
+                                    return;
+                                }
+                                if (_this.coreVer === 2) {
+                                    _0x2458d5 = _0x5d075f + '-' + type + '.data';
+                                } else {
+                                    _0x2458d5 = _0x5d075f + '-old-' + type + '.data';
+                                }
+                                'undefined' != typeof EJS_CUSTOM_COREFILE && (_0x2458d5 = EJS_CUSTOM_COREFILE);
+                                _0x24de8d.db ? _0x24de8d.get(_0x2458d5, function(_0x47a6fd) {
+                                    if (_0x47a6fd && _0x47a6fd.version === _0x124167 && !('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
+                                        if (_0xc6823.coreVer === 2) {
+                                            _0x4f0fcc(_0x47a6fd.data);
+                                        } else {
+                                            var _0x3787ba = _0x47a6fd.data.slice ? _0x47a6fd.data.slice(12) : _0x47a6fd.data.subarray(12);
+                                            _0x3787ba.set([55, 122, 188, 175, 39, 28, 0, 3], 0);
+                                            _0x4f0fcc(_0x3787ba);
+                                        }
+                                    } else _0x3641d6(_0x2458d5, _0x124167);
+                                }) : _0x3641d6(_0x2458d5, _0x124167);
+                            }
+                            _0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true);
+                            _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd);
+                            _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd);
+                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_0x5b1dcd);
+                            _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_0x5b1dcd);
+                            _0xc6823.setStatesSupported(_0x5b1dcd);
+                        }).catch(function(e) {
+                            renderErrorPage(e, _0x3787ba, _0xc6823);
+                        });
+                        _0x4d7024.romdb = _0x4e171c;
                         return false;
                     };
+                
+                
                 _0x455c85(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])), 'click touchstart', _0x26d6a1);
                 if (_0xc6823.startOnLoad === true) {
-                    if (true === _0x528f2b && true === _0x547484 && true === _0x5e24fa) {
-                        _0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])).click();
-                    } else {
-                        console.warn('Start on load attempted, but user has not yet interacted with the document');
-                    }
+                    _0x4d7024.loading.querySelector('.' .concat(_0x4fce24['start-game'])).click();
                 }
             }
         },
