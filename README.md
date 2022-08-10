@@ -93,11 +93,12 @@ EJS_BETA = true;
 
 ### Atari
 
-**[Jaguar][Atari Jaguar]**   | 
+**[2600][Atari 2600]**   |
+**[5200][Atari 5200]**   |
+**[7800][Atari 7800]**   |
 **[Lynx][Atari Lynx]**   | 
-**[7800][Atari 7800]**   | 
-**[2600][Atari 2600]**
-**[5200][Atari 5200]**
+**[Jaguar][Atari Jaguar]**
+
 
 <br>
 <br>
