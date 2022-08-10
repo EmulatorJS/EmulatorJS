@@ -1523,7 +1523,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x52e6f3.target.terminate();
                                         start(_0x55627a.startName);
                                     }
-                                    if (2 === _0x52e6f3.data.t) {
+                                    if (2 === _0x52e6f3.data.t && _0x1e0766[_0x429d6b].includes(_0x52e6f3.data.file.split('.').pop())) {
                                         var _0x1c661d = _0x52e6f3.data.file.replace(/\#/g, '');
                                         try {
                                             _0x468801 += _0x52e6f3.data.data.length;
