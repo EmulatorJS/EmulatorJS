@@ -22,7 +22,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'saveState': 'Save State (Shift + F2)',
                 'loadState': 'Load State (Shift + F4)',
                 'screenRecord': 'Start Screen Recording',
-                'netplay': 'Netplay',
+                //'netplay': 'Netplay',
                 'gamepad': 'Control Settings',
                 'cheat': 'Cheats',
                 'menuBack': 'Go back to previous menu',
@@ -60,7 +60,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     'loadState': '[data-btn="load-state"]',
                     'screenRecord': '[data-btn="screen-record"]',
                     'gamepad': '[data-btn="gamepad"]',
-                    'netplay': '[data-btn="netplay"]',
+                    //'netplay': '[data-btn="netplay"]',
                     'cheat': '[data-btn="cheat"]'
                 },
                 'inputs': {
@@ -583,9 +583,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         }]) && _0x4c97b0(_0x17edbf.prototype, _0x2c1832), _0x4496fc && _0x4c97b0(_0x17edbf, _0x4496fc), _0x566dbe;
     }();
-    var _0x13fb79, _0x569918 = _0x2c1832(108),
-        _0x4e4ca6 = _0x2c1832.n(_0x569918),
-        _0x4ad1c6 = _0x2c1832(6),
+    var _0x13fb79, _0x4ad1c6 = _0x2c1832(6),
         _0x4704b1 = _0x2c1832(159),
         _0x3a58c8 = _0x2c1832.n(_0x4704b1),
         _0x5032e6 = {
@@ -600,8 +598,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'crt-aperture.glsl': '\n/*\nCRT Shader by EasyMode\nLicense: GPL\n*/\n/*\n#pragma parameter SHARPNESS_IMAGE "Sharpness Image" 1.0 1.0 5.0 1.0\n#pragma parameter SHARPNESS_EDGES "Sharpness Edges" 3.0 1.0 5.0 1.0\n#pragma parameter GLOW_WIDTH "Glow Width" 0.5 0.05 0.65 0.05\n#pragma parameter GLOW_HEIGHT "Glow Height" 0.5 0.05 0.65 0.05\n#pragma parameter GLOW_HALATION "Glow Halation" 0.1 0.0 1.0 0.01\n#pragma parameter GLOW_DIFFUSION "Glow Diffusion" 0.05 0.0 1.0 0.01\n#pragma parameter MASK_COLORS "Mask Colors" 2.0 2.0 3.0 1.0\n#pragma parameter MASK_STRENGTH "Mask Strength" 0.3 0.0 1.0 0.05\n#pragma parameter MASK_SIZE "Mask Size" 1.0 1.0 9.0 1.0\n#pragma parameter SCANLINE_SIZE_MIN "Scanline Size Min." 0.5 0.5 1.5 0.05\n#pragma parameter SCANLINE_SIZE_MAX "Scanline Size Max." 1.5 0.5 1.5 0.05\n#pragma parameter GAMMA_INPUT "Gamma Input" 2.4 1.0 5.0 0.1\n#pragma parameter GAMMA_OUTPUT "Gamma Output" 2.4 1.0 5.0 0.1\n#pragma parameter BRIGHTNESS "Brightness" 1.5 0.0 2.0 0.05\n* */\n\n#define Coord TEX0\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define OUT out\n#define IN  in\n#define tex2D texture\n#else\n#define OUT varying \n#define IN attribute \n#define tex2D texture2D\n#endif\n\n#ifdef GL_ES\n#define PRECISION mediump\n#else\n#define PRECISION\n#endif\n\nIN  vec4 VertexCoord;\nIN  vec4 Color;\nIN  vec2 TexCoord;\nOUT vec4 color;\nOUT vec2 Coord;\n\nuniform mat4 MVPMatrix;\nuniform PRECISION int FrameDirection;\nuniform PRECISION int FrameCount;\nuniform PRECISION vec2 OutputSize;\nuniform PRECISION vec2 TextureSize;\nuniform PRECISION vec2 InputSize;\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\ncolor = Color;\nCoord = TexCoord;\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define IN in\n#define tex2D texture\nout vec4 FragColor;\n#else\n#define IN varying\n#define FragColor gl_FragColor\n#define tex2D texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define PRECISION mediump\n#else\n#define PRECISION\n#endif\n\nuniform PRECISION int FrameDirection;\nuniform PRECISION int FrameCount;\nuniform PRECISION vec2 OutputSize;\nuniform PRECISION vec2 TextureSize;\nuniform PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nIN vec2 Coord;\n\n#ifdef PARAMETER_UNIFORM\nuniform PRECISION float SHARPNESS_IMAGE;\nuniform PRECISION float SHARPNESS_EDGES;\nuniform PRECISION float GLOW_WIDTH;\nuniform PRECISION float GLOW_HEIGHT;\nuniform PRECISION float GLOW_HALATION;\nuniform PRECISION float GLOW_DIFFUSION;\nuniform PRECISION float MASK_COLORS;\nuniform PRECISION float MASK_STRENGTH;\nuniform PRECISION float MASK_SIZE;\nuniform PRECISION float SCANLINE_SIZE_MIN;\nuniform PRECISION float SCANLINE_SIZE_MAX;\nuniform PRECISION float GAMMA_INPUT;\nuniform PRECISION float GAMMA_OUTPUT;\nuniform PRECISION float BRIGHTNESS;\n#else\n#define SHARPNESS_IMAGE 1.0\n#define SHARPNESS_EDGES 3.0\n#define GLOW_WIDTH 0.5\n#define GLOW_HEIGHT 0.5\n#define GLOW_HALATION 0.1\n#define GLOW_DIFFUSION 0.05\n#define MASK_COLORS 2.0\n#define MASK_STRENGTH 0.3\n#define MASK_SIZE 1.0\n#define SCANLINE_SIZE_MIN 0.5\n#define SCANLINE_SIZE_MAX 1.5\n#define GAMMA_INPUT 2.4\n#define GAMMA_OUTPUT 2.4\n#define BRIGHTNESS 1.5\n#endif\n\n#define FIX(c) max(abs(c), 1e-5)\n#define PI 3.141592653589\n#define saturate(c) clamp(c, 0.0, 1.0)\n#define TEX2D(c) pow(tex2D(tex, c).rgb, vec3(GAMMA_INPUT))\n\nmat3 get_color_matrix(sampler2D tex, vec2 co, vec2 dx)\n{\nreturn mat3(TEX2D(co - dx), TEX2D(co), TEX2D(co + dx));\n}\n\nvec3 blur(mat3 m, float dist, float rad)\n{\nvec3 x = vec3(dist - 1.0, dist, dist + 1.0) / rad;\nvec3 w = exp2(x * x * -1.0);\n\nreturn (m[0] * w.x + m[1] * w.y + m[2] * w.z) / (w.x + w.y + w.z);\n}\n\nvec3 filter_gaussian(sampler2D tex, vec2 co, vec2 tex_size)\n{\nvec2 dx = vec2(1.0 / tex_size.x, 0.0);\nvec2 dy = vec2(0.0, 1.0 / tex_size.y);\nvec2 pix_co = co * tex_size;\nvec2 tex_co = (floor(pix_co) + 0.5) / tex_size;\nvec2 dist = (fract(pix_co) - 0.5) * -1.0;\n\nmat3 line0 = get_color_matrix(tex, tex_co - dy, dx);\nmat3 line1 = get_color_matrix(tex, tex_co, dx);\nmat3 line2 = get_color_matrix(tex, tex_co + dy, dx);\nmat3 column = mat3(blur(line0, dist.x, GLOW_WIDTH),\n                       blur(line1, dist.x, GLOW_WIDTH),\n                       blur(line2, dist.x, GLOW_WIDTH));\n\nreturn blur(column, dist.y, GLOW_HEIGHT);\n}\n\nvec3 filter_lanczos(sampler2D tex, vec2 co, vec2 tex_size, float sharp)\n{\ntex_size.x *= sharp;\n\nvec2 dx = vec2(1.0 / tex_size.x, 0.0);\nvec2 pix_co = co * tex_size - vec2(0.5, 0.0);\nvec2 tex_co = (floor(pix_co) + vec2(0.5, 0.0)) / tex_size;\nvec2 dist = fract(pix_co);\nvec4 coef = PI * vec4(dist.x + 1.0, dist.x, dist.x - 1.0, dist.x - 2.0);\n\ncoef = FIX(coef);\ncoef = 2.0 * sin(coef) * sin(coef / 2.0) / (coef * coef);\ncoef /= dot(coef, vec4(1.0));\n\nvec4 col1 = vec4(TEX2D(tex_co), 1.0);\nvec4 col2 = vec4(TEX2D(tex_co + dx), 1.0);\n\nreturn (mat4(col1, col1, col2, col2) * coef).rgb;\n}\n\nvec3 get_scanline_weight(float x, vec3 col)\n{\nvec3 beam = mix(vec3(SCANLINE_SIZE_MIN), vec3(SCANLINE_SIZE_MAX), col);\nvec3 x_mul = 2.0 / beam;\nvec3 x_offset = x_mul * 0.5;\n\nreturn smoothstep(0.0, 1.0, 1.0 - abs(x * x_mul - x_offset)) * x_offset;\n}\n\nvec3 get_mask_weight(float x)\n{\nfloat i = mod(floor(x * OutputSize.x * TextureSize.x / (InputSize.x * MASK_SIZE)), MASK_COLORS);\n\nif (i == 0.0) return mix(vec3(1.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), MASK_COLORS - 2.0);\nelse if (i == 1.0) return vec3(0.0, 1.0, 0.0);\nelse return vec3(0.0, 0.0, 1.0);\n}\n\nvoid main()\n{\nvec3 col_glow = filter_gaussian(Texture, Coord, TextureSize);\nvec3 col_soft = filter_lanczos(Texture, Coord, TextureSize, SHARPNESS_IMAGE);\nvec3 col_sharp = filter_lanczos(Texture, Coord, TextureSize, SHARPNESS_EDGES);\nvec3 col = sqrt(col_sharp * col_soft);\n\ncol *= get_scanline_weight(fract(Coord.y * TextureSize.y), col_soft);\ncol_glow = saturate(col_glow - col);\ncol += col_glow * col_glow * GLOW_HALATION;\ncol = mix(col, col * get_mask_weight(Coord.x) * MASK_COLORS, MASK_STRENGTH);\ncol += col_glow * GLOW_DIFFUSION;\ncol = pow(col * BRIGHTNESS, vec3(1.0 / GAMMA_OUTPUT));\n\nFragColor = vec4(col, 1.0);\n}\n\n#endif\n',
             'crt-geom.glsl': '\n/*\nCRT-interlaced\n\nCopyright (C) 2010-2012 cgwg, Themaister and DOLLS\n\nThis program is free software; you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the Free\nSoftware Foundation; either version 2 of the License, or (at your option)\nany later version.\n\n(cgwg gave their consent to have the original version of this shader\ndistributed under the GPL in this message:\n\nhttp://board.byuu.org/viewtopic.php?p=26075#p26075\n\n"Feel free to distribute my shaders under the GPL. After all, the\nbarrel distortion code was taken from the Curvature shader, which is\nunder the GPL."\n)\nThis shader variant is pre-configured with screen curvature\n*/\n/*\n#pragma parameter CRTgamma "CRTGeom Target Gamma" 2.4 0.1 5.0 0.1\n#pragma parameter monitorgamma "CRTGeom Monitor Gamma" 2.2 0.1 5.0 0.1\n#pragma parameter d "CRTGeom Distance" 1.6 0.1 3.0 0.1\n#pragma parameter CURVATURE "CRTGeom Curvature Toggle" 1.0 0.0 1.0 1.0\n#pragma parameter R "CRTGeom Curvature Radius" 2.0 0.1 10.0 0.1\n#pragma parameter cornersize "CRTGeom Corner Size" 0.03 0.001 1.0 0.005\n#pragma parameter cornersmooth "CRTGeom Corner Smoothness" 1000.0 80.0 2000.0 100.0\n#pragma parameter x_tilt "CRTGeom Horizontal Tilt" 0.0 -0.5 0.5 0.05\n#pragma parameter y_tilt "CRTGeom Vertical Tilt" 0.0 -0.5 0.5 0.05\n#pragma parameter overscan_x "CRTGeom Horiz. Overscan %" 100.0 -125.0 125.0 1.0\n#pragma parameter overscan_y "CRTGeom Vert. Overscan %" 100.0 -125.0 125.0 1.0\n#pragma parameter DOTMASK "CRTGeom Dot Mask Toggle" 0.3 0.0 0.3 0.3\n#pragma parameter SHARPER "CRTGeom Sharpness" 1.0 1.0 3.0 1.0\n#pragma parameter scanline_weight "CRTGeom Scanline Weight" 0.3 0.1 0.5 0.05\n*/\n\n#ifndef PARAMETER_UNIFORM\n#define CRTgamma 2.4\n#define monitorgamma 2.2\n#define d 1.6\n#define CURVATURE 1.0\n#define R 2.0\n#define cornersize 0.03\n#define cornersmooth 1000.0\n#define x_tilt 0.0\n#define y_tilt 0.0\n#define overscan_x 100.0\n#define overscan_y 100.0\n#define DOTMASK 0.3\n#define SHARPER 1.0\n#define scanline_weight 0.3\n#endif\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\nCOMPAT_VARYING vec2 overscan;\nCOMPAT_VARYING vec2 aspect;\nCOMPAT_VARYING vec3 stretch;\nCOMPAT_VARYING vec2 sinangle;\nCOMPAT_VARYING vec2 cosangle;\nCOMPAT_VARYING vec2 one;\nCOMPAT_VARYING float mod_factor;\nCOMPAT_VARYING vec2 ilfac;\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CRTgamma;\nuniform COMPAT_PRECISION float monitorgamma;\nuniform COMPAT_PRECISION float d;\nuniform COMPAT_PRECISION float CURVATURE;\nuniform COMPAT_PRECISION float R;\nuniform COMPAT_PRECISION float cornersize;\nuniform COMPAT_PRECISION float cornersmooth;\nuniform COMPAT_PRECISION float x_tilt;\nuniform COMPAT_PRECISION float y_tilt;\nuniform COMPAT_PRECISION float overscan_x;\nuniform COMPAT_PRECISION float overscan_y;\nuniform COMPAT_PRECISION float DOTMASK;\nuniform COMPAT_PRECISION float SHARPER;\nuniform COMPAT_PRECISION float scanline_weight;\n#endif\n\n#define FIX(c) max(abs(c), 1e-5);\n\nfloat intersect(vec2 xy)\n{\nfloat A = dot(xy,xy)+d*d;\nfloat B = 2.0*(R*(dot(xy,sinangle)-d*cosangle.x*cosangle.y)-d*d);\nfloat C = d*d + 2.0*R*d*cosangle.x*cosangle.y;\nreturn (-B-sqrt(B*B-4.0*A*C))/(2.0*A);\n}\n\nvec2 bkwtrans(vec2 xy)\n{\nfloat c = intersect(xy);\nvec2 point = vec2(c)*xy;\npoint -= vec2(-R)*sinangle;\npoint /= vec2(R);\nvec2 tang = sinangle/cosangle;\nvec2 poc = point/cosangle;\nfloat A = dot(tang,tang)+1.0;\nfloat B = -2.0*dot(poc,tang);\nfloat C = dot(poc,poc)-1.0;\nfloat a = (-B+sqrt(B*B-4.0*A*C))/(2.0*A);\nvec2 uv = (point-a*sinangle)/cosangle;\nfloat r = R*acos(a);\nreturn uv*r/sin(r/R);\n}\n\nvec2 fwtrans(vec2 uv)\n{\nfloat r = FIX(sqrt(dot(uv,uv)));\nuv *= sin(r/R)/r;\nfloat x = 1.0-cos(r/R);\nfloat D = d/R + x*cosangle.x*cosangle.y+dot(uv,sinangle);\nreturn d*(uv*cosangle-x*sinangle)/D;\n}\n\nvec3 maxscale()\n{\nvec2 c = bkwtrans(-R * sinangle / (1.0 + R/d*cosangle.x*cosangle.y));\nvec2 a = vec2(0.5,0.5)*aspect;\nvec2 lo = vec2(fwtrans(vec2(-a.x,c.y)).x, fwtrans(vec2(c.x,-a.y)).y)/aspect;\nvec2 hi = vec2(fwtrans(vec2(+a.x,c.y)).x, fwtrans(vec2(c.x,+a.y)).y)/aspect;\nreturn vec3((hi+lo)*aspect*0.5,max(hi.x-lo.x,hi.y-lo.y));\n}\n\nvoid main()\n{\n// START of parameters\n\n// gamma of simulated CRT\n//	CRTgamma = 1.8;\n// gamma of display monitor (typically 2.2 is correct)\n//	monitorgamma = 2.2;\n// overscan (e.g. 1.02 for 2% overscan)\noverscan = vec2(1.00,1.00);\n// aspect ratio\naspect = vec2(1.0, 0.75);\n// lengths are measured in units of (approximately) the width\n// of the monitor simulated distance from viewer to monitor\n//	d = 2.0;\n// radius of curvature\n//	R = 1.5;\n// tilt angle in radians\n// (behavior might be a bit wrong if both components are\n// nonzero)\nconst vec2 angle = vec2(0.0,0.0);\n// size of curved corners\n//	cornersize = 0.03;\n// border smoothness parameter\n// decrease if borders are too aliased\n//	cornersmooth = 1000.0;\n\n// END of parameters\n\nvec4 _oColor;\nvec2 _otexCoord;\ngl_Position = VertexCoord.x * MVPMatrix[0] + VertexCoord.y * MVPMatrix[1] + VertexCoord.z * MVPMatrix[2] + VertexCoord.w * MVPMatrix[3];\n_oPosition1 = gl_Position;\n_oColor = COLOR;\n_otexCoord = TexCoord.xy;\nCOL0 = COLOR;\nTEX0.xy = TexCoord.xy;\n\n// Precalculate a bunch of useful values we\'ll need in the fragment\n// shader.\nsinangle = sin(vec2(x_tilt, y_tilt)) + vec2(0.001);//sin(vec2(max(abs(x_tilt), 1e-3), max(abs(y_tilt), 1e-3)));\ncosangle = cos(vec2(x_tilt, y_tilt)) + vec2(0.001);//cos(vec2(max(abs(x_tilt), 1e-3), max(abs(y_tilt), 1e-3)));\nstretch = maxscale();\n\nilfac = vec2(1.0,clamp(floor(InputSize.y/200.0), 1.0, 2.0));\n\n// The size of one texel, in texture-coordinates.\nvec2 sharpTextureSize = vec2(SHARPER * TextureSize.x, TextureSize.y);\none = ilfac / sharpTextureSize;\n\n// Resulting X pixel-coordinate of the pixel we\'re drawing.\nmod_factor = TexCoord.x * TextureSize.x * OutputSize.x / InputSize.x;\n\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nstruct output_dummy {\nvec4 _color;\n};\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\n\n// Comment the next line to disable interpolation in linear gamma (and\n// gain speed).\n#define LINEAR_PROCESSING\n\n// Enable screen curvature.\n//        #define CURVATURE\n\n// Enable 3x oversampling of the beam profile\n#define OVERSAMPLE\n\n// Use the older, purely gaussian beam profile\n//#define USEGAUSSIAN\n\n// Macros.\n#define FIX(c) max(abs(c), 1e-5);\n#define PI 3.141592653589\n\n#ifdef LINEAR_PROCESSING\n#       define TEX2D(c) pow(COMPAT_TEXTURE(Texture, (c)), vec4(CRTgamma))\n#else\n#       define TEX2D(c) COMPAT_TEXTURE(Texture, (c))\n#endif\n\nCOMPAT_VARYING vec2 one;\nCOMPAT_VARYING float mod_factor;\nCOMPAT_VARYING vec2 ilfac;\nCOMPAT_VARYING vec2 overscan;\nCOMPAT_VARYING vec2 aspect;\nCOMPAT_VARYING vec3 stretch;\nCOMPAT_VARYING vec2 sinangle;\nCOMPAT_VARYING vec2 cosangle;\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CRTgamma;\nuniform COMPAT_PRECISION float monitorgamma;\nuniform COMPAT_PRECISION float d;\nuniform COMPAT_PRECISION float CURVATURE;\nuniform COMPAT_PRECISION float R;\nuniform COMPAT_PRECISION float cornersize;\nuniform COMPAT_PRECISION float cornersmooth;\nuniform COMPAT_PRECISION float x_tilt;\nuniform COMPAT_PRECISION float y_tilt;\nuniform COMPAT_PRECISION float overscan_x;\nuniform COMPAT_PRECISION float overscan_y;\nuniform COMPAT_PRECISION float DOTMASK;\nuniform COMPAT_PRECISION float SHARPER;\nuniform COMPAT_PRECISION float scanline_weight;\n#endif\n\nfloat intersect(vec2 xy)\n{\nfloat A = dot(xy,xy)+d*d;\nfloat B = 2.0*(R*(dot(xy,sinangle)-d*cosangle.x*cosangle.y)-d*d);\nfloat C = d*d + 2.0*R*d*cosangle.x*cosangle.y;\nreturn (-B-sqrt(B*B-4.0*A*C))/(2.0*A);\n}\n\nvec2 bkwtrans(vec2 xy)\n{\nfloat c = intersect(xy);\nvec2 point = vec2(c)*xy;\npoint -= vec2(-R)*sinangle;\npoint /= vec2(R);\nvec2 tang = sinangle/cosangle;\nvec2 poc = point/cosangle;\nfloat A = dot(tang,tang)+1.0;\nfloat B = -2.0*dot(poc,tang);\nfloat C = dot(poc,poc)-1.0;\nfloat a = (-B+sqrt(B*B-4.0*A*C))/(2.0*A);\nvec2 uv = (point-a*sinangle)/cosangle;\nfloat r = FIX(R*acos(a));\nreturn uv*r/sin(r/R);\n}\n\nvec2 transform(vec2 coord)\n{\ncoord *= TextureSize / InputSize;\ncoord = (coord-vec2(0.5))*aspect*stretch.z+stretch.xy;\nreturn (bkwtrans(coord)/vec2(overscan_x / 100.0, overscan_y / 100.0)/aspect+vec2(0.5)) * InputSize / TextureSize;\n}\n\nfloat corner(vec2 coord)\n{\ncoord *= TextureSize / InputSize;\ncoord = (coord - vec2(0.5)) * vec2(overscan_x / 100.0, overscan_y / 100.0) + vec2(0.5);\ncoord = min(coord, vec2(1.0)-coord) * aspect;\nvec2 cdist = vec2(cornersize);\ncoord = (cdist - min(coord,cdist));\nfloat dist = sqrt(dot(coord,coord));\nreturn clamp((cdist.x-dist)*cornersmooth,0.0, 1.0);\n}\n\n// Calculate the influence of a scanline on the current pixel.\n//\n// \'distance\' is the distance in texture coordinates from the current\n// pixel to the scanline in question.\n// \'color\' is the colour of the scanline at the horizontal location of\n// the current pixel.\nvec4 scanlineWeights(float distance, vec4 color)\n{\n// "wid" controls the width of the scanline beam, for each RGB\n// channel The "weights" lines basically specify the formula\n// that gives you the profile of the beam, i.e. the intensity as\n// a function of distance from the vertical center of the\n// scanline. In this case, it is gaussian if width=2, and\n// becomes nongaussian for larger widths. Ideally this should\n// be normalized so that the integral across the beam is\n// independent of its width. That is, for a narrower beam\n// "weights" should have a higher peak at the center of the\n// scanline than for a wider beam.\n#ifdef USEGAUSSIAN\nvec4 wid = 0.3 + 0.1 * pow(color, vec4(3.0));\nvec4 weights = vec4(distance / wid);\nreturn 0.4 * exp(-weights * weights) / wid;\n#else\nvec4 wid = 2.0 + 2.0 * pow(color, vec4(4.0));\nvec4 weights = vec4(distance / scanline_weight);\nreturn 1.4 * exp(-pow(weights * inversesqrt(0.5 * wid), wid)) / (0.6 + 0.2 * wid);\n#endif\n}\n\nvoid main()\n{\n// Here\'s a helpful diagram to keep in mind while trying to\n// understand the code:\n//\n//  |      |      |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//  |  01  |  11  |  21  |  31  | <-- current scanline\n//  |      | @    |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//  |  02  |  12  |  22  |  32  | <-- next scanline\n//  |      |      |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//\n// Each character-cell represents a pixel on the output\n// surface, "@" represents the current pixel (always somewhere\n// in the bottom half of the current scan-line, or the top-half\n// of the next scanline). The grid of lines represents the\n// edges of the texels of the underlying texture.\n\n// Texture coordinates of the texel containing the active pixel.\nvec2 xy = (CURVATURE > 0.5) ? transform(TEX0.xy) : TEX0.xy;\n\nfloat cval = corner(xy);\n\n// Of all the pixels that are mapped onto the texel we are\n// currently rendering, which pixel are we currently rendering?\nvec2 ilvec = vec2(0.0,ilfac.y > 1.5 ? mod(float(FrameCount),2.0) : 0.0);\nvec2 ratio_scale = (xy * TextureSize - vec2(0.5) + ilvec)/ilfac;\n#ifdef OVERSAMPLE\nfloat filter_ = InputSize.y/OutputSize.y;//fwidth(ratio_scale.y);\n#endif\nvec2 uv_ratio = fract(ratio_scale);\n\n// Snap to the center of the underlying texel.\nxy = (floor(ratio_scale)*ilfac + vec2(0.5) - ilvec) / TextureSize;\n\n// Calculate Lanczos scaling coefficients describing the effect\n// of various neighbour texels in a scanline on the current\n// pixel.\nvec4 coeffs = PI * vec4(1.0 + uv_ratio.x, uv_ratio.x, 1.0 - uv_ratio.x, 2.0 - uv_ratio.x);\n\n// Prevent division by zero.\ncoeffs = FIX(coeffs);\n\n// Lanczos2 kernel.\ncoeffs = 2.0 * sin(coeffs) * sin(coeffs / 2.0) / (coeffs * coeffs);\n\n// Normalize.\ncoeffs /= dot(coeffs, vec4(1.0));\n\n// Calculate the effective colour of the current and next\n// scanlines at the horizontal location of the current pixel,\n// using the Lanczos coefficients above.\nvec4 col  = clamp(mat4(\n                TEX2D(xy + vec2(-one.x, 0.0)),\n                TEX2D(xy),\n                TEX2D(xy + vec2(one.x, 0.0)),\n                TEX2D(xy + vec2(2.0 * one.x, 0.0))) * coeffs,\n                0.0, 1.0);\nvec4 col2 = clamp(mat4(\n                TEX2D(xy + vec2(-one.x, one.y)),\n                TEX2D(xy + vec2(0.0, one.y)),\n                TEX2D(xy + one),\n                TEX2D(xy + vec2(2.0 * one.x, one.y))) * coeffs,\n                0.0, 1.0);\n\n#ifndef LINEAR_PROCESSING\ncol  = pow(col , vec4(CRTgamma));\ncol2 = pow(col2, vec4(CRTgamma));\n#endif\n\n// Calculate the influence of the current and next scanlines on\n// the current pixel.\nvec4 weights  = scanlineWeights(uv_ratio.y, col);\nvec4 weights2 = scanlineWeights(1.0 - uv_ratio.y, col2);\n#ifdef OVERSAMPLE\nuv_ratio.y =uv_ratio.y+1.0/3.0*filter_;\nweights = (weights+scanlineWeights(uv_ratio.y, col))/3.0;\nweights2=(weights2+scanlineWeights(abs(1.0-uv_ratio.y), col2))/3.0;\nuv_ratio.y =uv_ratio.y-2.0/3.0*filter_;\nweights=weights+scanlineWeights(abs(uv_ratio.y), col)/3.0;\nweights2=weights2+scanlineWeights(abs(1.0-uv_ratio.y), col2)/3.0;\n#endif\n\nvec3 mul_res  = (col * weights + col2 * weights2).rgb * vec3(cval);\n\n// dot-mask emulation:\n// Output pixels are alternately tinted green and magenta.\nvec3 dotMaskWeights = mix(\nvec3(1.0, 1.0 - DOTMASK, 1.0),\nvec3(1.0 - DOTMASK, 1.0, 1.0 - DOTMASK),\nfloor(mod(mod_factor, 2.0))\n);\n\nmul_res *= dotMaskWeights;\n\n// Convert the image gamma for display on our output device.\nmul_res = pow(mul_res, vec3(1.0 / monitorgamma));\n\n// Color the texel.\noutput_dummy _OUT;\n_OUT._color = vec4(mul_res, 1.0);\nFragColor = _OUT._color;\nreturn;\n} \n#endif\n\n'
         },
-        _0x5bb4c9 = _0x2c1832(0x39),
-        _0x50f370 = _0x2c1832.n(_0x5bb4c9),
+        IDBStore = _0x2c1832(0x39),
         _0x550f17 = _0x2c1832(0xb),
         _0x5ab74d = {
             'addStyleHook': function() {
@@ -1186,53 +1183,59 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0xa884ea = null,
                     _0x1ffb98 = null;
                 try {
-                    _0x24de8d = new _0x50f370.a({
-                        'dbVersion': 0x1,
+                    _0x24de8d = new IDBStore({
+                        'dbVersion': 1,
                         'storePrefix': 'ejs-',
                         'storeName': 'system',
                         'keyPath': null,
-                        'autoIncrement': !0x1,
+                        'autoIncrement': false,
                         'onStoreReady': function() {
                             _0x528f2b = true;
                         },
                         'onError': function() {
                             _0x528f2b = true;
                         }
-                    }), _0x4e171c = new _0x50f370.a({
-                        'dbVersion': 0x1,
+                    });
+                    _0x4e171c = new IDBStore({
+                        'dbVersion': 1,
                         'storePrefix': 'ejs-',
                         'storeName': 'roms',
                         'keyPath': null,
-                        'autoIncrement': !0x1,
+                        'autoIncrement': false,
                         'onStoreReady': function() {
                             _0x547484 = true;
                         },
                         'onError': function() {
                             _0x547484 = true;
                         }
-                    }), _0xa884ea = new _0x50f370.a({
-                        'dbVersion': 0x1,
+                    });
+                    _0xa884ea = new IDBStore({
+                        'dbVersion': 1,
                         'storePrefix': 'ejs-',
                         'storeName': 'bios',
                         'keyPath': null,
-                        'autoIncrement': !0x1,
+                        'autoIncrement': false,
                         'onStoreReady': function() {
                             _0x5e24fa = true;
                         },
                         'onError': function() {
                             _0x5e24fa = true;
                         }
-                    }), _0x1ffb98 = new _0x50f370.a({
-                        'dbVersion': 0x1,
+                    });
+                    _0x1ffb98 = new IDBStore({
+                        'dbVersion': 1,
                         'storePrefix': 'ejs-',
                         'storeName': 'romsdata',
                         'keyPath': null,
-                        'autoIncrement': !0x1,
+                        'autoIncrement': false,
                         'onStoreReady': function() {},
                         'onError': function() {}
                     });
                 } catch (_0x4fc9b6) {
-                    _0x528f2b = true, _0x547484 = true, _0x5e24fa = true, console.log(_0x4fc9b6);
+                    _0x528f2b = true;
+                    _0x547484 = true;
+                    _0x5e24fa = true;
+                    console.log(_0x4fc9b6);
                 }
                 _0x1093f4.call(_0xc6823, _0xc6823.elements.container, 'start-game', function(_0x3d9f57) {
                     _0xc6823.started = true, _0xc6823.playing = true, _0x132da7(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24['loading-info'])), true);
@@ -1523,14 +1526,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x52e6f3.target.terminate();
                                         start(_0x55627a.startName);
                                     }
-                                    if (2 === _0x52e6f3.data.t && _0x1e0766[_0x429d6b].includes(_0x52e6f3.data.file.split('.').pop())) {
+                                    if (2 === _0x52e6f3.data.t) {
                                         var _0x1c661d = _0x52e6f3.data.file.replace(/\#/g, '');
                                         try {
                                             _0x468801 += _0x52e6f3.data.data.length;
                                             _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x52e6f3.data.data, true, false);
-                                            _0x55627a.startName = _0x52e6f3.data.file;
-                                            _0x52e6f3.target.terminate();
-                                            start(_0x55627a.startName);
+                                            if (_0x1e0766[_0x429d6b].includes(_0x52e6f3.data.file.split('.').pop())) {
+                                                _0x55627a.startName = _0x52e6f3.data.file;
+                                            }
                                         } catch (_0x210043) {
                                             console.log(_0x210043);
                                         }
@@ -1826,29 +1829,48 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x50119 = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p2)),
                             _0x19a43e = (_0x5e7c8b.split('.').pop(), function(_0x1e8643) {
                                 if (_0x1e8643.data) {
-                                    if (0x1 === _0x1e8643.data.t && (_0x50119.innerHTML = 'BIOS ready', _0x1e8643.target.terminate(), _0x452592()), 0x2 === _0x1e8643.data.t) {
+                                    if (1 === _0x1e8643.data.t) {
+                                        _0x50119.innerHTML = 'BIOS ready';
+                                        _0x1e8643.target.terminate();
+                                        _0x452592();
+                                    }
+                                    if (2 === _0x1e8643.data.t) {
                                         var _0x17edbf = _0x1e8643.data.file.split('/'),
                                             _0x2c1832 = _0x17edbf.pop();
                                         _0x2c1832.split('.').pop();
-                                        _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, !0x1), _0x468801 += _0x1e8643.data.data.length;
+                                        _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true);
+                                        _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, false);
+                                        _0x468801 += _0x1e8643.data.data.length;
                                     }
-                                    if (0x4 === _0x1e8643.data.t && _0x1e8643.data.total > 0x0) {
+                                    if (4 === _0x1e8643.data.t && _0x1e8643.data.total > 0) {
                                         var _0x149f09 = Math.floor(_0x1e8643.data.current / _0x1e8643.data.total * 0x64),
                                             _0x5e7c8b = _0x1e8643.data.name || '';
                                         _0x149f09 <= 0x64 && _0x149f09 > 0x0 && (_0x50119.innerHTML = 'Decompress BIOS ' .concat(_0x5e7c8b, ' ').concat(_0x149f09, '%'));
                                     }
                                 }
                             }),
-                            _0x3a6560 = !0x1,
                             _0x12e229 = _0x3cff36.slice ? _0x3cff36.slice(0x0, 0xa) : _0x3cff36.subarray(0x0, 0xa),
                             _0x80852b = isCompressed(_0x12e229);
-                        '7z' === _0x80852b ? (extractFile(_0x17edbf).then(function(_0x1b6a80) {
-                            _0x1b6a80.onmessage = _0x19a43e, _0x1b6a80.postMessage(_0x3cff36);
-                        }), _0x3a6560 = true) : 'zip' !== _0x80852b || ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x3ea97.system) ? 'rar' === _0x80852b && (extractRar(_0x4ce206).then(function(_0x259be0) {
-                            _0x259be0.onmessage = _0x19a43e, _0x259be0.postMessage(_0x3cff36);
-                        }), _0x3a6560 = true) : (extractFile(_0x2c1832).then(function(_0x31c70d) {
-                            _0x31c70d.onmessage = _0x19a43e, _0x31c70d.postMessage(_0x3cff36);
-                        }), _0x3a6560 = true), _0x3a6560 || (_0x468801 += _0x3cff36.length, _0x50119.innerHTML = 'BIOS ready', _0x4d7024._FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, !0x1), _0x452592());
+                        if (_0x80852b === '7z') {
+                            extractFile(_0x17edbf).then(function(_0x1b6a80) {
+                                _0x1b6a80.onmessage = _0x19a43e;
+                                _0x1b6a80.postMessage(_0x3cff36);
+                            });
+                        } else if (_0x80852b === 'rar') {
+                            extractRar(_0x4ce206).then(function(_0x259be0) {
+                                _0x259be0.onmessage = _0x19a43e, _0x259be0.postMessage(_0x3cff36);
+                            });
+                        } else if (_0x80852b === 'zip' && !['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x3ea97.system)) {
+                            extractFile(_0x2c1832).then(function(_0x31c70d) {
+                                _0x31c70d.onmessage = _0x19a43e;
+                                _0x31c70d.postMessage(_0x3cff36);
+                            });
+                        } else {
+                            _0x468801 += _0x3cff36.length;
+                            _0x50119.innerHTML = 'BIOS ready';
+                            _0x4d7024._FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, false);
+                            _0x452592();
+                        }
                     },
                     _0x10b71a = function() {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
@@ -1858,7 +1880,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xdcec2a.setGamepadDialog.call(_0xa88a13);
                         _0xdcec2a.setCacheDialog.call(_0xa88a13);
                         _0xdcec2a.setLoadingDialog.call(_0xa88a13);
-                        _0xdcec2a.setNetplayDialog.call(_0xa88a13);
+                        //_0xdcec2a.setNetplayDialog.call(_0xa88a13);
                         _0xdcec2a.setCheatDialog.call(_0xa88a13);
                         _0xdcec2a.initGamepad.call(_0xa88a13);
                         _0xdcec2a.initKeyboard.call(_0xa88a13);
@@ -2108,7 +2130,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 return;
                             }
                             var _0x124167 = _0x28ee7f.version ? _0x28ee7f.version : 1,
-                                _0x254bc2 = Boolean(_0x28ee7f.netplay),
+                                //_0x254bc2 = Boolean(_0x28ee7f.netplay),
                                 _0x5b1dcd = Boolean(_0x28ee7f.state),
                                 _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
                                 _0x3e4345 = Boolean(_0x28ee7f.wasm);
@@ -2206,7 +2228,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     } else _0x3641d6(_0x2458d5, _0x124167);
                                 }) : _0x3641d6(_0x2458d5, _0x124167);
                             }
-                            _0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true);
+                            //_0x254bc2 || _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, true);
                             _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_0x5b1dcd);
                             _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd);
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_0x5b1dcd);
@@ -2226,8 +2248,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
             }
         },
-        _0x27f4c4 = _0x4d7024,
-        _0x4a2390 = _0x2c1832(0xa1);
+        _0x27f4c4 = _0x4d7024;
 
     function _0x3c0613(_0x3eef01) {
         return function(_0x3d9b1e) {
@@ -2688,12 +2709,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x378b5c.disableInput = true;
                 } else _0x378b5c.disableInput = !0x1;
             },
-            'loadRoomsListTimer': null,
-            'loadRoomsList': function() {},
-            'stopLoadRooms': function() {
-                _0x378b5c.loadRoomsListTimer && clearTimeout(_0x378b5c.loadRoomsListTimer);
-            },
-            'openRoom': function() {},
             'isPaused': null,
             'setVolume': null,
             'setVariable': null,
@@ -2772,6 +2787,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'btn-create-room': _0x449eac({
                     'btn-create-room': true
                 }),
+                /*
                 'netplay-player-name': _0x449eac({
                     'netplay-player-name': true
                 }),
@@ -2790,6 +2806,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 'netplay-room': _0x449eac({
                     'netplay-room': true
                 }),
+                */
                 'modal': _0x449eac({
                     'modal': true
                 }),
@@ -3147,348 +3164,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }), 'arcade' !== _0xa88a13.system && 'mame' !== _0xa88a13.system && 'mame2003' !== _0xa88a13.system && 'mame2010' !== _0xa88a13.system || (_0x1e2c68.element(_0xa88a13.elements.buttons.cheat) && _0x132da7(_0xa88a13.elements.buttons.cheat, true), _0x378b5c.allowCheat = !0x1), _0x378b5c.setCheat || (_0x132da7(_0xa88a13.elements.buttons.cheat, true), _0x378b5c.allowCheat = !0x1);
                 }
             },
+            /*
             'setNetplayDialog': function() {
                 var _0xa88a13 = this,
                     _0x17edbf = this;
                 if (_0x17edbf.elements.dialogs.netplay) {
-                    _0x17edbf.elements.dialogs.netplay.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>'+_0x17edbf.localization('Netplay')+'</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['netplay-roomlist'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Rooms')+'</strong>\n                        <table style="width:100%" cellspacing=0>\n                            <thead>\n                                <tr>\n                                    <td>'+_0x17edbf.localization('Room Name')+'</td>\n                                    <td>'+_0x17edbf.localization('Players')+'</td>\n                                    <td></td>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr>\n                                    <td></td>\n                                    <td></td>\n                                    <td></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </div>\n\n                    <div class="').concat(_0x378b5c.classNames['netplay-room'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong>\n                        <div data-room-password>'+_0x17edbf.localization('Password')+': <span></span></div>\n                        <table style="width:100%" cellspacing="0">\n                            <thead>\n                            <tr>\n                                <td>'+_0x17edbf.localization('Player')+'</td>\n                                <td>'+_0x17edbf.localization('Name')+'</td>\n                                <td></td>\n                            </tr>\n                            </thead>\n                            <tbody>\n                            <tr>\n                                <td>1</td>\n                                <td>'+_0x17edbf.localization('Name')+' 1</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>2</td>\n                                <td>'+_0x17edbf.localization('Name')+' 2</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>3</td>\n                                <td>'+_0x17edbf.localization('Name')+' 3</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>4</td>\n                                <td>'+_0x17edbf.localization('Name')+' 4</td>\n                                <td></td>\n                            </tr>\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-quit'], '">'+_0x17edbf.localization('Quit Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-create-room'], '">'+_0x17edbf.localization('Create a Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">'+_0x17edbf.localization('Close')+'</a>\n                </div>\n            </div>\n\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-9de6c4e9ce2b9361" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-9de6c4e9ce2b9361-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-9de6c4e9ce2b9361-title">\n                        '+_0x17edbf.localization('Set Player Name')+'\n                    </h2>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-9de6c4e9ce2b9361-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Player Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-player-name'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484a" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484a-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484a-title">\n                    '+_0x17edbf.localization('Create a Room')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484a-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-name-input'], '" /><br />\n                        <strong>Max Players</strong><br />\n                        <select data-max-players>\n                            <option value="2">2</option>\n                            <option value="3">3</option>\n                            <option value="4">4</option>\n                        </select>\n                        <br />\n                        <strong>'+_0x17edbf.localization('Password (optional)')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-5aa765d61d8327de" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-5aa765d61d8327de-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-5aa765d61d8327de-title">\n                        '+_0x17edbf.localization('Password')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-5aa765d61d8327de-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-7d8fd50ed642340b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-7d8fd50ed642340b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-7d8fd50ed642340b-title"></h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-7d8fd50ed642340b-content">\n                        \n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '" data-modal-close>OK</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            '), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x3d4554) {
-                        return _0x132da7(_0x17edbf.elements.dialogs.netplay, true), _0x378b5c.disableControl(!0x1), _0x378b5c.stopLoadRooms(), _0x3d4554.stopPropagation(), _0x17edbf.elements.container.focus(), !0x1;
-                    }), window.setInterval(function() {
-                        var _0xa88a13 = '<ul>';
-                        _0x378b5c.players.forEach(function(_0x20c45e, _0x14d0b2) {
-                            var _0x57ec9c = null;
-                            _0x20c45e ? (_0x378b5c.connection.peers[_0x20c45e] ? _0x57ec9c = _0x378b5c.connection.peers[_0x20c45e].extra : _0x378b5c.connection.userid === _0x20c45e && (_0x57ec9c = _0x378b5c.connection.extra), _0xa88a13 += '<li>' .concat(_0x14d0b2 + 0x1, '. ').concat(_0x57ec9c.name, '</li>')) : _0xa88a13 += '<li>' .concat(_0x14d0b2 + 0x1, '. </li>');
-                        }), _0xa88a13 += '</ul>', _0x17edbf.elements.widgets.netplay.innerHTML = _0xa88a13;
-                    }, 0x1f4);
-                    var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-9de6c4e9ce2b9361'),
-                        _0x36bde0 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-85cd7a1c543a484a'),
-                        _0x5289c1 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-7d8fd50ed642340b'),
-                        _0x325651 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-5aa765d61d8327de'),
-                        _0x3d0d28 = {};
-                    _0x378b5c.connection = new _0x4a2390.a();
-                    var _0x10d51e = _0xa88a13.socketUrl;
-                    if (! _0x10d51e.endsWith('/')) {
-                        _0x10d51e += '/';
-                    };
-                    _0x378b5c.connection.socketURL = '/', _0x378b5c.connection.socketURL = _0x10d51e, _0x378b5c.connection.socketMessageEvent = 'emulatorjs-message', _0x378b5c.connection.socketCustomEvent = 'emulatorjs-custom-message';
-                    var _0xda20e9 = _0x59aa33.info();
-                    _0x378b5c.connection.extra = {
-                        'name': _0x378b5c.playerName,
-                        'game_id': _0x17edbf.config.gameId,
-                        'browser_name': _0xda20e9.name,
-                        'room_name': ' ',
-                        'domain': document.domain
-                    }, _0x378b5c.connection.socketMessageEvent = 'netplay', _0x378b5c.connection.enableFileSharing = true, _0x378b5c.connection.enableLogs = !0x1, _0x378b5c.connection.session = {
-                        'data': true
-                    }, _0x378b5c.connection.sdpConstraints.mandatory = {
-                        'OfferToReceiveAudio': !0x1,
-                        'OfferToReceiveVideo': !0x1
-                    }, _0x378b5c.connection.onclose = function(_0x4fec07) {}, _0x378b5c.connection.iceServers = [{
-                        'urls': 'turn:turn.emulatorjs.com:3478',
-                        'credential': 'dSnmrtehverella',
-                        'username': 'ejs'
-                    }, {
-                        'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun.l.google.com:19302?transport=udp']
-                    }], _0x378b5c.connection.maxParticipantsAllowed = 0x4, _0x378b5c.netPlayInitFrame = 0x0;
-                    var _0x1eb137 = 0x0,
-                        _0x52eb7d = !0x1;
-                    Module.postMainLoop = function() {
-                        var _0xa88a13;
-                        if (_0x378b5c.currentFrame = parseInt(_0x378b5c.currentFrameNum(), 0xa), _0x378b5c.connected)
-                            if (_0x1eb137 += 0x1, _0x378b5c.connection.isInitiator) _0x1eb137 >= 0x1 && function() {
-                                for (var _0xa88a13 = [], _0x17edbf = _0x378b5c.currentFrame - 0x1; _0x17edbf < _0x378b5c.currentFrame; _0x17edbf += 0x1) _0x378b5c.inputsData[_0x17edbf] ? _0x378b5c.inputsData[_0x17edbf].forEach(function(_0x2a02da, _0x1b2066) {
-                                    _0xa88a13.push('' .concat(_0x2a02da.index, '|').concat(_0x2a02da.key, '|').concat(_0x2a02da.status, '|').concat(_0x2a02da.frame));
-                                }) : _0xa88a13.push('-1|||' .concat(_0x17edbf));
-                                _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'sync-control',
-                                    'value': _0xa88a13
-                                })), _0x1eb137 = 0x0, _0x378b5c.currentFrame % 0x64 == 0x0 && Object.keys(_0x378b5c.inputsData).forEach(function(_0x3125e4, _0x31ea67) {
-                                    _0x3125e4 < _0x378b5c.currentFrame - 0x32 && (_0x378b5c.inputsData[_0x3125e4] = null, delete _0x378b5c.inputsData[_0x3125e4]);
-                                });
-                            }();
-                            else {
-                                if (_0x378b5c.coreOptionData[_0x378b5c.currentFrame]) {
-                                    var _0x2c1832 = _0x378b5c.coreOptionData[_0x378b5c.currentFrame].key,
-                                        _0x4fd0cc = _0x378b5c.coreOptionData[_0x378b5c.currentFrame].value;
-                                    _0x2593da.updateCoreOptions.call(_0x17edbf, _0x2c1832, _0x4fd0cc), delete _0x378b5c.coreOptionData[_0x378b5c.currentFrame];
-                                }
-                                if (_0x378b5c.currentFrame <= 0x0 || _0x378b5c.inputsData[_0x378b5c.currentFrame]) _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0xa88a13 = _0x378b5c.inputsData[_0x378b5c.currentFrame], _0x378b5c.inputsData[_0x378b5c.currentFrame] = null, delete _0x378b5c.inputsData[_0x378b5c.currentFrame], _0xa88a13 || (_0xa88a13 = []), _0xa88a13.forEach(function(_0x4bb42f, _0x28928a) {
-                                    _0x4bb42f.index >= 0x0 && _0x378b5c.simulateInputFn(_0x4bb42f.index, _0x4bb42f.key, _0x4bb42f.status);
-                                });
-                                else {
-                                    _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop();
-                                    var _0x3a10d1 = !0x1,
-                                        _0x42763c = Object.keys(_0x378b5c.inputsData);
-                                    0x0 == _0x42763c.length && (_0x3a10d1 = true);
-                                    for (var _0x58af15 = 0x0; _0x58af15 < _0x42763c.length; _0x58af15 += 0x1) {
-                                        if (_0x42763c[_0x58af15] > _0x378b5c.currentFrame) {
-                                            console.log('lost', _0x378b5c.currentFrame), _0x3a10d1 = true;
-                                            break;
-                                        }
-                                    }
-                                    _0x3a10d1 ? _0x378b5c.wait || (!_0x52eb7d || _0x52eb7d < new Date().valueOf() - 0xbb8) && (_0x378b5c.inputsData = {}, _0x52eb7d = new Date().valueOf(), _0x378b5c.connection.send(JSON.stringify({
-                                        'act': 'sync-mem',
-                                        'value': _0x378b5c.connection.userid
-                                    }), _0x378b5c.roomMaster)) : (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop());
-                                }
-                                _0x378b5c.currentFrame % 0x64 == 0x0 && Object.keys(_0x378b5c.inputsData).forEach(function(_0x3aa393, _0x3a7829) {
-                                    _0x3aa393 < _0x378b5c.currentFrame - 0x32 && (_0x378b5c.inputsData[_0x3aa393] = null, delete _0x378b5c.inputsData[_0x3aa393]);
-                                });
-                            }
-                    }, _0x378b5c.connection.onopen = function(_0x4b10d6) {
-                        _0x378b5c.connected = true, _0x378b5c.connection.isInitiator && (-0x1 === _0x378b5c.players.indexOf(_0x4b10d6.userid) && (_0x378b5c.players.filter(function(_0x3eafb3, _0xabd7b7) {
-                            return null == _0x3eafb3;
-                        }).length > 0x0 ? _0x378b5c.players.forEach(function(_0xbf0f19, _0xa9d540) {
-                            null != _0xbf0f19 || _0x378b5c.players.includes(_0x4b10d6.userid) || (_0x378b5c.players[_0xa9d540] = _0x4b10d6.userid);
-                        }) : _0x378b5c.players.push(_0x4b10d6.userid)), _0x378b5c.connection.send(JSON.stringify({
-                            'act': 'get-players-result',
-                            'value': _0x378b5c.players,
-                            'coreOptions': _0x2593da.coreOptionsValues,
-                            'newuser': _0x4b10d6.userid,
-                            'master': _0x378b5c.connection.userid
-                        }))), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf);
-                    }, _0x378b5c.connection.onFileStart = function(_0x50eb3a) {
-                        var _0x2c1832 = _0x50eb3a.name.split('-');
-                        'reset' !== _0x2c1832[0x0] && 0x0 != _0x2c1832[0x0] || (_0x378b5c.inputsData = {}, _0x378b5c.disableControl(true)), _0x378b5c.progressHelper[_0x50eb3a.remoteUserId] = {}, _0x378b5c.progressHelper[_0x50eb3a.remoteUserId].max = _0x50eb3a.maxChunks, _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.isInitiator ? (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop()) : _0x378b5c.inputsData = {};
-                    }, _0x378b5c.connection.onFileProgress = function(_0x44a04b) {
-                        var _0x17edbf = _0x378b5c.progressHelper[_0x44a04b.remoteUserId];
-                        _0x17edbf.current = _0x44a04b.currentPosition || _0x44a04b.maxChunks || _0x17edbf.max;
-                    }, _0x378b5c.connection.onFileEnd = function(_0x45d454) {
-                        _0x378b5c.hideLoading.call(_0x17edbf);
-                        var _0x2c1832 = _0x45d454.name.split('-'),
-                            _0x3795d9 = _0x2c1832[0x0] >> 0x0;
-                        'reset' === _0x2c1832[0x0] ? (_0x3795d9 = 0x0, _0x378b5c.connection.isInitiator ? (_0x378b5c.systemPause(0x0), _0x378b5c.disableControl(!0x1), _0x17edbf.playing = true, _0x27f4c4.Module.resumeMainLoop()) : _0x550f17.a.get(_0x45d454.url, {
-                            'responseType': 'arraybuffer'
-                        }).then(function(_0x37db4c) {
-                            _0x378b5c.inputsData = {};
-                            var _0x2c1832 = new Uint8Array(_0x37db4c.data);
-                            _0x378b5c.loadState(_0x2c1832, _0x3795d9), _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1, _0x17edbf.playing = true, _0x27f4c4.Module.resumeMainLoop();
-                        })) : 'game.state' === _0x2c1832[0x1] && (_0x378b5c.connection.isInitiator ? (_0x378b5c.openRoom(_0x17edbf), _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop()) : (_0x378b5c.netPlayInitFrame = _0x3795d9, _0x550f17.a.get(_0x45d454.url, {
-                            'responseType': 'arraybuffer'
-                        }).then(function(_0x4d241b) {
-                            var _0x2c1832 = new Uint8Array(_0x4d241b.data);
-                            _0x378b5c.loadState(_0x2c1832, _0x3795d9), _0x378b5c.wait = !0x1, _0x378b5c.disableInput = !0x1, _0x378b5c.connection.send(JSON.stringify({
-                                'act': 'wait-end',
-                                'value': _0x378b5c.connection.userid
-                            })), _0x378b5c.hideLoading.call(_0x17edbf), _0x17edbf.playing = true, _0x27f4c4.Module.resumeMainLoop();
-                        }))), _0x378b5c.connection.isInitiator || console.log('recv mem end', _0x378b5c.currentFrame, _0x45d454.name);
-                    };
-                    var _0x3bdb35 = !0x1;
-                    _0x378b5c.connection.onmessage = function(_0x32e81a) {
-                        var _0x2c1832, _0x2dca58 = _0x32e81a.data || _0x32e81a;
-                        try {
-                            _0x2c1832 = JSON.parse(_0x2dca58);
-                        } catch (_0x3fb9cc) {
-                            _0x2c1832 = null;
-                        }
-                        if (_0x2c1832) {
-                            if ('room-master' === _0x2c1832.act && (_0x378b5c.roomMaster = _0x2c1832.value), _0x2c1832.act, 'short-pause' === _0x2c1832.act && (_0x3bdb35 || (_0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x3bdb35 = true, _0x378b5c.wait = true, setTimeout(function() {
-                                    _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.wait = !0x1, _0x3bdb35 = !0x1;
-                                }, 0x30))), 'sync-control' === _0x2c1832.act) {
-                                var _0xb051c1 = _0x2c1832.value;
-                                _0x17edbf.playing || _0x378b5c.wait;
-                                var _0x2ef644 = _0x378b5c.connection.userid;
-                                _0x378b5c.players.indexOf(_0x2ef644);
-                                _0x378b5c.connection.isInitiator, _0xb051c1.forEach(function(_0x308105, _0x383237) {
-                                    var _0x2c1832 = _0x308105.split('|'),
-                                        _0x25a5c4 = _0x2c1832[0x0] >> 0x0,
-                                        _0x2b3afd = _0x2c1832[0x1] >> 0x0,
-                                        _0x4f5761 = _0x2c1832[0x2] >> 0x0,
-                                        _0x249303 = _0x2c1832[0x3] >> 0x0,
-                                        _0x54e0fd = _0x378b5c.currentFrame;
-                                    _0x378b5c.inputsData[_0x249303] || (_0x378b5c.inputsData[_0x249303] = []), -0x1 !== _0x25a5c4 && _0x249303 === _0x54e0fd && _0x378b5c.simulateInputFn(_0x25a5c4, _0x2b3afd, _0x4f5761), _0x378b5c.connection.isInitiator ? _0x25a5c4 >= 0x0 && (_0x378b5c.inputsData[_0x54e0fd] || (_0x378b5c.inputsData[_0x54e0fd] = []), -0x2 != _0x2b3afd && (_0x378b5c.inputsData[_0x54e0fd].push({
-                                        'index': _0x25a5c4,
-                                        'key': _0x2b3afd,
-                                        'status': _0x4f5761,
-                                        'frame': _0x54e0fd
-                                    }), _0x378b5c.simulateInputFn(_0x25a5c4, _0x2b3afd, _0x4f5761)), _0x3bdb35 || _0x54e0fd - 0xa >= _0x249303 && (_0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x3bdb35 = true, _0x378b5c.wait = true, setTimeout(function() {
-                                        _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.wait = !0x1, _0x3bdb35 = !0x1;
-                                    }, 0x30))) : ('' !== _0x25a5c4 && _0x378b5c.inputsData[_0x249303].push({
-                                        'index': _0x25a5c4,
-                                        'key': _0x2b3afd,
-                                        'status': _0x4f5761,
-                                        'frame': _0x249303
-                                    }), _0x378b5c.inputsData[_0x378b5c.currentFrame] && _0x27f4c4.Module.resumeMainLoop(), _0x54e0fd + 0xa <= _0x249303 && _0x249303 > _0x378b5c.netPlayInitFrame + 0x64 && _0x378b5c.connection.send(JSON.stringify({
-                                        'act': 'short-pause',
-                                        'value': _0x2ef644
-                                    }), _0x378b5c.roomMaster));
-                                });
-                            }
-                            if (_0x2c1832.act, _0x2c1832.act, 'update-core-option' === _0x2c1832.act && (_0x378b5c.connection.isInitiator || (_0x378b5c.coreOptionData[_0x2c1832.frame] = {
-                                    'key': _0x2c1832.key,
-                                    'value': _0x2c1832.value
-                                })), 'restart-game' === _0x2c1832.act && (_0x378b5c.inputsData = {}, _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'sync-mem',
-                                    'value': _0x378b5c.connection.userid
-                                }), _0x378b5c.roomMaster)), 'pause' === _0x2c1832.act && _0x27f4c4.Module.pauseMainLoop(), 'resume' === _0x2c1832.act && _0x27f4c4.Module.resumeMainLoop(), 'wait' === _0x2c1832.act && (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x2c1832.value !== _0x378b5c.connection.userid && (_0x378b5c.waitingList[_0x2c1832.value] = 0x1), _0x378b5c.disableControl(true)), 'wait-end' === _0x2c1832.act && (_0x378b5c.waitingList[_0x2c1832.value] && delete _0x378b5c.waitingList[_0x2c1832.value], 0x0 === Object.keys(_0x378b5c.waitingList).length && (_0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1)), 'sync-mem' === _0x2c1832.act) {
-                                _0x378b5c.wait = true, _0x378b5c.systemPause(0x1);
-                                var _0x2a5bce = _0x2c1832.value;
-                                _0x378b5c.disableControl(true), _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'wait',
-                                    'value': _0x2a5bce
-                                }));
-                                for (var _0x8624ae = _0x378b5c.getStateInfo().split('|'), _0x99810a = _0x8624ae[0x0] >> 0x0, _0x96975a = new Uint8Array(_0x99810a), _0x4aea80 = _0x8624ae[0x1] >> 0x0, _0x2d2ba0 = 0x0; _0x2d2ba0 < _0x99810a; _0x2d2ba0 += 0x1) _0x96975a[_0x2d2ba0] = _0x27f4c4.Module.getValue(_0x4aea80 + _0x2d2ba0);
-                                _0x27f4c4._FS.createDataFile('/', 'game.state', _0x96975a, true, true), _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number'])('game.state', 0x0), _0x27f4c4.FS.unlink('game.state'), _0x378b5c.inputsData = {};
-                                var _0x49054f = new File([_0x96975a], '' .concat(0x0, '-game.state'), {
-                                    'type': '',
-                                    'lastModified': new Date()
-                                });
-                                _0x378b5c.connection.shareFile(_0x49054f, _0x2a5bce);
-                            }
-                            if (_0x2c1832.act, 'get-players-result' === _0x2c1832.act && (_0x378b5c.players = _0x2c1832.value, _0x378b5c.roomMaster = _0x2c1832.master, _0x2c1832.newuser === _0x378b5c.connection.userid)) {
-                                var _0x418ccb = _0x2593da.coreOptionsValues;
-                                _0x2c1832.coreOptions && Object.keys(_0x2c1832.coreOptions).forEach(function(_0x3f4c8f) {
-                                    _0x418ccb[_0x3f4c8f] !== _0x2c1832.coreOptions[_0x3f4c8f] && _0x2593da.updateCoreOptions.call(_0x17edbf, _0x3f4c8f, _0x2c1832.coreOptions[_0x3f4c8f]);
-                                }), _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.disableControl(true), setTimeout(function() {
-                                    _0x378b5c.connection.send(JSON.stringify({
-                                        'act': 'sync-mem',
-                                        'value': _0x378b5c.connection.userid
-                                    }), _0x378b5c.roomMaster);
-                                }, 0x1), _0x378b5c.roomMaster && _0x378b5c.connection.peers[_0x378b5c.roomMaster] && (_0x378b5c.connection.extra.room_name = _0x378b5c.connection.peers[_0x378b5c.roomMaster].extra.room_name, _0x378b5c.connection.updateExtraData()), _0x378b5c.connection.peers[_0x378b5c.roomMaster] && (_0x3d0d28 = _0x378b5c.connection.peers[_0x378b5c.roomMaster].extra), _0x378b5c.openRoom(_0x17edbf);
-                            }
-                        }
-                    }, _0x378b5c.connection.onUserStatusChanged = function(_0x4188ba) {
-                        if ('offline' === _0x4188ba.status) {
-                            var _0x17edbf = _0x378b5c.players.indexOf(_0x4188ba.userid);
-                            _0x17edbf >= 0x0 && (_0x378b5c.players[_0x17edbf] = null);
-                        }
-                        _0x4188ba.status;
-                    }, _0x378b5c.connection.onExtraDataUpdated = function(_0x20ce61) {
-                        _0x20ce61.userid === _0x378b5c.connection.userid && (_0x378b5c.connection.extra = _0x20ce61.extra);
-                    }, _0x378b5c.connection.onleave = function(_0x30ebc6) {
-                        if (_0x30ebc6.userid) {
-                            var _0x2c1832 = _0x378b5c.players.indexOf(_0x30ebc6.userid);
-                            _0x2c1832 >= 0x0 && (_0x378b5c.players[_0x2c1832] = null);
-                        }
-                        _0x378b5c.waitingList[_0x30ebc6.userid] && delete _0x378b5c.waitingList[_0x30ebc6.userid], _0x378b5c.connection.isInitiator && 0x0 === Object.keys(_0x378b5c.waitingList).length && _0x378b5c.wait && (_0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1, _0x378b5c.connection.send(JSON.stringify({
-                            'act': 'wait-end',
-                            'value': _0x378b5c.connection.userid
-                        }))), _0x378b5c.openRoom(_0x17edbf), _0x378b5c.inputsData = {}, _0x378b5c.hideLoading.call(_0x17edbf);
-                    };
-                    var _0x2fba43 = function() {
-                        try {
-                            _0x378b5c.connection.onbeforeunload();
-                        } catch (_0xac619d) {}
-                        _0x378b5c.connected = !0x1, _0x378b5c.connection.password = null, _0x378b5c.players = [], _0x378b5c.connection.peersBackup = [], _0x378b5c.waitingList = {}, _0x378b5c.inputsData = {}, _0x378b5c.hideLoading.call(_0x17edbf), _0x132da7(_0x17edbf.elements.buttons.restart, !0x1), _0x132da7(_0x17edbf.elements.buttons.loadState, !0x1), _0x132da7(_0x17edbf.elements.buttons.saveState, !0x1), _0x378b5c.allowCheat && _0x132da7(_0x17edbf.elements.buttons.cheat, !0x1), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !0x1), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !0x1), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x3d296d) {
-                            _0x132da7(_0x3d296d, !0x1);
-                        }), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf);
-                    };
-                    _0x378b5c.connection.close = _0x2fba43, _0x378b5c.connection.disconnect = _0x2fba43, _0x378b5c.connection.leave = _0x2fba43;
-                    var _0x3f9c57, _0x10c0ad = function(_0x42ff74, _0x306f0b, _0x345d4d) {
-                            _0x378b5c.hideLoading.call(_0x17edbf), _0x42ff74 ? (_0x378b5c.stopLoadRooms(), _0x132da7(_0x17edbf.elements.buttons.restart, true), _0x132da7(_0x17edbf.elements.buttons.loadState, true), _0x132da7(_0x17edbf.elements.buttons.saveState, true), _0x378b5c.resetCheat(), _0x132da7(_0x17edbf.elements.buttons.cheat, true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x2911fb) {
-                                _0x132da7(_0x2911fb, true);
-                            }), _0x378b5c.connection.socket && _0x378b5c.connection.socket.on('set-isInitiator-true', function(_0x31da46) {
-                                _0x31da46 === _0x378b5c.connection.sessionid && (_0x378b5c.connection.socket.emit('extra-data-updated', _0x378b5c.connection.extra), _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'room-master',
-                                    'value': _0x378b5c.connection.userid
-                                })), _0x378b5c.roomMaster = _0x378b5c.connection.userid, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf), _0x132da7(_0x17edbf.elements.buttons.restart, !0x1), _0x132da7(_0x17edbf.elements.buttons.loadState, !0x1), _0x132da7(_0x17edbf.elements.buttons.saveState, !0x1), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x132034) {
-                                    _0x132da7(_0x132034, !0x1);
-                                }));
-                            })) : (_0x4d8495.close(), _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = _0x345d4d, _0x4d8495.show('modal-7d8fd50ed642340b', {
-                                'closeTrigger': 'data-modal-close'
-                            }));
-                        },
-                        _0x1e0cdb = function(_0x5b3f13) {
-                            var _0x2c1832 = _0x5b3f13.target.getAttribute('data-id');
-                            if ('Y' === _0x5b3f13.target.getAttribute('data-password')) _0x4d8495.show('modal-5aa765d61d8327de', {
-                                'closeTrigger': 'data-modal-close'
-                            }), _0x325651.setAttribute('data-id', _0x2c1832);
-                            else {
-                                _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.userid = _0x378b5c.connection.token();
-                                try {
-                                    _0x378b5c.connection.join(_0x2c1832, _0x10c0ad);
-                                } catch (_0x2767b9) {
-                                    _0x378b5c.hideLoading.call(_0x17edbf), _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = 'Error', _0x4d8495.show('modal-7d8fd50ed642340b', {
-                                        'closeTrigger': 'data-modal-close'
-                                    });
-                                }
-                            }
-                            return _0x5b3f13.stopPropagation(), !0x1;
-                        };
-                    _0x378b5c.loadRoomsList = function() {
-                        _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), true), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), true);
-                        var listUrl = _0x17edbf.listUrl
-                        if (! listUrl.endsWith('/')) {
-                            listUrl += '/';
-                        };
-                        var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])).querySelector('tbody'),
-                            _0x5cf2be = [listUrl, 'list?game_id=', _0x17edbf.config.gameId, '&domain=', document.domain].join('');
-                        _0x550f17.a.get(_0x5cf2be, {}).then(function(_0x37c60b) {
-                            if (_0x37c60b.data) {
-                                var _0x4782da = [],
-                                    _0x28e87d = [];
-                                _0x2c1832.querySelectorAll('tr').forEach(function(_0x1e5a22) {
-                                    _0x28e87d.push(_0x1e5a22.getAttribute('id'));
-                                }), Object.keys(_0x37c60b.data).forEach(function(_0x47ae0e) {
-                                    var _0x4a8f4c = _0x37c60b.data[_0x47ae0e];
-                                    if (_0x4782da.push(_0x47ae0e), _0x28e87d.includes(_0x47ae0e)) {
-                                        var _0x2d672f = _0x2c1832.querySelector('tr[id="' .concat(_0x47ae0e, '"]'));
-                                        _0x2c1832.removeChild(_0x2d672f);
-                                    }
-                                    var _0x295f41 = document.createElement('tr');
-                                    _0x295f41.setAttribute('id', _0x47ae0e);
-                                    var _0xa2ea61 = _0x4a8f4c.password ? _0x378b5c.icons.lock : '',
-                                        _0x5452b6 = _0x4a8f4c.password ? 'Y' : 'N',
-                                        _0xb3121d = _0x4a8f4c.current < _0x4a8f4c.max ? '<span data-id="' .concat(_0x47ae0e, '" data-password="').concat(_0x5452b6, '" class="').concat(_0x378b5c.classNames['btn-join-room'], '">Join</span>') : '',
-                                        _0x5c8146 = _0x4a8f4c.country ? _0x4a8f4c.country : '?';
-                                    _0x295f41.innerHTML = '<td>[' .concat(_0x5c8146, '] ').concat(_0xa2ea61, ' ').concat(_0x4a8f4c.room_name, '</td><td>').concat(_0x4a8f4c.current, '/').concat(_0x4a8f4c.max, '</td><td>').concat(_0xb3121d, '</td>'), _0x1093f4.call(_0xa88a13, _0x295f41.querySelector('.' .concat(_0x378b5c.classNames['btn-join-room'])), 'click', _0x1e0cdb), _0x2c1832.appendChild(_0x295f41);
-                                }), _0x2c1832.querySelectorAll('tr').forEach(function(_0x24dcf7) {
-                                    _0x4782da.includes(_0x24dcf7.id) || _0x2c1832.removeChild(_0x24dcf7);
-                                });
-                            }
-                            _0x378b5c.loadRoomsListTimer = setTimeout(_0x378b5c.loadRoomsList, 0x7d0);
-                        }).catch(function(_0x227055) {
-                            console.log('Network Error', _0x227055), _0x378b5c.loadRoomsListTimer = setTimeout(_0x378b5c.loadRoomsList, 0x7d0);
-                        });
-                    }, _0x378b5c.openRoom = function(_0x10625f) {
-                        _0x378b5c.stopLoadRooms(), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), true), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), !0x1), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), true), _0x132da7(_0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), !0x1), _0x378b5c.resetCheat(), _0x132da7(_0x10625f.elements.buttons.cheat, true);
-                        var _0x17edbf = _0x10625f.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])),
-                            _0x2c1832 = _0x17edbf.querySelector('[data-room-password]');
-                        null === _0x378b5c.connection.password ? _0x132da7(_0x2c1832, true) : (_0x132da7(_0x2c1832, !0x1), _0x2c1832.querySelector('span').innerText = _0x378b5c.connection.password);
-                        var _0x18c1cb = _0x17edbf.querySelector('tbody');
-                        _0x18c1cb.innerHTML = '', _0x17edbf.querySelector('strong').innerText = _0x3d0d28.room_name, _0x378b5c.players.forEach(function(_0x938d55, _0xf3d39a) {
-                            var _0x2c1832 = null;
-                            if (_0x938d55 && (_0x378b5c.connection.peers[_0x938d55] ? _0x2c1832 = _0x378b5c.connection.peers[_0x938d55].extra : _0x378b5c.connection.userid === _0x938d55 && (_0x2c1832 = _0x378b5c.connection.extra), _0x2c1832 && _0x2c1832.name)) {
-                                var _0x564064 = document.createElement('tr');
-                                _0x564064.innerHTML = '<td>' .concat(_0xf3d39a + 0x1, '</td><td>').concat(_0x2c1832.name, '</td><td></td>'), _0x18c1cb.appendChild(_0x564064);
-                            }
-                        });
-                    }, _0x1093f4.call(this, _0x325651.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x9ac969) {
-                        var _0x2c1832 = _0x325651.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-password-input'])).value;
-                        _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.password = _0x2c1832;
-                        var _0xcf7207 = _0x325651.getAttribute('data-id');
-                        _0x378b5c.connection.join(_0xcf7207, function(_0x1a0deb, _0x1ef6c8, _0x1ad18e) {
-                            _0x10c0ad(_0x1a0deb, 0x0, _0x1ad18e), _0x1a0deb && _0x325651.classList.remove(_0x449eac({
-                                'is-open': true
-                            }));
-                        }), _0x9ac969.stopPropagation();
-                    }), _0x1093f4.call(this, _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x43f795) {
-                        var _0x17edbf = _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames['netplay-player-name'])).value;
-                        _0x17edbf = _0x17edbf.replace(/<|>/g, ''), _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = '', _0x17edbf.trim() && (_0x378b5c.playerName = _0x17edbf.trim(), _0x378b5c.connection.extra.name = _0x17edbf.trim(), _0x4d8495.close()), _0x43f795.stopPropagation();
-                    }), _0x1093f4.call(this, _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x202cf6) {
-                        var _0x2c1832 = _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-name-input'])).value;
-                        _0x2c1832 = _0x2c1832.replace(/<|>/g, '');
-                        var _0x3510ed = _0x36bde0.querySelector('select[data-max-players] option:checked').value;
-                        _0x3510ed < 0x2 && (_0x3510ed = 0x2), _0x3510ed > 0x4 && (_0x3510ed = 0x4);
-                        for (var _0x1264b2 = 0x0; _0x1264b2 < _0x3510ed; _0x1264b2++) _0x378b5c.players[_0x1264b2] = null;
-                        _0x378b5c.connection.maxParticipantsAllowed = _0x3510ed;
-                        var _0x140bcf = _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-password-input'])).value;
-                        _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = '', _0x2c1832.trim() ? (_0x378b5c.connection.extra.room_name = _0x2c1832.trim(), '' !== _0x140bcf.trim() && (_0x378b5c.connection.password = _0x140bcf.trim()), _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.open(_0x378b5c.connection.token(), function(_0x3c6c26, _0x203288, _0x210547) {
-                            _0x378b5c.hideLoading.call(_0x17edbf), _0x3c6c26 ? (_0x378b5c.players[0x0] = _0x378b5c.connection.userid, _0x378b5c.roomMaster = _0x378b5c.connection.userid, _0x3f9c57.closeModal(), _0x378b5c.stopLoadRooms(), _0x3d0d28 = _0x378b5c.connection.extra, _0x378b5c.openRoom(_0x17edbf), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true)) : _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = _0x210547;
-                        })) : _0x3f9c57.closeModal(), _0x202cf6.stopPropagation();
-                    }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), 'click', function(_0x48cb26) {
-                        return _0x3f9c57 = _0x4d8495.show('modal-85cd7a1c543a484a', {
-                            'closeTrigger': 'data-modal-close',
-                            'onClose': function() {
-                                _0x17edbf.elements.container.focus();
-                            }
-                        }), _0x48cb26.stopPropagation(), !0x1;
-                    }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), 'click', function(_0x68459d) {
-                        return _0x378b5c.connection.close(), _0x378b5c.stopLoadRooms(), _0x378b5c.loadRoomsList(), _0x378b5c.inputsData = {}, _0x68459d.stopPropagation(), !0x1;
+                    _0x17edbf.elements.dialogs.netplay.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>'+_0x17edbf.localization('Netplay')+'</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['netplay-roomlist'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Rooms')+'</strong>\n                        <table style="width:100%" cellspacing=0>\n                            <thead>\n                                <tr>\n                                    <td>'+_0x17edbf.localization('Room Name')+'</td>\n                                    <td>'+_0x17edbf.localization('Players')+'</td>\n                                    <td></td>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr>\n                                    <td></td>\n                                    <td></td>\n                                    <td></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </div>\n\n                    <div class="').concat(_0x378b5c.classNames['netplay-room'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong>\n                        <div data-room-password>'+_0x17edbf.localization('Password')+': <span></span></div>\n                        <table style="width:100%" cellspacing="0">\n                            <thead>\n                            <tr>\n                                <td>'+_0x17edbf.localization('Player')+'</td>\n                                <td>'+_0x17edbf.localization('Name')+'</td>\n                                <td></td>\n                            </tr>\n                            </thead>\n                            <tbody>\n                            <tr>\n                                <td>1</td>\n                                <td>'+_0x17edbf.localization('Name')+' 1</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>2</td>\n                                <td>'+_0x17edbf.localization('Name')+' 2</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>3</td>\n                                <td>'+_0x17edbf.localization('Name')+' 3</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>4</td>\n                                <td>'+_0x17edbf.localization('Name')+' 4</td>\n                                <td></td>\n                            </tr>\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-quit'], '">'+_0x17edbf.localization('Quit Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-create-room'], '">'+_0x17edbf.localization('Create a Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">'+_0x17edbf.localization('Close')+'</a>\n                </div>\n            </div>\n\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-9de6c4e9ce2b9361" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-9de6c4e9ce2b9361-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-9de6c4e9ce2b9361-title">\n                        '+_0x17edbf.localization('Set Player Name')+'\n                    </h2>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-9de6c4e9ce2b9361-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Player Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-player-name'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484a" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484a-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484a-title">\n                    '+_0x17edbf.localization('Create a Room')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484a-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-name-input'], '" /><br />\n                        <strong>Max Players</strong><br />\n                        <select data-max-players>\n                            <option value="2">2</option>\n                            <option value="3">3</option>\n                            <option value="4">4</option>\n                        </select>\n                        <br />\n                        <strong>'+_0x17edbf.localization('Password (optional)')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-5aa765d61d8327de" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-5aa765d61d8327de-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-5aa765d61d8327de-title">\n                        '+_0x17edbf.localization('Password')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-5aa765d61d8327de-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-7d8fd50ed642340b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-7d8fd50ed642340b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-7d8fd50ed642340b-title"></h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-7d8fd50ed642340b-content">\n                        \n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '" data-modal-close>OK</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            ');
+                    
+                    _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x3d4554) {
+                        return _0x132da7(_0x17edbf.elements.dialogs.netplay, true), _0x3d4554.stopPropagation(), _0x17edbf.elements.container.focus(), !0x1;
                     });
                 }
-            window._0x378b5c = _0x378b5c
-            },
+            },*/
             'initKeyboard': function() {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
@@ -3983,72 +3670,66 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             },
             'setup': function() {
                 var _0xa88a13 = this;
-                if (this.game) {
-                    if (_0x378b5c.playerName = _0xa88a13.config.playerName, _0x3a8e2f(this.elements.container, this.config.classNames.type, true), this.elements.container.setAttribute('tabindex', '0'), this.color) {
-                        var _0x17edbf = function(_0x175d8e) {
-                            var _0x17edbf = _0x175d8e.toLowerCase();
-                            if (_0x17edbf && /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/ .test(_0x17edbf)) {
-                                if (0x4 === _0x17edbf.length) {
-                                    for (var _0x2c1832 = '#', _0x4c881f = 0x1; _0x4c881f < 0x4; _0x4c881f += 0x1) _0x2c1832 += _0x17edbf.slice(_0x4c881f, _0x4c881f + 0x1).concat(_0x17edbf.slice(_0x4c881f, _0x4c881f + 0x1));
-                                    _0x17edbf = _0x2c1832;
-                                }
-                                for (var _0x5ac4ff = [], _0x324169 = 0x1; _0x324169 < 0x7; _0x324169 += 0x2) _0x5ac4ff.push(parseInt('0x' .concat(_0x17edbf.slice(_0x324169, _0x324169 + 0x2)), 0x10));
-                                return _0x5ac4ff;
+                if (!this.game) {
+                    console.warn('No game element found!');
+                    return;
+                }
+                _0x378b5c.playerName = _0xa88a13.config.playerName;
+                _0x3a8e2f(this.elements.container, this.config.classNames.type, true);
+                this.elements.container.setAttribute('tabindex', '0');
+                if (this.color) {
+                    var _0x17edbf = function(_0x175d8e) {
+                        var _0x17edbf = _0x175d8e.toLowerCase();
+                        if (_0x17edbf && /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/ .test(_0x17edbf)) {
+                            if (0x4 === _0x17edbf.length) {
+                                for (var _0x2c1832 = '#', _0x4c881f = 0x1; _0x4c881f < 0x4; _0x4c881f += 0x1) _0x2c1832 += _0x17edbf.slice(_0x4c881f, _0x4c881f + 0x1).concat(_0x17edbf.slice(_0x4c881f, _0x4c881f + 0x1));
+                                _0x17edbf = _0x2c1832;
                             }
-                            return null;
-                        }(this.color);
-                        _0x17edbf && this.elements.container.setAttribute('style', '--ejs-primary-color: ' .concat(_0x17edbf[0x0], ', ').concat(_0x17edbf[0x1], ', ').concat(_0x17edbf[0x2]));
-                    }
-                    if (this.elements.wrapper = _0x428003('div', {
-                            'class': this.config.classNames.video
-                        }), _0x580edd(this.game, this.elements.wrapper), 'video' !== _0xa88a13.game.tagName.toLocaleLowerCase()) {
-                        var _0x2c1832 = this.config.volume;
-                        Object.defineProperty(_0xa88a13.game, 'volume', {
-                            'get': function() {
-                                return _0x2c1832;
-                            },
-                            'set': function(_0x4cca18) {
-                                _0x2c1832 = _0x4cca18, _0xbae705.call(_0xa88a13, _0xa88a13.game, 'volumechange');
-                            }
-                        });
-                        var _0x541fe1 = _0xa88a13.storage.get('muted');
-                        Object.defineProperty(_0xa88a13.game, 'muted', {
-                            'get': function() {
-                                return _0x541fe1;
-                            },
-                            'set': function(_0x54b6e0) {
-                                var _0x2c1832 = !!_0x1e2c68.boolean(_0x54b6e0) && _0x54b6e0;
-                                _0x541fe1 = _0x2c1832, _0xbae705.call(_0xa88a13, _0xa88a13.game, 'volumechange');
-                            }
-                        });
-                    }
-                    window.addEventListener('beforeunload', function(_0x34b11a) {
-                        if (_0xa88a13.started) {
-                            var _0x2c1832 = _0xa88a13.startName.split('/').pop().split('.'),
-                                _0x478412 = _0x2c1832.slice(0x0, _0x2c1832.length - 0x1).join('.');
-                            _0x27f4c4.FS.syncfs(function(_0x1026f5) {});
-                            try {
-                                var _0x40d46a = 'srm';
-                                'nds' === _0xa88a13.system && (_0x40d46a = 'dsv'), _0x27f4c4.FS.unlink('/data/saves/' .concat(_0x478412, '.').concat(_0x40d46a));
-                            } catch (_0x2c3bc8) {
-                                console.log('fail to save');
-                            }
-                            _0x378b5c.saveSavFiles(), _0x27f4c4.FS.syncfs(function(_0x2c4b20) {});
+                            for (var _0x5ac4ff = [], _0x324169 = 0x1; _0x324169 < 0x7; _0x324169 += 0x2) _0x5ac4ff.push(parseInt('0x' .concat(_0x17edbf.slice(_0x324169, _0x324169 + 0x2)), 0x10));
+                            return _0x5ac4ff;
                         }
-                    }, true);
-                } else console.warn('No game element found!');
+                        return null;
+                    }(this.color);
+                    _0x17edbf && this.elements.container.setAttribute('style', '--ejs-primary-color: ' .concat(_0x17edbf[0x0], ', ').concat(_0x17edbf[0x1], ', ').concat(_0x17edbf[0x2]));
+                }
+                this.elements.wrapper = _0x428003('div', {
+                    'class': this.config.classNames.video
+                });
+                _0x580edd(this.game, this.elements.wrapper);
+                if ('video' !== _0xa88a13.game.tagName.toLocaleLowerCase()) {
+                    var _0x2c1832 = this.config.volume;
+                    Object.defineProperty(_0xa88a13.game, 'volume', {
+                        'get': function() {
+                            return _0x2c1832;
+                        },
+                        'set': function(_0x4cca18) {
+                            _0x2c1832 = _0x4cca18, _0xbae705.call(_0xa88a13, _0xa88a13.game, 'volumechange');
+                        }
+                    });
+                    var _0x541fe1 = _0xa88a13.storage.get('muted');
+                    Object.defineProperty(_0xa88a13.game, 'muted', {
+                        'get': function() {
+                            return _0x541fe1;
+                        },
+                        'set': function(_0x54b6e0) {
+                            var _0x2c1832 = !!_0x1e2c68.boolean(_0x54b6e0) && _0x54b6e0;
+                            _0x541fe1 = _0x2c1832, _0xbae705.call(_0xa88a13, _0xa88a13.game, 'volumechange');
+                        }
+                    });
+                }
+                window.addEventListener('beforeunload', function(_0x34b11a) {
+                    if (_0xa88a13.started) {
+                        _0x27f4c4.FS.syncfs(function() {});
+                        _0x378b5c.saveSavFiles();
+                        _0x27f4c4.FS.syncfs(function() {});
+                    }
+                }, true);
             },
             'listeners': function() {
                 var _0xa88a13 = this;
                 _0xa88a13.elements.buttons.restart && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.restart, 'click', function(_0x5cfc51) {
-                    if (_0x378b5c.restartGame(), _0x378b5c.inputsData = {}, _0x378b5c.connected && _0x378b5c.connection.isInitiator) {
-                        for (var _0x17edbf = _0x378b5c.getStateInfo().split('|'), _0x2c1832 = _0x17edbf[0x0] >> 0x0, _0x1036de = (_0x17edbf[0x2], new Uint8Array(_0x2c1832)), _0x532138 = _0x17edbf[0x1] >> 0x0, _0x5a4c27 = 0x0; _0x5a4c27 < _0x2c1832; _0x5a4c27 += 0x1) _0x1036de[_0x5a4c27] = _0x27f4c4.Module.getValue(_0x532138 + _0x5a4c27);
-                        var _0x5a3d1a = new File([_0x1036de], '0-game.state', {
-                            'type': '',
-                            'lastModified': new Date()
-                        });
-                        _0x378b5c.connection.shareFile(_0x5a3d1a), _0x378b5c.inputsData = {}, _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x378b5c.disableControl(true);
-                    }
+                    _0x378b5c.restartGame();
+                    _0x378b5c.inputsData = {};
                 }), _0xa88a13.elements.buttons.screenRecord && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.screenRecord, 'click', function(_0x5cfc51) {
                     
                     if (! _0xa88a13.recordData) {
@@ -4130,21 +3811,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     
                 }), _0xa88a13.elements.buttons.play && Array.from(_0xa88a13.elements.buttons.play).forEach(function(_0x24495b) {
                     _0x1093f4.call(_0xa88a13, _0x24495b, 'click', function(_0x966382) {
-                        _0xa88a13.playing ? (_0xa88a13.playing = !0x1, _0x27f4c4.Module.pauseMainLoop(), _0x378b5c.connected && _0x378b5c.connection.isInitiator && _0x378b5c.connection.send(JSON.stringify({
-                            'act': 'pause'
-                        })), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
+                        _0xa88a13.playing ? (_0xa88a13.playing = !0x1, _0x27f4c4.Module.pauseMainLoop(), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
                             'pause': true
-                        })) : (_0xa88a13.playing = true, _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.connected && _0x378b5c.connection.isInitiator && _0x378b5c.connection.send(JSON.stringify({
-                            'act': 'resume'
-                        })), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
+                        })) : (_0xa88a13.playing = true, _0x27f4c4.Module.resumeMainLoop(), _0xbae705.call(_0xa88a13, _0xa88a13.elements.container, 'pause', !0x1, {
                             'pause': !0x1
                         }));
                     });
-                }), _0xa88a13.elements.buttons.netplay && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.netplay, 'click', function(_0x2317b9) {
-                    _0x378b5c.disableControl(true), _0x132da7(_0xa88a13.elements.dialogs.netplay, !0x1), _0x378b5c.players.length > 0x0 ? _0x378b5c.openRoom(_0xa88a13) : (_0x378b5c.stopLoadRooms(), _0x378b5c.loadRoomsList()), _0x378b5c.playerName || _0x4d8495.show('modal-9de6c4e9ce2b9361', {
-                        'closeByEsckey': !0x1
-                    });
-                }), _0xa88a13.elements.buttons.cheat && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.cheat, 'click', function(_0x44b01a) {
+                }), /*_0xa88a13.elements.buttons.netplay && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.netplay, 'click', function(_0x2317b9) {
+                    _0x378b5c.disableControl(true), _0x132da7(_0xa88a13.elements.dialogs.netplay, !0x1);
+                }), */_0xa88a13.elements.buttons.cheat && _0x1093f4.call(_0xa88a13, _0xa88a13.elements.buttons.cheat, 'click', function(_0x44b01a) {
                     _0x132da7(_0xa88a13.elements.dialogs.cheat, !0x1);
                 });
                 _0xa88a13.game.stateloadField = _0x428003('input'), _0xa88a13.game.stateloadField.type = 'file', _0xa88a13.game.stateloadField.onchange = function _0x17edbf(_0xcd4599) {
@@ -4173,60 +3848,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     };
                 }
                 _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']);
+                _0x378b5c.simulateInput = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
+                /*
                 _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
-                var _0x2c63cc = {
-                    0: null,
-                    1: null,
-                    2: null,
-                    3: null,
-                    4: null,
-                    5: null,
-                    6: null,
-                    7: null,
-                    8: null,
-                    9: null,
-                    10: null,
-                    11: null,
-                    12: null,
-                    13: null,
-                    14: null,
-                    15: null,
-                    16: null,
-                    17: null,
-                    18: null,
-                    19: null,
-                    20: null,
-                    21: null,
-                    22: null,
-                    23: null,
-                    24: null,
-                    25: null,
-                    26: null,
-                    27: null,
-                    28: null,
-                    29: null,
-                    30: null,
-                    31: null
-                };
                 _0x378b5c.simulateInput = function(_0x249751, _0x480d05, _0x50f784) {
-                    if (_0x378b5c.connected) {
-                        if (_0xa88a13.playing && !_0x378b5c.disableInput) {
-                            var _0x35b9c1 = _0x378b5c.connection.userid,
-                                _0x4d96ad = _0x378b5c.roomMaster === _0x35b9c1,
-                                _0xf1bb97 = _0x378b5c.players.indexOf(_0x35b9c1),
-                                _0x52e1f4 = _0x378b5c.currentFrameNum();
-                            _0x249751 >> 0x0 == 0x0 && (_0x2c63cc[_0x480d05] !== _0x50f784 && (_0x4d96ad ? (_0x378b5c.inputsData[_0x52e1f4] || (_0x378b5c.inputsData[_0x52e1f4] = []), _0x378b5c.inputsData[_0x52e1f4].push({
-                                'index': _0xf1bb97,
-                                'key': _0x480d05,
-                                'status': _0x50f784,
-                                'frame': _0x52e1f4
-                            }),_0x378b5c.simulateInputFn(_0xf1bb97, _0x480d05, _0x50f784)) : _0x378b5c.connection.send(JSON.stringify({
-                                'act': 'sync-control',
-                                'value': ['' .concat(_0xf1bb97, '|').concat(_0x480d05, '|').concat(_0x50f784, '|').concat(_0x52e1f4)]
-                            }), _0x378b5c.roomMaster)), _0x2c63cc[_0x480d05] = _0x50f784);
-                        }
-                    } else _0x378b5c.disableInput || _0x378b5c.simulateInputFn(_0x249751, _0x480d05, _0x50f784);
-                }, _0x378b5c.syncInput = _0x378b5c.simulateInput;
+                    _0x378b5c.disableInput || _0x378b5c.simulateInputFn(_0x249751, _0x480d05, _0x50f784);
+                };*/
+                _0x378b5c.syncInput = _0x378b5c.simulateInput;
                 window.simulateInput = _0x378b5c.simulateInput;
                 var _0x762355 = _0x27f4c4.Module.cwrap('shader_enable', 'null', ['number']);
                 _0x378b5c.toggleShader = function(_0x433182) {
@@ -4291,25 +3919,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x27f4c4.FS.unlink('game.state');
                         }, 100)
                     }
-                    if (_0x378b5c.connected && _0x378b5c.connection.isInitiator) {
-                        for (var _0x54607c = _0x378b5c.getStateInfo().split('|'), _0x1ab9c9 = _0x54607c[0x0] >> 0x0, _0xce58ec = (_0x54607c[0x2], new Uint8Array(_0x1ab9c9)), _0x4aff4f = _0x54607c[0x1] >> 0x0, _0x3bfae0 = 0x0; _0x3bfae0 < _0x1ab9c9; _0x3bfae0 += 0x1) _0xce58ec[_0x3bfae0] = _0x27f4c4.Module.getValue(_0x4aff4f + _0x3bfae0);
-                        var _0x227419 = new File([_0xce58ec], '0-game.state', {
-                            'type': '',
-                            'lastModified': new Date()
-                        });
-                        _0x378b5c.connection.shareFile(_0x227419);
-                        _0x378b5c.inputsData = {};
-                        _0x378b5c.wait = true;
-                        _0x378b5c.systemPause(0x1);
-                        _0x27f4c4.Module.pauseMainLoop();
-                        _0x378b5c.disableControl(true);
-                    }
                     _0xa88a13.elements.container.focus();
                 };
                 _0x27f4c4.Module._set_cheat && (_0x378b5c.setCheat = _0x27f4c4.Module.cwrap('set_cheat', 'number', ['number', 'number', 'string']));
                 _0x27f4c4.Module._reset_cheat && (_0x378b5c.resetCheat = _0x27f4c4.Module._reset_cheat);
                 _0x378b5c.quickSaveState = async function() {
-                    if (_0xa88a13.started && !_0x378b5c.connected) {
+                    if (_0xa88a13.started) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY SAVE STATE';
                             clearTimeout(_0x378b5c.saveMsgTransitions);
@@ -4350,7 +3965,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 };
                 _0x378b5c.saveMsgTransitions = null;
                 _0x378b5c.quickLoadState = function() {
-                    if (_0xa88a13.started && !_0x378b5c.connected) {
+                    if (_0xa88a13.started) {
                         if (_0xa88a13.statesSupported === false) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'CANNOT CURRENTLY LOAD STATE';
                             clearTimeout(_0x378b5c.saveMsgTransitions);
@@ -4390,7 +4005,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                         }, 1500)
                     }
-                }, _0x378b5c.changeStateSlot = function(e) {
+                };
+                _0x378b5c.changeStateSlot = function(e) {
                     if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                         var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
                         if (! slot) {
@@ -4414,29 +4030,21 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x378b5c.saveMsgTransitions = setTimeout(function() {
                         _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = '';
                     }, 1500)
-                }, window.EJS_loadState = function(_0x4dd6a5) {
-                    _0x378b5c.loadState(_0x4dd6a5, 0x0);
-                    setTimeout(function() {
-                        if (_0x378b5c.connected) {
-                            var _0x17edbf = new File([_0x4dd6a5], '0-game.state', {
-                                'type': '',
-                                'lastModified': new Date()
-                            });
-                            _0x378b5c.connection.shareFile(_0x17edbf), _0x378b5c.inputsData = {}, _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x378b5c.disableControl(true);
-                        }
-                    }, 0x1e);
+                };
+                window.EJS_loadState = function(_0x4dd6a5) {
+                    _0x378b5c.loadState(_0x4dd6a5, 0);
                 };
                 var _0x840cf4 = _0x27f4c4.Module.cwrap('cmd_take_screenshot', '', []);
                 _0x378b5c.getScreenData = function() {
-                    return _0x378b5c.toggleShader(0x0), _0x840cf4(), _0x378b5c.toggleShader(0x1), _0x27f4c4.FS.readFile('screenshot.png');
+                    _0x378b5c.toggleShader(0x0);
+                    _0x840cf4();
+                    _0x378b5c.toggleShader(0x1);
+                    return _0x27f4c4.FS.readFile('screenshot.png');
                 };
                 _0x378b5c.restartGame = _0x27f4c4.Module.cwrap('system_restart', '', []);
-                _0x378b5c.currentFrameNum = _0x27f4c4.Module.cwrap('get_current_frame_count', '', []);
+                //_0x378b5c.currentFrameNum = _0x27f4c4.Module.cwrap('get_current_frame_count', '', []);
                 _0x378b5c.saveSavFiles = _0x27f4c4.Module.cwrap('cmd_savefiles', '', []);
                 _0x27f4c4.Module._get_core_options && (_0x378b5c.getGameCoreOptions = _0x27f4c4.Module.cwrap('get_core_options', 'string', []));
-                _0x378b5c.systemPause = function(_0x29d94a) {
-                    return !0x1;
-                };
                 _0x378b5c.controllers = _0x2593da.storage.get('controllers');
                 _0x378b5c.controllers || (_0x378b5c.controllers = JSON.parse(JSON.stringify(_0x378b5c.defaultControllers)));
             }
@@ -5059,6 +4667,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 });
                 return _0xa88a13;
             },
+            /*
             'supportNetPlay': function() {
                 if (this.lightgun || this.mouse) return !0x1;
                 var _0xa88a13 = window.RTCPeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection,
@@ -5066,7 +4675,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x2c1832 = window.mozRTCSessionDescription || window.RTCSessionDescription;
                 return !!(_0xa88a13 && _0x17edbf && _0x2c1832) && !!(_0xa88a13 && 'createDataChannel' in _0xa88a13.prototype);
             },
-            'isNetPlay': function() {},
+            'isNetPlay': function() {},*/
             'findElements': function() {
                 try {
                     return this.elements.controls = _0x530042.call(this, this.config.selectors.controls.wrapper), this.elements.buttons = {
@@ -5080,7 +4689,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'screenRecord': _0x530042.call(this, this.config.selectors.buttons.screenRecord),
                         'loadState': _0x530042.call(this, this.config.selectors.buttons.loadState),
                         'gamepad': _0x530042.call(this, this.config.selectors.buttons.gamepad),
-                        'netplay': _0x530042.call(this, this.config.selectors.buttons.netplay),
+                        //'netplay': _0x530042.call(this, this.config.selectors.buttons.netplay),
                         'cheat': _0x530042.call(this, this.config.selectors.buttons.cheat)
                     }, this.elements.inputs = {
                         'volume': _0x530042.call(this, this.config.selectors.inputs.volume)
@@ -5221,12 +4830,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 });
                 var _0x449ec7 = _0x7f9f36.getCoreOptions.call(this);
                 this.listeners.bind(_0xb8fbbd, 'click keyup', function(_0x270d0d) {
-                    _0x1e2c68.keyboardEvent(_0x270d0d) && 0x20 !== _0x270d0d.which || (_0x270d0d.preventDefault(), _0x270d0d.stopPropagation(), _0xb8fbbd.checked = true, Object.keys(_0x7f9f36.normalOptions).includes(_0x57313b) && _0x7f9f36.updateNormalOptions.call(_0x17edbf, _0x57313b, _0x2c1832), Object.keys(_0x449ec7).includes(_0x57313b) && (_0x449ec7[_0x57313b].netplay && _0xdcec2a.connected ? _0xdcec2a.connection.isInitiator && (_0x7f9f36.updateCoreOptions.call(_0x17edbf, _0x57313b, _0x2c1832), _0xdcec2a.connection.send(JSON.stringify({
-                        'act': 'update-core-option',
-                        'key': _0x57313b,
-                        'value': _0x2c1832,
-                        'frame': _0xdcec2a.currentFrame
-                    }))) : _0x7f9f36.updateCoreOptions.call(_0x17edbf, _0x57313b, _0x2c1832)), _0x7f9f36.showMenuPanel.call(_0x17edbf, 'home', _0x1e2c68.keyboardEvent(_0x270d0d)));
+                    _0x1e2c68.keyboardEvent(_0x270d0d) && 0x20 !== _0x270d0d.which || (_0x270d0d.preventDefault(), _0x270d0d.stopPropagation(), _0xb8fbbd.checked = true, Object.keys(_0x7f9f36.normalOptions).includes(_0x57313b) && _0x7f9f36.updateNormalOptions.call(_0x17edbf, _0x57313b, _0x2c1832), Object.keys(_0x449ec7).includes(_0x57313b) && _0x7f9f36.updateCoreOptions.call(_0x17edbf, _0x57313b, _0x2c1832)), _0x7f9f36.showMenuPanel.call(_0x17edbf, 'home', _0x1e2c68.keyboardEvent(_0x270d0d));
                 }, _0x57313b, !0x1), _0x7f9f36.bindMenuItemShortcuts.call(this, _0xb8fbbd, _0x57313b), _0x231912.appendChild(_0xb8fbbd);
             },
             'updateVolume': function() {
@@ -5396,9 +5000,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'updateCoreOptionMenuItems': function() {
                 var _0xa88a13 = this.elements.settings.panels.home.querySelector('[role="menu"]'),
                     _0x17edbf = _0x7f9f36.getCoreOptions.call(this);
-                _0xdcec2a.connected && !_0xdcec2a.connection.isInitiator ? Object.keys(_0x17edbf).forEach(function(_0x480587) {
-                    _0x17edbf[_0x480587].netplay && _0xa88a13.querySelector('[item="' .concat(_0x480587, '"]')).setAttribute('disabled', '');
-                }) : Object.keys(_0x17edbf).forEach(function(_0x20e093) {
+                Object.keys(_0x17edbf).forEach(function(_0x20e093) {
                     _0xa88a13.querySelector('[item="' .concat(_0x20e093, '"]')).removeAttribute('disabled');
                 });
             },
@@ -5581,7 +5183,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }))).appendChild(_0xa88a13);
                 this.elements.widgets.stateInfo = _0xa88a13;
                 this.elements.widgets.stateInfoDiv = _0x17edbf;
-            },
+            },/*
             'setNetplayWidgets': function() {
                 var _0xa88a13 = _0x428003('div', {
                         'class': _0x449eac({
@@ -5615,7 +5217,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }))).appendChild(_0x2c1832);
                 this.elements.dialogs.netplay = _0x2c1832;
                 _0x7f9f36.setNetplayWidgets.call(this);
-            },
+            },*/
             'toggleContextMenu': function(_0x24b1f3, _0x4b9d55) {
                 if (_0x350d73(_0x24b1f3.target, _0x449eac({
                         'ejs__dialogs': true
@@ -5677,7 +5279,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                        var gamep = _0xa88a13.gameName
                     }
                     var gamepng = gamep ? '' .concat(gamep, '-screenshot.png') : 'game.png';
-                    _0x4e4ca6()(new Blob([_0x4e898a]), gamepng);
+                    var a = document.createElement('a');
+                    a.href = URL.createObjectURL(new Blob([_0x4e898a]));
+                    a.download = gamepng;
+                    a.click();
+                    setTimeout(function() {
+                        URL.revokeObjectURL(a.src);
+                    })
                     return false;
                 })
                 addContextHtml(_0xa88a13.localization('Cache Manage'), true, function(_0x275730) {
@@ -5764,7 +5372,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }));
                 _0x7f9f36.setLoadState.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setScreenRecord.call(this, _0x17edbf, _0x42e40d);
-                _0x7f9f36.supportNetPlay.call(this, _0x17edbf) && parseInt(this.config.gameId, 0xa) > 0x0 && _0x7f9f36.setNetplay.call(this, _0x17edbf, _0x42e40d);
+                //_0x7f9f36.supportNetPlay.call(this, _0x17edbf) && parseInt(this.config.gameId, 0xa) > 0x0 && _0x7f9f36.setNetplay.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setGamepad.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setStateInfoBarWidget.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setCheat.call(this, _0x17edbf, _0x42e40d);
@@ -5833,7 +5441,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     'gamepad': '<svg viewBox="0 0 640 512"><path fill="currentColor" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"/></svg>',
                     'load-state': '<svg viewBox="0 0 576 512"><path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/></svg>',
                     'muted': '<path d="M12.4 12.5l2.1-2.1 2.1 2.1 1.4-1.4L15.9 9 18 6.9l-1.4-1.4-2.1 2.1-2.1-2.1L11 6.9 13.1 9 11 11.1zM3.786 6.008H.714C.286 6.008 0 6.31 0 6.76v4.512c0 .452.286.752.714.752h3.072l4.071 3.858c.5.3 1.143 0 1.143-.602V2.752c0-.601-.643-.977-1.143-.601L3.786 6.008z"/>',
-                    'netplay': '<svg viewBox="0 0 512 512"><path fill="currentColor" d="M364.215 192h131.43c5.439 20.419 8.354 41.868 8.354 64s-2.915 43.581-8.354 64h-131.43c5.154-43.049 4.939-86.746 0-128zM185.214 352c10.678 53.68 33.173 112.514 70.125 151.992.221.001.44.008.661.008s.44-.008.661-.008c37.012-39.543 59.467-98.414 70.125-151.992H185.214zm174.13-192h125.385C452.802 84.024 384.128 27.305 300.95 12.075c30.238 43.12 48.821 96.332 58.394 147.925zm-27.35 32H180.006c-5.339 41.914-5.345 86.037 0 128h151.989c5.339-41.915 5.345-86.037-.001-128zM152.656 352H27.271c31.926 75.976 100.6 132.695 183.778 147.925-30.246-43.136-48.823-96.35-58.393-147.925zm206.688 0c-9.575 51.605-28.163 104.814-58.394 147.925 83.178-15.23 151.852-71.949 183.778-147.925H359.344zm-32.558-192c-10.678-53.68-33.174-112.514-70.125-151.992-.221 0-.44-.008-.661-.008s-.44.008-.661.008C218.327 47.551 195.872 106.422 185.214 160h141.572zM16.355 192C10.915 212.419 8 233.868 8 256s2.915 43.581 8.355 64h131.43c-4.939-41.254-5.154-84.951 0-128H16.355zm136.301-32c9.575-51.602 28.161-104.81 58.394-147.925C127.872 27.305 59.198 84.024 27.271 160h125.385z"/></svg>',
+                    //'netplay': '<svg viewBox="0 0 512 512"><path fill="currentColor" d="M364.215 192h131.43c5.439 20.419 8.354 41.868 8.354 64s-2.915 43.581-8.354 64h-131.43c5.154-43.049 4.939-86.746 0-128zM185.214 352c10.678 53.68 33.173 112.514 70.125 151.992.221.001.44.008.661.008s.44-.008.661-.008c37.012-39.543 59.467-98.414 70.125-151.992H185.214zm174.13-192h125.385C452.802 84.024 384.128 27.305 300.95 12.075c30.238 43.12 48.821 96.332 58.394 147.925zm-27.35 32H180.006c-5.339 41.914-5.345 86.037 0 128h151.989c5.339-41.915 5.345-86.037-.001-128zM152.656 352H27.271c31.926 75.976 100.6 132.695 183.778 147.925-30.246-43.136-48.823-96.35-58.393-147.925zm206.688 0c-9.575 51.605-28.163 104.814-58.394 147.925 83.178-15.23 151.852-71.949 183.778-147.925H359.344zm-32.558-192c-10.678-53.68-33.174-112.514-70.125-151.992-.221 0-.44-.008-.661-.008s-.44.008-.661.008C218.327 47.551 195.872 106.422 185.214 160h141.572zM16.355 192C10.915 212.419 8 233.868 8 256s2.915 43.581 8.355 64h131.43c-4.939-41.254-5.154-84.951 0-128H16.355zm136.301-32c9.575-51.602 28.161-104.81 58.394-147.925C127.872 27.305 59.198 84.024 27.271 160h125.385z"/></svg>',
                     'pause': '<path d="M6 1H3c-.6 0-1 .4-1 1v14c0 .6.4 1 1 1h3c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1zM12 1c-.6 0-1 .4-1 1v14c0 .6.4 1 1 1h3c.6 0 1-.4 1-1V2c0-.6-.4-1-1-1h-3z"/>',
                     'play': '<path d="M15.562 8.1L3.87.225C3.052-.337 2 .225 2 1.125v15.75c0 .9 1.052 1.462 1.87.9L15.563 9.9c.584-.45.584-1.35 0-1.8z"/>',
                     'restart': '<path d="M9.7 1.2l.7 6.4 2.1-2.1c1.9 1.9 1.9 5.1 0 7-.9 1-2.2 1.5-3.5 1.5-1.3 0-2.6-.5-3.5-1.5-1.9-1.9-1.9-5.1 0-7 .6-.6 1.4-1.1 2.3-1.3l-.6-1.9C6 2.6 4.9 3.2 4 4.1 1.3 6.8 1.3 11.2 4 14c1.3 1.3 3.1 2 4.9 2 1.9 0 3.6-.7 4.9-2 2.7-2.7 2.7-7.1 0-9.9L16 1.9l-6.3-.7z"/>',
@@ -6217,7 +5825,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x2c1832 = _0xdcec2a.getScreenData();
                                 
                             if (_0x378b5c.saveLoadDB.call(_0x17edbf, 'save')) {
-                                console.log('a');
                                 return;
                             }
                             var _0x2c1832 = _0x31e271;
@@ -6367,7 +5974,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.3';
+                this.version = '2.2.4';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6400,6 +6007,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.multitap = this.config.multitap;
                 this.cheats = this.config.cheats;
                 this.cheats || (this.cheats = []);
+                /*
                 var u = function(a, b) {
                     if (typeof b === 'string') {
                         return b;
@@ -6411,6 +6019,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }(this.config.oldNetplayServer, this.config.netplayUrl);
                 this.listUrl = u;
                 this.socketUrl = u;
+                */
                 this.mameCore = this.config.mameCore || null;
                 this.color = this.config.color;
                 this.startOnLoad = this.config.startOnLoad || false;
