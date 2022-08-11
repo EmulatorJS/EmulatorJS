@@ -41,18 +41,18 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-### Beta
+### Old Cores
 
-The **beta** of the emulator core is now available for *some* systems. <br>
-To use it, please add the following line to your code.
+The new cores are now the stable cores, if you want to <br>
+continue using the old cores, add this line to your code
 
 ```js
-EJS_BETA = true;
+EJS_oldCores = true;
 ```
 
 <br>
 
-**>> When reporting bugs, please specify that you are using the beta version**
+**>> When reporting bugs, please specify that you are using the old version**
 
 <br>
 <br>
