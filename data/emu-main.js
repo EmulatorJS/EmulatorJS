@@ -1587,10 +1587,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x17edbf = _0xa88a13,
                             _0x2c1832 = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p3)),
                             _0x50eb85 = _0xa88a13.config,
-                            _0x3cf3cf = (_0x50eb85.gameId, _0x50eb85.gameUrl),
+                            _0x3cf3cf = _0x50eb85.gameUrl,
                             _0x594488 = _0x50eb85.system;
                         'vbanext' == _0x594488 && (_0x594488 = 'gba');
-                        var _0x154dc5 = _0x3cf3cf.split('/'),
+                        var _0x154dc5 = (typeof _0x3cf3cf == 'string') ? _0x3cf3cf.split('/') : "ga.me",
                             _0x139f1c = _0x154dc5[_0x154dc5.length - 0x1];
                         _0x139f1c.indexOf('?') > -0x1 && (_0x139f1c = _0x139f1c.substr(0x0, _0x139f1c.indexOf('?')));
                         _0x139f1c.split('.').pop();
@@ -1600,6 +1600,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                         if (_0x17edbf.config.gamePatchUrl) {
                             _0x2c1832.innerHTML += ' (2/2)';
+                        }
+                        if (typeof _0x3cf3cf != 'string') {
+                            if (_0x3cf3cf.toString() === "[object Blob]") {
+                                _0x3cf3cf.arrayBuffer().then(function(data) {
+                                    _0x3512e9(_0x139f1c, new Uint8Array(data));
+                                })
+                            } else if (_0x3cf3cf.toString() === "[object ArrayBuffer]") {
+                                _0x3512e9(_0x139f1c, new Uint8Array(_0x3cf3cf));
+                            } else {
+                                _0x3512e9(_0x139f1c, Uint8Array.from(_0x3cf3cf));
+                            }
+                            return;
                         }
                         _0x550f17.a.head(_0x3cf3cf, {}).then(function(_0x3d703e) {
                             var _0x21b526 = _0x3d703e.headers['content-length'],
@@ -1614,7 +1626,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         'responseType': 'arraybuffer'
                                     }).then(function(_0x22a1f4) {
                                         var _0x17edbf = new Uint8Array(_0x22a1f4.data);
-                                        if (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length == 1)) {_0x3512e9(_0x139f1c, _0x17edbf);return;};
+                                        if (typeof _0xa88a13.config.gameUrl != 'string' || (typeof _0xa88a13.config.gameUrl == 'string' && (_0xa88a13.config.gameUrl.startsWith('blob:') || _0xa88a13.config.gameUrl.startsWith('file:') || _0xa88a13.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _0xa88a13.config.gameUrl.split(':').length === 1)))) {
+                                            _0x3512e9(_0x139f1c, _0x17edbf);
+                                            return;
+                                        };
                                         if (_0x107e8a && _0x4e171c.db)
                                             if (_0x17edbf.length > 0x6400000)
                                                 for (var _0x2c1832 = Math.ceil(_0x17edbf.length / 0x6400000), _0x257c4d = 0x0; _0x257c4d < _0x2c1832; _0x257c4d += 0x1) {
@@ -2234,6 +2249,54 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_0x5b1dcd);
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_0x5b1dcd);
                             _0xc6823.setStatesSupported(_0x5b1dcd);
+                            
+                            if (_this.config.buttons) {
+                                if (_this.config.buttons.playPause === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.play[0]) && _0x132da7(_this.elements.buttons.play[0], true);
+                                }
+                                if (_this.config.buttons.restart === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.restart) && _0x132da7(_this.elements.buttons.restart, true);
+                                }
+                                if (_this.config.buttons.mute === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.mute) && _0x132da7(_this.elements.buttons.mute, true);
+                                }
+                                if (_this.config.buttons.settings === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.settings) && _0x132da7(_this.elements.buttons.settings, true);
+                                }
+                                if (_this.config.buttons.fullscreen === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.fullscreen) && _0x132da7(_this.elements.buttons.fullscreen, true);
+                                }
+                                if (_this.config.buttons.saveState === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, true);
+                                }
+                                if (_this.config.buttons.loadState === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, true);
+                                }
+                                if (_this.config.buttons.screenRecord === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.screenRecord) && _0x132da7(_this.elements.buttons.screenRecord, true);
+                                }
+                                if (_this.config.buttons.gamepad === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.gamepad) && _0x132da7(_this.elements.buttons.gamepad, true);
+                                }
+                                if (_this.config.buttons.cheat === false) {
+                                    _0x1e2c68.element(_this.elements.buttons.cheat) && _0x132da7(_this.elements.buttons.cheat, true);
+                                }
+                                if (_this.config.buttons.volume === false) {
+                                    _0x1e2c68.element(_this.elements.inputs.volume) && _0x132da7(_this.elements.inputs.volume, true);
+                                }
+                                if (_this.config.buttons.screenshot === false) {
+                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0), true);
+                                }
+                                if (_this.config.buttons.cacheManage === true) {
+                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(1), false);
+                                }
+                                if (_this.config.buttons.quickSave === false) {
+                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), true);
+                                }
+                                if (_this.config.buttons.quickLoad === false) {
+                                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), true);
+                                }
+                            }
                         }).catch(function(e) {
                             renderErrorPage(e, _0x3787ba, _0xc6823);
                         });
@@ -2653,7 +2716,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'saveLoadDB': function(type) {
                 try {
                     if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
-                        if ((!this.gameName && this.config.gameUrl.startsWith('blob:')) || !window.indexedDB) {
+                        if ((!this.gameName && typeof this.config.gameUrl == 'string' && this.config.gameUrl.startsWith('blob:')) || !window.indexedDB) {
                             return false;
                         }
                         var location = _0x2593da.getCoreOptionsValues()['save-state-location'];
@@ -2661,10 +2724,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             return false;
                         }
                         var slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
-                        var game = this.config.gameUrl.split('/').pop();
+                        var game;
+                        if (typeof this.config.gameUrl == 'string') {
+                            game = this.config.gameUrl.split('/').pop();
+                        }
                         if (this.gameName) {
                             game = this.gameName;
                         };
+                        if (!game) return false;
                         var key = game + '-' + slot;
                         (async function() {
                             if (type === 'save') {
@@ -2992,7 +3059,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     delete _0x48ee51[26];
                 }
                 
-                for (var _0x501790 = [0x2, 0x3, 0x4, 0x5, 0x6, 0x7, 0x8, 0x0, 0x9, 0x1, 0xa, 0xb, 0xc, 0xd, 0xe, 0xf, 0x13, 0x12, 0x11, 0x10, 0x17, 0x16, 0x15, 0x14, 0x18, 0x19, 26], _0x50fd12 = function(_0x88827f) {
+                for (var _0x501790 = [2, 3, 4, 5, 6, 7, 8, 0, 9, 1, 10, 11, 12, 13, 14, 15, 19, 18, 17, 16, 23, 22, 21, 20, 24, 25, 26], _0x50fd12 = function(_0x88827f) {
                         _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'])).innerHTML += _0x17edbf.replace(/{index}/g, _0x88827f), _0x501790.forEach(function(_0x1bf162) {
                             _0x48ee51[_0x1bf162] && (_0xa88a13.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x88827f)).innerHTML += _0x2c1832.replace(/{index}/g, _0x88827f).replace(/{id}/g, _0x1bf162).replace(/{label}/g, _0x48ee51[_0x1bf162]));
                         }), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="16"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="16"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="17"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="17"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="18"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="18"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="19"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="19"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="20"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="20"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="21"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="21"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="22"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="22"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="23"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="23"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc');
@@ -3057,11 +3124,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return _0x132da7(_0xa88a13.elements.dialogs.gamepad, true), _0xa88a13.elements.container.focus(), _0x16d598.stopPropagation(), !0x1;
                 }), Array.from(_0xa88a13.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames.tabs, ' li'))).forEach(function(_0x523f7b) {
                     _0x1093f4.call(_0xa88a13, _0x523f7b, 'mousedown', function(_0xa99a78) {
-                        _0x3a8e2f(_0xa88a13.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames.tabs, ' li')), _0x378b5c.classNames.active, !0x1), _0x3a8e2f(_0x523f7b, _0x378b5c.classNames.active, true);
+                        _0x3a8e2f(_0xa88a13.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames.tabs, ' li')), _0x378b5c.classNames.active, false);
+                        _0x3a8e2f(_0x523f7b, _0x378b5c.classNames.active, true);
                         var _0xb8a227 = _0x523f7b.querySelector('a').getAttribute('aria-controls');
-                        return Array.from(_0xa88a13.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames['tabs-content'], ' .').concat(_0x378b5c.classNames['tabs-panel']))).forEach(function(_0x1c29a4) {
+                        Array.from(_0xa88a13.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames['tabs-content'], ' .').concat(_0x378b5c.classNames['tabs-panel']))).forEach(function(_0x1c29a4) {
                             _0x132da7(_0x1c29a4, true);
-                        }), _0x132da7(_0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'], ' #').concat(_0xb8a227)), !0x1), _0xa99a78.stopPropagation(), !0x1;
+                        });
+                        _0x132da7(_0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'], ' #').concat(_0xb8a227)), false);
+                        _0xa99a78.stopPropagation();
+                        return false;
                     });
                 }), _0xbae705.call(_0xa88a13, _0xa88a13.elements.dialogs.gamepad.querySelector('[aria-controls="controls-0"]').parentNode, 'mousedown');
                 var _0x11b11a = _0xa88a13.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay));
@@ -3077,9 +3148,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x4e649c = _0x2c1832.getAttribute('data-id'),
                             _0x431719 = _0x2c1832.getAttribute('data-index'),
                             _0x4a6f6f = _0x2c1832.getAttribute('data-label');
-                        _0x132da7(_0x11b11a, !0x1), _0x11b11a.setAttribute('data-id', _0x4e649c), _0x11b11a.setAttribute('data-index', _0x431719);
+                        _0x132da7(_0x11b11a, !0x1), _0x11b11a.setAttribute('data-id', _0x4e649c);
+                        _0x11b11a.setAttribute('data-index', _0x431719);
                         var _0x179623 = '[ ' .concat(_0x4a6f6f, ' ]');
-                        _0x378b5c.gamepad.gamepads[_0x431719] && _0x4e649c < 0x10 ? _0x179623 += '<br /><span style="font-size:12px">Gamepad:' .concat(_0x378b5c.gamepad.gamepads[_0x431719].id, '</span><br />'+_0xa88a13.localization('Press keyboard or gamepad')+'<br/>'+_0xa88a13.localization('Press escape (esc) to clear')) : _0x179623 += '<br />Press keyboard<br/>'+_0xa88a13.localization('Press escape (esc) to clear'), _0x11b11a.querySelector('.' .concat(_0x378b5c.classNames['key-setting-popup'])).innerHTML = _0x179623, _0x1e1d79.stopPropagation();
+                        _0x378b5c.gamepad.gamepads[_0x431719] && _0x4e649c < 16 ? _0x179623 += '<br /><span style="font-size:12px">Gamepad:' .concat(_0x378b5c.gamepad.gamepads[_0x431719].id, '</span><br />'+_0xa88a13.localization('Press keyboard or gamepad')+'<br/>'+_0xa88a13.localization('Press escape (esc) to clear')) : _0x179623 += '<br />Press keyboard<br/>'+_0xa88a13.localization('Press escape (esc) to clear'), _0x11b11a.querySelector('.' .concat(_0x378b5c.classNames['key-setting-popup'])).innerHTML = _0x179623, _0x1e1d79.stopPropagation();
                     });
                 });
             },
@@ -3227,124 +3299,133 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x17edbf = this,
                     _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay)),
                     _0x181250 = new _0x4ad1c6.Gamepad();
-                _0x378b5c.gamepad = _0x181250, _0x181250.init() && (_0x181250.bind(_0x4ad1c6.Gamepad.Event.TICK, function(_0x2fe35d) {
+                _0x378b5c.gamepad = _0x181250;
+                if (!_0x181250.init()) {
+                    console.warn('gamepad not supported');
+                    return;
+                }
+                 _0x181250.bind(_0x4ad1c6.Gamepad.Event.TICK, function(_0x2fe35d) {
                     _0x2fe35d.forEach(function(_0x2b21f8) {
                         var _0x17edbf;
-                        _0x2b21f8 && _0x2b21f8.axes && _0x2b21f8.axes[0x9] && ((_0x17edbf = _0x2b21f8.axes[0x9]) < 3.28571 ? 0x1 == _0x17edbf ? (_0x2b21f8.extra_buttons[0xc].pressed || (_0x2b21f8.extra_buttons[0xc] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xc,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xe].pressed || (_0x2b21f8.extra_buttons[0xe] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xe,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        }))) : _0x17edbf <= -0.7142857 && _0x17edbf >= -0.714291 ? (_0x2b21f8.extra_buttons[0xc].pressed || (_0x2b21f8.extra_buttons[0xc] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xc,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xf].pressed || (_0x2b21f8.extra_buttons[0xf] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xf,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        }))) : _0x17edbf >= 0.42856 && _0x17edbf <= 0.42858 ? (_0x2b21f8.extra_buttons[0xd].pressed || (_0x2b21f8.extra_buttons[0xd] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xd,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xe].pressed || (_0x2b21f8.extra_buttons[0xe] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xe,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        }))) : _0x17edbf >= -0.14287 && _0x17edbf <= -0.14285 ? (_0x2b21f8.extra_buttons[0xd].pressed || (_0x2b21f8.extra_buttons[0xd] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xd,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xf].pressed || (_0x2b21f8.extra_buttons[0xf] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xf,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        }))) : _0x17edbf <= -0x1 && _0x17edbf >= -1.01 ? _0x2b21f8.extra_buttons[0xc].pressed || (_0x2b21f8.extra_buttons[0xc] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xc,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })) : _0x17edbf >= 0.142857 && _0x17edbf <= 0.142858 ? _0x2b21f8.extra_buttons[0xd].pressed || (_0x2b21f8.extra_buttons[0xd] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xd,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })) : _0x17edbf >= 0.7142857 && _0x17edbf <= 0.7142858 ? _0x2b21f8.extra_buttons[0xe].pressed || (_0x2b21f8.extra_buttons[0xe] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xe,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })) : _0x17edbf <= -0.42857 && _0x17edbf >= -0.42858 && (_0x2b21f8.extra_buttons[0xf].pressed || (_0x2b21f8.extra_buttons[0xf] = {
-                            'pressed': true,
-                            'value': 0x1
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                            'index': 0xf,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        }))) : (_0x2b21f8.extra_buttons[0xc].pressed && (_0x2b21f8.extra_buttons[0xc] = {
-                            'pressed': !0x1,
-                            'value': 0x0
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                            'index': 0xc,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xd].pressed && (_0x2b21f8.extra_buttons[0xd] = {
-                            'pressed': !0x1,
-                            'value': 0x0
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                            'index': 0xd,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xe].pressed && (_0x2b21f8.extra_buttons[0xe] = {
-                            'pressed': !0x1,
-                            'value': 0x0
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                            'index': 0xe,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        })), _0x2b21f8.extra_buttons[0xf].pressed && (_0x2b21f8.extra_buttons[0xf] = {
-                            'pressed': !0x1,
-                            'value': 0x0
-                        }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                            'index': 0xf,
-                            'gamepad': _0x2b21f8,
-                            'gamepadIndex': _0x2b21f8.index
-                        }))));
+                        if (_0x2b21f8 && _0x2b21f8.axes && _0x2b21f8.axes[9]) {
+                            (_0x17edbf = _0x2b21f8.axes[9]) < 3.28571 ? 1 == _0x17edbf ? (_0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 12,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 14,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            }))) : _0x17edbf <= -0.7142857 && _0x17edbf >= -0.714291 ? (_0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 12,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 15,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            }))) : _0x17edbf >= 0.42856 && _0x17edbf <= 0.42858 ? (_0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 13,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 14,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            }))) : _0x17edbf >= -0.14287 && _0x17edbf <= -0.14285 ? (_0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 13,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 15,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            }))) : _0x17edbf <= -1 && _0x17edbf >= -1.01 ? _0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 12,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })) : _0x17edbf >= 0.142857 && _0x17edbf <= 0.142858 ? _0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 13,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })) : _0x17edbf >= 0.7142857 && _0x17edbf <= 0.7142858 ? _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 14,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })) : _0x17edbf <= -0.42857 && _0x17edbf >= -0.42858 && (_0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
+                                'pressed': true,
+                                'value': 1
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
+                                'index': 15,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            }))) : (_0x2b21f8.extra_buttons[12].pressed && (_0x2b21f8.extra_buttons[12] = {
+                                'pressed': false,
+                                'value': 0
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
+                                'index': 12,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[13].pressed && (_0x2b21f8.extra_buttons[13] = {
+                                'pressed': false,
+                                'value': 0
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
+                                'index': 13,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[14].pressed && (_0x2b21f8.extra_buttons[14] = {
+                                'pressed': false,
+                                'value': 0
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
+                                'index': 14,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })), _0x2b21f8.extra_buttons[15].pressed && (_0x2b21f8.extra_buttons[15] = {
+                                'pressed': false,
+                                'value': 0
+                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
+                                'index': 15,
+                                'gamepad': _0x2b21f8,
+                                'gamepadIndex': _0x2b21f8.index
+                            })));
+                        }
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, function(_0x15761a) {
+                });
+                _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, function(_0x15761a) {
+                    console.log(_0x15761a.gamepad)
                     if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                         var _0x387018, _0xdd4205 = parseInt(_0x2c1832.getAttribute('data-index'), 0xa),
                             _0x1f4ee2 = _0x2c1832.getAttribute('data-id');
@@ -3374,12 +3455,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     });
                 }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.AXIS_CHANGED, function(_0x31f017) {
                     var value = function(value) {
-                        if (value > 0.5 || value < 0.5) {
+                        if (value > 0.5 || value < -0.5) {
                             return (value > 0) ? 1 : -1;
                         } else {
                             return 0;
                         }
-                    }(parseFloat(_0x31f017.value));
+                    }(_0x31f017.value);
                     if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                         if (value !== 0) {
                             var _0x1f4ee2 = _0x2c1832.getAttribute('data-id'),
@@ -3462,7 +3543,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x2c1832 = _0x181250.gamepads[_0x327c74];
                         _0x17edbf.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x327c74, ' .gamepad-name')).innerHTML = _0x2c1832 ? _0x2c1832.id : 'n/a';
                     });
-                }));
+                });
             },
             'setShader': function(_0x4cbec3) {
                 if ('disabled' === _0x4cbec3) _0x27f4c4.FS.unlink('/shader/shader.glslp', ''), _0x378b5c.toggleShader && _0x378b5c.toggleShader(0x0);
@@ -4638,7 +4719,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 if (this.statesSupported === true && window.indexedDB &&
-                    (typeof this.gameName == 'string' || !this.config.gameUrl.startsWith('blob:'))) {
+                    (typeof this.gameName == 'string' || (typeof this.config.gameUrl == 'string' && !this.config.gameUrl.startsWith('blob:')))) {
                     _0xa88a13['save-state-location'] = {
                         'label': this.localization('Save State Location'),
                         'options': {
@@ -5238,7 +5319,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 var _0x14264d = _0x428003('li', {});
                                 _0x14264d.appendChild(_0x428003('a', {
                                     'target': '_blank',
-                                    'href': 'https://github.com/ethanaobrien/emulatorjs'
+                                    'href': 'https://github.com/ethanaobrien/emulatorjs' // Modifying this is against the terms of service
                                 }, 'EmulatorJS v' .concat(this.version)));
                                 _0x2a1dda.appendChild(_0x14264d);
                                 _0x2a1dda.setAttribute('menu', '');
@@ -5974,7 +6055,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.4';
+                this.version = '2.2.5';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -5994,10 +6075,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.touch = _0x2d904a.touch;
                 this.game = _0x28cce1;
                 _0x1e2c68.string(this.game) && (this.game = document.querySelectorAll(this.game));
-                (window.jQuery && this.game instanceof jQuery || _0x1e2c68.nodeList(this.game) || _0x1e2c68.array(this.game)) && (this.game = this.game[0x0]);
+                (window.jQuery && this.game instanceof jQuery || _0x1e2c68.nodeList(this.game) || _0x1e2c68.array(this.game)) && (this.game = this.game[0]);
                 this.game = this.game;
                 this.game.innerHTML = '';
                 this.config = _0x5dc0c0({}, _0x39ca5e, _0x6954aa.defaults, _0x2ba0e6 || {});
+                if (this.config.settings && this.config.settings.volume) _0x39ca5e.volume = this.config.settings.volume;
+                if (this.config.settings && this.config.settings.defaultControllers) _0x378b5c.defaultControllers = this.config.settings.defaultControllers;
                 this.coreVer = 1;
                 this.lightgun = this.config.lightgun;
                 this.loadStateOnStart = this.config.loadStateOnStart || false;
@@ -6144,9 +6227,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.listeners.global();
                 this.fullscreen = new _0x335854(this);
                 _0x27f4c4.create.call(this);
-                var _0x446e06 = document.createElement('script');
-                _0x446e06.src = (this.customPaths && typeof this.customPaths['webrtc-adapter.js'] == 'string') ? this.customPaths['webrtc-adapter.js'] : (this.dataPath + 'webrtc-adapter.js');
-                document.body.appendChild(_0x446e06);
                 resolve(this);
             }.bind(this))
         }
