@@ -1155,35 +1155,31 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 var _0x18a437 = window.URL || window.webkitURL;
-                var isCompressed = function(data) {
+                var isCompressed = function(data) { //https://www.garykessler.net/library/file_sigs.html
                         if ((data[0] === 80 && data[1] === 75) && ((data[2] === 3 && data[3] === 4) || (data[2] === 5 && data[3] === 6) || (data[2] === 7 && data[3] === 8))) {
                             return 'zip';
-                        } else if (data[0] === 55 && data[1] === 122 && data[2] === 188 && data[3] === 175 && data[3] === 39 && data[5] === 28) {
+                        } else if (data[0] === 55 && data[1] === 122 && data[2] === 188 && data[3] === 175 && data[4] === 39 && data[5] === 28) {
                             return '7z';
-                        } else if (data[0] === 82 && data[1] === 97 && data[2] === 114 && data[3] === 33 && data[3] === 26 && data[5] === 7 && data[6] === 0) {
+                        } else if ((data[0] === 82 && data[1] === 97 && data[2] === 114 && data[3] === 33 && data[4] === 26 && data[5] === 7) && ((data[6] === 0) || (data[6] === 1 && data[7] == 0))) {
                             return 'rar';
                         }
                     },
-                    _0xa24f60 = function(_0xbf2b8b) {
-                        var _0x17edbf = 'importScripts("'+_0xbf2b8b+'");',
-                            _0x2c1832 = new Blob([_0x17edbf], {
+                    extractFile = async function(url) {
+                        var fileData = await (await fetch(url)).text(),
+                            _0x2c1832 = new Blob([fileData], {
                                 'type': 'application/javascript'
                             }),
                             _0x501a8e = window.URL.createObjectURL(_0x2c1832);
-                        return new Promise(function(_0x2d8147, _0x1b03b2) {
-                            _0x2d8147(new Worker(_0x501a8e));
-                        });
+                        return new Worker(_0x501a8e);
                     },
-                    _0x41d0bd = function(_0x3a41ff, _0x2b541e) {
-                            var _0x2c1832 = '';
-                            if ('rar' == _0x2b541e) _0x2c1832 = '\nvar dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \'' .concat(_0x3a41ff+'.mem', '\';\n    }\n};\nimportScripts("').concat(_0x3a41ff, '");\nvar unrar = function(data, password) {\n    var cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    var rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    var rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ');
-                            var _0x22326b = new Blob([_0x2c1832], {
-                                    'type': 'application/javascript'
-                                }),
-                                _0x3635b1 = window.URL.createObjectURL(_0x22326b);
-                            return new Promise(function(_0x2d169f, _0x341b0d) {
-                                _0x2d169f(new Worker(_0x3635b1));
-                            });
+                    extractRar = async function(url) {
+                        var fileData = await (await fetch(url)).text();
+                        var _0x2c1832 = '\nvar dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+url+'.mem\';\n    }\n};\n'+fileData+'\nvar unrar = function(data, password) {\n    var cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    var rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    var rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
+                        var _0x22326b = new Blob([_0x2c1832], {
+                                'type': 'application/javascript'
+                            }),
+                            _0x3635b1 = window.URL.createObjectURL(_0x22326b);
+                        return new Worker(_0x3635b1);
                     },
                     _0x24de8d = null,
                     _0x4e171c = null,
@@ -1496,6 +1492,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                         var start = function(startName) {
                             _0x1cfda7.innerHTML = 'Game Data ready';
+                            if (!startName) {
+                                _0x1cfda7.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">Invalid Rom</strong>';
+                                return;
+                            }
                             try {
                                 _0x4bd781();
                                 _0x5f3757(_0x55627a);
@@ -1529,6 +1529,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             _0x468801 += _0x52e6f3.data.data.length;
                                             _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x52e6f3.data.data, true, false);
                                             _0x55627a.startName = _0x52e6f3.data.file;
+                                            _0x52e6f3.target.terminate();
+                                            start(_0x55627a.startName);
                                         } catch (_0x210043) {
                                             console.log(_0x210043);
                                         }
@@ -1547,19 +1549,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var _0x20a78c = _0x1844e3.slice ? _0x1844e3.slice(0, 10) : _0x1844e3.subarray(0, 10),
                                 _0x1761cf = isCompressed(_0x20a78c);
                             if (_0x1761cf === "7z") {
-                                _0xa24f60(_0x17edbf).then(function(_0xea623e) {
+                                extractFile(_0x17edbf).then(function(_0xea623e) {
                                     _0xea623e.onmessage = _0x99321;
                                     _0xea623e.postMessage(_0x1844e3);
                                 })
                             _0x1e67c4 = true;
                             } else if (_0x1761cf === 'zip') {
-                                _0xa24f60(_0x2c1832).then(function(_0x5a81e4) {
+                                extractFile(_0x2c1832).then(function(_0x5a81e4) {
                                     _0x5a81e4.onmessage = _0x99321;
                                     _0x5a81e4.postMessage(_0x1844e3);
                                 })
                                 _0x1e67c4 = true;
                             } else if (_0x1761cf === 'rar') {
-                                _0x41d0bd(_0x4ce206, 'rar').then(function(_0x5f204f) {
+                                extractRar(_0x4ce206).then(function(_0x5f204f) {
                                     _0x5f204f.onmessage = _0x99321;
                                     _0x5f204f.postMessage(_0x1844e3);
                                 })
@@ -1709,17 +1711,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     _0x3de3e4 = _0x1097ca.slice ? _0x1097ca.slice(0, 10) : _0x1097ca.subarray(0, 10),
                                     _0x17f736 = isCompressed(_0x3de3e4);
                                 if (_0x17f736 === '7z') {
-                                    _0xa24f60(_0x17edbf).then(function(_0x20601d) {
+                                    extractFile(_0x17edbf).then(function(_0x20601d) {
                                         _0x20601d.onmessage = _0x59c7c1;
                                         _0x20601d.postMessage(_0x1097ca);
                                     })
                                 } else if (_0x17f736 === 'zip') {
-                                    _0xa24f60(_0x2c1832).then(function(_0x46622d) {
+                                    extractFile(_0x2c1832).then(function(_0x46622d) {
                                         _0x46622d.onmessage = _0x59c7c1;
                                         _0x46622d.postMessage(_0x1097ca);
                                     })
                                 } else if (_0x17f736 === 'rar') {
-                                    _0x41d0bd(_0x4ce206, 'rar').then(function(_0x2ecd24) {
+                                    extractRar(_0x4ce206).then(function(_0x2ecd24) {
                                         _0x2ecd24.onmessage = _0x59c7c1;
                                         _0x2ecd24.postMessage(_0x1097ca);
                                     })
@@ -1840,11 +1842,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x3a6560 = !0x1,
                             _0x12e229 = _0x3cff36.slice ? _0x3cff36.slice(0x0, 0xa) : _0x3cff36.subarray(0x0, 0xa),
                             _0x80852b = isCompressed(_0x12e229);
-                        '7z' === _0x80852b ? (_0xa24f60(_0x17edbf).then(function(_0x1b6a80) {
+                        '7z' === _0x80852b ? (extractFile(_0x17edbf).then(function(_0x1b6a80) {
                             _0x1b6a80.onmessage = _0x19a43e, _0x1b6a80.postMessage(_0x3cff36);
-                        }), _0x3a6560 = true) : 'zip' !== _0x80852b || ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x3ea97.system) ? 'rar' === _0x80852b && (_0x41d0bd(_0x4ce206, 'rar').then(function(_0x259be0) {
+                        }), _0x3a6560 = true) : 'zip' !== _0x80852b || ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x3ea97.system) ? 'rar' === _0x80852b && (extractRar(_0x4ce206).then(function(_0x259be0) {
                             _0x259be0.onmessage = _0x19a43e, _0x259be0.postMessage(_0x3cff36);
-                        }), _0x3a6560 = true) : (_0xa24f60(_0x2c1832).then(function(_0x31c70d) {
+                        }), _0x3a6560 = true) : (extractFile(_0x2c1832).then(function(_0x31c70d) {
                             _0x31c70d.onmessage = _0x19a43e, _0x31c70d.postMessage(_0x3cff36);
                         }), _0x3a6560 = true), _0x3a6560 || (_0x468801 += _0x3cff36.length, _0x50119.innerHTML = 'BIOS ready', _0x4d7024._FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, !0x1), _0x452592());
                     },
@@ -2001,8 +2003,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 0x4 === _0x3f49ec.data.t && _0x3f49ec.data.total > 0x0 && (_0x2c1832.innerHTML = _0xa88a13.localization('Decompress Game Core')+' ' .concat(Math.floor(_0x3f49ec.data.current / _0x3f49ec.data.total * 0x64), '%'));
                             }
                         };
-                        _0xa24f60(_0x17edbf).then(function(_0x48c633) {
-                            _0x48c633.onmessage = _0x21d6a1, _0x48c633.postMessage(_0x18cb26);
+                        extractFile(_0x17edbf).then(function(_0x48c633) {
+                            _0x48c633.onmessage = _0x21d6a1;
+                            _0x48c633.postMessage(_0x18cb26);
                         });
                     },
                     _this = this,
