@@ -1,6 +1,6 @@
 {
     "nes": {
-        "version":"21",
+        "version":"22",
         "netplay": 1,
         "old": {"wasm":1, "asmjs":1 },
         "state": 1,
@@ -10,7 +10,7 @@
         "oldCores": 1
     },
     "snes": {
-        "version":"18",
+        "version":"19",
         "netplay": 1,
         "old": {"wasm":1, "asmjs":1 },
         "state": 1,
@@ -119,7 +119,7 @@
         "oldCores": 1
     },
     "vb": {
-        "version":"4",
+        "version":"5",
         "netplay": 0,
         "old": {"wasm":1, "asmjs":1 },
         "state": 1,
@@ -183,7 +183,7 @@
         "oldCores": 1
     },
     "gb": {
-        "version":"9",
+        "version":"10",
         "netplay": 0,
         "state": 1,
         "old": {"wasm":0, "asmjs":1 },
@@ -202,12 +202,13 @@
         "oldCores": 1
     },
     "gba": {
-        "version":"7",
+        "version":"8",
         "netplay": 0,
         "state": 1,
+        "old": {"wasm":0, "asmjs":1 },
         "asmjs": 1,
-        "wasm": 0,
-        "newCores": 0,
+        "wasm": 1,
+        "newCores": 1,
         "oldCores": 1
     },
     "segaGG": {
@@ -265,7 +266,7 @@
         "oldCores": 1
     },
     "n64": {
-        "version":"10",
+        "version":"11",
         "netplay": 1,
         "state": 1,
         "asmjs": 0,
@@ -275,7 +276,7 @@
         "oldCores": 1
     },
     "nds": {
-        "version":"13",
+        "version":"14",
         "old": {"wasm":1, "asmjs":1 },
         "netplay": 0,
         "state": 1,
@@ -303,7 +304,7 @@
         "oldCores": 1
     },
     "mame2003": {
-        "version":"2",
+        "version":"3",
         "old": {"wasm":1, "asmjs":1 },
         "netplay": 1,
         "state": 1,

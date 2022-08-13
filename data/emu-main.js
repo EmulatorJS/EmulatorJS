@@ -1511,6 +1511,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 if (_0xc6823.coreVer === 2) {
                                     _0x4d7024.Module.resumeMainLoop();
                                     _0x4d7024.Module.setCanvasSize(800, 600);
+                                    var i=0;
+                                    var j = setInterval(function() { // some cores have a messed up screen size on load (for example - gba)
+                                        if (i>20) clearInterval(j);
+                                        i++;
+                                        _0x4d7024.Module.setCanvasSize(800, 600);
+                                    }, 100)
                                 }
                                 _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                                 try{_0x567717();}catch(e){}
@@ -2934,7 +2940,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             },
             'setGamepadDialog': function() {
                 var _0xa88a13 = this;
-                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_0xa88a13.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_0xa88a13.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_0xa88a13.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_0xa88a13.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_0xa88a13.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">'+_0xa88a13.localization('Update')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_0xa88a13.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_0xa88a13.localization('Clear')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">'+_0xa88a13.localization('Cancel')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_0xa88a13.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        '
+                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_0xa88a13.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_0xa88a13.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_0xa88a13.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_0xa88a13.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_0xa88a13.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">'+_0xa88a13.localization('Update')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_0xa88a13.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_0xa88a13.localization('Clear')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">'+_0xa88a13.localization('Cancel')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_0xa88a13.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        ';
                 
                 var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Gamepad')+'</div>\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Keyboard')+'</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
                     _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">'+_0xa88a13.localization('Set')+'</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
@@ -3206,11 +3212,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             } catch (_0x101b3e) {}
                             _0x17edbf && (_0xa88a13.cheats = _0x17edbf);
                         }
-                        _0x2c1832.innerHTML = '', _0xa88a13.cheats && Array.isArray(_0xa88a13.cheats) && _0xa88a13.cheats.forEach(function(_0x245035, _0x116996) {
-                            var _0x4ac35a = _0x245035[0x0];
-                            _0x245035[0x1];
-                            _0x2c1832.innerHTML += '<div class="' .concat(_0x378b5c.classNames['ejs-switch'], '">\n                                <input type="checkbox" value="').concat(_0x116996, '" id="ejs-cheat-switch-').concat(_0x116996, '">\n                                <label for="ejs-cheat-switch-').concat(_0x116996, '">').concat(_0x4ac35a, '</label>\n                                <a href="#" data-idx="').concat(_0x116996, '" onclick="return false" class="').concat(_0x378b5c.classNames['ejs-delete-cheat'], '">&times;</a>\n                            </div>');
-                        });
+                        _0x2c1832.innerHTML = '';
+                        if (_0xa88a13.cheats && Array.isArray(_0xa88a13.cheats)) {
+                            _0xa88a13.cheats.forEach(function(_0x245035, _0x116996) {
+                                var _0x4ac35a = _0x245035[0x0];
+                                _0x245035[0x1];
+                                _0x2c1832.innerHTML += '<div class="' .concat(_0x378b5c.classNames['ejs-switch'], '">\n                                <input type="checkbox" value="').concat(_0x116996, '" id="ejs-cheat-switch-').concat(_0x116996, '">\n                                <label for="ejs-cheat-switch-').concat(_0x116996, '">').concat(_0x4ac35a, '</label>\n                                <a href="#" data-idx="').concat(_0x116996, '" onclick="return false" class="').concat(_0x378b5c.classNames['ejs-delete-cheat'], '">&times;</a>\n                            </div>');
+                            });
+                        }
                     };
                     _0x1093f4.call(_0xa88a13, _0x2c1832, 'click', function(_0x576733) {
                         if (_0x576733.target && _0x576733.target.classList.contains(_0x378b5c.classNames['ejs-delete-cheat']) && _0x576733.target.getAttribute('data-idx')) {
@@ -3229,10 +3238,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x4adb2c) {
                         return _0x132da7(_0xa88a13.elements.dialogs.cheat, true), _0x4adb2c.stopPropagation(), _0xa88a13.elements.container.focus(), !0x1;
                     }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-submit'])), 'click', function(_0x5785f6) {
-                        return _0x378b5c.resetCheat(), _0x2c1832.querySelectorAll('input:checked').forEach(function(_0xeb7426, _0x45b02d) {
+                        _0x378b5c.resetCheat();
+                        _0x2c1832.querySelectorAll('input:checked').forEach(function(_0xeb7426, _0x45b02d) {
                             var _0x27e2c1 = _0xa88a13.cheats[_0xeb7426.value];
-                            _0x27e2c1 && _0x378b5c.setCheat(_0x45b02d, 0x1, _0x27e2c1[0x1]);
-                        }), _0x132da7(_0xa88a13.elements.dialogs.cheat, true), _0xa88a13.elements.container.focus(), !0x1;
+                            _0x27e2c1 && _0x378b5c.setCheat(_0x45b02d, 1, _0x27e2c1[1]);
+                        });
+                        _0x132da7(_0xa88a13.elements.dialogs.cheat, true);
+                        _0xa88a13.elements.container.focus();
+                        return false;
                     }), 'arcade' !== _0xa88a13.system && 'mame' !== _0xa88a13.system && 'mame2003' !== _0xa88a13.system && 'mame2010' !== _0xa88a13.system || (_0x1e2c68.element(_0xa88a13.elements.buttons.cheat) && _0x132da7(_0xa88a13.elements.buttons.cheat, true), _0x378b5c.allowCheat = !0x1), _0x378b5c.setCheat || (_0x132da7(_0xa88a13.elements.buttons.cheat, true), _0x378b5c.allowCheat = !0x1);
                 }
             },
@@ -4710,6 +4723,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 if (this.coreVer === 2) {
                     _0xa88a13 = {};
+                    _0xa88a13['fps'] = {
+                        'label': this.localization('FPS'),
+                        'options': ["show", "hide"],
+                        'default': "hide"
+                    }
                 }
                 if (this.statesSupported === true) {
                     _0xa88a13['save-state-slot'] = {
@@ -5904,17 +5922,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', false, {});
                             var _0x31e271 = await _0xdcec2a.saveState(),
                                 _0x2c1832 = _0xdcec2a.getScreenData();
-                                
+                            
                             if (_0x378b5c.saveLoadDB.call(_0x17edbf, 'save')) {
                                 return;
                             }
-                            var _0x2c1832 = _0x31e271;
                             if (_0x1e2c68.function(_0x17edbf.config.onsavestate)) _0x17edbf.config.onsavestate.call(null, {
                                 'screenshot': _0x2c1832,
-                                'state': _0x2c1832
+                                'state': _0x31e271
                             });
                             else {
-                                var _0x2b5fc8 = new Blob([_0x2c1832]),
+                                var _0x2b5fc8 = new Blob([_0x31e271]),
                                     _0x152605 = _0x17edbf.startName.split('/').pop().split('.'),
                                     _0x51d471 = _0x152605.slice(0x0, _0x152605.length - 0x1).join('.');
                                 if (typeof _0x17edbf.gameName == 'string') {
@@ -6055,7 +6072,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.5';
+                this.version = '2.2.6';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
