@@ -305,7 +305,7 @@
     },
     "mame2003": {
         "version":"3",
-        "old": {"wasm":1, "asmjs":1 },
+        "old": {"wasm":0, "asmjs":1 },
         "netplay": 1,
         "state": 1,
         "asmjs": 0,
