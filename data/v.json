@@ -330,14 +330,5 @@
         "wasm": 1,
         "newCores": 0,
         "oldCores": 1
-    },
-    "dos": {
-        "version":"1",
-        "netplay": 0,
-        "state": 0,
-        "asmjs": 0,
-        "wasm": 1,
-        "newCores": 1,
-        "oldCores": 0
     }
 }

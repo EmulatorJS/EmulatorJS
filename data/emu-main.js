@@ -225,10 +225,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     }
 
     function _0x455c85(_0x4e4b15) {
-        var _0x17edbf = arguments.length > 0x1 && void 0x0 !== arguments[0x1] ? arguments[0x1] : '',
-            _0x2c1832 = arguments.length > 0x2 ? arguments[0x2] : void 0x0,
-            _0x2b8c91 = !(arguments.length > 0x3 && void 0x0 !== arguments[0x3]) || arguments[0x3],
-            _0x23e991 = arguments.length > 0x4 && void 0x0 !== arguments[0x4] && arguments[0x4];
+        var _0x17edbf = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : '',
+            _0x2c1832 = arguments.length > 2 ? arguments[2] : void 0,
+            _0x2b8c91 = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3],
+            _0x23e991 = arguments.length > 4 && void 0 !== arguments[4] && arguments[4];
+        
         _0x1ef215.call(this, _0x4e4b15, _0x17edbf, function _0x5127f4() {
             _0x20109b(_0x4e4b15, _0x17edbf, _0x5127f4, _0x2b8c91, _0x23e991);
             for (var _0x1fe440 = arguments.length, _0x1d3219 = new Array(_0x1fe440), _0x54457c = 0x0; _0x54457c < _0x1fe440; _0x54457c++) _0x1d3219[_0x54457c] = arguments[_0x54457c];
@@ -963,42 +964,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         _0x5a641d = _0x2c1832.n(_0xc778fa),
         _0x4d7024 = {
             '_FS': {
-                'createPath': function(parent, path, canRead, canWrite) {
+                'createFolder': function(parent, name, canRead, canWrite) {
                     if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.mkdir == 'function') {
-                        _0x4d7024.FS.mkdir(path);
+                    if (typeof _0x4d7024.FS.mkdir == 'function' && window.PATH) {
+                        var path = PATH.join2(typeof parent === 'string' ? parent : _0x4d7024.FS.getPath(parent), name);
+                        var mode = _0x4d7024.FS.getMode(canRead, canWrite);
+                        _0x4d7024.FS.mkdir(path, mode);
                     } else {
-                        _0x4d7024.FS.createPath(parent, path, canRead, canWrite);
-                    }
-                },
-                'createDataFile': function(parent, name, data, canRead, canWrite, canOwn) {
-                    if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.writeFile == 'function') {
-                        var path = function(parent, name) {
-                            if (parent.endsWith('/') || name.startsWith('/')) {
-                                return parent + name;
-                            } else {
-                                return parent + '/' + name;
-                            }
-                        }(parent, name);
-                        _0x4d7024.FS.writeFile(path, data);
-                    } else {
-                        _0x4d7024.FS.createDataFile(parent, name, data, canRead, canWrite, canOwn);
-                    }
-                },
-                'createFolder': function(parent, name, a, b) {
-                    if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.mkdir == 'function') {
-                        var path = function(parent, name) {
-                            if (parent.endsWith('/') || name.startsWith('/')) {
-                                return parent + name;
-                            } else {
-                                return parent + '/' + name;
-                            }
-                        }(parent, name);
-                        _0x4d7024.FS.mkdir(path);
-                    } else {
-                        _0x4d7024.FS.createFolder(parent, name, a, b);
+                        _0x4d7024.FS.createFolder(parent, name, canRead, canWrite);
                     }
                 }
             },
@@ -1058,8 +1031,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'arcade': ['zip'],
                         'fba0.2.97.29': ['zip'],
                         'mame2003': ['zip'],
-                        'mame': ['zip'],
-                        'dos': ['zip']
+                        'mame': ['zip']
                     },
                     _0x29078e = {
                         'psx': 'psx',
@@ -1093,8 +1065,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'arcade': 'arcade',
                         'fba0.2.97.29': 'fba0.2.97.29',
                         'jaguar': 'jaguar',
-                        'mame2003': 'mame2003',
-                        'dos': 'dos'
+                        'mame2003': 'mame2003'
                     },
                     _0xc6823 = this,
                     _0x1143c5 = _0xc6823.system;
@@ -1442,6 +1413,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x55627a = _0xa88a13,
                             _0x1cfda7 = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p3)),
                             _0x429d6b = (_0x1bc287.split('.').pop(), _0x29078e[_0x1143c5]),
+                            _0xb0c5d8 = -1,
                             _0x567713 = '',
                             _0x567717 = function() {
                                 if (_0x55627a.coreVer === 2) {
@@ -1533,16 +1505,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         start(_0x55627a.startName);
                                     }
                                     if (2 === _0x52e6f3.data.t) {
-                                        var _0x1c661d = _0x52e6f3.data.file.replace(/\#/g, '');
-                                        try {
-                                            _0x468801 += _0x52e6f3.data.data.length;
-                                            _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x52e6f3.data.data, true, false);
-                                            if (_0x1e0766[_0x429d6b].includes(_0x52e6f3.data.file.split('.').pop())) {
-                                                _0x55627a.startName = _0x52e6f3.data.file;
-                                            }
-                                        } catch (_0x210043) {
-                                            console.log(_0x210043);
-                                        }
+                                        var _0x25aae3 = _0x52e6f3.data.file.split('/'),
+                                            _0x1bc287 = _0x25aae3.pop(),
+                                            _0x1844e3 = _0x1bc287.split('.').pop();
+                                        _0x1bc287 = _0x1bc287.replace(/\#/g, ''), _0x4d7024.FS.createPath('/', _0x25aae3.join('/'), true, true);
+                                        for (var _0x36bace = _0x1e0766[_0x429d6b].length - 0x1; _0x36bace >= 0x0; _0x36bace -= 0x1) _0x1e0766[_0x429d6b][_0x36bace] === _0x1844e3.toLowerCase() && _0x36bace > _0xb0c5d8 && (_0xb0c5d8 = _0x36bace, _0x55627a.startName = ['', _0x25aae3.join('/'), _0x1bc287].join('/'), _0x55627a.startName = _0x55627a.startName.replace(/\/+/, '/'));
+                                        _0x1bc287 && (_0x4d7024.FS.createDataFile('/' .concat(_0x25aae3.join('/')), _0x1bc287, _0x52e6f3.data.data, true, !0x1), _0x468801 += _0x52e6f3.data.data.length), _0x567713 = '/' .concat(_0x25aae3.join('/'), '/').concat(_0x1bc287);
                                     }
                                     if (4 === _0x52e6f3.data.t && _0x52e6f3.data.total > 0) {
                                         var _0x163fc4 = Math.floor(_0x52e6f3.data.current / _0x52e6f3.data.total * 100),
@@ -1581,7 +1549,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var _0x1c661d = _0x1bc287.replace(/\#/g, '');
                             try {
                                 _0x468801 += _0x1844e3.length;
-                                _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x1844e3, true, false);
+                                _0x4d7024.FS.createDataFile('/', _0x1c661d, _0x1844e3, true, false);
                             } catch (_0x210043) {
                                 console.log(_0x210043);
                             }
@@ -1723,7 +1691,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 var _0x17edbf = _0x36004e.data.file.split('/'),
                                                     _0x2c1832 = _0x17edbf.pop(),
                                                     _0x2b320e = _0x2c1832.split('.').pop();
-                                                _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x36004e.data.data, true, !0x1), _0x468801 += _0x36004e.data.data.length, ['ips', 'bps', 'ups'].includes(_0x2b320e) && !_0x4d7024.gamePatch && (_0x4d7024.gamePatch = '/' + _0x17edbf.join('/') + '/' + _0x2c1832);
+                                                _0x4d7024.FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024.FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x36004e.data.data, true, !0x1), _0x468801 += _0x36004e.data.data.length, ['ips', 'bps', 'ups'].includes(_0x2b320e) && !_0x4d7024.gamePatch && (_0x4d7024.gamePatch = '/' + _0x17edbf.join('/') + '/' + _0x2c1832);
                                             }
                                             if (0x4 === _0x36004e.data.t && _0x36004e.data.total > 0x0) {
                                                 var _0x1097ca = Math.floor(_0x36004e.data.current / _0x36004e.data.total * 0x64),
@@ -1752,7 +1720,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 } else {
                                     _0x468801 += _0x1097ca.length;
                                     _0x4d7024.gamePatch = '/'+_0xe531f0;
-                                    _0x4d7024._FS.createDataFile('/', _0xe531f0, _0x1097ca, true, false);
+                                    _0x4d7024.FS.createDataFile('/', _0xe531f0, _0x1097ca, true, false);
                                     _0x5048db();
                                 }
                             }).catch(function(_0x314293) {
@@ -1816,7 +1784,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     });
                                             var _0x54d79 = _0xa1889f.replace(/\#/g, '');
                                             try {
-                                                _0x468801 += _0x17edbf.length, _0x4d7024._FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
+                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
                                             } catch (_0x125736) {
                                                 console.log(_0x125736);
                                             }
@@ -1835,9 +1803,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     return _0x1c8a88;
                                                 }).length !== _0x6f30ae ? _0x31f098() : (_0x198a02.forEach(function(_0x22b824, _0x16eecf) {
                                                     _0x2c1832.set(_0x22b824.data, 0x6400000 * (_0x16eecf + 0x1));
-                                                }), _0x4d7024._FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
+                                                }), _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
                                             }, function() {}, 'sparse');
-                                        } else _0x4d7024._FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
+                                        } else _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
                                     else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
@@ -1859,8 +1827,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         var _0x17edbf = _0x1e8643.data.file.split('/'),
                                             _0x2c1832 = _0x17edbf.pop();
                                         _0x2c1832.split('.').pop();
-                                        _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true);
-                                        _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, false);
+                                        _0x4d7024.FS.createPath('/', _0x17edbf.join('/'), true, true);
+                                        _0x4d7024.FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, false);
                                         _0x468801 += _0x1e8643.data.data.length;
                                     }
                                     if (4 === _0x1e8643.data.t && _0x1e8643.data.total > 0) {
@@ -1879,7 +1847,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             });
                         } else if (_0x80852b === 'rar') {
                             extractRar(_0x4ce206).then(function(_0x259be0) {
-                                _0x259be0.onmessage = _0x19a43e, _0x259be0.postMessage(_0x3cff36);
+                                _0x259be0.onmessage = _0x19a43e;
+                                _0x259be0.postMessage(_0x3cff36);
                             });
                         } else if (_0x80852b === 'zip' && !['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x3ea97.system)) {
                             extractFile(_0x2c1832).then(function(_0x31c70d) {
@@ -1889,7 +1858,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } else {
                             _0x468801 += _0x3cff36.length;
                             _0x50119.innerHTML = 'BIOS ready';
-                            _0x4d7024._FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, false);
+                            _0x4d7024.FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, false);
                             _0x452592();
                         }
                     },
@@ -1933,15 +1902,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
                             _0x32dd27 = '';
                         if (_0x2c1832.coreVer === 2) {
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024.FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
                             _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);
                             _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);
-                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);
+                            _0x4d7024.FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);
                         } else {
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024.FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
                             _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);
                             _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);
-                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);
+                            _0x4d7024.FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);
                         }
                         if (_0x55117c && Object.keys(_0x55117c).forEach(function(_0x2950d3) {
                                 if (_0x2c1832.lightgun && 'nes' === _0x2c1832.system && 'system_type' === _0x2950d3) return !0x1;
@@ -3818,6 +3787,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x27f4c4.FS.syncfs(function() {});
                     }
                 }, true);
+                /**  todo
+                setInterval(function() {
+                    if (_0xa88a13.started) {
+                        console.log('saving save files');
+                        _0x378b5c.saveSavFiles();
+                        _0x27f4c4.FS.syncfs(false, function() {});
+                    }
+                }, 600000)
+                */
             },
             'listeners': function() {
                 var _0xa88a13 = this;
@@ -3999,7 +3977,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     try {
                         _0x27f4c4.FS.unlink('game.state');
                     } catch(e){}
-                    _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
+                    _0x27f4c4.FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
                     null === _0x1d4918 && (_0x1d4918 = 0);
                     if ('arcade' === _0x17edbf) {
                         setTimeout(function() {
@@ -4041,7 +4019,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } catch (_0x4b4d4c) {}
                         try {
                             var _0x17edbf = await _0x378b5c.saveState();
-                            _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                            _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
                             clearTimeout(_0x378b5c.saveMsgTransitions);
                             _0x378b5c.saveMsgTransitions = setTimeout(function() {
@@ -6072,7 +6050,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.6';
+                this.version = '2.2.7';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
