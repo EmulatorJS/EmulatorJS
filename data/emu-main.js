@@ -2125,7 +2125,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
                                 _0x3e4345 = Boolean(_0x28ee7f.wasm);
                             var status = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
-                            if (!(_this.config.oldCores && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1) && !(_0x4d7024.isMobileDevice && _0x28ee7f.oldCores === 1)) {
+                            if (!(_this.config.oldCores === true && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1) && !(_0x4d7024.isMobileDevice && _0x28ee7f.oldCores === 1)) {
                                 _this.coreVer = 2;
                                 delete Module.readAsync;
                                 Module.INITIAL_MEMORY = Module.TOTAL_MEMORY;
