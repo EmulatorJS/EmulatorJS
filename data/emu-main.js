@@ -3279,146 +3279,26 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'initGamepad': function() {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
-                    _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay)),
-                    _0x181250 = new _0x4ad1c6.Gamepad();
-                _0x378b5c.gamepad = _0x181250;
-                if (!_0x181250.init()) {
+                    _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay));
+                var gamepad;
+                try {
+                    gamepad = new _0x4ad1c6();
+                } catch(e) {
                     console.warn('gamepad not supported');
                     return;
                 }
-                 _0x181250.bind(_0x4ad1c6.Gamepad.Event.TICK, function(_0x2fe35d) {
-                    _0x2fe35d.forEach(function(_0x2b21f8) {
-                        var _0x17edbf;
-                        if (_0x2b21f8 && _0x2b21f8.axes && _0x2b21f8.axes[9]) {
-                            (_0x17edbf = _0x2b21f8.axes[9]) < 3.28571 ? 1 == _0x17edbf ? (_0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf <= -0.7142857 && _0x17edbf >= -0.714291 ? (_0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf >= 0.42856 && _0x17edbf <= 0.42858 ? (_0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf >= -0.14287 && _0x17edbf <= -0.14285 ? (_0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf <= -1 && _0x17edbf >= -1.01 ? _0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })) : _0x17edbf >= 0.142857 && _0x17edbf <= 0.142858 ? _0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })) : _0x17edbf >= 0.7142857 && _0x17edbf <= 0.7142858 ? _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })) : _0x17edbf <= -0.42857 && _0x17edbf >= -0.42858 && (_0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : (_0x2b21f8.extra_buttons[12].pressed && (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[13].pressed && (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[14].pressed && (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[15].pressed && (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })));
-                        }
-                    });
-                });
-                _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, function(_0x15761a) {
-                    console.log(_0x15761a.gamepad)
+                _0x378b5c.gamepad = gamepad;
+                gamepad.on('buttondown', function(event) {
                     if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                         var _0x387018, _0xdd4205 = parseInt(_0x2c1832.getAttribute('data-index'), 0xa),
                             _0x1f4ee2 = _0x2c1832.getAttribute('data-id');
-                        if (_0x15761a.gamepad.index === parseInt(_0xdd4205, 0xa)) {
-                            for (var _0x211087 = 0x0; _0x211087 < 0x20 && ((_0x387018 = _0x15761a.gamepad.buttons[_0x211087]) || (_0x387018 = _0x15761a.gamepad.extra_buttons[_0x211087]), !_0x387018 || !('number' == typeof _0x387018 && 0x1 === _0x387018 || 'number' == typeof _0x387018.value && 0x1 === _0x387018.value)); _0x211087 += 0x1);
+                        if (event.gamepadIndex === parseInt(_0xdd4205, 0xa)) {
                             var _0x126d2d = null;
-                            (_0x126d2d = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))).setAttribute('data-value', _0x15761a.index), _0x126d2d.value = 'button ' .concat(_0x15761a.index + 0x1), _0x132da7(_0x2c1832, true);
+                            (_0x126d2d = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))).setAttribute('data-value', event.index), _0x126d2d.value = 'button ' .concat(event.index + 0x1), _0x132da7(_0x2c1832, true);
                         }
-                    } else Object.keys(_0x378b5c.controllers[_0x15761a.gamepad.index.toString()]).forEach(function(_0x3cf4d3) {
-                        var _0x5cf388 = _0x15761a.gamepad.index.toString();
-                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25', '26'].includes(_0x3cf4d3)) {
+                    } else Object.keys(_0x378b5c.controllers[event.gamepadIndex.toString()]).forEach(function(_0x3cf4d3) {
+                        var _0x5cf388 = event.gamepadIndex.toString();
+                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(event.index, 0xa) && ['24', '25', '26'].includes(_0x3cf4d3)) {
                             if (_0x3cf4d3 == '24') {//save
                                 _0x378b5c.quickSaveState()
                             } else if (_0x3cf4d3 == '25') {//load
@@ -3427,29 +3307,31 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x378b5c.changeStateSlot()
                             }
                         }
-                        parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
+                        parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(event.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(event.gamepadIndex, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_UP, function(_0x3220b3) {
+                });
+                gamepad.on('buttonup', function(event) {
                     Object.keys(_0x378b5c.controllers).forEach(function(_0x302c3e) {
                         Object.keys(_0x378b5c.controllers[_0x302c3e]).forEach(function(_0x14eb8a) {
-                            parseInt(_0x378b5c.controllers[_0x302c3e][_0x14eb8a].value2, 0xa) === parseInt(_0x3220b3.index, 0xa) && parseInt(_0x302c3e, 0xa) === parseInt(_0x3220b3.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x302c3e, _0x14eb8a, 0x0);
+                            parseInt(_0x378b5c.controllers[_0x302c3e][_0x14eb8a].value2, 0xa) === parseInt(event.index, 0xa) && parseInt(_0x302c3e, 0xa) === parseInt(event.gamepadIndex, 0xa) && _0x378b5c.simulateInput(_0x302c3e, _0x14eb8a, 0x0);
                         });
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.AXIS_CHANGED, function(_0x31f017) {
+                });
+                gamepad.on('axischanged', function(event) {
                     var value = function(value) {
                         if (value > 0.5 || value < -0.5) {
                             return (value > 0) ? 1 : -1;
                         } else {
                             return 0;
                         }
-                    }(_0x31f017.value);
+                    }(event.value);
                     if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                         if (value !== 0) {
                             var _0x1f4ee2 = _0x2c1832.getAttribute('data-id'),
                                 _0xdd4205 = parseInt(_0x2c1832.getAttribute('data-index'), 0xa);
                             var _0x126d2d = _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))
-                            _0x126d2d.setAttribute('data-value', _0x31f017.axis + ':' + value)
-                            _0x126d2d.value = _0x31f017.axis + ':' + value
+                            _0x126d2d.setAttribute('data-value', event.axis + ':' + value)
+                            _0x126d2d.value = event.axis + ':' + value
                             _0x132da7(_0x2c1832, true)
                         }
                     } else {
@@ -3457,12 +3339,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x378b5c.prevButtons = {}
                         }
                         var quit = false
-                        var _0x5cf388 = _0x31f017.gamepad.index.toString();
+                        var _0x5cf388 = event.gamepadIndex.toString();
                         if (! _0x378b5c.prevButtons[_0x5cf388]) {
                             _0x378b5c.prevButtons[_0x5cf388] = {}
                         }
-                        if (! _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis]) {
-                            _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = 0
+                        if (! _0x378b5c.prevButtons[_0x5cf388][event.axis]) {
+                            _0x378b5c.prevButtons[_0x5cf388][event.axis] = 0
                         }
                         if (! _0x378b5c.prevButtons[_0x5cf388].buttonID) {
                             _0x378b5c.prevButtons[_0x5cf388].buttonID = 0
@@ -3472,7 +3354,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
                                 continue
                             }
-                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value && ['24', '25', '26'].includes(_0x3cf4d3)) {
+                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === event.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value && ['24', '25', '26'].includes(_0x3cf4d3)) {
                                 if (_0x3cf4d3 == '24') {//save
                                     quit = true
                                     _0x378b5c.quickSaveState()
@@ -3485,19 +3367,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             }
                             if (value === 0) {
                                 // button up
-                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis) {
-                                    _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = value
+                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === event.axis) {
+                                    _0x378b5c.prevButtons[_0x5cf388][event.axis] = value
                                     _0x378b5c.prevButtons[_0x5cf388].buttonID = _0x3cf4d3
                                     _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x0)
                                 }
                             } else {
                                 //button down
-                                if ((1 === _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] && value === -1) ||
-                                    (-1 === _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] && value === 1)) {
+                                if ((1 === _0x378b5c.prevButtons[_0x5cf388][event.axis] && value === -1) ||
+                                    (-1 === _0x378b5c.prevButtons[_0x5cf388][event.axis] && value === 1)) {
                                     _0x378b5c.simulateInput(_0x5cf388, _0x378b5c.prevButtons[_0x5cf388].buttonID, 0x0)
                                 }
-                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value) {
-                                    _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = value
+                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === event.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value) {
+                                    _0x378b5c.prevButtons[_0x5cf388][event.axis] = value
                                     _0x378b5c.prevButtons[_0x5cf388].buttonID = _0x3cf4d3
                                     quit = true
                                     _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1)
@@ -3511,18 +3393,52 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             return
                         }
                     }
-                    
-                    Math.abs(_0x31f017.value) <= 0.1 && (_0x31f017.value = 0x0);
-                    var _0x17edbf = _0x31f017.gamepad.index;
-                    'LEFT_STICK_X' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x10, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x11, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x11, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x10, 0x0))), 'LEFT_STICK_Y' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x12, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x13, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x13, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x12, 0x0))), 'RIGHT_STICK_X' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x14, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x15, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x15, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x14, 0x0))), 'RIGHT_STICK_Y' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x16, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x17, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x17, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x16, 0x0)));
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.DISCONNECTED, function(_0x1c996a) {
-                    [0x0, 0x1, 0x2, 0x3].forEach(function(_0x429f30) {
-                        var _0x2c1832 = _0x181250.gamepads[_0x429f30];
+                    Math.abs(event.value) <= 0.1 && (event.value = 0);
+                    var _0x17edbf = event.gamepadIndex;
+                    var coreVer = _0xa88a13.coreVer;
+                    if (event.axis === 'LEFT_STICK_X') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 16, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 17, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 17, -0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 16, 0);
+                        }
+                    } else if (event.axis === 'LEFT_STICK_Y') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 18, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 19, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 19, -0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 18, 0);
+                        }
+                    } else if (event.axis === 'RIGHT_STICK_X') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 20, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 21, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 21, -0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 20, 0);
+                        }
+                    } else if (event.axis === 'RIGHT_STICK_Y') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 22, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 23, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 23, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 22, 0);
+                        }
+                    }
+                });
+                gamepad.on('disconnected', function(event) {
+                    [0, 1, 2, 3].forEach(function(_0x429f30) {
+                        var _0x2c1832 = gamepad.gamepads[_0x429f30];
                         _0x17edbf.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x429f30, ' .gamepad-name')).innerHTML = _0x2c1832 ? _0x2c1832.id : 'n/a';
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.CONNECTED, function(_0x748f24) {
-                    Object.keys(_0x181250.gamepads).forEach(function(_0x327c74) {
-                        var _0x2c1832 = _0x181250.gamepads[_0x327c74];
+                });
+                gamepad.on('connected', function(event) {
+                    Object.keys(gamepad.gamepads).forEach(function(_0x327c74) {
+                        var _0x2c1832 = gamepad.gamepads[_0x327c74];
                         _0x17edbf.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x327c74, ' .gamepad-name')).innerHTML = _0x2c1832 ? _0x2c1832.id : 'n/a';
                     });
                 });
@@ -6050,7 +5966,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.7';
+                this.version = '2.2.8';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
