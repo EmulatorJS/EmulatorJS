@@ -3703,15 +3703,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x27f4c4.FS.syncfs(function() {});
                     }
                 }, true);
-                /**  todo
                 setInterval(function() {
                     if (_0xa88a13.started) {
                         console.log('saving save files');
                         _0x378b5c.saveSavFiles();
                         _0x27f4c4.FS.syncfs(false, function() {});
                     }
-                }, 600000)
-                */
+                }, 300000)
             },
             'listeners': function() {
                 var _0xa88a13 = this;
