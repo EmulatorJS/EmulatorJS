@@ -113,7 +113,7 @@ var EJS = function(_0x574f5e) {
                 var hasGamepad = false;
                 for (var j=0; j<this.gamepads.length; j++) {
                     if (!this.gamepads[j]) continue;
-                    if (this.gamepads[j].id === gamepads[i].id) {
+                    if (this.gamepads[j].index === gamepads[i].index) {
                         hasGamepad = true;
                         if (typeof this.onaxischanged == 'function') {
                             for (var q=0; q<this.gamepads[j].axes.length; q++) {
@@ -173,7 +173,7 @@ var EJS = function(_0x574f5e) {
                 var has = false;
                 for (var i=0; i<gamepads.length; i++) {
                     if (!gamepads[i]) continue;
-                    if (this.gamepads[j].id === gamepads[i].id) {
+                    if (this.gamepads[j].index === gamepads[i].index) {
                         has = true;
                     }
                 }
