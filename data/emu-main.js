@@ -225,10 +225,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     }
 
     function _0x455c85(_0x4e4b15) {
-        var _0x17edbf = arguments.length > 0x1 && void 0x0 !== arguments[0x1] ? arguments[0x1] : '',
-            _0x2c1832 = arguments.length > 0x2 ? arguments[0x2] : void 0x0,
-            _0x2b8c91 = !(arguments.length > 0x3 && void 0x0 !== arguments[0x3]) || arguments[0x3],
-            _0x23e991 = arguments.length > 0x4 && void 0x0 !== arguments[0x4] && arguments[0x4];
+        var _0x17edbf = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : '',
+            _0x2c1832 = arguments.length > 2 ? arguments[2] : void 0,
+            _0x2b8c91 = !(arguments.length > 3 && void 0 !== arguments[3]) || arguments[3],
+            _0x23e991 = arguments.length > 4 && void 0 !== arguments[4] && arguments[4];
+        
         _0x1ef215.call(this, _0x4e4b15, _0x17edbf, function _0x5127f4() {
             _0x20109b(_0x4e4b15, _0x17edbf, _0x5127f4, _0x2b8c91, _0x23e991);
             for (var _0x1fe440 = arguments.length, _0x1d3219 = new Array(_0x1fe440), _0x54457c = 0x0; _0x54457c < _0x1fe440; _0x54457c++) _0x1d3219[_0x54457c] = arguments[_0x54457c];
@@ -963,42 +964,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         _0x5a641d = _0x2c1832.n(_0xc778fa),
         _0x4d7024 = {
             '_FS': {
-                'createPath': function(parent, path, canRead, canWrite) {
+                'createFolder': function(parent, name, canRead, canWrite) {
                     if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.mkdir == 'function') {
-                        _0x4d7024.FS.mkdir(path);
+                    if (typeof _0x4d7024.FS.mkdir == 'function' && window.PATH) {
+                        var path = PATH.join2(typeof parent === 'string' ? parent : _0x4d7024.FS.getPath(parent), name);
+                        var mode = _0x4d7024.FS.getMode(canRead, canWrite);
+                        _0x4d7024.FS.mkdir(path, mode);
                     } else {
-                        _0x4d7024.FS.createPath(parent, path, canRead, canWrite);
-                    }
-                },
-                'createDataFile': function(parent, name, data, canRead, canWrite, canOwn) {
-                    if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.writeFile == 'function') {
-                        var path = function(parent, name) {
-                            if (parent.endsWith('/') || name.startsWith('/')) {
-                                return parent + name;
-                            } else {
-                                return parent + '/' + name;
-                            }
-                        }(parent, name);
-                        _0x4d7024.FS.writeFile(path, data);
-                    } else {
-                        _0x4d7024.FS.createDataFile(parent, name, data, canRead, canWrite, canOwn);
-                    }
-                },
-                'createFolder': function(parent, name, a, b) {
-                    if (! _0x4d7024.FS) return;
-                    if (typeof _0x4d7024.FS.mkdir == 'function') {
-                        var path = function(parent, name) {
-                            if (parent.endsWith('/') || name.startsWith('/')) {
-                                return parent + name;
-                            } else {
-                                return parent + '/' + name;
-                            }
-                        }(parent, name);
-                        _0x4d7024.FS.mkdir(path);
-                    } else {
-                        _0x4d7024.FS.createFolder(parent, name, a, b);
+                        _0x4d7024.FS.createFolder(parent, name, canRead, canWrite);
                     }
                 }
             },
@@ -1058,8 +1031,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'arcade': ['zip'],
                         'fba0.2.97.29': ['zip'],
                         'mame2003': ['zip'],
-                        'mame': ['zip'],
-                        'dos': ['zip']
+                        'mame': ['zip']
                     },
                     _0x29078e = {
                         'psx': 'psx',
@@ -1093,8 +1065,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'arcade': 'arcade',
                         'fba0.2.97.29': 'fba0.2.97.29',
                         'jaguar': 'jaguar',
-                        'mame2003': 'mame2003',
-                        'dos': 'dos'
+                        'mame2003': 'mame2003'
                     },
                     _0xc6823 = this,
                     _0x1143c5 = _0xc6823.system;
@@ -1442,6 +1413,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x55627a = _0xa88a13,
                             _0x1cfda7 = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p3)),
                             _0x429d6b = (_0x1bc287.split('.').pop(), _0x29078e[_0x1143c5]),
+                            _0xb0c5d8 = -1,
                             _0x567713 = '',
                             _0x567717 = function() {
                                 if (_0x55627a.coreVer === 2) {
@@ -1511,6 +1483,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 if (_0xc6823.coreVer === 2) {
                                     _0x4d7024.Module.resumeMainLoop();
                                     _0x4d7024.Module.setCanvasSize(800, 600);
+                                    var i=0;
+                                    var j = setInterval(function() { // some cores have a messed up screen size on load (for example - gba)
+                                        if (i>20) clearInterval(j);
+                                        i++;
+                                        _0x4d7024.Module.setCanvasSize(800, 600);
+                                    }, 100)
                                 }
                                 _0xbae705.call(_0x55627a, _0x55627a.elements.container, 'start-game');
                                 try{_0x567717();}catch(e){}
@@ -1527,16 +1505,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         start(_0x55627a.startName);
                                     }
                                     if (2 === _0x52e6f3.data.t) {
-                                        var _0x1c661d = _0x52e6f3.data.file.replace(/\#/g, '');
-                                        try {
-                                            _0x468801 += _0x52e6f3.data.data.length;
-                                            _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x52e6f3.data.data, true, false);
-                                            if (_0x1e0766[_0x429d6b].includes(_0x52e6f3.data.file.split('.').pop())) {
-                                                _0x55627a.startName = _0x52e6f3.data.file;
-                                            }
-                                        } catch (_0x210043) {
-                                            console.log(_0x210043);
-                                        }
+                                        var _0x25aae3 = _0x52e6f3.data.file.split('/'),
+                                            _0x1bc287 = _0x25aae3.pop(),
+                                            _0x1844e3 = _0x1bc287.split('.').pop();
+                                        _0x1bc287 = _0x1bc287.replace(/\#/g, ''), _0x4d7024.FS.createPath('/', _0x25aae3.join('/'), true, true);
+                                        for (var _0x36bace = _0x1e0766[_0x429d6b].length - 0x1; _0x36bace >= 0x0; _0x36bace -= 0x1) _0x1e0766[_0x429d6b][_0x36bace] === _0x1844e3.toLowerCase() && _0x36bace > _0xb0c5d8 && (_0xb0c5d8 = _0x36bace, _0x55627a.startName = ['', _0x25aae3.join('/'), _0x1bc287].join('/'), _0x55627a.startName = _0x55627a.startName.replace(/\/+/, '/'));
+                                        _0x1bc287 && (_0x4d7024.FS.createDataFile('/' .concat(_0x25aae3.join('/')), _0x1bc287, _0x52e6f3.data.data, true, !0x1), _0x468801 += _0x52e6f3.data.data.length), _0x567713 = '/' .concat(_0x25aae3.join('/'), '/').concat(_0x1bc287);
                                     }
                                     if (4 === _0x52e6f3.data.t && _0x52e6f3.data.total > 0) {
                                         var _0x163fc4 = Math.floor(_0x52e6f3.data.current / _0x52e6f3.data.total * 100),
@@ -1575,7 +1549,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             var _0x1c661d = _0x1bc287.replace(/\#/g, '');
                             try {
                                 _0x468801 += _0x1844e3.length;
-                                _0x4d7024._FS.createDataFile('/', _0x1c661d, _0x1844e3, true, false);
+                                _0x4d7024.FS.createDataFile('/', _0x1c661d, _0x1844e3, true, false);
                             } catch (_0x210043) {
                                 console.log(_0x210043);
                             }
@@ -1717,7 +1691,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 var _0x17edbf = _0x36004e.data.file.split('/'),
                                                     _0x2c1832 = _0x17edbf.pop(),
                                                     _0x2b320e = _0x2c1832.split('.').pop();
-                                                _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x36004e.data.data, true, !0x1), _0x468801 += _0x36004e.data.data.length, ['ips', 'bps', 'ups'].includes(_0x2b320e) && !_0x4d7024.gamePatch && (_0x4d7024.gamePatch = '/' + _0x17edbf.join('/') + '/' + _0x2c1832);
+                                                _0x4d7024.FS.createPath('/', _0x17edbf.join('/'), true, true), _0x4d7024.FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x36004e.data.data, true, !0x1), _0x468801 += _0x36004e.data.data.length, ['ips', 'bps', 'ups'].includes(_0x2b320e) && !_0x4d7024.gamePatch && (_0x4d7024.gamePatch = '/' + _0x17edbf.join('/') + '/' + _0x2c1832);
                                             }
                                             if (0x4 === _0x36004e.data.t && _0x36004e.data.total > 0x0) {
                                                 var _0x1097ca = Math.floor(_0x36004e.data.current / _0x36004e.data.total * 0x64),
@@ -1746,7 +1720,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 } else {
                                     _0x468801 += _0x1097ca.length;
                                     _0x4d7024.gamePatch = '/'+_0xe531f0;
-                                    _0x4d7024._FS.createDataFile('/', _0xe531f0, _0x1097ca, true, false);
+                                    _0x4d7024.FS.createDataFile('/', _0xe531f0, _0x1097ca, true, false);
                                     _0x5048db();
                                 }
                             }).catch(function(_0x314293) {
@@ -1810,7 +1784,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     });
                                             var _0x54d79 = _0xa1889f.replace(/\#/g, '');
                                             try {
-                                                _0x468801 += _0x17edbf.length, _0x4d7024._FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
+                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
                                             } catch (_0x125736) {
                                                 console.log(_0x125736);
                                             }
@@ -1829,9 +1803,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                     return _0x1c8a88;
                                                 }).length !== _0x6f30ae ? _0x31f098() : (_0x198a02.forEach(function(_0x22b824, _0x16eecf) {
                                                     _0x2c1832.set(_0x22b824.data, 0x6400000 * (_0x16eecf + 0x1));
-                                                }), _0x4d7024._FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
+                                                }), _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
                                             }, function() {}, 'sparse');
-                                        } else _0x4d7024._FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
+                                        } else _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
                                     else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
@@ -1853,8 +1827,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         var _0x17edbf = _0x1e8643.data.file.split('/'),
                                             _0x2c1832 = _0x17edbf.pop();
                                         _0x2c1832.split('.').pop();
-                                        _0x4d7024._FS.createPath('/', _0x17edbf.join('/'), true, true);
-                                        _0x4d7024._FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, false);
+                                        _0x4d7024.FS.createPath('/', _0x17edbf.join('/'), true, true);
+                                        _0x4d7024.FS.createDataFile('/' + _0x17edbf.join('/'), _0x2c1832, _0x1e8643.data.data, true, false);
                                         _0x468801 += _0x1e8643.data.data.length;
                                     }
                                     if (4 === _0x1e8643.data.t && _0x1e8643.data.total > 0) {
@@ -1873,7 +1847,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             });
                         } else if (_0x80852b === 'rar') {
                             extractRar(_0x4ce206).then(function(_0x259be0) {
-                                _0x259be0.onmessage = _0x19a43e, _0x259be0.postMessage(_0x3cff36);
+                                _0x259be0.onmessage = _0x19a43e;
+                                _0x259be0.postMessage(_0x3cff36);
                             });
                         } else if (_0x80852b === 'zip' && !['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x3ea97.system)) {
                             extractFile(_0x2c1832).then(function(_0x31c70d) {
@@ -1883,7 +1858,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } else {
                             _0x468801 += _0x3cff36.length;
                             _0x50119.innerHTML = 'BIOS ready';
-                            _0x4d7024._FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, false);
+                            _0x4d7024.FS.createDataFile('/', _0x5e7c8b, _0x3cff36, true, false);
                             _0x452592();
                         }
                     },
@@ -1927,15 +1902,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         var _0x55117c = _0x5dc0c0(_0x36edb7, _0x2593da.storage.get('core-options') || {}),
                             _0x32dd27 = '';
                         if (_0x2c1832.coreVer === 2) {
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024.FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
                             _0x4d7024._FS.createFolder('/home/web_user', 'retroarch', true, true);
                             _0x4d7024._FS.createFolder('/home/web_user/retroarch', 'userdata', true, true);
-                            _0x4d7024._FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);
+                            _0x4d7024.FS.createDataFile('/home/web_user/retroarch/userdata', 'retroarch.cfg', _0x32dd27, true, true);
                         } else {
-                            _0x4d7024._FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
+                            _0x4d7024.FS.createDataFile('/etc', 'retroarch.cfg', _0x14d39f, true, true);
                             _0x4d7024._FS.createFolder('/home/web_user', '.config', true, true);
                             _0x4d7024._FS.createFolder('/home/web_user/.config', 'retroarch', true, true);
-                            _0x4d7024._FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);
+                            _0x4d7024.FS.createDataFile('/home/web_user/.config/retroarch', 'retroarch-core-options.cfg', _0x32dd27, true, true);
                         }
                         if (_0x55117c && Object.keys(_0x55117c).forEach(function(_0x2950d3) {
                                 if (_0x2c1832.lightgun && 'nes' === _0x2c1832.system && 'system_type' === _0x2950d3) return !0x1;
@@ -2150,7 +2125,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x9a1f1 = Boolean(_0x28ee7f.asmjs),
                                 _0x3e4345 = Boolean(_0x28ee7f.wasm);
                             var status = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
-                            if (!(_this.config.oldCores && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1) && !(_0x4d7024.isMobileDevice && _0x28ee7f.oldCores === 1)) {
+                            if (!(_this.config.oldCores === true && _0x28ee7f.oldCores === 1) && _0x28ee7f.newCores === 1 && (_0x2d904a.wasm || _0x9a1f1) && !(_0x4d7024.isMobileDevice && _0x28ee7f.oldCores === 1)) {
                                 _this.coreVer = 2;
                                 delete Module.readAsync;
                                 Module.INITIAL_MEMORY = Module.TOTAL_MEMORY;
@@ -2934,7 +2909,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             },
             'setGamepadDialog': function() {
                 var _0xa88a13 = this;
-                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_0xa88a13.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_0xa88a13.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_0xa88a13.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_0xa88a13.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_0xa88a13.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">'+_0xa88a13.localization('Update')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_0xa88a13.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_0xa88a13.localization('Clear')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">'+_0xa88a13.localization('Cancel')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_0xa88a13.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        '
+                _0xa88a13.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_0xa88a13.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_0xa88a13.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_0xa88a13.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_0xa88a13.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_0xa88a13.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">'+_0xa88a13.localization('Update')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_0xa88a13.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_0xa88a13.localization('Clear')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">'+_0xa88a13.localization('Cancel')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_0xa88a13.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        ';
                 
                 var _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Gamepad')+'</div>\n                        <div style="text-align:center;width:50%;float:left">'+_0xa88a13.localization('Keyboard')+'</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
                     _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">'+_0xa88a13.localization('Set')+'</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
@@ -3206,11 +3181,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             } catch (_0x101b3e) {}
                             _0x17edbf && (_0xa88a13.cheats = _0x17edbf);
                         }
-                        _0x2c1832.innerHTML = '', _0xa88a13.cheats && Array.isArray(_0xa88a13.cheats) && _0xa88a13.cheats.forEach(function(_0x245035, _0x116996) {
-                            var _0x4ac35a = _0x245035[0x0];
-                            _0x245035[0x1];
-                            _0x2c1832.innerHTML += '<div class="' .concat(_0x378b5c.classNames['ejs-switch'], '">\n                                <input type="checkbox" value="').concat(_0x116996, '" id="ejs-cheat-switch-').concat(_0x116996, '">\n                                <label for="ejs-cheat-switch-').concat(_0x116996, '">').concat(_0x4ac35a, '</label>\n                                <a href="#" data-idx="').concat(_0x116996, '" onclick="return false" class="').concat(_0x378b5c.classNames['ejs-delete-cheat'], '">&times;</a>\n                            </div>');
-                        });
+                        _0x2c1832.innerHTML = '';
+                        if (_0xa88a13.cheats && Array.isArray(_0xa88a13.cheats)) {
+                            _0xa88a13.cheats.forEach(function(_0x245035, _0x116996) {
+                                var _0x4ac35a = _0x245035[0x0];
+                                _0x245035[0x1];
+                                _0x2c1832.innerHTML += '<div class="' .concat(_0x378b5c.classNames['ejs-switch'], '">\n                                <input type="checkbox" value="').concat(_0x116996, '" id="ejs-cheat-switch-').concat(_0x116996, '">\n                                <label for="ejs-cheat-switch-').concat(_0x116996, '">').concat(_0x4ac35a, '</label>\n                                <a href="#" data-idx="').concat(_0x116996, '" onclick="return false" class="').concat(_0x378b5c.classNames['ejs-delete-cheat'], '">&times;</a>\n                            </div>');
+                            });
+                        }
                     };
                     _0x1093f4.call(_0xa88a13, _0x2c1832, 'click', function(_0x576733) {
                         if (_0x576733.target && _0x576733.target.classList.contains(_0x378b5c.classNames['ejs-delete-cheat']) && _0x576733.target.getAttribute('data-idx')) {
@@ -3229,10 +3207,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x4adb2c) {
                         return _0x132da7(_0xa88a13.elements.dialogs.cheat, true), _0x4adb2c.stopPropagation(), _0xa88a13.elements.container.focus(), !0x1;
                     }), _0x1093f4.call(this, _0xa88a13.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-submit'])), 'click', function(_0x5785f6) {
-                        return _0x378b5c.resetCheat(), _0x2c1832.querySelectorAll('input:checked').forEach(function(_0xeb7426, _0x45b02d) {
+                        _0x378b5c.resetCheat();
+                        _0x2c1832.querySelectorAll('input:checked').forEach(function(_0xeb7426, _0x45b02d) {
                             var _0x27e2c1 = _0xa88a13.cheats[_0xeb7426.value];
-                            _0x27e2c1 && _0x378b5c.setCheat(_0x45b02d, 0x1, _0x27e2c1[0x1]);
-                        }), _0x132da7(_0xa88a13.elements.dialogs.cheat, true), _0xa88a13.elements.container.focus(), !0x1;
+                            _0x27e2c1 && _0x378b5c.setCheat(_0x45b02d, 1, _0x27e2c1[1]);
+                        });
+                        _0x132da7(_0xa88a13.elements.dialogs.cheat, true);
+                        _0xa88a13.elements.container.focus();
+                        return false;
                     }), 'arcade' !== _0xa88a13.system && 'mame' !== _0xa88a13.system && 'mame2003' !== _0xa88a13.system && 'mame2010' !== _0xa88a13.system || (_0x1e2c68.element(_0xa88a13.elements.buttons.cheat) && _0x132da7(_0xa88a13.elements.buttons.cheat, true), _0x378b5c.allowCheat = !0x1), _0x378b5c.setCheat || (_0x132da7(_0xa88a13.elements.buttons.cheat, true), _0x378b5c.allowCheat = !0x1);
                 }
             },
@@ -3297,146 +3279,26 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'initGamepad': function() {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
-                    _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay)),
-                    _0x181250 = new _0x4ad1c6.Gamepad();
-                _0x378b5c.gamepad = _0x181250;
-                if (!_0x181250.init()) {
+                    _0x2c1832 = this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames.overlay));
+                var gamepad;
+                try {
+                    gamepad = new _0x4ad1c6();
+                } catch(e) {
                     console.warn('gamepad not supported');
                     return;
                 }
-                 _0x181250.bind(_0x4ad1c6.Gamepad.Event.TICK, function(_0x2fe35d) {
-                    _0x2fe35d.forEach(function(_0x2b21f8) {
-                        var _0x17edbf;
-                        if (_0x2b21f8 && _0x2b21f8.axes && _0x2b21f8.axes[9]) {
-                            (_0x17edbf = _0x2b21f8.axes[9]) < 3.28571 ? 1 == _0x17edbf ? (_0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf <= -0.7142857 && _0x17edbf >= -0.714291 ? (_0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf >= 0.42856 && _0x17edbf <= 0.42858 ? (_0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf >= -0.14287 && _0x17edbf <= -0.14285 ? (_0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : _0x17edbf <= -1 && _0x17edbf >= -1.01 ? _0x2b21f8.extra_buttons[12].pressed || (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })) : _0x17edbf >= 0.142857 && _0x17edbf <= 0.142858 ? _0x2b21f8.extra_buttons[13].pressed || (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })) : _0x17edbf >= 0.7142857 && _0x17edbf <= 0.7142858 ? _0x2b21f8.extra_buttons[14].pressed || (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })) : _0x17edbf <= -0.42857 && _0x17edbf >= -0.42858 && (_0x2b21f8.extra_buttons[15].pressed || (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': true,
-                                'value': 1
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            }))) : (_0x2b21f8.extra_buttons[12].pressed && (_0x2b21f8.extra_buttons[12] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 12,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[13].pressed && (_0x2b21f8.extra_buttons[13] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 13,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[14].pressed && (_0x2b21f8.extra_buttons[14] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 14,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })), _0x2b21f8.extra_buttons[15].pressed && (_0x2b21f8.extra_buttons[15] = {
-                                'pressed': false,
-                                'value': 0
-                            }, _0x181250._fire(_0x4ad1c6.Gamepad.Event.BUTTON_UP, {
-                                'index': 15,
-                                'gamepad': _0x2b21f8,
-                                'gamepadIndex': _0x2b21f8.index
-                            })));
-                        }
-                    });
-                });
-                _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_DOWN, function(_0x15761a) {
-                    console.log(_0x15761a.gamepad)
+                _0x378b5c.gamepad = gamepad;
+                gamepad.on('buttondown', function(event) {
                     if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                         var _0x387018, _0xdd4205 = parseInt(_0x2c1832.getAttribute('data-index'), 0xa),
                             _0x1f4ee2 = _0x2c1832.getAttribute('data-id');
-                        if (_0x15761a.gamepad.index === parseInt(_0xdd4205, 0xa)) {
-                            for (var _0x211087 = 0x0; _0x211087 < 0x20 && ((_0x387018 = _0x15761a.gamepad.buttons[_0x211087]) || (_0x387018 = _0x15761a.gamepad.extra_buttons[_0x211087]), !_0x387018 || !('number' == typeof _0x387018 && 0x1 === _0x387018 || 'number' == typeof _0x387018.value && 0x1 === _0x387018.value)); _0x211087 += 0x1);
+                        if (event.gamepadIndex === parseInt(_0xdd4205, 0xa)) {
                             var _0x126d2d = null;
-                            (_0x126d2d = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))).setAttribute('data-value', _0x15761a.index), _0x126d2d.value = 'button ' .concat(_0x15761a.index + 0x1), _0x132da7(_0x2c1832, true);
+                            (_0x126d2d = _0x17edbf.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))).setAttribute('data-value', event.index), _0x126d2d.value = 'button ' .concat(event.index + 0x1), _0x132da7(_0x2c1832, true);
                         }
-                    } else Object.keys(_0x378b5c.controllers[_0x15761a.gamepad.index.toString()]).forEach(function(_0x3cf4d3) {
-                        var _0x5cf388 = _0x15761a.gamepad.index.toString();
-                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && ['24', '25', '26'].includes(_0x3cf4d3)) {
+                    } else Object.keys(_0x378b5c.controllers[event.gamepadIndex.toString()]).forEach(function(_0x3cf4d3) {
+                        var _0x5cf388 = event.gamepadIndex.toString();
+                        if (parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(event.index, 0xa) && ['24', '25', '26'].includes(_0x3cf4d3)) {
                             if (_0x3cf4d3 == '24') {//save
                                 _0x378b5c.quickSaveState()
                             } else if (_0x3cf4d3 == '25') {//load
@@ -3445,29 +3307,31 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x378b5c.changeStateSlot()
                             }
                         }
-                        parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(_0x15761a.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(_0x15761a.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
+                        parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2, 0xa) === parseInt(event.index, 0xa) && parseInt(_0x5cf388, 0xa) === parseInt(event.gamepadIndex, 0xa) && _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1);
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.BUTTON_UP, function(_0x3220b3) {
+                });
+                gamepad.on('buttonup', function(event) {
                     Object.keys(_0x378b5c.controllers).forEach(function(_0x302c3e) {
                         Object.keys(_0x378b5c.controllers[_0x302c3e]).forEach(function(_0x14eb8a) {
-                            parseInt(_0x378b5c.controllers[_0x302c3e][_0x14eb8a].value2, 0xa) === parseInt(_0x3220b3.index, 0xa) && parseInt(_0x302c3e, 0xa) === parseInt(_0x3220b3.gamepad.index, 0xa) && _0x378b5c.simulateInput(_0x302c3e, _0x14eb8a, 0x0);
+                            parseInt(_0x378b5c.controllers[_0x302c3e][_0x14eb8a].value2, 0xa) === parseInt(event.index, 0xa) && parseInt(_0x302c3e, 0xa) === parseInt(event.gamepadIndex, 0xa) && _0x378b5c.simulateInput(_0x302c3e, _0x14eb8a, 0x0);
                         });
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.AXIS_CHANGED, function(_0x31f017) {
+                });
+                gamepad.on('axischanged', function(event) {
                     var value = function(value) {
                         if (value > 0.5 || value < -0.5) {
                             return (value > 0) ? 1 : -1;
                         } else {
                             return 0;
                         }
-                    }(_0x31f017.value);
+                    }(event.value);
                     if (!_0xa88a13.elements.dialogs.gamepad.hidden && !_0x2c1832.hidden) {
                         if (value !== 0) {
                             var _0x1f4ee2 = _0x2c1832.getAttribute('data-id'),
                                 _0xdd4205 = parseInt(_0x2c1832.getAttribute('data-index'), 0xa);
                             var _0x126d2d = _0xa88a13.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x1f4ee2, '"][data-index="').concat(_0xdd4205, '"][data-type="2"]'))
-                            _0x126d2d.setAttribute('data-value', _0x31f017.axis + ':' + value)
-                            _0x126d2d.value = _0x31f017.axis + ':' + value
+                            _0x126d2d.setAttribute('data-value', event.axis + ':' + value)
+                            _0x126d2d.value = event.axis + ':' + value
                             _0x132da7(_0x2c1832, true)
                         }
                     } else {
@@ -3475,12 +3339,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x378b5c.prevButtons = {}
                         }
                         var quit = false
-                        var _0x5cf388 = _0x31f017.gamepad.index.toString();
+                        var _0x5cf388 = event.gamepadIndex.toString();
                         if (! _0x378b5c.prevButtons[_0x5cf388]) {
                             _0x378b5c.prevButtons[_0x5cf388] = {}
                         }
-                        if (! _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis]) {
-                            _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = 0
+                        if (! _0x378b5c.prevButtons[_0x5cf388][event.axis]) {
+                            _0x378b5c.prevButtons[_0x5cf388][event.axis] = 0
                         }
                         if (! _0x378b5c.prevButtons[_0x5cf388].buttonID) {
                             _0x378b5c.prevButtons[_0x5cf388].buttonID = 0
@@ -3490,7 +3354,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             if (! _0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2) {
                                 continue
                             }
-                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value && ['24', '25', '26'].includes(_0x3cf4d3)) {
+                            if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === event.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value && ['24', '25', '26'].includes(_0x3cf4d3)) {
                                 if (_0x3cf4d3 == '24') {//save
                                     quit = true
                                     _0x378b5c.quickSaveState()
@@ -3503,19 +3367,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             }
                             if (value === 0) {
                                 // button up
-                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis) {
-                                    _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = value
+                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === event.axis) {
+                                    _0x378b5c.prevButtons[_0x5cf388][event.axis] = value
                                     _0x378b5c.prevButtons[_0x5cf388].buttonID = _0x3cf4d3
                                     _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x0)
                                 }
                             } else {
                                 //button down
-                                if ((1 === _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] && value === -1) ||
-                                    (-1 === _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] && value === 1)) {
+                                if ((1 === _0x378b5c.prevButtons[_0x5cf388][event.axis] && value === -1) ||
+                                    (-1 === _0x378b5c.prevButtons[_0x5cf388][event.axis] && value === 1)) {
                                     _0x378b5c.simulateInput(_0x5cf388, _0x378b5c.prevButtons[_0x5cf388].buttonID, 0x0)
                                 }
-                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === _0x31f017.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value) {
-                                    _0x378b5c.prevButtons[_0x5cf388][_0x31f017.axis] = value
+                                if (_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[0] === event.axis && parseInt(_0x378b5c.controllers[_0x5cf388][_0x3cf4d3].value2.split(':')[1]) === value) {
+                                    _0x378b5c.prevButtons[_0x5cf388][event.axis] = value
                                     _0x378b5c.prevButtons[_0x5cf388].buttonID = _0x3cf4d3
                                     quit = true
                                     _0x378b5c.simulateInput(_0x5cf388, _0x3cf4d3, 0x1)
@@ -3529,18 +3393,52 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             return
                         }
                     }
-                    
-                    Math.abs(_0x31f017.value) <= 0.1 && (_0x31f017.value = 0x0);
-                    var _0x17edbf = _0x31f017.gamepad.index;
-                    'LEFT_STICK_X' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x10, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x11, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x11, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x10, 0x0))), 'LEFT_STICK_Y' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x12, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x13, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x13, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x12, 0x0))), 'RIGHT_STICK_X' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x14, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x15, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x15, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x14, 0x0))), 'RIGHT_STICK_Y' === _0x31f017.axis && (_0x31f017.value > 0x0 ? (_0x378b5c.simulateInput(_0x17edbf, 0x16, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x17, 0x0)) : (_0x378b5c.simulateInput(_0x17edbf, 0x17, 0x7fff * _0x31f017.value), _0x378b5c.simulateInput(_0x17edbf, 0x16, 0x0)));
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.DISCONNECTED, function(_0x1c996a) {
-                    [0x0, 0x1, 0x2, 0x3].forEach(function(_0x429f30) {
-                        var _0x2c1832 = _0x181250.gamepads[_0x429f30];
+                    Math.abs(event.value) <= 0.1 && (event.value = 0);
+                    var _0x17edbf = event.gamepadIndex;
+                    var coreVer = _0xa88a13.coreVer;
+                    if (event.axis === 'LEFT_STICK_X') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 16, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 17, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 17, -0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 16, 0);
+                        }
+                    } else if (event.axis === 'LEFT_STICK_Y') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 18, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 19, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 19, -0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 18, 0);
+                        }
+                    } else if (event.axis === 'RIGHT_STICK_X') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 20, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 21, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 21, -0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 20, 0);
+                        }
+                    } else if (event.axis === 'RIGHT_STICK_Y') {
+                        if (event.value > 0) {
+                            _0x378b5c.simulateInput(_0x17edbf, 22, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 23, 0);
+                        } else {
+                            _0x378b5c.simulateInput(_0x17edbf, 23, 0x7fff * event.value);
+                            _0x378b5c.simulateInput(_0x17edbf, 22, 0);
+                        }
+                    }
+                });
+                gamepad.on('disconnected', function(event) {
+                    [0, 1, 2, 3].forEach(function(_0x429f30) {
+                        var _0x2c1832 = gamepad.gamepads[_0x429f30];
                         _0x17edbf.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x429f30, ' .gamepad-name')).innerHTML = _0x2c1832 ? _0x2c1832.id : 'n/a';
                     });
-                }), _0x181250.bind(_0x4ad1c6.Gamepad.Event.CONNECTED, function(_0x748f24) {
-                    Object.keys(_0x181250.gamepads).forEach(function(_0x327c74) {
-                        var _0x2c1832 = _0x181250.gamepads[_0x327c74];
+                });
+                gamepad.on('connected', function(event) {
+                    Object.keys(gamepad.gamepads).forEach(function(_0x327c74) {
+                        var _0x2c1832 = gamepad.gamepads[_0x327c74];
                         _0x17edbf.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x327c74, ' .gamepad-name')).innerHTML = _0x2c1832 ? _0x2c1832.id : 'n/a';
                     });
                 });
@@ -3562,102 +3460,464 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
             },
             'toggleVirtualGamepad': function(_0x1ed80b) {
-                var _0xa88a13 = this;
-                if (null === _0x378b5c.virtualGamepadContainer) {
-                    _0x378b5c.virtualGamepadContainer = _0x428003('div', {
-                        'class': _0x449eac({
-                            'ejs-virtual-gamepad': true
-                        }),
-                        'hidden': ''
-                    });
-                    this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
-                    var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
-                    var html = '';
-                    if (['snes', 'nds'].includes(_0xa88a13.system)) {
-                        var elements = {
-                            order: ['X','Y','A','B'],
-                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
-                            LandR: true
-                        }
-                    } else if (['gba', 'gb', 'vb', 'nes'].includes(_0xa88a13.system)) {
-                        var elements = {
-                            order: ['B','A'],
-                            orderCSS: ['left:-10px;top:70px;', 'left:60px;top:70px;'],
-                            LandR: (_0xa88a13.system === 'gba')
-                        }
-                    } else if (['n64'].includes(_0xa88a13.system)) {
-                        var elements = {
-                            order: ['B','A'],
-                            orderCSS: ['left:-10px;top:95px;', 'left:40px;top:150px;'],
-                            LandR: true
-                        }
-                    } else {
-                        var elements = {
-                            order: ['Y','X','B','A'],
-                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
-                            LandR: true
-                        }
-                    }
-                    html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
-                    
-                    html += '<div class="'+_0x449eac({'top': true})+'">';
-                    if (elements.LandR === true) {
-                        if (_0xa88a13.system === 'n64') {
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;top:-40px;'+blockCSS+'">L</div>';
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_z': true})+'" style="left:10px;'+blockCSS+'">Z</div>';
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;top:-40px;'+blockCSS+'">R</div>';
-                        } else {
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;'+blockCSS+'">L</div>';
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;'+blockCSS+'">R</div>';
-                        }
-                    }
-                    html += '</div>';
-                    
-                    html += '<div class="'+_0x449eac({'left': true})+'"></div>';
-                    
-                    html += '<div class="'+_0x449eac({'center': true})+'">';
-                    if (_0xa88a13.system === 'n64') {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:40px;">'+_0xa88a13.localization('Start')+'</div>';
-                    } else {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:60px;">'+_0xa88a13.localization('Start')+'</div>';
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-5px;">'+_0xa88a13.localization('Select')+'</div>';
-                    }
-                    html += '</div>';
-                    
-                    html += '<div class="'+_0x449eac({'right': true})+'">';
-                    
-                    if (_0xa88a13.system === 'n64') {
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cu': true})+'" style="left:25px;top:-65px;"></div>';
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cd': true})+'" style="left:25px;top:15px;"></div>';
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cl': true})+'" style="left:-15px;top:-25px;"></div>';
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cr': true})+'" style="left:65px;top:-25px;"></div>';
-                    }
-                    
-                    for (var i=0; i<elements.order.length; i++) {
-                        var opts = {'buttons': true};
-                        opts['b_'+elements.order[i].toLowerCase()] = true;
-                        html += '<div class="'+_0x449eac(opts)+'" style="'+elements.orderCSS[i]+'">'+elements.order[i]+'</div>';
-                    }
-                    
-                    html += '</div></div>';
-                    
-                    _0x378b5c.virtualGamepadContainer.innerHTML = html;
+                var _this = this;
+                if (null !== _0x378b5c.virtualGamepadContainer) {
                     _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                    return
+                }
+                _0x378b5c.virtualGamepadContainer = _0x428003('div', {
+                    'class': _0x449eac({
+                        'ejs-virtual-gamepad': true
+                    }),
+                    'hidden': ''
+                });
+                this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
+                var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
+                var html = '';
+                var info;
+                
+                if (_this.config.VirtualGamepadSettings && function(set) {
+                    if (!Array.isArray(set)) {
+                        console.warn("Vritual gamepad settings is not array! Using default gamepad settings");
+                        return false;
+                    }
+                    if (!set.length) {
+                        console.warn("Vritual gamepad settings is empty! Using default gamepad settings");
+                        return false;
+                    }
+                    for (var i=0; i<set.length; i++) {
+                        if (set[i].type === 'zone') continue;
+                        if (!set[i].location) {
+                            console.warn("Missing location value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].type) {
+                            console.warn("Missing type value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].id) {
+                            console.warn("Missing id value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].input_value) {
+                            console.warn("Missing input_value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        }
+                    }
+                    return true;
+                }(_this.config.VirtualGamepadSettings)) {
+                    info = _this.config.VirtualGamepadSettings;
+                } else if (['gba', 'gb', 'vb', 'nes'].includes(_this.system)) {
+                    info = [
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: -10,
+                            top: 70,
+                            input_value: 0
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 60,
+                            top: 70,
+                            input_value: 8
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 60,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "Select",
+                            id: "select",
+                            location: "center",
+                            left: -5,
+                            input_value: 2
+                        }
+                    ];
+                    if (_this.system === 'gba') {
+                        info.push({
+                            type: "button",
+                            text: "L",
+                            id: "l",
+                            block: true,
+                            location: "top",
+                            left: 10,
+                            top: -40,
+                            input_value: 10
+                        });
+                        info.push({
+                            type: "button",
+                            text: "R",
+                            id: "r",
+                            block: true,
+                            location: "top",
+                            right: 10,
+                            top: -40,
+                            input_value: 11
+                        });
+                    }
+                } else if (_this.system === 'n64') {
+                    info = [
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: -10,
+                            top: 95,
+                            input_value: 0,
+                            input_new_cores: 1
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 40,
+                            top: 150,
+                            input_value: 8,
+                            input_new_cores: 0
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 30,
+                            top: -10,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "L",
+                            id: "l",
+                            block: true,
+                            location: "top",
+                            left: 10,
+                            top: -40,
+                            input_value: 10
+                        },
+                        {
+                            type: "button",
+                            text: "R",
+                            id: "r",
+                            block: true,
+                            location: "top",
+                            right: 10,
+                            top: -40,
+                            input_value: 11
+                        },
+                        {
+                            type: "button",
+                            text: "Z",
+                            id: "z",
+                            block: true,
+                            location: "top",
+                            left: 10,
+                            input_value: 12
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cu",
+                            location: "right",
+                            left: 25,
+                            top: -65,
+                            input_value: 23
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cd",
+                            location: "right",
+                            left: 25,
+                            top: 15,
+                            input_value: 22
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cl",
+                            location: "right",
+                            left: -15,
+                            top: -25,
+                            input_value: 21
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cr",
+                            location: "right",
+                            left: 65,
+                            top: -25,
+                            input_value: 20
+                        }
+                    ];
+                } else if (['snes', 'nds'].includes(_this.system)) {
+                    info = [
+                        {
+                            type: "button",
+                            text: "X",
+                            id: "x",
+                            location: "right",
+                            left: 40,
+                            input_value: 9
+                        },
+                        {
+                            type: "button",
+                            text: "Y",
+                            id: "y",
+                            location: "right",
+                            top: 40,
+                            input_value: 1
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 81,
+                            top: 40,
+                            input_value: 8
+                        },
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: 40,
+                            top: 80,
+                            input_value: 0
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 60,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "Select",
+                            id: "select",
+                            location: "center",
+                            left: -5,
+                            input_value: 2
+                        }
+                    ];
+                } else {
+                    info = [
+                        {
+                            type: "button",
+                            text: "Y",
+                            id: "y",
+                            location: "right",
+                            left: 40,
+                            input_value: 9
+                        },
+                        {
+                            type: "button",
+                            text: "X",
+                            id: "X",
+                            location: "right",
+                            top: 40,
+                            input_value: 1
+                        },
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: 81,
+                            top: 40,
+                            input_value: 8
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 40,
+                            top: 80,
+                            input_value: 0
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 60,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "Select",
+                            id: "select",
+                            location: "center",
+                            left: -5,
+                            input_value: 2
+                        }
+                    ];
+                }
+                html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
+                html += '<div class="'+_0x449eac({'top': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'top' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="'+_0x449eac({'left': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'left' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="'+_0x449eac({'center': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'center' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="'+_0x449eac({'right': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'right' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div></div>';
+                _0x378b5c.virtualGamepadContainer.innerHTML = html;
+                _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                
+                var _0x2c1832 = _0x449eac({
+                        'virtual-gamepad': true
+                    }),
+                    _0x2ec721 = _0x449eac({
+                        'touch': true
+                    });
+                if (! _0x59aa33.isIos) {
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(event) {
+                        event.stopPropagation();
+                    });
+                }
+                
+                var zone;
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].type === 'zone') {
+                        zone = info[i];
+                        break;
+                    }
+                }
+                if (zone) {
+                    var opts = {};
+                    opts[info[i].location.toLowerCase()] = true;
                     var _0x17edbf = _0x3a58c8.a.create({
                         'zone': _0x530042.call(this, '.' .concat(_0x449eac({
                             'ejs-virtual-gamepad': true
-                        }), ' .').concat(_0x449eac({
-                            'left': true
-                        }))),
+                        }), ' .').concat(_0x449eac(opts))),
                         'mode': 'static',
                         'position': {
-                            'left': '50%',
-                            'top': '50%'
+                            'left': zone.left,
+                            'top': zone.top
                         },
                         'color': 'red'
                     });
                     function inputs() {
-                        if (_0xa88a13.system === 'n64') {
+                        if (_this.system === 'n64') {
                             var inputLocation;
                             if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                                 inputLocation = _0x2593da.getCoreOptionsValues()['joystick-input'];
@@ -3692,62 +3952,55 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x378b5c.syncInput(0, inputs()[7], 0);
                         }, 0x1e);
                     });
-                    var _0x2c1832 = _0x449eac({
-                            'virtual-gamepad': true
-                        }),
-                        _0x2ec721 = _0x449eac({
-                            'touch': true
-                        });
-                    if (! _0x59aa33.isIos) {
-                        _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(_0x2ae626) {
-                            _0x2ae626.stopPropagation();
-                        });
+                }
+                
+                var keys = [];
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].type === 'zone') continue;
+                    var opts = {};
+                    opts['b_'+info[i].id.toLowerCase()] = true;
+                    var value;
+                    if (_this.newCores === 2 && info[i].input_new_cores) {
+                        value = info[i].input_new_cores;
+                    } else {
+                        value = info[i].input_value;
                     }
-                    var keys = [
-                        {id: {"b_a":true},number: 8},
-                        {id: {"b_b":true},number: 0},
-                        {id: {"b_x":true},number: 9},
-                        {id: {"b_y":true},number: 1},
-                        {id: {"b_l":true},number: 10},
-                        {id: {"b_z":true},number: 12},
-                        {id: {"b_r":true},number: 11},
-                        {id: {"b_start":true},number: 3},
-                        {id: {"b_select":true},number: 2},
-                        {id: {"b_cu":true},number: 23},
-                        {id: {"b_cd":true},number: 22},
-                        {id: {"b_cl":true},number: 21},
-                        {id: {"b_cr":true},number: 20}
-                    ]
-                    if (_0xa88a13.system === 'n64') {
-                        keys[0].number = 0;
-                        keys[1].number = 1;
-                    }
-                    keys.forEach((a) => {
-                        _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
-                                       'touchstart touchend', function(e) {
-                            ['touchend'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
+                    keys.push({id: opts, number: value});
+                }
+                keys.forEach((a) => {
+                    var element = _0x530042.call(_this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id)));
+                    if (!element) return;
+                    _0x1093f4.call(_this, element, 'touchstart touchend', function(e) {
+                        if (e.type === 'touchend') {
+                            _0x3a8e2f(e.target, _0x2ec721, false);
+                            window.setTimeout(function() {
                                 _0x378b5c.syncInput(0, a.number, 0);
-                            }, 30)) : (_0x3a8e2f(e.target, _0x2ec721, true), _0x378b5c.syncInput(0, a.number, 1)), e.stopPropagation();
-                        })
-                    });
-                    var menuButton = _0x428003('div', {
-                        'class': _0x449eac({
-                            'ejs__widget': true,
-                            'ejs__widget_controls_toggle': true
-                        })
-                    }, '');
-                    menuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 78.33 14.33 64 32 64H416C433.7 64 448 78.33 448 96C448 113.7 433.7 128 416 128H32C14.33 128 0 113.7 0 96zM0 256C0 238.3 14.33 224 32 224H416C433.7 224 448 238.3 448 256C448 273.7 433.7 288 416 288H32C14.33 288 0 273.7 0 256zM416 448H32C14.33 448 0 433.7 0 416C0 398.3 14.33 384 32 384H416C433.7 384 448 398.3 448 416C448 433.7 433.7 448 416 448z"/></svg>';
-                    _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
-                    var hideTimeout;
-                    _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
-                        _0x3a8e2f(e.target, _0x2ec721, true);
-                        clearTimeout(hideTimeout);
-                        _0x5ab74d.toggleControls.call(_0xa88a13, true);
-                        hideTimeout = setTimeout(function() {
-                            _0x5ab74d.toggleControls.call(_0xa88a13, false);
-                        }, 5000)
-                    });
-                } else _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                            }, 30)
+                        } else {
+                            _0x3a8e2f(e.target, _0x2ec721, true);
+                            _0x378b5c.syncInput(0, a.number, 1)
+                        }
+                        e.stopPropagation();
+                    })
+                });
+                
+                var menuButton = _0x428003('div', {
+                    'class': _0x449eac({
+                        'ejs__widget': true,
+                        'ejs__widget_controls_toggle': true
+                    })
+                }, '');
+                menuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 78.33 14.33 64 32 64H416C433.7 64 448 78.33 448 96C448 113.7 433.7 128 416 128H32C14.33 128 0 113.7 0 96zM0 256C0 238.3 14.33 224 32 224H416C433.7 224 448 238.3 448 256C448 273.7 433.7 288 416 288H32C14.33 288 0 273.7 0 256zM416 448H32C14.33 448 0 433.7 0 416C0 398.3 14.33 384 32 384H416C433.7 384 448 398.3 448 416C448 433.7 433.7 448 416 448z"/></svg>';
+                _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
+                var hideTimeout;
+                _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
+                    _0x3a8e2f(e.target, _0x2ec721, true);
+                    clearTimeout(hideTimeout);
+                    _0x5ab74d.toggleControls.call(_this, true);
+                    hideTimeout = setTimeout(function() {
+                        _0x5ab74d.toggleControls.call(_this, false);
+                    }, 5000)
+                });
             },
             'setup': function() {
                 var _0xa88a13 = this;
@@ -3805,6 +4058,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x27f4c4.FS.syncfs(function() {});
                     }
                 }, true);
+                setInterval(function() {
+                    if (_0xa88a13.started) {
+                        console.log('saving save files');
+                        _0x378b5c.saveSavFiles();
+                        _0x27f4c4.FS.syncfs(false, function() {});
+                    }
+                }, 300000)
             },
             'listeners': function() {
                 var _0xa88a13 = this;
@@ -3929,12 +4189,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     };
                 }
                 _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']);
-                _0x378b5c.simulateInput = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
-                /*
                 _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
                 _0x378b5c.simulateInput = function(_0x249751, _0x480d05, _0x50f784) {
                     _0x378b5c.disableInput || _0x378b5c.simulateInputFn(_0x249751, _0x480d05, _0x50f784);
-                };*/
+                };
                 _0x378b5c.syncInput = _0x378b5c.simulateInput;
                 window.simulateInput = _0x378b5c.simulateInput;
                 var _0x762355 = _0x27f4c4.Module.cwrap('shader_enable', 'null', ['number']);
@@ -3986,7 +4244,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     try {
                         _0x27f4c4.FS.unlink('game.state');
                     } catch(e){}
-                    _0x27f4c4._FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
+                    _0x27f4c4.FS.createDataFile('/', 'game.state', _0x91cd69, true, true);
                     null === _0x1d4918 && (_0x1d4918 = 0);
                     if ('arcade' === _0x17edbf) {
                         setTimeout(function() {
@@ -4028,7 +4286,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } catch (_0x4b4d4c) {}
                         try {
                             var _0x17edbf = await _0x378b5c.saveState();
-                            _0x27f4c4._FS.createDataFile('/', name, _0x17edbf, true, true);
+                            _0x27f4c4.FS.createDataFile('/', name, _0x17edbf, true, true);
                             _0xa88a13.elements.widgets.stateInfoDiv.innerHTML = 'STATE SAVED TO SLOT ' + slot;
                             clearTimeout(_0x378b5c.saveMsgTransitions);
                             _0x378b5c.saveMsgTransitions = setTimeout(function() {
@@ -4710,6 +4968,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 if (this.coreVer === 2) {
                     _0xa88a13 = {};
+                    _0xa88a13['fps'] = {
+                        'label': this.localization('FPS'),
+                        'options': ["show", "hide"],
+                        'default': "hide"
+                    }
                 }
                 if (this.statesSupported === true) {
                     _0xa88a13['save-state-slot'] = {
@@ -5051,16 +5314,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
                     _0x2c1832 = {};
-                _0x2c1832.orientation = _0x7f9f36.storage.get('orientation'), _0x2c1832.shader = _0x7f9f36.storage.get('shader'), _0x17edbf.touch ? (_0x2c1832['virtual-gamepad'] = _0x7f9f36.storage.get('virtual-gamepad'), _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
+                _0x2c1832.orientation = _0x7f9f36.storage.get('orientation');
+                _0x2c1832.shader = _0x7f9f36.storage.get('shader');
+                _0x17edbf.touch ? (_0x2c1832['virtual-gamepad'] = _0x7f9f36.storage.get('virtual-gamepad'), _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
                     ('enabled' === _0x2c1832['virtual-gamepad'] || _0x1e2c68.empty(_0x2c1832['virtual-gamepad'])) && _0xdcec2a.toggleVirtualGamepad.call(_0x17edbf, true);
-                })) : delete _0x7f9f36.normalOptions['virtual-gamepad'], _0x7f9f36.setOptionMenuItem.call(this, _0x7f9f36.normalOptions, _0x2c1832), _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
+                })) : delete _0x7f9f36.normalOptions['virtual-gamepad'];
+                _0x7f9f36.setOptionMenuItem.call(this, _0x7f9f36.normalOptions, _0x2c1832);
+                _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
+                    var shader = _0x7f9f36.storage.get('shader');
+                    if (shader !== 'disabled') {
+                        _0xdcec2a.setShader(shader);
+                    }
                     var _0x2c1832 = _0xa88a13,
                         _0x42a7b1 = {};
                     _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x4a987e, _0x10bd7a) {
                         var _0x2c1832 = _0x4a987e.split('; '),
-                            _0x1ddc5f = _0x2c1832[0x0];
-                        if (0x0 === _0x1ddc5f.indexOf('fba-dipswitch-')/* || _0x17edbf.coreVer === 2*/) {
-                            var _0xbd808 = _0x2c1832[0x1].split('|'),
+                            _0x1ddc5f = _0x2c1832[0];
+                        if (0 === _0x1ddc5f.indexOf('fba-dipswitch-') || _0x17edbf.coreVer === 2) {
+                            var _0xbd808 = _0x2c1832[1].split('|'),
                                 _0x3c4b1a = _0x1ddc5f.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
                             _0xbd808.slice(1, -1);
                             if (_0xbd808.length === 1) return;
@@ -5073,9 +5344,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     });
                     var _0x27d859 = _0x7f9f36.storage.get('core-options');
-                    _0x7f9f36.coreOptionsValues = _0x27d859 || {}, _0x7f9f36.setOptionMenuItem.call(_0x17edbf, _0x42a7b1, _0x7f9f36.coreOptionsValues), Object.keys(_0x7f9f36.coreOptionsValues).forEach(function(_0x51fc4e, _0x4b3613) {
+                    _0x7f9f36.coreOptionsValues = _0x27d859 || {};
+                    _0x7f9f36.setOptionMenuItem.call(_0x17edbf, _0x42a7b1, _0x7f9f36.coreOptionsValues);
+                    Object.keys(_0x7f9f36.coreOptionsValues).forEach(function(_0x51fc4e, _0x4b3613) {
                         _0x7f9f36.updateCoreOptions.call(_0x2c1832, _0x51fc4e, _0x7f9f36.coreOptionsValues[_0x51fc4e]);
-                    }), 'nds' == _0x17edbf.system && (_0x27f4c4.Module._fast_forward_2 ? _0x27f4c4.Module._fast_forward_2(0x1) : _0x27f4c4.Module._fast_forward && _0x27f4c4.Module._fast_forward(0x1));
+                    });
+                    'nds' == _0x17edbf.system && (_0x27f4c4.Module._fast_forward_2 ? _0x27f4c4.Module._fast_forward_2(1) : _0x27f4c4.Module._fast_forward && _0x27f4c4.Module._fast_forward(1));
                 });
             },
             'updateCoreOptionMenuItems': function() {
@@ -5904,17 +6178,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0xbae705.call(_0x17edbf, _0x17edbf.elements.container, 'savestate-start', false, {});
                             var _0x31e271 = await _0xdcec2a.saveState(),
                                 _0x2c1832 = _0xdcec2a.getScreenData();
-                                
+                            
                             if (_0x378b5c.saveLoadDB.call(_0x17edbf, 'save')) {
                                 return;
                             }
-                            var _0x2c1832 = _0x31e271;
                             if (_0x1e2c68.function(_0x17edbf.config.onsavestate)) _0x17edbf.config.onsavestate.call(null, {
                                 'screenshot': _0x2c1832,
-                                'state': _0x2c1832
+                                'state': _0x31e271
                             });
                             else {
-                                var _0x2b5fc8 = new Blob([_0x2c1832]),
+                                var _0x2b5fc8 = new Blob([_0x31e271]),
                                     _0x152605 = _0x17edbf.startName.split('/').pop().split('.'),
                                     _0x51d471 = _0x152605.slice(0x0, _0x152605.length - 0x1).join('.');
                                 if (typeof _0x17edbf.gameName == 'string') {
@@ -6055,7 +6328,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.5';
+                this.version = '2.3.0';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
