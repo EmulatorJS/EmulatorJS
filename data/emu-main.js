@@ -3460,102 +3460,464 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
             },
             'toggleVirtualGamepad': function(_0x1ed80b) {
-                var _0xa88a13 = this;
-                if (null === _0x378b5c.virtualGamepadContainer) {
-                    _0x378b5c.virtualGamepadContainer = _0x428003('div', {
-                        'class': _0x449eac({
-                            'ejs-virtual-gamepad': true
-                        }),
-                        'hidden': ''
-                    });
-                    this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
-                    var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
-                    var html = '';
-                    if (['snes', 'nds'].includes(_0xa88a13.system)) {
-                        var elements = {
-                            order: ['X','Y','A','B'],
-                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
-                            LandR: true
-                        }
-                    } else if (['gba', 'gb', 'vb', 'nes'].includes(_0xa88a13.system)) {
-                        var elements = {
-                            order: ['B','A'],
-                            orderCSS: ['left:-10px;top:70px;', 'left:60px;top:70px;'],
-                            LandR: (_0xa88a13.system === 'gba')
-                        }
-                    } else if (['n64'].includes(_0xa88a13.system)) {
-                        var elements = {
-                            order: ['B','A'],
-                            orderCSS: ['left:-10px;top:95px;', 'left:40px;top:150px;'],
-                            LandR: true
-                        }
-                    } else {
-                        var elements = {
-                            order: ['Y','X','B','A'],
-                            orderCSS: ['left:40px;', 'top:40px;', 'left:81px;top:40px;', 'left:40px;top:80px;'],
-                            LandR: true
-                        }
-                    }
-                    html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
-                    
-                    html += '<div class="'+_0x449eac({'top': true})+'">';
-                    if (elements.LandR === true) {
-                        if (_0xa88a13.system === 'n64') {
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;top:-40px;'+blockCSS+'">L</div>';
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_z': true})+'" style="left:10px;'+blockCSS+'">Z</div>';
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;top:-40px;'+blockCSS+'">R</div>';
-                        } else {
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_l': true})+'" style="left:10px;'+blockCSS+'">L</div>';
-                            html += '<div class="'+_0x449eac({'buttons': true,'b_r': true})+'" style="right:10px;'+blockCSS+'">R</div>';
-                        }
-                    }
-                    html += '</div>';
-                    
-                    html += '<div class="'+_0x449eac({'left': true})+'"></div>';
-                    
-                    html += '<div class="'+_0x449eac({'center': true})+'">';
-                    if (_0xa88a13.system === 'n64') {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:40px;">'+_0xa88a13.localization('Start')+'</div>';
-                    } else {
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_start': true})+'" style="left:60px;">'+_0xa88a13.localization('Start')+'</div>';
-                        html += '<div class="'+_0x449eac({'buttons': true,'b_select': true})+'" style="left:-5px;">'+_0xa88a13.localization('Select')+'</div>';
-                    }
-                    html += '</div>';
-                    
-                    html += '<div class="'+_0x449eac({'right': true})+'">';
-                    
-                    if (_0xa88a13.system === 'n64') {
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cu': true})+'" style="left:25px;top:-65px;"></div>';
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cd': true})+'" style="left:25px;top:15px;"></div>';
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cl': true})+'" style="left:-15px;top:-25px;"></div>';
-                        html += '<div class="'+_0x449eac({'buttons': true, 'b_cr': true})+'" style="left:65px;top:-25px;"></div>';
-                    }
-                    
-                    for (var i=0; i<elements.order.length; i++) {
-                        var opts = {'buttons': true};
-                        opts['b_'+elements.order[i].toLowerCase()] = true;
-                        html += '<div class="'+_0x449eac(opts)+'" style="'+elements.orderCSS[i]+'">'+elements.order[i]+'</div>';
-                    }
-                    
-                    html += '</div></div>';
-                    
-                    _0x378b5c.virtualGamepadContainer.innerHTML = html;
+                var _this = this;
+                if (null !== _0x378b5c.virtualGamepadContainer) {
                     _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                    return
+                }
+                _0x378b5c.virtualGamepadContainer = _0x428003('div', {
+                    'class': _0x449eac({
+                        'ejs-virtual-gamepad': true
+                    }),
+                    'hidden': ''
+                });
+                this.elements.container.appendChild(_0x378b5c.virtualGamepadContainer);
+                var blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
+                var html = '';
+                var info;
+                
+                if (_this.config.VirtualGamepadSettings && function(set) {
+                    if (!Array.isArray(set)) {
+                        console.warn("Vritual gamepad settings is not array! Using default gamepad settings");
+                        return false;
+                    }
+                    if (!set.length) {
+                        console.warn("Vritual gamepad settings is empty! Using default gamepad settings");
+                        return false;
+                    }
+                    for (var i=0; i<set.length; i++) {
+                        if (set[i].type === 'zone') continue;
+                        if (!set[i].location) {
+                            console.warn("Missing location value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].type) {
+                            console.warn("Missing type value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].id) {
+                            console.warn("Missing id value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].input_value) {
+                            console.warn("Missing input_value for button "+set[i].text+"! Using default gamepad settings");
+                            return false;
+                        }
+                    }
+                    return true;
+                }(_this.config.VirtualGamepadSettings)) {
+                    info = _this.config.VirtualGamepadSettings;
+                } else if (['gba', 'gb', 'vb', 'nes'].includes(_this.system)) {
+                    info = [
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: -10,
+                            top: 70,
+                            input_value: 0
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 60,
+                            top: 70,
+                            input_value: 8
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 60,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "Select",
+                            id: "select",
+                            location: "center",
+                            left: -5,
+                            input_value: 2
+                        }
+                    ];
+                    if (_this.system === 'gba') {
+                        info.push({
+                            type: "button",
+                            text: "L",
+                            id: "l",
+                            block: true,
+                            location: "top",
+                            left: 10,
+                            top: -40,
+                            input_value: 10
+                        });
+                        info.push({
+                            type: "button",
+                            text: "R",
+                            id: "r",
+                            block: true,
+                            location: "top",
+                            right: 10,
+                            top: -40,
+                            input_value: 11
+                        });
+                    }
+                } else if (_this.system === 'n64') {
+                    info = [
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: -10,
+                            top: 95,
+                            input_value: 0,
+                            input_new_cores: 1
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 40,
+                            top: 150,
+                            input_value: 8,
+                            input_new_cores: 0
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 30,
+                            top: -10,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "L",
+                            id: "l",
+                            block: true,
+                            location: "top",
+                            left: 10,
+                            top: -40,
+                            input_value: 10
+                        },
+                        {
+                            type: "button",
+                            text: "R",
+                            id: "r",
+                            block: true,
+                            location: "top",
+                            right: 10,
+                            top: -40,
+                            input_value: 11
+                        },
+                        {
+                            type: "button",
+                            text: "Z",
+                            id: "z",
+                            block: true,
+                            location: "top",
+                            left: 10,
+                            input_value: 12
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cu",
+                            location: "right",
+                            left: 25,
+                            top: -65,
+                            input_value: 23
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cd",
+                            location: "right",
+                            left: 25,
+                            top: 15,
+                            input_value: 22
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cl",
+                            location: "right",
+                            left: -15,
+                            top: -25,
+                            input_value: 21
+                        },
+                        {
+                            type: "button",
+                            text: "",
+                            id: "cr",
+                            location: "right",
+                            left: 65,
+                            top: -25,
+                            input_value: 20
+                        }
+                    ];
+                } else if (['snes', 'nds'].includes(_this.system)) {
+                    info = [
+                        {
+                            type: "button",
+                            text: "X",
+                            id: "x",
+                            location: "right",
+                            left: 40,
+                            input_value: 9
+                        },
+                        {
+                            type: "button",
+                            text: "Y",
+                            id: "y",
+                            location: "right",
+                            top: 40,
+                            input_value: 1
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 81,
+                            top: 40,
+                            input_value: 8
+                        },
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: 40,
+                            top: 80,
+                            input_value: 0
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 60,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "Select",
+                            id: "select",
+                            location: "center",
+                            left: -5,
+                            input_value: 2
+                        }
+                    ];
+                } else {
+                    info = [
+                        {
+                            type: "button",
+                            text: "Y",
+                            id: "y",
+                            location: "right",
+                            left: 40,
+                            input_value: 9
+                        },
+                        {
+                            type: "button",
+                            text: "X",
+                            id: "X",
+                            location: "right",
+                            top: 40,
+                            input_value: 1
+                        },
+                        {
+                            type: "button",
+                            text: "B",
+                            id: "b",
+                            location: "right",
+                            left: 81,
+                            top: 40,
+                            input_value: 8
+                        },
+                        {
+                            type: "button",
+                            text: "A",
+                            id: "a",
+                            location: "right",
+                            left: 40,
+                            top: 80,
+                            input_value: 0
+                        },
+                        {
+                            type: "zone",
+                            location: "left",
+                            left: "50%",
+                            top: "50%"
+                        },
+                        {
+                            type: "button",
+                            text: "Start",
+                            id: "start",
+                            location: "center",
+                            left: 60,
+                            input_value: 3
+                        },
+                        {
+                            type: "button",
+                            text: "Select",
+                            id: "select",
+                            location: "center",
+                            left: -5,
+                            input_value: 2
+                        }
+                    ];
+                }
+                html += '<div class="'+_0x449eac({'virtual-gamepad': true})+'" style="display: block;">';
+                html += '<div class="'+_0x449eac({'top': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'top' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="'+_0x449eac({'left': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'left' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="'+_0x449eac({'center': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'center' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div>';
+                html += '<div class="'+_0x449eac({'right': true})+'">';
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].location === 'right' && info[i].type === 'button') {
+                        var opts = {'buttons': true};
+                        opts['b_'+info[i].id.toLowerCase()] = true;
+                        var style = '';
+                        if (info[i].left) {
+                            style += 'left:'+info[i].left+'px;';
+                        }
+                        if (info[i].right) {
+                            style += 'right:'+info[i].right+'px;';
+                        }
+                        if (info[i].top) {
+                            style += 'top:'+info[i].top+'px;';
+                        }
+                        if (info[i].block) {
+                            style += blockCSS;
+                        }
+                        html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
+                    }
+                }
+                html += '</div></div>';
+                _0x378b5c.virtualGamepadContainer.innerHTML = html;
+                _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                
+                var _0x2c1832 = _0x449eac({
+                        'virtual-gamepad': true
+                    }),
+                    _0x2ec721 = _0x449eac({
+                        'touch': true
+                    });
+                if (! _0x59aa33.isIos) {
+                    _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(event) {
+                        event.stopPropagation();
+                    });
+                }
+                
+                var zone;
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].type === 'zone') {
+                        zone = info[i];
+                        break;
+                    }
+                }
+                if (zone) {
+                    var opts = {};
+                    opts[info[i].location.toLowerCase()] = true;
                     var _0x17edbf = _0x3a58c8.a.create({
                         'zone': _0x530042.call(this, '.' .concat(_0x449eac({
                             'ejs-virtual-gamepad': true
-                        }), ' .').concat(_0x449eac({
-                            'left': true
-                        }))),
+                        }), ' .').concat(_0x449eac(opts))),
                         'mode': 'static',
                         'position': {
-                            'left': '50%',
-                            'top': '50%'
+                            'left': zone.left,
+                            'top': zone.top
                         },
                         'color': 'red'
                     });
                     function inputs() {
-                        if (_0xa88a13.system === 'n64') {
+                        if (_this.system === 'n64') {
                             var inputLocation;
                             if (_0x2593da && typeof _0x2593da.getCoreOptionsValues == 'function') {
                                 inputLocation = _0x2593da.getCoreOptionsValues()['joystick-input'];
@@ -3590,62 +3952,55 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x378b5c.syncInput(0, inputs()[7], 0);
                         }, 0x1e);
                     });
-                    var _0x2c1832 = _0x449eac({
-                            'virtual-gamepad': true
-                        }),
-                        _0x2ec721 = _0x449eac({
-                            'touch': true
-                        });
-                    if (! _0x59aa33.isIos) {
-                        _0x1093f4.call(this, _0x530042.call(this, '.' .concat(_0x2c1832)), 'touchmove', function(_0x2ae626) {
-                            _0x2ae626.stopPropagation();
-                        });
+                }
+                
+                var keys = [];
+                for (var i=0; i<info.length; i++) {
+                    if (info[i].type === 'zone') continue;
+                    var opts = {};
+                    opts['b_'+info[i].id.toLowerCase()] = true;
+                    var value;
+                    if (_this.newCores === 2 && info[i].input_new_cores) {
+                        value = info[i].input_new_cores;
+                    } else {
+                        value = info[i].input_value;
                     }
-                    var keys = [
-                        {id: {"b_a":true},number: 8},
-                        {id: {"b_b":true},number: 0},
-                        {id: {"b_x":true},number: 9},
-                        {id: {"b_y":true},number: 1},
-                        {id: {"b_l":true},number: 10},
-                        {id: {"b_z":true},number: 12},
-                        {id: {"b_r":true},number: 11},
-                        {id: {"b_start":true},number: 3},
-                        {id: {"b_select":true},number: 2},
-                        {id: {"b_cu":true},number: 23},
-                        {id: {"b_cd":true},number: 22},
-                        {id: {"b_cl":true},number: 21},
-                        {id: {"b_cr":true},number: 20}
-                    ]
-                    if (_0xa88a13.system === 'n64') {
-                        keys[0].number = 0;
-                        keys[1].number = 1;
-                    }
-                    keys.forEach((a) => {
-                        _0x1093f4.call(this, _0x530042.call(this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id))),
-                                       'touchstart touchend', function(e) {
-                            ['touchend'].includes(e.type) ? (_0x3a8e2f(e.target, _0x2ec721, false), window.setTimeout(function() {
+                    keys.push({id: opts, number: value});
+                }
+                keys.forEach((a) => {
+                    var element = _0x530042.call(_this, '.'.concat(_0x2c1832, ' .').concat(_0x449eac(a.id)));
+                    if (!element) return;
+                    _0x1093f4.call(_this, element, 'touchstart touchend', function(e) {
+                        if (e.type === 'touchend') {
+                            _0x3a8e2f(e.target, _0x2ec721, false);
+                            window.setTimeout(function() {
                                 _0x378b5c.syncInput(0, a.number, 0);
-                            }, 30)) : (_0x3a8e2f(e.target, _0x2ec721, true), _0x378b5c.syncInput(0, a.number, 1)), e.stopPropagation();
-                        })
-                    });
-                    var menuButton = _0x428003('div', {
-                        'class': _0x449eac({
-                            'ejs__widget': true,
-                            'ejs__widget_controls_toggle': true
-                        })
-                    }, '');
-                    menuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 78.33 14.33 64 32 64H416C433.7 64 448 78.33 448 96C448 113.7 433.7 128 416 128H32C14.33 128 0 113.7 0 96zM0 256C0 238.3 14.33 224 32 224H416C433.7 224 448 238.3 448 256C448 273.7 433.7 288 416 288H32C14.33 288 0 273.7 0 256zM416 448H32C14.33 448 0 433.7 0 416C0 398.3 14.33 384 32 384H416C433.7 384 448 398.3 448 416C448 433.7 433.7 448 416 448z"/></svg>';
-                    _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
-                    var hideTimeout;
-                    _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
-                        _0x3a8e2f(e.target, _0x2ec721, true);
-                        clearTimeout(hideTimeout);
-                        _0x5ab74d.toggleControls.call(_0xa88a13, true);
-                        hideTimeout = setTimeout(function() {
-                            _0x5ab74d.toggleControls.call(_0xa88a13, false);
-                        }, 5000)
-                    });
-                } else _0x132da7(_0x378b5c.virtualGamepadContainer, !_0x1ed80b);
+                            }, 30)
+                        } else {
+                            _0x3a8e2f(e.target, _0x2ec721, true);
+                            _0x378b5c.syncInput(0, a.number, 1)
+                        }
+                        e.stopPropagation();
+                    })
+                });
+                
+                var menuButton = _0x428003('div', {
+                    'class': _0x449eac({
+                        'ejs__widget': true,
+                        'ejs__widget_controls_toggle': true
+                    })
+                }, '');
+                menuButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M0 96C0 78.33 14.33 64 32 64H416C433.7 64 448 78.33 448 96C448 113.7 433.7 128 416 128H32C14.33 128 0 113.7 0 96zM0 256C0 238.3 14.33 224 32 224H416C433.7 224 448 238.3 448 256C448 273.7 433.7 288 416 288H32C14.33 288 0 273.7 0 256zM416 448H32C14.33 448 0 433.7 0 416C0 398.3 14.33 384 32 384H416C433.7 384 448 398.3 448 416C448 433.7 433.7 448 416 448z"/></svg>';
+                _0x530042.call(this, ".".concat(_0x449eac({ejs__widgets: true}))).appendChild(menuButton);
+                var hideTimeout;
+                _0x1093f4.call(this, menuButton, 'mousedown touchstart', function(e) {
+                    _0x3a8e2f(e.target, _0x2ec721, true);
+                    clearTimeout(hideTimeout);
+                    _0x5ab74d.toggleControls.call(_this, true);
+                    hideTimeout = setTimeout(function() {
+                        _0x5ab74d.toggleControls.call(_this, false);
+                    }, 5000)
+                });
             },
             'setup': function() {
                 var _0xa88a13 = this;
@@ -3834,12 +4189,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     };
                 }
                 _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']);
-                _0x378b5c.simulateInput = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
-                /*
                 _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
                 _0x378b5c.simulateInput = function(_0x249751, _0x480d05, _0x50f784) {
                     _0x378b5c.disableInput || _0x378b5c.simulateInputFn(_0x249751, _0x480d05, _0x50f784);
-                };*/
+                };
                 _0x378b5c.syncInput = _0x378b5c.simulateInput;
                 window.simulateInput = _0x378b5c.simulateInput;
                 var _0x762355 = _0x27f4c4.Module.cwrap('shader_enable', 'null', ['number']);
@@ -4961,16 +5314,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
                     _0x2c1832 = {};
-                _0x2c1832.orientation = _0x7f9f36.storage.get('orientation'), _0x2c1832.shader = _0x7f9f36.storage.get('shader'), _0x17edbf.touch ? (_0x2c1832['virtual-gamepad'] = _0x7f9f36.storage.get('virtual-gamepad'), _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
+                _0x2c1832.orientation = _0x7f9f36.storage.get('orientation');
+                _0x2c1832.shader = _0x7f9f36.storage.get('shader');
+                _0x17edbf.touch ? (_0x2c1832['virtual-gamepad'] = _0x7f9f36.storage.get('virtual-gamepad'), _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
                     ('enabled' === _0x2c1832['virtual-gamepad'] || _0x1e2c68.empty(_0x2c1832['virtual-gamepad'])) && _0xdcec2a.toggleVirtualGamepad.call(_0x17edbf, true);
-                })) : delete _0x7f9f36.normalOptions['virtual-gamepad'], _0x7f9f36.setOptionMenuItem.call(this, _0x7f9f36.normalOptions, _0x2c1832), _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
+                })) : delete _0x7f9f36.normalOptions['virtual-gamepad'];
+                _0x7f9f36.setOptionMenuItem.call(this, _0x7f9f36.normalOptions, _0x2c1832);
+                _0x1093f4.call(_0x17edbf, _0x17edbf.elements.container, 'start-game', function() {
+                    var shader = _0x7f9f36.storage.get('shader');
+                    if (shader !== 'disabled') {
+                        _0xdcec2a.setShader(shader);
+                    }
                     var _0x2c1832 = _0xa88a13,
                         _0x42a7b1 = {};
                     _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x4a987e, _0x10bd7a) {
                         var _0x2c1832 = _0x4a987e.split('; '),
-                            _0x1ddc5f = _0x2c1832[0x0];
-                        if (0x0 === _0x1ddc5f.indexOf('fba-dipswitch-')/* || _0x17edbf.coreVer === 2*/) {
-                            var _0xbd808 = _0x2c1832[0x1].split('|'),
+                            _0x1ddc5f = _0x2c1832[0];
+                        if (0 === _0x1ddc5f.indexOf('fba-dipswitch-') || _0x17edbf.coreVer === 2) {
+                            var _0xbd808 = _0x2c1832[1].split('|'),
                                 _0x3c4b1a = _0x1ddc5f.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
                             _0xbd808.slice(1, -1);
                             if (_0xbd808.length === 1) return;
@@ -4983,9 +5344,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     });
                     var _0x27d859 = _0x7f9f36.storage.get('core-options');
-                    _0x7f9f36.coreOptionsValues = _0x27d859 || {}, _0x7f9f36.setOptionMenuItem.call(_0x17edbf, _0x42a7b1, _0x7f9f36.coreOptionsValues), Object.keys(_0x7f9f36.coreOptionsValues).forEach(function(_0x51fc4e, _0x4b3613) {
+                    _0x7f9f36.coreOptionsValues = _0x27d859 || {};
+                    _0x7f9f36.setOptionMenuItem.call(_0x17edbf, _0x42a7b1, _0x7f9f36.coreOptionsValues);
+                    Object.keys(_0x7f9f36.coreOptionsValues).forEach(function(_0x51fc4e, _0x4b3613) {
                         _0x7f9f36.updateCoreOptions.call(_0x2c1832, _0x51fc4e, _0x7f9f36.coreOptionsValues[_0x51fc4e]);
-                    }), 'nds' == _0x17edbf.system && (_0x27f4c4.Module._fast_forward_2 ? _0x27f4c4.Module._fast_forward_2(0x1) : _0x27f4c4.Module._fast_forward && _0x27f4c4.Module._fast_forward(0x1));
+                    });
+                    'nds' == _0x17edbf.system && (_0x27f4c4.Module._fast_forward_2 ? _0x27f4c4.Module._fast_forward_2(1) : _0x27f4c4.Module._fast_forward && _0x27f4c4.Module._fast_forward(1));
                 });
             },
             'updateCoreOptionMenuItems': function() {
@@ -5964,7 +6328,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.2.9';
+                this.version = '2.3.0';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
