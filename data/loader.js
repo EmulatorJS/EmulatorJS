@@ -1,11 +1,11 @@
 (async function() {
-    var VERSION = 3;
+    let VERSION = 3.1;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
-                    var version = JSON.parse(body);
+                    let version = JSON.parse(body);
                     if (VERSION < version.current_version) {
                         console.log('Using emulatorjs version ' + VERSION + ' but the newest version is ' + version.current_version + '\nopen https://github.com/ethanaobrien/emulatorjs to update');
                     }
@@ -13,10 +13,10 @@
             }
         })
     }
-    var scriptTag = document.getElementsByTagName('script')[0];
+    let scriptTag = document.getElementsByTagName('script')[0];
     function loadStyle(file) {
         return new Promise(function(resolve, reject) {
-            var css = document.createElement('link');
+            let css = document.createElement('link');
             css.rel = 'stylesheet';
             css.href = function() {
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] == 'string') {
@@ -34,7 +34,7 @@
     }
     function loadScript(file) {
         return new Promise(function (resolve, reject) {
-            var script = document.createElement('script');
+            let script = document.createElement('script');
             script.src = function() {
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] == 'string') {
                     return EJS_paths[file];
@@ -57,7 +57,7 @@
         await loadStyle('emu-css.min.css');
         await loadScript('emulator.min.js');
     }
-    var config = {};
+    let config = {};
     config.gameUrl = EJS_gameUrl;
     'undefined' != typeof EJS_mameCore && (config.mameCore = EJS_mameCore);
     'undefined' != typeof EJS_biosUrl && (config.biosUrl = EJS_biosUrl);
