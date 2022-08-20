@@ -3428,10 +3428,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         } else if (!set[i].type) {
                             console.warn("Missing type value for button "+set[i].text+"! Using default gamepad settings");
                             return false;
-                        } else if (!set[i].id) {
+                        } else if (!set[i].id.toString()) {
                             console.warn("Missing id value for button "+set[i].text+"! Using default gamepad settings");
                             return false;
-                        } else if (!set[i].input_value) {
+                        } else if (!set[i].input_value.toString()) {
                             console.warn("Missing input_value for button "+set[i].text+"! Using default gamepad settings");
                             return false;
                         }
@@ -3839,7 +3839,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 if (zone) {
                     let opts = {};
-                    opts[info[i].location.toLowerCase()] = true;
+                    opts[zone.location.toLowerCase()] = true;
                     let _0x17edbf = _0x3a58c8.a.create({
                         'zone': _0x530042.call(this, '.' .concat(_0x449eac({
                             'ejs-virtual-gamepad': true
@@ -6278,7 +6278,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.3.1';
+                this.version = '2.3.2';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
