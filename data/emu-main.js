@@ -1357,14 +1357,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     },
                     _0x5f3757 = function(_0x2bd107) {
                         if (_0x4d7024.gamePatch) {
-                            let _0x17edbf = _0x2bd107.startName.split('/'),
+                            let startName = _0x4d7024.getStartName(true);
+                            let _0x17edbf = startName.split('/'),
                                 _0x2c1832 = _0x17edbf.pop().split('.').pop(),
                                 _0x11dc72 = (_0x4d7024.gamePatch.split('.').pop(), _0x4d7024.gamePatch.split('/').pop().split('.').shift()),
                                 _0x453ec0 = '' .concat(_0x17edbf.join('/'), '/').concat(_0x11dc72, '.').concat(_0x2c1832);
                             _0x453ec0 = _0x453ec0.replace(/\#/g, '');
+                            if (_0x4d7024.gamePatch.startsWith('blob:')) {
+                                _0x453ec0 = startName;
+                            }
                             let _0x5438db = _0x4d7024.gamePatch;
-                            if (_0x4d7024.FS.rename(_0x2bd107.startName, _0x453ec0), _0x2bd107.startName = _0x453ec0, 'snes' === _0x2bd107.system || ['snes2002', 'snes2005', 'snes2010'].includes(_0x2bd107.system)) {
-                                let _0x4758bc, _0x4b4000, _0x4aa31e, _0x2d9175 = new _0x863031(_0x4d7024.FS.readFile(_0x2bd107.startName)),
+                            if (_0x4d7024.FS.rename(startName, _0x453ec0), _0x2bd107.startName = _0x453ec0, 'snes' === _0x2bd107.system || ['snes2002', 'snes2005', 'snes2010'].includes(_0x2bd107.system)) {
+                                let _0x4758bc, _0x4b4000, _0x4aa31e, _0x2d9175 = new _0x863031(_0x4d7024.FS.readFile(startName)),
                                     _0x567355 = _0x2d78e9(_0x2d9175),
                                     _0x3d2ad0 = new _0x863031(_0x4d7024.FS.readFile(_0x5438db)),
                                     _0x4a229b = _0x3d2ad0.readString(0x6),
@@ -1373,16 +1377,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 try {
                                     if (_0x4aa31e = _0x4758bc.apply(_0x2d9175, !0x1)) {
                                         let _0x1ffde3 = _0x4aa31e._u8array.length % 0x400;
-                                        _0x1ffde3 > 0x0 && (_0x4b4000 = _0x4aa31e._u8array.slice ? _0x4aa31e._u8array.slice(_0x1ffde3) : _0x4aa31e._u8array.subarray(_0x1ffde3), _0x4aa31e = new _0x863031(_0x4b4000)), _0x4d7024.FS.unlink(_0x5438db), _0x4d7024.FS.unlink(_0x2bd107.startName), _0x4d7024.FS.writeFile(_0x2bd107.startName, _0x4aa31e._u8array);
+                                        _0x1ffde3 > 0x0 && (_0x4b4000 = _0x4aa31e._u8array.slice ? _0x4aa31e._u8array.slice(_0x1ffde3) : _0x4aa31e._u8array.subarray(_0x1ffde3), _0x4aa31e = new _0x863031(_0x4b4000)), _0x4d7024.FS.unlink(_0x5438db), _0x4d7024.FS.unlink(startName), _0x4d7024.FS.writeFile(startName, _0x4aa31e._u8array);
                                     }
                                 } catch (_0x2ef20f) {}
                             } else {
-                                let _0x4108d8, _0x5e086b, _0x454a20 = new _0x863031(_0x4d7024.FS.readFile(_0x2bd107.startName)),
+                                let _0x4108d8, _0x5e086b, _0x454a20 = new _0x863031(_0x4d7024.FS.readFile(startName)),
                                     _0x4991ea = new _0x863031(_0x4d7024.FS.readFile(_0x5438db)),
                                     _0x130f1f = _0x4991ea.readString(0x6);
                                 _0x130f1f.startsWith('PATCH') ? _0x4108d8 = _0x288092(_0x4991ea) : _0x130f1f.startsWith(_0x7a6485) ? _0x4108d8 = _0xd2202f(_0x4991ea) : _0x130f1f.startsWith('BPS1') && (_0x4108d8 = _0x356089(_0x4991ea));
                                 try {
-                                    (_0x5e086b = _0x4108d8.apply(_0x454a20, !0x1)) && (_0x4d7024.FS.unlink(_0x5438db), _0x4d7024.FS.unlink(_0x2bd107.startName), _0x4d7024.FS.writeFile(_0x2bd107.startName, _0x5e086b._u8array));
+                                    (_0x5e086b = _0x4108d8.apply(_0x454a20, !0x1)) && (_0x4d7024.FS.unlink(_0x5438db), _0x4d7024.FS.unlink(startName), _0x4d7024.FS.writeFile(startName, _0x5e086b._u8array));
                                 } catch (_0x3ed519) {}
                             }
                         }
@@ -1528,14 +1532,16 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             }
                         }
                         if (!_0x1e67c4) {
-                            let _0x1c661d = _0x1bc287.replace(/\#/g, '');
+                            _0x55627a.startName = _0x55627a.getStartName();
+                            if (!_0x55627a.startName) {
+                                _0x55627a.startName = 'rom';
+                            }
                             try {
                                 _0x468801 += _0x1844e3.length;
-                                _0x4d7024.FS.createDataFile('/', _0x1c661d, _0x1844e3, true, false);
+                                _0x4d7024.FS.createDataFile('/', _0x55627a.startName, _0x1844e3, true, false);
                             } catch (_0x210043) {
                                 console.log(_0x210043);
                             }
-                            _0x55627a.startName = _0x1c661d;
                             start(_0x55627a.startName);
                         }
                     },
@@ -2204,7 +2210,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_0x5b1dcd);
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_0x5b1dcd);
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_0x5b1dcd);
-                            _0xc6823.setStatesSupported(_0x5b1dcd);
+                            _this.statesSupported = _0x5b1dcd;
                             
                             if (_this.config.buttons) {
                                 if (_this.config.buttons.playPause === false) {
@@ -2645,16 +2651,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (!location || location === 'download') {
                             return false;
                         }
-                        if ((!this.gameName && typeof this.config.gameUrl == 'string' && this.config.gameUrl.startsWith('blob:'))) return false;
+                        if (!this.getStartName()) return false;
                         let slot = _0x2593da.getCoreOptionsValues()['save-state-slot'];
-                        let game;
-                        if (typeof this.config.gameUrl == 'string') {
-                            game = this.config.gameUrl.split('/').pop();
-                        }
-                        if (this.gameName) {
-                            game = this.gameName;
-                        };
-                        if (!game) return false;
+                        let game = this.getStartName();
+                        if (!slot) return false;
                         let key = game + '-' + slot;
                         (async function() {
                             if (type === 'save') {
@@ -3113,11 +3113,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x2c1832.querySelector('#ejs-cheat-switch-' .concat(_0x7bb84b)).setAttribute('checked', 'checked');
                             });
                         }
-                        return 'localStorage' in window && localStorage.setItem('' .concat(_this.system, '-').concat(_this.startName, '-cheats'), JSON.stringify(_this.cheats)), _0x1c01ce.stopPropagation(), !0x1;
+                        if ('localStorage' in window && _this.getStartName()) {
+                            localStorage.setItem('' .concat(_this.system, '-').concat(_this.getStartName(), '-cheats'), JSON.stringify(_this.cheats));
+                            _0x1c01ce.stopPropagation();
+                        }
+                        return false;
                     });
                     let _0x257001 = function() {
-                        if ('localStorage' in window) {
-                            let _0x17edbf = localStorage.getItem('' .concat(_this.system, '-').concat(_this.startName, '-cheats'));
+                        if ('localStorage' in window && _this.getStartName()) {
+                            let _0x17edbf = localStorage.getItem('' .concat(_this.system, '-').concat(_this.getStartName(), '-cheats'));
                             try {
                                 _0x17edbf = JSON.parse(_0x17edbf);
                             } catch (_0x101b3e) {}
@@ -3135,7 +3139,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x1093f4.call(_this, _0x2c1832, 'click', function(_0x576733) {
                         if (_0x576733.target && _0x576733.target.classList.contains(_0x378b5c.classNames['ejs-delete-cheat']) && _0x576733.target.getAttribute('data-idx')) {
                             let _0x5b10b7 = _0x576733.target.getAttribute('data-idx');
-                            _this.cheats.splice(_0x5b10b7, 0x1), 'localStorage' in window && localStorage.setItem('' .concat(_this.system, '-').concat(_this.startName, '-cheats'), JSON.stringify(_this.cheats));
+                            _this.cheats.splice(_0x5b10b7, 0x1);
+                            if ('localStorage' in window && _this.getStartName()) {
+                                localStorage.setItem('' .concat(_this.system, '-').concat(_this.getStartName(), '-cheats'), JSON.stringify(_this.cheats));
+                            }
                             let _0x557895 = [];
                             _0x2c1832.querySelectorAll('input').forEach(function(_0xab0ba8, _0x1f3597) {
                                 _0x557895[_0x1f3597] = !!_0x2c1832.querySelector('#ejs-cheat-switch-' .concat(_0x1f3597, ':checked'));
@@ -3987,7 +3994,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     });
                 }
                 window.addEventListener('beforeunload', function(_0x34b11a) {
-                    if (_this.started) {
+                    if (_this.started && _this.getStartName()) {
                         _0x27f4c4.FS.syncfs(function() {});
                         _0x378b5c.saveSavFiles();
                         _0x27f4c4.FS.syncfs(function() {});
@@ -3995,6 +4002,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }, true);
                 //Wille save savefiles to indexeddb
                 window.saveSaveFiles = function() {
+                    if (!_this.getStartName()) return;
                     console.log('saving save files');
                     _0x378b5c.saveSavFiles();
                     _0x27f4c4.FS.syncfs(false, function() {});
@@ -4929,8 +4937,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'default': 1
                     }
                 }
-                if (this.statesSupported === true && window.indexedDB &&
-                    (typeof this.gameName == 'string' || (typeof this.config.gameUrl == 'string' && !this.config.gameUrl.startsWith('blob:')))) {
+                if (this.statesSupported === true && window.indexedDB && this.getStartName()) {
                     _0xa88a13['save-state-location'] = {
                         'label': this.localization('Save State Location'),
                         'options': {
@@ -6137,16 +6144,18 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'state': _0x31e271
                             });
                             else {
-                                let _0x2b5fc8 = new Blob([_0x31e271]),
-                                    _0x152605 = _0x17edbf.startName.split('/').pop().split('.'),
-                                    _0x51d471 = _0x152605.slice(0x0, _0x152605.length - 0x1).join('.');
-                                if (typeof _0x17edbf.gameName == 'string') {
-                                    let _0x51d471 = _0x17edbf.gameName
+                                let name = _0x17edbf.getStartName(true, true).split('/').pop();
+                                let data = new Blob([_0x31e271]);
+                                if (name.includes('.')) {
+                                    name = name.substring(0, name.length-name.split('.').pop().length-1);
                                 }
-                                let _0x49f6b6 = _0x51d471 ? '' .concat(_0x51d471, '.state') : 'game.state';
+                                if (typeof _0x17edbf.gameName == 'string') {
+                                    name = _0x17edbf.gameName
+                                }
+                                let _0x49f6b6 = name ? '' .concat(name, '.state') : 'game.state';
                                 let a = document.createElement('a');
                                 a.download = _0x49f6b6;
-                                a.href = URL.createObjectURL(_0x2b5fc8);
+                                a.href = URL.createObjectURL(data);
                                 a.click();
                                 setTimeout(function() {
                                     URL.revokeObjectURL(a.href);
@@ -6278,7 +6287,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.3.2';
+                this.version = '2.3.3';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6308,7 +6317,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.lightgun = this.config.lightgun;
                 this.loadStateOnStart = this.config.loadStateOnStart || false;
                 this.adUrl = this.config.adUrl || null;
-                this.gameName = this.config.gameName || null;
+                _0x1e2c68.string(this.config.gameName) && (this.gameName = this.config.gameName || null);
                 this.mouse = this.config.mouse;
                 this.multitap = this.config.multitap;
                 this.cheats = this.config.cheats;
@@ -6490,9 +6499,21 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 return !0x1;
             }
         }, {
-            'key': 'setStatesSupported',
-            'value': function(newValue) {
-                this.statesSupported = newValue;
+            'key': 'getStartName',
+            'value': function(force, noSystem) {
+                let rv;
+                if (this.startName && (force === true || this.startName !== 'rom')) {
+                    rv = this.startName;
+                } else if (!this.config.gameUrl.startsWith('blob:')) {
+                    rv = this.config.gameUrl.replace(/\#/g, '');
+                } else if (this.gameName) {
+                    rv = (noSystem===true?'':this.system)+'-'+this.gameName.replace(/\#/g, '');
+                } else if (this.config.gameId) {
+                    rv = (noSystem===true?'':this.system)+'-'+this.config.gameId;
+                } else if (force === true) {
+                    rv = this.config.gameUrl.replace(/\#/g, '');
+                }
+                return rv;
             }
         }, {
             'key': 'loadState',
@@ -6548,6 +6569,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
         _0x423c42 && _0x1a3a6c(_0x17edbf, _0x423c42)
         return _0x6954aa;
     }();
+    
     _0x3dbc76.defaults = {};
     _0x17edbf.default = _0x3dbc76;
 }
