@@ -47,12 +47,13 @@
         "oldCores": 1
     },
     "arcade": {
-        "version":"14",
+        "version":"15",
         "netplay": 1,
         "state": 1,
-        "asmjs": 1,
+        "asmjs": 0,
         "wasm": 1,
-        "newCores": 0,
+        "old": {"wasm":1, "asmjs":1 },
+        "newCores": 1,
         "oldCores": 1
     },
     "fba0.2.97.29": {
