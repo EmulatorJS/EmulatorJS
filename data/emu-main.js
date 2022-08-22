@@ -1367,7 +1367,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x453ec0 = startName;
                             }
                             let _0x5438db = _0x4d7024.gamePatch;
-                            if (_0x4d7024.FS.rename(startName, _0x453ec0), _0x2bd107.startName = _0x453ec0, 'snes' === _0x2bd107.system || ['snes2002', 'snes2005', 'snes2010'].includes(_0x2bd107.system)) {
+                            _0x4d7024.FS.rename(startName, _0x453ec0);
+                            _0x2bd107.startName = _0x453ec0;
+                            startName = _0x4d7024.getStartName(true);
+                            if ('snes' === _0x2bd107.system || ['snes2002', 'snes2005', 'snes2010'].includes(_0x2bd107.system)) {
                                 let _0x4758bc, _0x4b4000, _0x4aa31e, _0x2d9175 = new _0x863031(_0x4d7024.FS.readFile(startName)),
                                     _0x567355 = _0x2d78e9(_0x2d9175),
                                     _0x3d2ad0 = new _0x863031(_0x4d7024.FS.readFile(_0x5438db)),
