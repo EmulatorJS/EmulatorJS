@@ -6491,7 +6491,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'key': 'getStartName',
             'value': function(force) {
                 let rv;
-				const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
+                const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
                 if (this.startName && (force === true || this.startName !== 'rom')) {
                     rv = this.startName;
                 } else if (_0x1e2c68.string(this.config.gameUrl) && !this.config.gameUrl.startsWith('blob:')) {
@@ -6503,8 +6503,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 } else if (_0x1e2c68.string(this.config.gameUrl) && force === true) {
                     rv = this.config.gameUrl.split('/').pop().split('?')[0].replace(invalidCharacters, '');
                 } else if (force === true) {
-					return 'rom';
-				}
+                    return 'rom';
+                }
                 return rv;
             }
         }, {
