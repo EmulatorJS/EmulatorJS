@@ -2443,64 +2443,50 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0xf43a92.closeModal();
             }
         });
-        var _0x378b5c = {
+        const _0x378b5c = {
             'defaultControllers': {
                 0: {
                     0: {
-                        'value': '88',
-                        'value2': '1'
+                        'value': '88'
                     },
                     1: {
-                        'value': '83',
-                        'value2': '3'
+                        'value': '83'
                     },
                     2: {
-                        'value': '16',
-                        'value2': '8'
+                        'value': '16'
                     },
                     3: {
-                        'value': '13',
-                        'value2': '9'
+                        'value': '13'
                     },
                     4: {
-                        'value': '38',
-                        'value2': '12'
+                        'value': '38'
                     },
                     5: {
-                        'value': '40',
-                        'value2': '13'
+                        'value': '40'
                     },
                     6: {
-                        'value': '37',
-                        'value2': '14'
+                        'value': '37'
                     },
                     7: {
-                        'value': '39',
-                        'value2': '15'
+                        'value': '39'
                     },
                     8: {
-                        'value': '90',
-                        'value2': '0'
+                        'value': '90'
                     },
                     9: {
-                        'value': '65',
-                        'value2': '2'
+                        'value': '65'
                     },
                     10: {
-                        'value': '81',
-                        'value2': '4'
+                        'value': '81'
                     },
                     11: {
-                        'value': '69',
-                        'value2': '5'
+                        'value': '69'
                     },
                     12: {
-                        'value': '82',
-                        'value2': '6'
+                        'value': '82'
                     },
                     13: {
-                        'value': '87',
-                        'value2': '7'
+                        'value': '87'
                     },
                     14: {},
                     15: {},
@@ -6147,7 +6133,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'state': _0x31e271
                             });
                             else {
-                                let name = _0x17edbf.getStartName(true, true).split('/').pop();
+                                let name = _0x17edbf.getStartName(true).split('/').pop();
                                 let data = new Blob([_0x31e271]);
                                 if (name.includes('.')) {
                                     name = name.substring(0, name.length-name.split('.').pop().length-1);
@@ -6290,7 +6276,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.3.5';
+                this.version = '2.3.6';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6503,19 +6489,22 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         }, {
             'key': 'getStartName',
-            'value': function(force, noSystem) {
+            'value': function(force) {
                 let rv;
+				const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
                 if (this.startName && (force === true || this.startName !== 'rom')) {
                     rv = this.startName;
-                } else if (!this.config.gameUrl.startsWith('blob:')) {
-                    rv = this.config.gameUrl.split('/').pop().replace(/[^a-z0-9 ,.]/ig, '');
+                } else if (_0x1e2c68.string(this.config.gameUrl) && !this.config.gameUrl.startsWith('blob:')) {
+                    rv = this.config.gameUrl.split('/').pop().split('?')[0].replace(invalidCharacters, '');
                 } else if (this.gameName) {
-                    rv = (noSystem===true?'':this.system+'-')+this.gameName.replace(/\#/g, '');
+                    rv = this.gameName.replace(invalidCharacters, '')+'.'+this.system;
                 } else if (this.config.gameId) {
-                    rv = (noSystem===true?'':this.system+'-')+this.config.gameId;
+                    rv = this.config.gameId+'.'+this.system;
+                } else if (_0x1e2c68.string(this.config.gameUrl) && force === true) {
+                    rv = this.config.gameUrl.split('/').pop().split('?')[0].replace(invalidCharacters, '');
                 } else if (force === true) {
-                    rv = this.config.gameUrl.split('/').pop().replace(/[^a-z0-9 ,.]/ig, '');
-                }
+					return 'rom';
+				}
                 return rv;
             }
         }, {
