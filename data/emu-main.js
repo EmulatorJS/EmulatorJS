@@ -6290,7 +6290,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.3.4';
+                this.version = '2.3.5';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6508,13 +6508,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 if (this.startName && (force === true || this.startName !== 'rom')) {
                     rv = this.startName;
                 } else if (!this.config.gameUrl.startsWith('blob:')) {
-                    rv = this.config.gameUrl.replace(/\#/g, '');
+                    rv = this.config.gameUrl.split('/').pop().replace(/[^a-z0-9 ,.]/ig, '');
                 } else if (this.gameName) {
-                    rv = (noSystem===true?'':this.system)+'-'+this.gameName.replace(/\#/g, '');
+                    rv = (noSystem===true?'':this.system+'-')+this.gameName.replace(/\#/g, '');
                 } else if (this.config.gameId) {
-                    rv = (noSystem===true?'':this.system)+'-'+this.config.gameId;
+                    rv = (noSystem===true?'':this.system+'-')+this.config.gameId;
                 } else if (force === true) {
-                    rv = this.config.gameUrl.replace(/\#/g, '');
+                    rv = this.config.gameUrl.split('/').pop().replace(/[^a-z0-9 ,.]/ig, '');
                 }
                 return rv;
             }
