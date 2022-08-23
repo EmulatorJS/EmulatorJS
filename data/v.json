@@ -1,6 +1,6 @@
 {
     "nes": {
-        "version":"23",
+        "version":"24",
         "netplay": 1,
         "old": {"wasm":1, "asmjs":1 },
         "state": 1,
@@ -10,7 +10,7 @@
         "oldCores": 1
     },
     "snes": {
-        "version":"20",
+        "version":"21",
         "netplay": 1,
         "old": {"wasm":1, "asmjs":1 },
         "state": 1,
@@ -47,12 +47,13 @@
         "oldCores": 1
     },
     "arcade": {
-        "version":"14",
+        "version":"15",
         "netplay": 1,
         "state": 1,
-        "asmjs": 1,
+        "asmjs": 0,
         "wasm": 1,
-        "newCores": 0,
+        "old": {"wasm":1, "asmjs":1 },
+        "newCores": 1,
         "oldCores": 1
     },
     "fba0.2.97.29": {
@@ -119,7 +120,7 @@
         "oldCores": 1
     },
     "vb": {
-        "version":"6",
+        "version":"7",
         "netplay": 0,
         "old": {"wasm":1, "asmjs":1 },
         "state": 1,
@@ -138,7 +139,7 @@
         "oldCores": 1
     },
     "atari5200": {
-        "version":"3",
+        "version":"4",
         "netplay": 1,
         "state": 1,
         "asmjs": 1,
@@ -183,7 +184,7 @@
         "oldCores": 1
     },
     "gb": {
-        "version":"11",
+        "version":"12",
         "netplay": 0,
         "state": 1,
         "old": {"wasm":0, "asmjs":1 },
@@ -202,7 +203,7 @@
         "oldCores": 1
     },
     "gba": {
-        "version":"9",
+        "version":"10",
         "netplay": 0,
         "state": 1,
         "old": {"wasm":0, "asmjs":1 },
@@ -266,7 +267,7 @@
         "oldCores": 1
     },
     "n64": {
-        "version":"12",
+        "version":"13",
         "netplay": 1,
         "state": 1,
         "asmjs": 0,
@@ -276,7 +277,7 @@
         "oldCores": 1
     },
     "nds": {
-        "version":"15",
+        "version":"16",
         "old": {"wasm":1, "asmjs":1 },
         "netplay": 0,
         "state": 1,
@@ -304,7 +305,7 @@
         "oldCores": 1
     },
     "mame2003": {
-        "version":"4",
+        "version":"5",
         "old": {"wasm":0, "asmjs":1 },
         "netplay": 1,
         "state": 1,
