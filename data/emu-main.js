@@ -1155,8 +1155,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     },
                     _0x24de8d = null,
                     _0x4e171c = null,
-                    _0xa884ea = null,
-                    _0x1ffb98 = null;
+                    _0xa884ea = null;
                 try {
                     _0x24de8d = new IDBStore({
                         'dbVersion': 1,
@@ -1196,15 +1195,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'onError': function() {
                             _0x5e24fa = true;
                         }
-                    });
-                    _0x1ffb98 = new IDBStore({
-                        'dbVersion': 1,
-                        'storePrefix': 'ejs-',
-                        'storeName': 'romsdata',
-                        'keyPath': null,
-                        'autoIncrement': false,
-                        'onStoreReady': function() {},
-                        'onError': function() {}
                     });
                 } catch (_0x4fc9b6) {
                     _0x528f2b = true;
@@ -1346,18 +1336,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x96b13f instanceof MouseEvent && _0xc6823.started && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)) && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)).parentNode.removeChild(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad))), _0xc6823.elements.container.focus();
                     });
                 }
-                let _0x16cf3e = function() {
-                        _0x4e171c.db && _0x4e171c.getAll(function(_0x1a4eaf) {
-                            Array.isArray(_0x1a4eaf) && _0x1a4eaf.length > 0xa && _0x1a4eaf.sort(function(_0x155e15, _0x4a9e7f) {
-                                return (_0x4a9e7f.lastaccess ? _0x4a9e7f.lastaccess : 0x0) - (_0x155e15.lastaccess ? _0x155e15.lastaccess : 0x0);
-                            }).forEach(function(_0x43d1af, _0x2db4e2) {
-                                _0x2db4e2 > 0xa && !_0x4d7024.saveFilenames.includes(_0x43d1af.key) ? (_0x4e171c.remove(_0x43d1af.key), _0x1ffb98.db && _0x1ffb98.remove(_0x43d1af.key)) : (delete _0x43d1af.data, _0x4e171c.put(_0x43d1af.key, _0x43d1af));
-                            });
-                        }, function() {
-                            _0x4e171c.clear(), _0x1ffb98.db && _0x1ffb98.clear();
-                        });
-                    },
-                    _0x5f3757 = function(_0x2bd107) {
+                let _0x5f3757 = function(_0x2bd107) {
                         if (_0x4d7024.gamePatch) {
                             let startName = _0x4d7024.getStartName(true);
                             let _0x17edbf = startName.split('/'),
@@ -1465,7 +1444,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             try {
                                 _0x4bd781();
                                 _0x5f3757(_0x55627a);
-                                _0x16cf3e();
                                 let _0x2c1832 = [startName,
                                     [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                 ];
@@ -1583,7 +1561,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x550f17.a.head(_0x3cf3cf, {}).then(function(_0x3d703e) {
                             let _0x21b526 = _0x3d703e.headers['content-length'],
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
-                                _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
+                                _0x107e8a = ('' .concat(_0x594488, '-').concat(_0x139f1c)),
                                 _0x43a689 = function() {
                                     _0x550f17.a.get(_0x3cf3cf, {
                                         'onDownloadProgress': function(e) {
@@ -1599,7 +1577,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         'responseType': 'arraybuffer'
                                     }).then(function(_0x22a1f4) {
                                         let _0x17edbf = new Uint8Array(_0x22a1f4.data);
-                                        if (typeof _this.config.gameUrl != 'string' || (typeof _this.config.gameUrl == 'string' && (_this.config.gameUrl.startsWith('blob:') || _this.config.gameUrl.startsWith('file:') || _this.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _this.config.gameUrl.split(':').length === 1)))) {
+                                        if (typeof _this.config.gameUrl != 'string' || (typeof _this.config.gameUrl == 'string' && (_this.config.gameUrl.startsWith('blob:') || _this.config.gameUrl.startsWith('file:') || _this.config.gameUrl.startsWith('chrome-extension:') || window.location.protocol === 'file:' || window.location.protocol === 'chrome-extension:'))) {
                                             _0x3512e9(_0x139f1c, _0x17edbf);
                                             return;
                                         };
@@ -1611,7 +1589,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                                 'key': _0x107e8a,
                                                 'lastaccess': new Date().valueOf()
                                             });
-                                            _0x1ffb98.db && _0x1ffb98.put(_0x107e8a, {
+                                            _0x4e171c.db && _0x4e171c.put(_0x107e8a, {
                                                 'filename': _0x139f1c,
                                                 'filesize': _0x17edbf.length,
                                                 'filetype': _0x7e8d4c,
@@ -1623,7 +1601,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         renderErrorPage(_0x2e4d62, _0x2c1832, _this);
                                     });
                                 };
-                            _0x1ffb98.db ? _0x1ffb98.get(_0x107e8a, function(_0x5afc4a) {
+                            _0x4e171c.db ? _0x4e171c.get(_0x107e8a, function(_0x5afc4a) {
                                 if (_0x5afc4a && _0x5afc4a.filename === _0x139f1c && _0x5afc4a.filesize - _0x21b526 == 0x0 && _0x5afc4a.filetype === _0x7e8d4c && _0x5afc4a.key)
                                     _0x3512e9(_0x5afc4a.filename, _0x5afc4a.data);
                                 else _0x43a689();
@@ -1716,41 +1694,26 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x191007) {
                                             let _0x17edbf = new Uint8Array(_0x191007.data);
-                                            if (_0x316472 && _0x4e171c.db)
-                                                if (_0x17edbf.length > 0x6400000)
-                                                    for (let _0x2c1832 = Math.ceil(_0x17edbf.length / 0x6400000), _0x3f44d7 = 0x0; _0x3f44d7 < _0x2c1832; _0x3f44d7 += 0x1) {
-                                                        let _0x15a529 = _0x17edbf.slice ? _0x17edbf.slice(0x6400000 * _0x3f44d7, 0x6400000 * (_0x3f44d7 + 0x1)) : _0x17edbf.subarray(0x6400000 * _0x3f44d7, 0x6400000 * (_0x3f44d7 + 0x1)),
-                                                            _0x4a61f1 = '' .concat(_0x316472);
-                                                        _0x3f44d7 > 0x0 && (_0x4a61f1 = '' .concat(_0x316472, '-part-').concat(_0x3f44d7)), _0x4d7024.saveFilenames.push(_0x4a61f1), _0x4e171c.put(_0x4a61f1, {
-                                                            'filename': _0xa1889f,
-                                                            'filesize': _0x17edbf.length,
-                                                            'filetype': _0x500ba1,
-                                                            'key': _0x4a61f1,
-                                                            'lastaccess': new Date().valueOf(),
-                                                            'next': '' .concat(_0x316472, '-part-').concat(_0x3f44d7 + 0x1)
-                                                        }), _0x1ffb98.db && _0x1ffb98.put(_0x4a61f1, {
-                                                            'filename': _0xa1889f,
-                                                            'filesize': _0x17edbf.length,
-                                                            'filetype': _0x500ba1,
-                                                            'key': _0x4a61f1,
-                                                            'data': _0x15a529
-                                                        });
-                                                    } else _0x4d7024.saveFilenames.push(_0x316472), _0x4e171c.put(_0x316472, {
-                                                        'filename': _0xa1889f,
-                                                        'filesize': _0x17edbf.length,
-                                                        'filetype': _0x500ba1,
-                                                        'key': _0x316472,
-                                                        'lastaccess': new Date().valueOf()
-                                                    }), _0x1ffb98.db && _0x1ffb98.put(_0x316472, {
-                                                        'filename': _0xa1889f,
-                                                        'filesize': _0x17edbf.length,
-                                                        'filetype': _0x500ba1,
-                                                        'key': _0x316472,
-                                                        'data': _0x17edbf
-                                                    });
+                                            if (_0x316472 && _0x4e171c.db) {
+                                                _0x4d7024.saveFilenames.push(_0x316472);
+                                                _0x4e171c.put(_0x316472, {
+                                                    'filename': _0xa1889f,
+                                                    'filesize': _0x17edbf.length,
+                                                    'filetype': _0x500ba1,
+                                                    'key': _0x316472,
+                                                    'lastaccess': new Date().valueOf()
+                                                }), _0x4e171c.db && _0x4e171c.put(_0x316472, {
+                                                    'filename': _0xa1889f,
+                                                    'filesize': _0x17edbf.length,
+                                                    'filetype': _0x500ba1,
+                                                    'key': _0x316472,
+                                                    'data': _0x17edbf
+                                                });
+                                            }
                                             let _0x54d79 = _0xa1889f.replace(/\#/g, '');
                                             try {
-                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
+                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1);
+                                                _0x139f68();
                                             } catch (_0x125736) {
                                                 console.log(_0x125736);
                                             }
@@ -1758,21 +1721,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             renderErrorPage(_0x516cc3, _0x2c1832, _this);
                                         });
                                     };
-                                _0x1ffb98.db ? _0x1ffb98.get(_0x316472, function(_0x3e612b) {
-                                    if (_0x3e612b && _0x3e612b.filename === _0xa1889f && _0x3e612b.filesize - _0x17edbf == 0x0 && _0x3e612b.filetype === _0x500ba1 && _0x3e612b.key)
-                                        if (_0x3e612b.filesize > 0x6400000) {
-                                            let _0x2c1832 = new Uint8Array(_0x3e612b.filesize);
-                                            _0x2c1832.set(_0x3e612b.data);
-                                            for (let _0xa2197 = Math.ceil(_0x3e612b.filesize / 0x6400000), _0x6f30ae = [], _0x32aa3c = 0x1; _0x32aa3c < _0xa2197; _0x32aa3c += 0x1) _0x6f30ae.push('' .concat(_0x316472, '-part-').concat(_0x32aa3c));
-                                            _0x1ffb98.getBatch(_0x6f30ae, function(_0x198a02) {
-                                                _0x198a02.filter(function(_0x1c8a88) {
-                                                    return _0x1c8a88;
-                                                }).length !== _0x6f30ae ? _0x31f098() : (_0x198a02.forEach(function(_0x22b824, _0x16eecf) {
-                                                    _0x2c1832.set(_0x22b824.data, 0x6400000 * (_0x16eecf + 0x1));
-                                                }), _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
-                                            }, function() {}, 'sparse');
-                                        } else _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
-                                    else _0x31f098();
+                                _0x4e171c.db ? _0x4e171c.get(_0x316472, function(_0x3e612b) {
+                                    if (_0x3e612b && _0x3e612b.filename === _0xa1889f && _0x3e612b.filesize - _0x17edbf == 0x0 && _0x3e612b.filetype === _0x500ba1 && _0x3e612b.key) {
+                                        _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1);
+                                        _0x139f68();
+                                    } else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
                                 renderErrorPage(_0x20f2e3, _0x2c1832, _this);
@@ -1896,7 +1849,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                         _0x550f17.a.get(_0x17edbf, {
                                             'onDownloadProgress': function(e) {
                                                 let progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
-                                                _0x2c1832.innerHTML = _this.localization('Download BIOS')+progress;
+                                                _0x1f8424.innerHTML = _this.localization('Download BIOS')+progress;
                                             },
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x4b0c1d) {
@@ -6316,7 +6269,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.3.8';
+                this.version = '2.3.9';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
