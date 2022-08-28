@@ -591,17 +591,19 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     let _0x13fb79, _0x4ad1c6 = _0x2c1832(6),
         _0x4704b1 = _0x2c1832(159),
         _0x3a58c8 = _0x2c1832.n(_0x4704b1),
-        _0x5032e6 = {
-            '2xScaleHQ.glslp': 'shaders = 1\n\nshader0 = "2xScaleHQ.glsl"\nfilter_linear0 = false\nscale_type_0 = source\n',
-            '4xScaleHQ.glslp': 'shaders = 1\n\nshader0 = "4xScaleHQ.glsl"\nfilter_linear0 = false\nscale_type_0 = source\n',
-            'crt-easymode.glslp': 'shaders = 1\n\nshader0 = crt-easymode.glsl\nfilter_linear0 = false\nscale_type_0 = source\n',
-            'crt-aperture.glslp': 'shaders = 1\n\nshader0 = crt-aperture.glsl\nfilter_linear0 = false\n',
-            'crt-geom.glslp': 'shaders = 1\n\nshader0 = crt-geom.glsl\nfilter_linear0 = false\nscale_type_0 = source\n',
-            '2xScaleHQ.glsl': '/*\n2xGLSLHqFilter shader\n\nCopyright (C) 2005 guest(r) - guest.r@gmail.com\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.\n*/\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\n// compatibility #defines\n#define vTexCoord TEX0.xy\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\nTEX0.xy = TexCoord.xy;\nfloat x = 0.5 * SourceSize.z;\nfloat y = 0.5 * SourceSize.w;\nvec2 dg1 = vec2( x, y);\nvec2 dg2 = vec2(-x, y);\nvec2 dx = vec2(x, 0.0);\nvec2 dy = vec2(0.0, y);\nt1 = vec4(vTexCoord - dg1, vTexCoord - dy);\nt2 = vec4(vTexCoord - dg2, vTexCoord + dx);\nt3 = vec4(vTexCoord + dg1, vTexCoord + dy);\nt4 = vec4(vTexCoord + dg2, vTexCoord - dx);\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\n\n// compatibility #defines\n#define Source Texture\n#define vTexCoord TEX0.xy\n\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nfloat mx = 0.325;      // start smoothing wt.\nfloat k = -0.250;      // wt. decrease factor\nfloat max_w = 0.25;    // max filter weight\nfloat min_w =-0.05;    // min filter weight\nfloat lum_add = 0.25;  // affects smoothing\nvec3 dt = vec3(1.0);\n\nvoid main()\n{\nvec3 c00 = COMPAT_TEXTURE(Source, t1.xy).xyz; \nvec3 c10 = COMPAT_TEXTURE(Source, t1.zw).xyz; \nvec3 c20 = COMPAT_TEXTURE(Source, t2.xy).xyz; \nvec3 c01 = COMPAT_TEXTURE(Source, t4.zw).xyz; \nvec3 c11 = COMPAT_TEXTURE(Source, vTexCoord).xyz; \nvec3 c21 = COMPAT_TEXTURE(Source, t2.zw).xyz; \nvec3 c02 = COMPAT_TEXTURE(Source, t4.xy).xyz; \nvec3 c12 = COMPAT_TEXTURE(Source, t3.zw).xyz; \nvec3 c22 = COMPAT_TEXTURE(Source, t3.xy).xyz; \n\nfloat md1 = dot(abs(c00 - c22), dt);\nfloat md2 = dot(abs(c02 - c20), dt);\n\nfloat w1 = dot(abs(c22 - c11), dt) * md2;\nfloat w2 = dot(abs(c02 - c11), dt) * md1;\nfloat w3 = dot(abs(c00 - c11), dt) * md2;\nfloat w4 = dot(abs(c20 - c11), dt) * md1;\n\nfloat t1 = w1 + w3;\nfloat t2 = w2 + w4;\nfloat ww = max(t1, t2) + 0.0001;\n\nc11 = (w1 * c00 + w2 * c20 + w3 * c22 + w4 * c02 + ww * c11) / (t1 + t2 + ww);\n\nfloat lc1 = k / (0.12 * dot(c10 + c12 + c11, dt) + lum_add);\nfloat lc2 = k / (0.12 * dot(c01 + c21 + c11, dt) + lum_add);\n\nw1 = clamp(lc1 * dot(abs(c11 - c10), dt) + mx, min_w, max_w);\nw2 = clamp(lc2 * dot(abs(c11 - c21), dt) + mx, min_w, max_w);\nw3 = clamp(lc1 * dot(abs(c11 - c12), dt) + mx, min_w, max_w);\nw4 = clamp(lc2 * dot(abs(c11 - c01), dt) + mx, min_w, max_w);\nFragColor = vec4(w1 * c10 + w2 * c21 + w3 * c12 + w4 * c01 + (1.0 - w1 - w2 - w3 - w4) * c11, 1.0);\n} \n#endif\n',
-            '4xScaleHQ.glsl': '/*\n4xGLSLHqFilter shader\n\nCopyright (C) 2005 guest(r) - guest.r@gmail.com\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.\n*/\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\nCOMPAT_VARYING vec4 t5;\nCOMPAT_VARYING vec4 t6;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\n// compatibility #defines\n#define vTexCoord TEX0.xy\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\nTEX0.xy = TexCoord.xy;\nfloat x = 0.5 * SourceSize.z;\nfloat y = 0.5 * SourceSize.w;\nvec2 dg1 = vec2( x, y);\nvec2 dg2 = vec2(-x, y);\nvec2 sd1 = dg1 * 0.5;\nvec2 sd2 = dg2 * 0.5;\nvec2 ddx = vec2(x, 0.0);\nvec2 ddy = vec2(0.0, y);\nt1 = vec4(vTexCoord - sd1, vTexCoord - ddy);\nt2 = vec4(vTexCoord - sd2, vTexCoord + ddx);\nt3 = vec4(vTexCoord + sd1, vTexCoord + ddy);\nt4 = vec4(vTexCoord + sd2, vTexCoord - ddx);\nt5 = vec4(vTexCoord - dg1, vTexCoord - dg2);\nt6 = vec4(vTexCoord + dg1, vTexCoord + dg2);\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\nCOMPAT_VARYING vec4 t5;\nCOMPAT_VARYING vec4 t6;\n\n// compatibility #defines\n#define Source Texture\n#define vTexCoord TEX0.xy\n\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nfloat mx = 1.0;      // start smoothing wt.\nfloat k = -1.10;      // wt. decrease factor\nfloat max_w = 0.75;    // max filter weight\nfloat min_w = 0.03;    // min filter weight\nfloat lum_add = 0.33;  // affects smoothing\nvec3 dt = vec3(1.0);\n\nvoid main()\n{\nvec3 c  = COMPAT_TEXTURE(Source, vTexCoord).xyz;\nvec3 i1 = COMPAT_TEXTURE(Source, t1.xy).xyz; \nvec3 i2 = COMPAT_TEXTURE(Source, t2.xy).xyz; \nvec3 i3 = COMPAT_TEXTURE(Source, t3.xy).xyz; \nvec3 i4 = COMPAT_TEXTURE(Source, t4.xy).xyz; \nvec3 o1 = COMPAT_TEXTURE(Source, t5.xy).xyz; \nvec3 o3 = COMPAT_TEXTURE(Source, t6.xy).xyz; \nvec3 o2 = COMPAT_TEXTURE(Source, t5.zw).xyz;\nvec3 o4 = COMPAT_TEXTURE(Source, t6.zw).xyz;\nvec3 s1 = COMPAT_TEXTURE(Source, t1.zw).xyz; \nvec3 s2 = COMPAT_TEXTURE(Source, t2.zw).xyz; \nvec3 s3 = COMPAT_TEXTURE(Source, t3.zw).xyz; \nvec3 s4 = COMPAT_TEXTURE(Source, t4.zw).xyz; \n\nfloat ko1=dot(abs(o1-c),dt);\nfloat ko2=dot(abs(o2-c),dt);\nfloat ko3=dot(abs(o3-c),dt);\nfloat ko4=dot(abs(o4-c),dt);\n\nfloat k1=min(dot(abs(i1-i3),dt),max(ko1,ko3));\nfloat k2=min(dot(abs(i2-i4),dt),max(ko2,ko4));\n\nfloat w1 = k2; if(ko3<ko1) w1*=ko3/ko1;\nfloat w2 = k1; if(ko4<ko2) w2*=ko4/ko2;\nfloat w3 = k2; if(ko1<ko3) w3*=ko1/ko3;\nfloat w4 = k1; if(ko2<ko4) w4*=ko2/ko4;\n\nc=(w1*o1+w2*o2+w3*o3+w4*o4+0.001*c)/(w1+w2+w3+w4+0.001);\nw1 = k*dot(abs(i1-c)+abs(i3-c),dt)/(0.125*dot(i1+i3,dt)+lum_add);\nw2 = k*dot(abs(i2-c)+abs(i4-c),dt)/(0.125*dot(i2+i4,dt)+lum_add);\nw3 = k*dot(abs(s1-c)+abs(s3-c),dt)/(0.125*dot(s1+s3,dt)+lum_add);\nw4 = k*dot(abs(s2-c)+abs(s4-c),dt)/(0.125*dot(s2+s4,dt)+lum_add);\n\nw1 = clamp(w1+mx,min_w,max_w); \nw2 = clamp(w2+mx,min_w,max_w);\nw3 = clamp(w3+mx,min_w,max_w); \nw4 = clamp(w4+mx,min_w,max_w);\n\nFragColor = vec4((w1*(i1+i3)+w2*(i2+i4)+w3*(s1+s3)+w4*(s2+s4)+c)/(2.0*(w1+w2+w3+w4)+1.0), 1.0);\n} \n#endif\n',
-            'crt-easymode.glsl': '#if defined(VERTEX)\n\n    #if __VERSION__ >= 130\n    #define COMPAT_VARYING out\n    #define COMPAT_ATTRIBUTE in\n    #define COMPAT_TEXTURE texture\n    #else\n    #define COMPAT_VARYING varying\n    #define COMPAT_ATTRIBUTE attribute\n    #define COMPAT_TEXTURE texture2D\n    #endif\n    \n    #ifdef GL_ES\n    #define COMPAT_PRECISION mediump\n    #else\n    #define COMPAT_PRECISION\n    #endif\n    COMPAT_VARYING     float _frame_rotation;\n    struct input_dummy {\n    vec2 _video_size;\n    vec2 _texture_size;\n    vec2 _output_dummy_size;\n    float _frame_count;\n    float _frame_direction;\n    float _frame_rotation;\n    };\n    vec4 _oPosition1;\n    vec4 _r0005;\n    COMPAT_ATTRIBUTE vec4 VertexCoord;\n    COMPAT_ATTRIBUTE vec4 TexCoord;\n    COMPAT_VARYING vec4 TEX0;\n    \n    uniform mat4 MVPMatrix;\n    uniform int FrameDirection;\n    uniform int FrameCount;\n    uniform COMPAT_PRECISION vec2 OutputSize;\n    uniform COMPAT_PRECISION vec2 TextureSize;\n    uniform COMPAT_PRECISION vec2 InputSize;\n    void main()\n    {\n    vec2 _oTex;\n    _r0005 = VertexCoord.x*MVPMatrix[0];\n    _r0005 = _r0005 + VertexCoord.y*MVPMatrix[1];\n    _r0005 = _r0005 + VertexCoord.z*MVPMatrix[2];\n    _r0005 = _r0005 + VertexCoord.w*MVPMatrix[3];\n    _oPosition1 = _r0005;\n    _oTex = TexCoord.xy;\n    gl_Position = _r0005;\n    TEX0.xy = TexCoord.xy;\n    }\n    #elif defined(FRAGMENT)\n    \n    #if __VERSION__ >= 130\n    #define COMPAT_VARYING in\n    #define COMPAT_TEXTURE texture\n    out vec4 FragColor;\n    #else\n    #define COMPAT_VARYING varying\n    #define FragColor gl_FragColor\n    #define COMPAT_TEXTURE texture2D\n    #endif\n    \n    #ifdef GL_ES\n    #ifdef GL_FRAGMENT_PRECISION_HIGH\n    precision highp float;\n    #else\n    precision mediump float;\n    #endif\n    #define COMPAT_PRECISION mediump\n    #else\n    #define COMPAT_PRECISION\n    #endif\n    COMPAT_VARYING     float _frame_rotation;\n    struct input_dummy {\n    vec2 _video_size;\n    vec2 _texture_size;\n    vec2 _output_dummy_size;\n    float _frame_count;\n    float _frame_direction;\n    float _frame_rotation;\n    };\n    vec4 _ret_0;\n    float _TMP30;\n    float _TMP29;\n    float _TMP28;\n    float _TMP13;\n    float _TMP32;\n    float _TMP11;\n    float _TMP10;\n    float _TMP31;\n    float _TMP9;\n    float _TMP8;\n    float _TMP15;\n    float _TMP14;\n    float _TMP33;\n    vec4 _TMP34;\n    vec4 _TMP27;\n    vec4 _TMP25;\n    vec4 _TMP23;\n    vec4 _TMP21;\n    vec4 _TMP26;\n    vec4 _TMP24;\n    vec4 _TMP22;\n    vec4 _TMP20;\n    float _TMP4;\n    vec4 _TMP3;\n    vec4 _TMP2;\n    float _TMP19;\n    float _TMP18;\n    float _TMP17;\n    float _TMP16;\n    vec4 _TMP1;\n    vec2 _TMP0;\n    uniform sampler2D Texture;\n    input_dummy _IN1;\n    float _TMP43;\n    float _x_step0044;\n    float _curve0044;\n    float _a0048;\n    float _val0052;\n    float _a0052;\n    vec4 _TMP57;\n    vec4 _x0072;\n    vec2 _c0086;\n    vec4 _x0088;\n    vec4 _x0094;\n    vec2 _c0098;\n    vec4 _x0100;\n    vec2 _c0104;\n    vec4 _x0106;\n    vec4 _sample_min0110;\n    vec4 _sample_max0110;\n    vec4 _r0112;\n    vec4 _TMP117;\n    vec2 _co0124;\n    vec2 _c0126;\n    vec4 _x0128;\n    vec4 _x0134;\n    vec2 _c0138;\n    vec4 _x0140;\n    vec2 _c0144;\n    vec4 _x0146;\n    vec4 _sample_min0150;\n    vec4 _sample_max0150;\n    vec4 _r0152;\n    vec4 _TMP157;\n    float _TMP163;\n    float _x_step0164;\n    float _curve0164;\n    float _a0168;\n    float _val0172;\n    float _a0172;\n    float _TMP183;\n    float _TMP189;\n    float _x0190;\n    float _a0196;\n    float _x0198;\n    vec2 _x0200;\n    float _x0208;\n    COMPAT_VARYING vec4 TEX0;\n    \n    uniform COMPAT_PRECISION vec2 OutputSize;\n    uniform COMPAT_PRECISION vec2 TextureSize;\n    uniform COMPAT_PRECISION vec2 InputSize;\n    void main()\n    {\n    vec2 _dx1;\n    vec2 _dy;\n    vec2 _pix_co;\n    vec2 _tex_co;\n    vec2 _dist;\n    vec3 _col2;\n    vec3 _col21;\n    vec4 _coeffs1;\n    float _luma;\n    float _bright;\n    float _scan_weight;\n    vec2 _mod_fac;\n    int _dot_no;\n    vec3 _mask_weight;\n    vec3 _TMP37;\n    _dx1 = vec2(1.00000000E+00/TextureSize.x, 0.00000000E+00);\n    _dy = vec2(0.00000000E+00, 1.00000000E+00/TextureSize.y);\n    _pix_co = TEX0.xy*TextureSize - vec2( 5.00000000E-01, 5.00000000E-01);\n    _TMP0 = floor(_pix_co);\n    _tex_co = (_TMP0 + vec2( 5.00000000E-01, 5.00000000E-01))/TextureSize;\n    _dist = fract(_pix_co);\n    _x_step0044 = float((_dist.x >= 5.00000000E-01));\n    _a0048 = 2.50000000E-01 - (_dist.x - _x_step0044)*(_dist.x - _x_step0044);\n    _TMP33 = inversesqrt(_a0048);\n    _TMP14 = 1.00000000E+00/_TMP33;\n    _a0052 = 5.00000000E-01 - _dist.x;\n    _val0052 = float((_a0052 > 0.00000000E+00));\n    _TMP15 = _val0052 - float((_a0052 < 0.00000000E+00));\n    _curve0044 = 5.00000000E-01 - _TMP14*_TMP15;\n    _TMP43 = _dist.x + 2.50000000E-01*(_curve0044 - _dist.x);\n    _coeffs1 = 3.14159274E+00*vec4(1.00000000E+00 + _TMP43, _TMP43, 1.00000000E+00 - _TMP43, 2.00000000E+00 - _TMP43);\n    _TMP1 = abs(_coeffs1);\n    _TMP57 = max(_TMP1, vec4( 9.99999975E-06, 9.99999975E-06, 9.99999975E-06, 9.99999975E-06));\n    _TMP16 = sin(_TMP57.x);\n    _TMP17 = sin(_TMP57.y);\n    _TMP18 = sin(_TMP57.z);\n    _TMP19 = sin(_TMP57.w);\n    _TMP2 = vec4(_TMP16, _TMP17, _TMP18, _TMP19);\n    _x0072 = _TMP57/2.00000000E+00;\n    _TMP16 = sin(_x0072.x);\n    _TMP17 = sin(_x0072.y);\n    _TMP18 = sin(_x0072.z);\n    _TMP19 = sin(_x0072.w);\n    _TMP3 = vec4(_TMP16, _TMP17, _TMP18, _TMP19);\n    _coeffs1 = ((2.00000000E+00*_TMP2)*_TMP3)/(_TMP57*_TMP57);\n    _TMP4 = dot(_coeffs1, vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _coeffs1 = _coeffs1/_TMP4;\n    _c0086 = _tex_co - _dx1;\n    _TMP20 = COMPAT_TEXTURE(Texture, _c0086);\n    _x0088 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP20 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP21 = _TMP20*_x0088;\n    _TMP22 = COMPAT_TEXTURE(Texture, _tex_co);\n    _x0094 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP22 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP23 = _TMP22*_x0094;\n    _c0098 = _tex_co + _dx1;\n    _TMP24 = COMPAT_TEXTURE(Texture, _c0098);\n    _x0100 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP24 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP25 = _TMP24*_x0100;\n    _c0104 = _tex_co + 2.00000000E+00*_dx1;\n    _TMP26 = COMPAT_TEXTURE(Texture, _c0104);\n    _x0106 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP26 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP27 = _TMP26*_x0106;\n    _r0112 = _coeffs1.x*_TMP21;\n    _r0112 = _r0112 + _coeffs1.y*_TMP23;\n    _r0112 = _r0112 + _coeffs1.z*_TMP25;\n    _r0112 = _r0112 + _coeffs1.w*_TMP27;\n    _sample_min0110 = min(_TMP23, _TMP25);\n    _sample_max0110 = max(_TMP23, _TMP25);\n    _TMP34 = min(_sample_max0110, _r0112);\n    _TMP117 = max(_sample_min0110, _TMP34);\n    _co0124 = _tex_co + _dy;\n    _c0126 = _co0124 - _dx1;\n    _TMP20 = COMPAT_TEXTURE(Texture, _c0126);\n    _x0128 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP20 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP21 = _TMP20*_x0128;\n    _TMP22 = COMPAT_TEXTURE(Texture, _co0124);\n    _x0134 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP22 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP23 = _TMP22*_x0134;\n    _c0138 = _co0124 + _dx1;\n    _TMP24 = COMPAT_TEXTURE(Texture, _c0138);\n    _x0140 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP24 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP25 = _TMP24*_x0140;\n    _c0144 = _co0124 + 2.00000000E+00*_dx1;\n    _TMP26 = COMPAT_TEXTURE(Texture, _c0144);\n    _x0146 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP26 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP27 = _TMP26*_x0146;\n    _r0152 = _coeffs1.x*_TMP21;\n    _r0152 = _r0152 + _coeffs1.y*_TMP23;\n    _r0152 = _r0152 + _coeffs1.z*_TMP25;\n    _r0152 = _r0152 + _coeffs1.w*_TMP27;\n    _sample_min0150 = min(_TMP23, _TMP25);\n    _sample_max0150 = max(_TMP23, _TMP25);\n    _TMP34 = min(_sample_max0150, _r0152);\n    _TMP157 = max(_sample_min0150, _TMP34);\n    _x_step0164 = float((_dist.y >= 5.00000000E-01));\n    _a0168 = 2.50000000E-01 - (_dist.y - _x_step0164)*(_dist.y - _x_step0164);\n    _TMP33 = inversesqrt(_a0168);\n    _TMP14 = 1.00000000E+00/_TMP33;\n    _a0172 = 5.00000000E-01 - _dist.y;\n    _val0172 = float((_a0172 > 0.00000000E+00));\n    _TMP15 = _val0172 - float((_a0172 < 0.00000000E+00));\n    _curve0164 = 5.00000000E-01 - _TMP14*_TMP15;\n    _TMP163 = _dist.y + (_curve0164 - _dist.y);\n    _col2 = _TMP117.xyz + _TMP163*(_TMP157.xyz - _TMP117.xyz);\n    _luma = dot(vec3( 2.12599993E-01, 7.15200007E-01, 7.22000003E-02), _col2);\n    _TMP8 = max(_col2.y, _col2.z);\n    _TMP9 = max(_col2.x, _TMP8);\n    _bright = (_TMP9 + _luma)/2.00000000E+00;\n    _TMP31 = min(6.49999976E-01, _bright);\n    _TMP183 = max(3.49999994E-01, _TMP31);\n    _x0190 = _bright*1.50000000E+00;\n    _TMP31 = min(1.50000000E+00, _x0190);\n    _TMP189 = max(1.50000000E+00, _TMP31);\n    _a0196 = TEX0.y*2.00000000E+00*3.14159274E+00*TextureSize.y;\n    _TMP10 = cos(_a0196);\n    _x0198 = _TMP10*5.00000000E-01 + 5.00000000E-01;\n    _TMP11 = pow(_x0198, _TMP189);\n    _scan_weight = 1.00000000E+00 - _TMP11;\n    _x0200 = (TEX0.xy*OutputSize*TextureSize)/InputSize;\n    _mod_fac = floor(_x0200);\n    _x0208 = _mod_fac.x/3.00000000E+00;\n    _TMP32 = floor(_x0208);\n    _TMP13 = _mod_fac.x - 3.00000000E+00*_TMP32;\n    _dot_no = int(_TMP13);\n    if (_dot_no == 0) {\n    _mask_weight = vec3( 1.00000000E+00, 6.99999988E-01, 6.99999988E-01);\n    } else {\n    if (_dot_no == 1) {\n    _mask_weight = vec3( 6.99999988E-01, 1.00000000E+00, 6.99999988E-01);\n    } else {\n    _mask_weight = vec3( 6.99999988E-01, 6.99999988E-01, 1.00000000E+00);\n    }\n    }\n    if (InputSize.y >= 4.00000000E+02) {\n    _scan_weight = 1.00000000E+00;\n    }\n    _col21 = _col2.xyz;\n    _col2 = _col2*vec3(_scan_weight, _scan_weight, _scan_weight);\n    _col2 = _col2 + _TMP183*(_col21 - _col2);\n    _col2 = _col2*_mask_weight;\n    _TMP28 = pow(_col2.x, 5.55555582E-01);\n    _TMP29 = pow(_col2.y, 5.55555582E-01);\n    _TMP30 = pow(_col2.z, 5.55555582E-01);\n    _col2 = vec3(_TMP28, _TMP29, _TMP30);\n    _TMP37 = _col2*1.20000005E+00;\n    _ret_0 = vec4(_TMP37.x, _TMP37.y, _TMP37.z, 1.00000000E+00);\n    FragColor = _ret_0;\n    return;\n    }\n    #endif\n',
-            'crt-aperture.glsl': '\n/*\nCRT Shader by EasyMode\nLicense: GPL\n*/\n/*\n#pragma parameter SHARPNESS_IMAGE "Sharpness Image" 1.0 1.0 5.0 1.0\n#pragma parameter SHARPNESS_EDGES "Sharpness Edges" 3.0 1.0 5.0 1.0\n#pragma parameter GLOW_WIDTH "Glow Width" 0.5 0.05 0.65 0.05\n#pragma parameter GLOW_HEIGHT "Glow Height" 0.5 0.05 0.65 0.05\n#pragma parameter GLOW_HALATION "Glow Halation" 0.1 0.0 1.0 0.01\n#pragma parameter GLOW_DIFFUSION "Glow Diffusion" 0.05 0.0 1.0 0.01\n#pragma parameter MASK_COLORS "Mask Colors" 2.0 2.0 3.0 1.0\n#pragma parameter MASK_STRENGTH "Mask Strength" 0.3 0.0 1.0 0.05\n#pragma parameter MASK_SIZE "Mask Size" 1.0 1.0 9.0 1.0\n#pragma parameter SCANLINE_SIZE_MIN "Scanline Size Min." 0.5 0.5 1.5 0.05\n#pragma parameter SCANLINE_SIZE_MAX "Scanline Size Max." 1.5 0.5 1.5 0.05\n#pragma parameter GAMMA_INPUT "Gamma Input" 2.4 1.0 5.0 0.1\n#pragma parameter GAMMA_OUTPUT "Gamma Output" 2.4 1.0 5.0 0.1\n#pragma parameter BRIGHTNESS "Brightness" 1.5 0.0 2.0 0.05\n* */\n\n#define Coord TEX0\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define OUT out\n#define IN  in\n#define tex2D texture\n#else\n#define OUT varying \n#define IN attribute \n#define tex2D texture2D\n#endif\n\n#ifdef GL_ES\n#define PRECISION mediump\n#else\n#define PRECISION\n#endif\n\nIN  vec4 VertexCoord;\nIN  vec4 Color;\nIN  vec2 TexCoord;\nOUT vec4 color;\nOUT vec2 Coord;\n\nuniform mat4 MVPMatrix;\nuniform PRECISION int FrameDirection;\nuniform PRECISION int FrameCount;\nuniform PRECISION vec2 OutputSize;\nuniform PRECISION vec2 TextureSize;\nuniform PRECISION vec2 InputSize;\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\ncolor = Color;\nCoord = TexCoord;\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define IN in\n#define tex2D texture\nout vec4 FragColor;\n#else\n#define IN varying\n#define FragColor gl_FragColor\n#define tex2D texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define PRECISION mediump\n#else\n#define PRECISION\n#endif\n\nuniform PRECISION int FrameDirection;\nuniform PRECISION int FrameCount;\nuniform PRECISION vec2 OutputSize;\nuniform PRECISION vec2 TextureSize;\nuniform PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nIN vec2 Coord;\n\n#ifdef PARAMETER_UNIFORM\nuniform PRECISION float SHARPNESS_IMAGE;\nuniform PRECISION float SHARPNESS_EDGES;\nuniform PRECISION float GLOW_WIDTH;\nuniform PRECISION float GLOW_HEIGHT;\nuniform PRECISION float GLOW_HALATION;\nuniform PRECISION float GLOW_DIFFUSION;\nuniform PRECISION float MASK_COLORS;\nuniform PRECISION float MASK_STRENGTH;\nuniform PRECISION float MASK_SIZE;\nuniform PRECISION float SCANLINE_SIZE_MIN;\nuniform PRECISION float SCANLINE_SIZE_MAX;\nuniform PRECISION float GAMMA_INPUT;\nuniform PRECISION float GAMMA_OUTPUT;\nuniform PRECISION float BRIGHTNESS;\n#else\n#define SHARPNESS_IMAGE 1.0\n#define SHARPNESS_EDGES 3.0\n#define GLOW_WIDTH 0.5\n#define GLOW_HEIGHT 0.5\n#define GLOW_HALATION 0.1\n#define GLOW_DIFFUSION 0.05\n#define MASK_COLORS 2.0\n#define MASK_STRENGTH 0.3\n#define MASK_SIZE 1.0\n#define SCANLINE_SIZE_MIN 0.5\n#define SCANLINE_SIZE_MAX 1.5\n#define GAMMA_INPUT 2.4\n#define GAMMA_OUTPUT 2.4\n#define BRIGHTNESS 1.5\n#endif\n\n#define FIX(c) max(abs(c), 1e-5)\n#define PI 3.141592653589\n#define saturate(c) clamp(c, 0.0, 1.0)\n#define TEX2D(c) pow(tex2D(tex, c).rgb, vec3(GAMMA_INPUT))\n\nmat3 get_color_matrix(sampler2D tex, vec2 co, vec2 dx)\n{\nreturn mat3(TEX2D(co - dx), TEX2D(co), TEX2D(co + dx));\n}\n\nvec3 blur(mat3 m, float dist, float rad)\n{\nvec3 x = vec3(dist - 1.0, dist, dist + 1.0) / rad;\nvec3 w = exp2(x * x * -1.0);\n\nreturn (m[0] * w.x + m[1] * w.y + m[2] * w.z) / (w.x + w.y + w.z);\n}\n\nvec3 filter_gaussian(sampler2D tex, vec2 co, vec2 tex_size)\n{\nvec2 dx = vec2(1.0 / tex_size.x, 0.0);\nvec2 dy = vec2(0.0, 1.0 / tex_size.y);\nvec2 pix_co = co * tex_size;\nvec2 tex_co = (floor(pix_co) + 0.5) / tex_size;\nvec2 dist = (fract(pix_co) - 0.5) * -1.0;\n\nmat3 line0 = get_color_matrix(tex, tex_co - dy, dx);\nmat3 line1 = get_color_matrix(tex, tex_co, dx);\nmat3 line2 = get_color_matrix(tex, tex_co + dy, dx);\nmat3 column = mat3(blur(line0, dist.x, GLOW_WIDTH),\n                       blur(line1, dist.x, GLOW_WIDTH),\n                       blur(line2, dist.x, GLOW_WIDTH));\n\nreturn blur(column, dist.y, GLOW_HEIGHT);\n}\n\nvec3 filter_lanczos(sampler2D tex, vec2 co, vec2 tex_size, float sharp)\n{\ntex_size.x *= sharp;\n\nvec2 dx = vec2(1.0 / tex_size.x, 0.0);\nvec2 pix_co = co * tex_size - vec2(0.5, 0.0);\nvec2 tex_co = (floor(pix_co) + vec2(0.5, 0.0)) / tex_size;\nvec2 dist = fract(pix_co);\nvec4 coef = PI * vec4(dist.x + 1.0, dist.x, dist.x - 1.0, dist.x - 2.0);\n\ncoef = FIX(coef);\ncoef = 2.0 * sin(coef) * sin(coef / 2.0) / (coef * coef);\ncoef /= dot(coef, vec4(1.0));\n\nvec4 col1 = vec4(TEX2D(tex_co), 1.0);\nvec4 col2 = vec4(TEX2D(tex_co + dx), 1.0);\n\nreturn (mat4(col1, col1, col2, col2) * coef).rgb;\n}\n\nvec3 get_scanline_weight(float x, vec3 col)\n{\nvec3 beam = mix(vec3(SCANLINE_SIZE_MIN), vec3(SCANLINE_SIZE_MAX), col);\nvec3 x_mul = 2.0 / beam;\nvec3 x_offset = x_mul * 0.5;\n\nreturn smoothstep(0.0, 1.0, 1.0 - abs(x * x_mul - x_offset)) * x_offset;\n}\n\nvec3 get_mask_weight(float x)\n{\nfloat i = mod(floor(x * OutputSize.x * TextureSize.x / (InputSize.x * MASK_SIZE)), MASK_COLORS);\n\nif (i == 0.0) return mix(vec3(1.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), MASK_COLORS - 2.0);\nelse if (i == 1.0) return vec3(0.0, 1.0, 0.0);\nelse return vec3(0.0, 0.0, 1.0);\n}\n\nvoid main()\n{\nvec3 col_glow = filter_gaussian(Texture, Coord, TextureSize);\nvec3 col_soft = filter_lanczos(Texture, Coord, TextureSize, SHARPNESS_IMAGE);\nvec3 col_sharp = filter_lanczos(Texture, Coord, TextureSize, SHARPNESS_EDGES);\nvec3 col = sqrt(col_sharp * col_soft);\n\ncol *= get_scanline_weight(fract(Coord.y * TextureSize.y), col_soft);\ncol_glow = saturate(col_glow - col);\ncol += col_glow * col_glow * GLOW_HALATION;\ncol = mix(col, col * get_mask_weight(Coord.x) * MASK_COLORS, MASK_STRENGTH);\ncol += col_glow * GLOW_DIFFUSION;\ncol = pow(col * BRIGHTNESS, vec3(1.0 / GAMMA_OUTPUT));\n\nFragColor = vec4(col, 1.0);\n}\n\n#endif\n',
-            'crt-geom.glsl': '\n/*\nCRT-interlaced\n\nCopyright (C) 2010-2012 cgwg, Themaister and DOLLS\n\nThis program is free software; you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the Free\nSoftware Foundation; either version 2 of the License, or (at your option)\nany later version.\n\n(cgwg gave their consent to have the original version of this shader\ndistributed under the GPL in this message:\n\nhttp://board.byuu.org/viewtopic.php?p=26075#p26075\n\n"Feel free to distribute my shaders under the GPL. After all, the\nbarrel distortion code was taken from the Curvature shader, which is\nunder the GPL."\n)\nThis shader variant is pre-configured with screen curvature\n*/\n/*\n#pragma parameter CRTgamma "CRTGeom Target Gamma" 2.4 0.1 5.0 0.1\n#pragma parameter monitorgamma "CRTGeom Monitor Gamma" 2.2 0.1 5.0 0.1\n#pragma parameter d "CRTGeom Distance" 1.6 0.1 3.0 0.1\n#pragma parameter CURVATURE "CRTGeom Curvature Toggle" 1.0 0.0 1.0 1.0\n#pragma parameter R "CRTGeom Curvature Radius" 2.0 0.1 10.0 0.1\n#pragma parameter cornersize "CRTGeom Corner Size" 0.03 0.001 1.0 0.005\n#pragma parameter cornersmooth "CRTGeom Corner Smoothness" 1000.0 80.0 2000.0 100.0\n#pragma parameter x_tilt "CRTGeom Horizontal Tilt" 0.0 -0.5 0.5 0.05\n#pragma parameter y_tilt "CRTGeom Vertical Tilt" 0.0 -0.5 0.5 0.05\n#pragma parameter overscan_x "CRTGeom Horiz. Overscan %" 100.0 -125.0 125.0 1.0\n#pragma parameter overscan_y "CRTGeom Vert. Overscan %" 100.0 -125.0 125.0 1.0\n#pragma parameter DOTMASK "CRTGeom Dot Mask Toggle" 0.3 0.0 0.3 0.3\n#pragma parameter SHARPER "CRTGeom Sharpness" 1.0 1.0 3.0 1.0\n#pragma parameter scanline_weight "CRTGeom Scanline Weight" 0.3 0.1 0.5 0.05\n*/\n\n#ifndef PARAMETER_UNIFORM\n#define CRTgamma 2.4\n#define monitorgamma 2.2\n#define d 1.6\n#define CURVATURE 1.0\n#define R 2.0\n#define cornersize 0.03\n#define cornersmooth 1000.0\n#define x_tilt 0.0\n#define y_tilt 0.0\n#define overscan_x 100.0\n#define overscan_y 100.0\n#define DOTMASK 0.3\n#define SHARPER 1.0\n#define scanline_weight 0.3\n#endif\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\nCOMPAT_VARYING vec2 overscan;\nCOMPAT_VARYING vec2 aspect;\nCOMPAT_VARYING vec3 stretch;\nCOMPAT_VARYING vec2 sinangle;\nCOMPAT_VARYING vec2 cosangle;\nCOMPAT_VARYING vec2 one;\nCOMPAT_VARYING float mod_factor;\nCOMPAT_VARYING vec2 ilfac;\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CRTgamma;\nuniform COMPAT_PRECISION float monitorgamma;\nuniform COMPAT_PRECISION float d;\nuniform COMPAT_PRECISION float CURVATURE;\nuniform COMPAT_PRECISION float R;\nuniform COMPAT_PRECISION float cornersize;\nuniform COMPAT_PRECISION float cornersmooth;\nuniform COMPAT_PRECISION float x_tilt;\nuniform COMPAT_PRECISION float y_tilt;\nuniform COMPAT_PRECISION float overscan_x;\nuniform COMPAT_PRECISION float overscan_y;\nuniform COMPAT_PRECISION float DOTMASK;\nuniform COMPAT_PRECISION float SHARPER;\nuniform COMPAT_PRECISION float scanline_weight;\n#endif\n\n#define FIX(c) max(abs(c), 1e-5);\n\nfloat intersect(vec2 xy)\n{\nfloat A = dot(xy,xy)+d*d;\nfloat B = 2.0*(R*(dot(xy,sinangle)-d*cosangle.x*cosangle.y)-d*d);\nfloat C = d*d + 2.0*R*d*cosangle.x*cosangle.y;\nreturn (-B-sqrt(B*B-4.0*A*C))/(2.0*A);\n}\n\nvec2 bkwtrans(vec2 xy)\n{\nfloat c = intersect(xy);\nvec2 point = vec2(c)*xy;\npoint -= vec2(-R)*sinangle;\npoint /= vec2(R);\nvec2 tang = sinangle/cosangle;\nvec2 poc = point/cosangle;\nfloat A = dot(tang,tang)+1.0;\nfloat B = -2.0*dot(poc,tang);\nfloat C = dot(poc,poc)-1.0;\nfloat a = (-B+sqrt(B*B-4.0*A*C))/(2.0*A);\nvec2 uv = (point-a*sinangle)/cosangle;\nfloat r = R*acos(a);\nreturn uv*r/sin(r/R);\n}\n\nvec2 fwtrans(vec2 uv)\n{\nfloat r = FIX(sqrt(dot(uv,uv)));\nuv *= sin(r/R)/r;\nfloat x = 1.0-cos(r/R);\nfloat D = d/R + x*cosangle.x*cosangle.y+dot(uv,sinangle);\nreturn d*(uv*cosangle-x*sinangle)/D;\n}\n\nvec3 maxscale()\n{\nvec2 c = bkwtrans(-R * sinangle / (1.0 + R/d*cosangle.x*cosangle.y));\nvec2 a = vec2(0.5,0.5)*aspect;\nvec2 lo = vec2(fwtrans(vec2(-a.x,c.y)).x, fwtrans(vec2(c.x,-a.y)).y)/aspect;\nvec2 hi = vec2(fwtrans(vec2(+a.x,c.y)).x, fwtrans(vec2(c.x,+a.y)).y)/aspect;\nreturn vec3((hi+lo)*aspect*0.5,max(hi.x-lo.x,hi.y-lo.y));\n}\n\nvoid main()\n{\n// START of parameters\n\n// gamma of simulated CRT\n//	CRTgamma = 1.8;\n// gamma of display monitor (typically 2.2 is correct)\n//	monitorgamma = 2.2;\n// overscan (e.g. 1.02 for 2% overscan)\noverscan = vec2(1.00,1.00);\n// aspect ratio\naspect = vec2(1.0, 0.75);\n// lengths are measured in units of (approximately) the width\n// of the monitor simulated distance from viewer to monitor\n//	d = 2.0;\n// radius of curvature\n//	R = 1.5;\n// tilt angle in radians\n// (behavior might be a bit wrong if both components are\n// nonzero)\nconst vec2 angle = vec2(0.0,0.0);\n// size of curved corners\n//	cornersize = 0.03;\n// border smoothness parameter\n// decrease if borders are too aliased\n//	cornersmooth = 1000.0;\n\n// END of parameters\n\nvec4 _oColor;\nvec2 _otexCoord;\ngl_Position = VertexCoord.x * MVPMatrix[0] + VertexCoord.y * MVPMatrix[1] + VertexCoord.z * MVPMatrix[2] + VertexCoord.w * MVPMatrix[3];\n_oPosition1 = gl_Position;\n_oColor = COLOR;\n_otexCoord = TexCoord.xy;\nCOL0 = COLOR;\nTEX0.xy = TexCoord.xy;\n\n// Precalculate a bunch of useful values we\'ll need in the fragment\n// shader.\nsinangle = sin(vec2(x_tilt, y_tilt)) + vec2(0.001);//sin(vec2(max(abs(x_tilt), 1e-3), max(abs(y_tilt), 1e-3)));\ncosangle = cos(vec2(x_tilt, y_tilt)) + vec2(0.001);//cos(vec2(max(abs(x_tilt), 1e-3), max(abs(y_tilt), 1e-3)));\nstretch = maxscale();\n\nilfac = vec2(1.0,clamp(floor(InputSize.y/200.0), 1.0, 2.0));\n\n// The size of one texel, in texture-coordinates.\nvec2 sharpTextureSize = vec2(SHARPER * TextureSize.x, TextureSize.y);\none = ilfac / sharpTextureSize;\n\n// Resulting X pixel-coordinate of the pixel we\'re drawing.\nmod_factor = TexCoord.x * TextureSize.x * OutputSize.x / InputSize.x;\n\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nstruct output_dummy {\nvec4 _color;\n};\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\n\n// Comment the next line to disable interpolation in linear gamma (and\n// gain speed).\n#define LINEAR_PROCESSING\n\n// Enable screen curvature.\n//        #define CURVATURE\n\n// Enable 3x oversampling of the beam profile\n#define OVERSAMPLE\n\n// Use the older, purely gaussian beam profile\n//#define USEGAUSSIAN\n\n// Macros.\n#define FIX(c) max(abs(c), 1e-5);\n#define PI 3.141592653589\n\n#ifdef LINEAR_PROCESSING\n#       define TEX2D(c) pow(COMPAT_TEXTURE(Texture, (c)), vec4(CRTgamma))\n#else\n#       define TEX2D(c) COMPAT_TEXTURE(Texture, (c))\n#endif\n\nCOMPAT_VARYING vec2 one;\nCOMPAT_VARYING float mod_factor;\nCOMPAT_VARYING vec2 ilfac;\nCOMPAT_VARYING vec2 overscan;\nCOMPAT_VARYING vec2 aspect;\nCOMPAT_VARYING vec3 stretch;\nCOMPAT_VARYING vec2 sinangle;\nCOMPAT_VARYING vec2 cosangle;\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CRTgamma;\nuniform COMPAT_PRECISION float monitorgamma;\nuniform COMPAT_PRECISION float d;\nuniform COMPAT_PRECISION float CURVATURE;\nuniform COMPAT_PRECISION float R;\nuniform COMPAT_PRECISION float cornersize;\nuniform COMPAT_PRECISION float cornersmooth;\nuniform COMPAT_PRECISION float x_tilt;\nuniform COMPAT_PRECISION float y_tilt;\nuniform COMPAT_PRECISION float overscan_x;\nuniform COMPAT_PRECISION float overscan_y;\nuniform COMPAT_PRECISION float DOTMASK;\nuniform COMPAT_PRECISION float SHARPER;\nuniform COMPAT_PRECISION float scanline_weight;\n#endif\n\nfloat intersect(vec2 xy)\n{\nfloat A = dot(xy,xy)+d*d;\nfloat B = 2.0*(R*(dot(xy,sinangle)-d*cosangle.x*cosangle.y)-d*d);\nfloat C = d*d + 2.0*R*d*cosangle.x*cosangle.y;\nreturn (-B-sqrt(B*B-4.0*A*C))/(2.0*A);\n}\n\nvec2 bkwtrans(vec2 xy)\n{\nfloat c = intersect(xy);\nvec2 point = vec2(c)*xy;\npoint -= vec2(-R)*sinangle;\npoint /= vec2(R);\nvec2 tang = sinangle/cosangle;\nvec2 poc = point/cosangle;\nfloat A = dot(tang,tang)+1.0;\nfloat B = -2.0*dot(poc,tang);\nfloat C = dot(poc,poc)-1.0;\nfloat a = (-B+sqrt(B*B-4.0*A*C))/(2.0*A);\nvec2 uv = (point-a*sinangle)/cosangle;\nfloat r = FIX(R*acos(a));\nreturn uv*r/sin(r/R);\n}\n\nvec2 transform(vec2 coord)\n{\ncoord *= TextureSize / InputSize;\ncoord = (coord-vec2(0.5))*aspect*stretch.z+stretch.xy;\nreturn (bkwtrans(coord)/vec2(overscan_x / 100.0, overscan_y / 100.0)/aspect+vec2(0.5)) * InputSize / TextureSize;\n}\n\nfloat corner(vec2 coord)\n{\ncoord *= TextureSize / InputSize;\ncoord = (coord - vec2(0.5)) * vec2(overscan_x / 100.0, overscan_y / 100.0) + vec2(0.5);\ncoord = min(coord, vec2(1.0)-coord) * aspect;\nvec2 cdist = vec2(cornersize);\ncoord = (cdist - min(coord,cdist));\nfloat dist = sqrt(dot(coord,coord));\nreturn clamp((cdist.x-dist)*cornersmooth,0.0, 1.0);\n}\n\n// Calculate the influence of a scanline on the current pixel.\n//\n// \'distance\' is the distance in texture coordinates from the current\n// pixel to the scanline in question.\n// \'color\' is the colour of the scanline at the horizontal location of\n// the current pixel.\nvec4 scanlineWeights(float distance, vec4 color)\n{\n// "wid" controls the width of the scanline beam, for each RGB\n// channel The "weights" lines basically specify the formula\n// that gives you the profile of the beam, i.e. the intensity as\n// a function of distance from the vertical center of the\n// scanline. In this case, it is gaussian if width=2, and\n// becomes nongaussian for larger widths. Ideally this should\n// be normalized so that the integral across the beam is\n// independent of its width. That is, for a narrower beam\n// "weights" should have a higher peak at the center of the\n// scanline than for a wider beam.\n#ifdef USEGAUSSIAN\nvec4 wid = 0.3 + 0.1 * pow(color, vec4(3.0));\nvec4 weights = vec4(distance / wid);\nreturn 0.4 * exp(-weights * weights) / wid;\n#else\nvec4 wid = 2.0 + 2.0 * pow(color, vec4(4.0));\nvec4 weights = vec4(distance / scanline_weight);\nreturn 1.4 * exp(-pow(weights * inversesqrt(0.5 * wid), wid)) / (0.6 + 0.2 * wid);\n#endif\n}\n\nvoid main()\n{\n// Here\'s a helpful diagram to keep in mind while trying to\n// understand the code:\n//\n//  |      |      |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//  |  01  |  11  |  21  |  31  | <-- current scanline\n//  |      | @    |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//  |  02  |  12  |  22  |  32  | <-- next scanline\n//  |      |      |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//\n// Each character-cell represents a pixel on the output\n// surface, "@" represents the current pixel (always somewhere\n// in the bottom half of the current scan-line, or the top-half\n// of the next scanline). The grid of lines represents the\n// edges of the texels of the underlying texture.\n\n// Texture coordinates of the texel containing the active pixel.\nvec2 xy = (CURVATURE > 0.5) ? transform(TEX0.xy) : TEX0.xy;\n\nfloat cval = corner(xy);\n\n// Of all the pixels that are mapped onto the texel we are\n// currently rendering, which pixel are we currently rendering?\nvec2 ilvec = vec2(0.0,ilfac.y > 1.5 ? mod(float(FrameCount),2.0) : 0.0);\nvec2 ratio_scale = (xy * TextureSize - vec2(0.5) + ilvec)/ilfac;\n#ifdef OVERSAMPLE\nfloat filter_ = InputSize.y/OutputSize.y;//fwidth(ratio_scale.y);\n#endif\nvec2 uv_ratio = fract(ratio_scale);\n\n// Snap to the center of the underlying texel.\nxy = (floor(ratio_scale)*ilfac + vec2(0.5) - ilvec) / TextureSize;\n\n// Calculate Lanczos scaling coefficients describing the effect\n// of various neighbour texels in a scanline on the current\n// pixel.\nvec4 coeffs = PI * vec4(1.0 + uv_ratio.x, uv_ratio.x, 1.0 - uv_ratio.x, 2.0 - uv_ratio.x);\n\n// Prevent division by zero.\ncoeffs = FIX(coeffs);\n\n// Lanczos2 kernel.\ncoeffs = 2.0 * sin(coeffs) * sin(coeffs / 2.0) / (coeffs * coeffs);\n\n// Normalize.\ncoeffs /= dot(coeffs, vec4(1.0));\n\n// Calculate the effective colour of the current and next\n// scanlines at the horizontal location of the current pixel,\n// using the Lanczos coefficients above.\nvec4 col  = clamp(mat4(\n                TEX2D(xy + vec2(-one.x, 0.0)),\n                TEX2D(xy),\n                TEX2D(xy + vec2(one.x, 0.0)),\n                TEX2D(xy + vec2(2.0 * one.x, 0.0))) * coeffs,\n                0.0, 1.0);\nvec4 col2 = clamp(mat4(\n                TEX2D(xy + vec2(-one.x, one.y)),\n                TEX2D(xy + vec2(0.0, one.y)),\n                TEX2D(xy + one),\n                TEX2D(xy + vec2(2.0 * one.x, one.y))) * coeffs,\n                0.0, 1.0);\n\n#ifndef LINEAR_PROCESSING\ncol  = pow(col , vec4(CRTgamma));\ncol2 = pow(col2, vec4(CRTgamma));\n#endif\n\n// Calculate the influence of the current and next scanlines on\n// the current pixel.\nvec4 weights  = scanlineWeights(uv_ratio.y, col);\nvec4 weights2 = scanlineWeights(1.0 - uv_ratio.y, col2);\n#ifdef OVERSAMPLE\nuv_ratio.y =uv_ratio.y+1.0/3.0*filter_;\nweights = (weights+scanlineWeights(uv_ratio.y, col))/3.0;\nweights2=(weights2+scanlineWeights(abs(1.0-uv_ratio.y), col2))/3.0;\nuv_ratio.y =uv_ratio.y-2.0/3.0*filter_;\nweights=weights+scanlineWeights(abs(uv_ratio.y), col)/3.0;\nweights2=weights2+scanlineWeights(abs(1.0-uv_ratio.y), col2)/3.0;\n#endif\n\nvec3 mul_res  = (col * weights + col2 * weights2).rgb * vec3(cval);\n\n// dot-mask emulation:\n// Output pixels are alternately tinted green and magenta.\nvec3 dotMaskWeights = mix(\nvec3(1.0, 1.0 - DOTMASK, 1.0),\nvec3(1.0 - DOTMASK, 1.0, 1.0 - DOTMASK),\nfloor(mod(mod_factor, 2.0))\n);\n\nmul_res *= dotMaskWeights;\n\n// Convert the image gamma for display on our output device.\nmul_res = pow(mul_res, vec3(1.0 / monitorgamma));\n\n// Color the texel.\noutput_dummy _OUT;\n_OUT._color = vec4(mul_res, 1.0);\nFragColor = _OUT._color;\nreturn;\n} \n#endif\n\n'
+        shaders = {
+            "2xScaleHQ.glslp": "shaders = 1\n\nshader0 = \"2xScaleHQ.glsl\"\nfilter_linear0 = false\nscale_type_0 = source\n",
+            "4xScaleHQ.glslp": "shaders = 1\n\nshader0 = \"4xScaleHQ.glsl\"\nfilter_linear0 = false\nscale_type_0 = source\n",
+            "crt-easymode.glslp": "shaders = 1\n\nshader0 = crt-easymode.glsl\nfilter_linear0 = false\nscale_type_0 = source\n",
+            "crt-aperture.glslp": "shaders = 1\n\nshader0 = crt-aperture.glsl\nfilter_linear0 = false\n",
+            "crt-geom.glslp": "shaders = 1\n\nshader0 = crt-geom.glsl\nfilter_linear0 = false\nscale_type_0 = source\n",
+            "crt-mattias.glslp": "\nshaders = 1\nshader0 = crt-mattias.glsl\nfilter_linear0 = false\n",
+            "2xScaleHQ.glsl": "/*\n2xGLSLHqFilter shader\n\nCopyright (C) 2005 guest(r) - guest.r@gmail.com\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.\n*/\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\n// compatibility #defines\n#define vTexCoord TEX0.xy\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\nTEX0.xy = TexCoord.xy;\nfloat x = 0.5 * SourceSize.z;\nfloat y = 0.5 * SourceSize.w;\nvec2 dg1 = vec2( x, y);\nvec2 dg2 = vec2(-x, y);\nvec2 dx = vec2(x, 0.0);\nvec2 dy = vec2(0.0, y);\nt1 = vec4(vTexCoord - dg1, vTexCoord - dy);\nt2 = vec4(vTexCoord - dg2, vTexCoord + dx);\nt3 = vec4(vTexCoord + dg1, vTexCoord + dy);\nt4 = vec4(vTexCoord + dg2, vTexCoord - dx);\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\n\n// compatibility #defines\n#define Source Texture\n#define vTexCoord TEX0.xy\n\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nfloat mx = 0.325;      // start smoothing wt.\nfloat k = -0.250;      // wt. decrease factor\nfloat max_w = 0.25;    // max filter weight\nfloat min_w =-0.05;    // min filter weight\nfloat lum_add = 0.25;  // affects smoothing\nvec3 dt = vec3(1.0);\n\nvoid main()\n{\nvec3 c00 = COMPAT_TEXTURE(Source, t1.xy).xyz; \nvec3 c10 = COMPAT_TEXTURE(Source, t1.zw).xyz; \nvec3 c20 = COMPAT_TEXTURE(Source, t2.xy).xyz; \nvec3 c01 = COMPAT_TEXTURE(Source, t4.zw).xyz; \nvec3 c11 = COMPAT_TEXTURE(Source, vTexCoord).xyz; \nvec3 c21 = COMPAT_TEXTURE(Source, t2.zw).xyz; \nvec3 c02 = COMPAT_TEXTURE(Source, t4.xy).xyz; \nvec3 c12 = COMPAT_TEXTURE(Source, t3.zw).xyz; \nvec3 c22 = COMPAT_TEXTURE(Source, t3.xy).xyz; \n\nfloat md1 = dot(abs(c00 - c22), dt);\nfloat md2 = dot(abs(c02 - c20), dt);\n\nfloat w1 = dot(abs(c22 - c11), dt) * md2;\nfloat w2 = dot(abs(c02 - c11), dt) * md1;\nfloat w3 = dot(abs(c00 - c11), dt) * md2;\nfloat w4 = dot(abs(c20 - c11), dt) * md1;\n\nfloat t1 = w1 + w3;\nfloat t2 = w2 + w4;\nfloat ww = max(t1, t2) + 0.0001;\n\nc11 = (w1 * c00 + w2 * c20 + w3 * c22 + w4 * c02 + ww * c11) / (t1 + t2 + ww);\n\nfloat lc1 = k / (0.12 * dot(c10 + c12 + c11, dt) + lum_add);\nfloat lc2 = k / (0.12 * dot(c01 + c21 + c11, dt) + lum_add);\n\nw1 = clamp(lc1 * dot(abs(c11 - c10), dt) + mx, min_w, max_w);\nw2 = clamp(lc2 * dot(abs(c11 - c21), dt) + mx, min_w, max_w);\nw3 = clamp(lc1 * dot(abs(c11 - c12), dt) + mx, min_w, max_w);\nw4 = clamp(lc2 * dot(abs(c11 - c01), dt) + mx, min_w, max_w);\nFragColor = vec4(w1 * c10 + w2 * c21 + w3 * c12 + w4 * c01 + (1.0 - w1 - w2 - w3 - w4) * c11, 1.0);\n} \n#endif\n",
+            "4xScaleHQ.glsl": "/*\n4xGLSLHqFilter shader\n\nCopyright (C) 2005 guest(r) - guest.r@gmail.com\n\nThis program is free software; you can redistribute it and/or\nmodify it under the terms of the GNU General Public License\nas published by the Free Software Foundation; either version 2\nof the License, or (at your option) any later version.\n\nThis program is distributed in the hope that it will be useful,\nbut WITHOUT ANY WARRANTY; without even the implied warranty of\nMERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\nGNU General Public License for more details.\n\nYou should have received a copy of the GNU General Public License\nalong with this program; if not, write to the Free Software\nFoundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.\n*/\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\nCOMPAT_VARYING vec4 t5;\nCOMPAT_VARYING vec4 t6;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\n// compatibility #defines\n#define vTexCoord TEX0.xy\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\nTEX0.xy = TexCoord.xy;\nfloat x = 0.5 * SourceSize.z;\nfloat y = 0.5 * SourceSize.w;\nvec2 dg1 = vec2( x, y);\nvec2 dg2 = vec2(-x, y);\nvec2 sd1 = dg1 * 0.5;\nvec2 sd2 = dg2 * 0.5;\nvec2 ddx = vec2(x, 0.0);\nvec2 ddy = vec2(0.0, y);\nt1 = vec4(vTexCoord - sd1, vTexCoord - ddy);\nt2 = vec4(vTexCoord - sd2, vTexCoord + ddx);\nt3 = vec4(vTexCoord + sd1, vTexCoord + ddy);\nt4 = vec4(vTexCoord + sd2, vTexCoord - ddx);\nt5 = vec4(vTexCoord - dg1, vTexCoord - dg2);\nt6 = vec4(vTexCoord + dg1, vTexCoord + dg2);\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\nCOMPAT_VARYING vec4 t1;\nCOMPAT_VARYING vec4 t2;\nCOMPAT_VARYING vec4 t3;\nCOMPAT_VARYING vec4 t4;\nCOMPAT_VARYING vec4 t5;\nCOMPAT_VARYING vec4 t6;\n\n// compatibility #defines\n#define Source Texture\n#define vTexCoord TEX0.xy\n\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nfloat mx = 1.0;      // start smoothing wt.\nfloat k = -1.10;      // wt. decrease factor\nfloat max_w = 0.75;    // max filter weight\nfloat min_w = 0.03;    // min filter weight\nfloat lum_add = 0.33;  // affects smoothing\nvec3 dt = vec3(1.0);\n\nvoid main()\n{\nvec3 c  = COMPAT_TEXTURE(Source, vTexCoord).xyz;\nvec3 i1 = COMPAT_TEXTURE(Source, t1.xy).xyz; \nvec3 i2 = COMPAT_TEXTURE(Source, t2.xy).xyz; \nvec3 i3 = COMPAT_TEXTURE(Source, t3.xy).xyz; \nvec3 i4 = COMPAT_TEXTURE(Source, t4.xy).xyz; \nvec3 o1 = COMPAT_TEXTURE(Source, t5.xy).xyz; \nvec3 o3 = COMPAT_TEXTURE(Source, t6.xy).xyz; \nvec3 o2 = COMPAT_TEXTURE(Source, t5.zw).xyz;\nvec3 o4 = COMPAT_TEXTURE(Source, t6.zw).xyz;\nvec3 s1 = COMPAT_TEXTURE(Source, t1.zw).xyz; \nvec3 s2 = COMPAT_TEXTURE(Source, t2.zw).xyz; \nvec3 s3 = COMPAT_TEXTURE(Source, t3.zw).xyz; \nvec3 s4 = COMPAT_TEXTURE(Source, t4.zw).xyz; \n\nfloat ko1=dot(abs(o1-c),dt);\nfloat ko2=dot(abs(o2-c),dt);\nfloat ko3=dot(abs(o3-c),dt);\nfloat ko4=dot(abs(o4-c),dt);\n\nfloat k1=min(dot(abs(i1-i3),dt),max(ko1,ko3));\nfloat k2=min(dot(abs(i2-i4),dt),max(ko2,ko4));\n\nfloat w1 = k2; if(ko3<ko1) w1*=ko3/ko1;\nfloat w2 = k1; if(ko4<ko2) w2*=ko4/ko2;\nfloat w3 = k2; if(ko1<ko3) w3*=ko1/ko3;\nfloat w4 = k1; if(ko2<ko4) w4*=ko2/ko4;\n\nc=(w1*o1+w2*o2+w3*o3+w4*o4+0.001*c)/(w1+w2+w3+w4+0.001);\nw1 = k*dot(abs(i1-c)+abs(i3-c),dt)/(0.125*dot(i1+i3,dt)+lum_add);\nw2 = k*dot(abs(i2-c)+abs(i4-c),dt)/(0.125*dot(i2+i4,dt)+lum_add);\nw3 = k*dot(abs(s1-c)+abs(s3-c),dt)/(0.125*dot(s1+s3,dt)+lum_add);\nw4 = k*dot(abs(s2-c)+abs(s4-c),dt)/(0.125*dot(s2+s4,dt)+lum_add);\n\nw1 = clamp(w1+mx,min_w,max_w); \nw2 = clamp(w2+mx,min_w,max_w);\nw3 = clamp(w3+mx,min_w,max_w); \nw4 = clamp(w4+mx,min_w,max_w);\n\nFragColor = vec4((w1*(i1+i3)+w2*(i2+i4)+w3*(s1+s3)+w4*(s2+s4)+c)/(2.0*(w1+w2+w3+w4)+1.0), 1.0);\n} \n#endif\n",
+            "crt-easymode.glsl": "#if defined(VERTEX)\n\n    #if __VERSION__ >= 130\n    #define COMPAT_VARYING out\n    #define COMPAT_ATTRIBUTE in\n    #define COMPAT_TEXTURE texture\n    #else\n    #define COMPAT_VARYING varying\n    #define COMPAT_ATTRIBUTE attribute\n    #define COMPAT_TEXTURE texture2D\n    #endif\n    \n    #ifdef GL_ES\n    #define COMPAT_PRECISION mediump\n    #else\n    #define COMPAT_PRECISION\n    #endif\n    COMPAT_VARYING     float _frame_rotation;\n    struct input_dummy {\n    vec2 _video_size;\n    vec2 _texture_size;\n    vec2 _output_dummy_size;\n    float _frame_count;\n    float _frame_direction;\n    float _frame_rotation;\n    };\n    vec4 _oPosition1;\n    vec4 _r0005;\n    COMPAT_ATTRIBUTE vec4 VertexCoord;\n    COMPAT_ATTRIBUTE vec4 TexCoord;\n    COMPAT_VARYING vec4 TEX0;\n    \n    uniform mat4 MVPMatrix;\n    uniform int FrameDirection;\n    uniform int FrameCount;\n    uniform COMPAT_PRECISION vec2 OutputSize;\n    uniform COMPAT_PRECISION vec2 TextureSize;\n    uniform COMPAT_PRECISION vec2 InputSize;\n    void main()\n    {\n    vec2 _oTex;\n    _r0005 = VertexCoord.x*MVPMatrix[0];\n    _r0005 = _r0005 + VertexCoord.y*MVPMatrix[1];\n    _r0005 = _r0005 + VertexCoord.z*MVPMatrix[2];\n    _r0005 = _r0005 + VertexCoord.w*MVPMatrix[3];\n    _oPosition1 = _r0005;\n    _oTex = TexCoord.xy;\n    gl_Position = _r0005;\n    TEX0.xy = TexCoord.xy;\n    }\n    #elif defined(FRAGMENT)\n    \n    #if __VERSION__ >= 130\n    #define COMPAT_VARYING in\n    #define COMPAT_TEXTURE texture\n    out vec4 FragColor;\n    #else\n    #define COMPAT_VARYING varying\n    #define FragColor gl_FragColor\n    #define COMPAT_TEXTURE texture2D\n    #endif\n    \n    #ifdef GL_ES\n    #ifdef GL_FRAGMENT_PRECISION_HIGH\n    precision highp float;\n    #else\n    precision mediump float;\n    #endif\n    #define COMPAT_PRECISION mediump\n    #else\n    #define COMPAT_PRECISION\n    #endif\n    COMPAT_VARYING     float _frame_rotation;\n    struct input_dummy {\n    vec2 _video_size;\n    vec2 _texture_size;\n    vec2 _output_dummy_size;\n    float _frame_count;\n    float _frame_direction;\n    float _frame_rotation;\n    };\n    vec4 _ret_0;\n    float _TMP30;\n    float _TMP29;\n    float _TMP28;\n    float _TMP13;\n    float _TMP32;\n    float _TMP11;\n    float _TMP10;\n    float _TMP31;\n    float _TMP9;\n    float _TMP8;\n    float _TMP15;\n    float _TMP14;\n    float _TMP33;\n    vec4 _TMP34;\n    vec4 _TMP27;\n    vec4 _TMP25;\n    vec4 _TMP23;\n    vec4 _TMP21;\n    vec4 _TMP26;\n    vec4 _TMP24;\n    vec4 _TMP22;\n    vec4 _TMP20;\n    float _TMP4;\n    vec4 _TMP3;\n    vec4 _TMP2;\n    float _TMP19;\n    float _TMP18;\n    float _TMP17;\n    float _TMP16;\n    vec4 _TMP1;\n    vec2 _TMP0;\n    uniform sampler2D Texture;\n    input_dummy _IN1;\n    float _TMP43;\n    float _x_step0044;\n    float _curve0044;\n    float _a0048;\n    float _val0052;\n    float _a0052;\n    vec4 _TMP57;\n    vec4 _x0072;\n    vec2 _c0086;\n    vec4 _x0088;\n    vec4 _x0094;\n    vec2 _c0098;\n    vec4 _x0100;\n    vec2 _c0104;\n    vec4 _x0106;\n    vec4 _sample_min0110;\n    vec4 _sample_max0110;\n    vec4 _r0112;\n    vec4 _TMP117;\n    vec2 _co0124;\n    vec2 _c0126;\n    vec4 _x0128;\n    vec4 _x0134;\n    vec2 _c0138;\n    vec4 _x0140;\n    vec2 _c0144;\n    vec4 _x0146;\n    vec4 _sample_min0150;\n    vec4 _sample_max0150;\n    vec4 _r0152;\n    vec4 _TMP157;\n    float _TMP163;\n    float _x_step0164;\n    float _curve0164;\n    float _a0168;\n    float _val0172;\n    float _a0172;\n    float _TMP183;\n    float _TMP189;\n    float _x0190;\n    float _a0196;\n    float _x0198;\n    vec2 _x0200;\n    float _x0208;\n    COMPAT_VARYING vec4 TEX0;\n    \n    uniform COMPAT_PRECISION vec2 OutputSize;\n    uniform COMPAT_PRECISION vec2 TextureSize;\n    uniform COMPAT_PRECISION vec2 InputSize;\n    void main()\n    {\n    vec2 _dx1;\n    vec2 _dy;\n    vec2 _pix_co;\n    vec2 _tex_co;\n    vec2 _dist;\n    vec3 _col2;\n    vec3 _col21;\n    vec4 _coeffs1;\n    float _luma;\n    float _bright;\n    float _scan_weight;\n    vec2 _mod_fac;\n    int _dot_no;\n    vec3 _mask_weight;\n    vec3 _TMP37;\n    _dx1 = vec2(1.00000000E+00/TextureSize.x, 0.00000000E+00);\n    _dy = vec2(0.00000000E+00, 1.00000000E+00/TextureSize.y);\n    _pix_co = TEX0.xy*TextureSize - vec2( 5.00000000E-01, 5.00000000E-01);\n    _TMP0 = floor(_pix_co);\n    _tex_co = (_TMP0 + vec2( 5.00000000E-01, 5.00000000E-01))/TextureSize;\n    _dist = fract(_pix_co);\n    _x_step0044 = float((_dist.x >= 5.00000000E-01));\n    _a0048 = 2.50000000E-01 - (_dist.x - _x_step0044)*(_dist.x - _x_step0044);\n    _TMP33 = inversesqrt(_a0048);\n    _TMP14 = 1.00000000E+00/_TMP33;\n    _a0052 = 5.00000000E-01 - _dist.x;\n    _val0052 = float((_a0052 > 0.00000000E+00));\n    _TMP15 = _val0052 - float((_a0052 < 0.00000000E+00));\n    _curve0044 = 5.00000000E-01 - _TMP14*_TMP15;\n    _TMP43 = _dist.x + 2.50000000E-01*(_curve0044 - _dist.x);\n    _coeffs1 = 3.14159274E+00*vec4(1.00000000E+00 + _TMP43, _TMP43, 1.00000000E+00 - _TMP43, 2.00000000E+00 - _TMP43);\n    _TMP1 = abs(_coeffs1);\n    _TMP57 = max(_TMP1, vec4( 9.99999975E-06, 9.99999975E-06, 9.99999975E-06, 9.99999975E-06));\n    _TMP16 = sin(_TMP57.x);\n    _TMP17 = sin(_TMP57.y);\n    _TMP18 = sin(_TMP57.z);\n    _TMP19 = sin(_TMP57.w);\n    _TMP2 = vec4(_TMP16, _TMP17, _TMP18, _TMP19);\n    _x0072 = _TMP57/2.00000000E+00;\n    _TMP16 = sin(_x0072.x);\n    _TMP17 = sin(_x0072.y);\n    _TMP18 = sin(_x0072.z);\n    _TMP19 = sin(_x0072.w);\n    _TMP3 = vec4(_TMP16, _TMP17, _TMP18, _TMP19);\n    _coeffs1 = ((2.00000000E+00*_TMP2)*_TMP3)/(_TMP57*_TMP57);\n    _TMP4 = dot(_coeffs1, vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _coeffs1 = _coeffs1/_TMP4;\n    _c0086 = _tex_co - _dx1;\n    _TMP20 = COMPAT_TEXTURE(Texture, _c0086);\n    _x0088 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP20 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP21 = _TMP20*_x0088;\n    _TMP22 = COMPAT_TEXTURE(Texture, _tex_co);\n    _x0094 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP22 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP23 = _TMP22*_x0094;\n    _c0098 = _tex_co + _dx1;\n    _TMP24 = COMPAT_TEXTURE(Texture, _c0098);\n    _x0100 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP24 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP25 = _TMP24*_x0100;\n    _c0104 = _tex_co + 2.00000000E+00*_dx1;\n    _TMP26 = COMPAT_TEXTURE(Texture, _c0104);\n    _x0106 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP26 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP27 = _TMP26*_x0106;\n    _r0112 = _coeffs1.x*_TMP21;\n    _r0112 = _r0112 + _coeffs1.y*_TMP23;\n    _r0112 = _r0112 + _coeffs1.z*_TMP25;\n    _r0112 = _r0112 + _coeffs1.w*_TMP27;\n    _sample_min0110 = min(_TMP23, _TMP25);\n    _sample_max0110 = max(_TMP23, _TMP25);\n    _TMP34 = min(_sample_max0110, _r0112);\n    _TMP117 = max(_sample_min0110, _TMP34);\n    _co0124 = _tex_co + _dy;\n    _c0126 = _co0124 - _dx1;\n    _TMP20 = COMPAT_TEXTURE(Texture, _c0126);\n    _x0128 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP20 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP21 = _TMP20*_x0128;\n    _TMP22 = COMPAT_TEXTURE(Texture, _co0124);\n    _x0134 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP22 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP23 = _TMP22*_x0134;\n    _c0138 = _co0124 + _dx1;\n    _TMP24 = COMPAT_TEXTURE(Texture, _c0138);\n    _x0140 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP24 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP25 = _TMP24*_x0140;\n    _c0144 = _co0124 + 2.00000000E+00*_dx1;\n    _TMP26 = COMPAT_TEXTURE(Texture, _c0144);\n    _x0146 = vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00) + (_TMP26 - vec4( 1.00000000E+00, 1.00000000E+00, 1.00000000E+00, 1.00000000E+00));\n    _TMP27 = _TMP26*_x0146;\n    _r0152 = _coeffs1.x*_TMP21;\n    _r0152 = _r0152 + _coeffs1.y*_TMP23;\n    _r0152 = _r0152 + _coeffs1.z*_TMP25;\n    _r0152 = _r0152 + _coeffs1.w*_TMP27;\n    _sample_min0150 = min(_TMP23, _TMP25);\n    _sample_max0150 = max(_TMP23, _TMP25);\n    _TMP34 = min(_sample_max0150, _r0152);\n    _TMP157 = max(_sample_min0150, _TMP34);\n    _x_step0164 = float((_dist.y >= 5.00000000E-01));\n    _a0168 = 2.50000000E-01 - (_dist.y - _x_step0164)*(_dist.y - _x_step0164);\n    _TMP33 = inversesqrt(_a0168);\n    _TMP14 = 1.00000000E+00/_TMP33;\n    _a0172 = 5.00000000E-01 - _dist.y;\n    _val0172 = float((_a0172 > 0.00000000E+00));\n    _TMP15 = _val0172 - float((_a0172 < 0.00000000E+00));\n    _curve0164 = 5.00000000E-01 - _TMP14*_TMP15;\n    _TMP163 = _dist.y + (_curve0164 - _dist.y);\n    _col2 = _TMP117.xyz + _TMP163*(_TMP157.xyz - _TMP117.xyz);\n    _luma = dot(vec3( 2.12599993E-01, 7.15200007E-01, 7.22000003E-02), _col2);\n    _TMP8 = max(_col2.y, _col2.z);\n    _TMP9 = max(_col2.x, _TMP8);\n    _bright = (_TMP9 + _luma)/2.00000000E+00;\n    _TMP31 = min(6.49999976E-01, _bright);\n    _TMP183 = max(3.49999994E-01, _TMP31);\n    _x0190 = _bright*1.50000000E+00;\n    _TMP31 = min(1.50000000E+00, _x0190);\n    _TMP189 = max(1.50000000E+00, _TMP31);\n    _a0196 = TEX0.y*2.00000000E+00*3.14159274E+00*TextureSize.y;\n    _TMP10 = cos(_a0196);\n    _x0198 = _TMP10*5.00000000E-01 + 5.00000000E-01;\n    _TMP11 = pow(_x0198, _TMP189);\n    _scan_weight = 1.00000000E+00 - _TMP11;\n    _x0200 = (TEX0.xy*OutputSize*TextureSize)/InputSize;\n    _mod_fac = floor(_x0200);\n    _x0208 = _mod_fac.x/3.00000000E+00;\n    _TMP32 = floor(_x0208);\n    _TMP13 = _mod_fac.x - 3.00000000E+00*_TMP32;\n    _dot_no = int(_TMP13);\n    if (_dot_no == 0) {\n    _mask_weight = vec3( 1.00000000E+00, 6.99999988E-01, 6.99999988E-01);\n    } else {\n    if (_dot_no == 1) {\n    _mask_weight = vec3( 6.99999988E-01, 1.00000000E+00, 6.99999988E-01);\n    } else {\n    _mask_weight = vec3( 6.99999988E-01, 6.99999988E-01, 1.00000000E+00);\n    }\n    }\n    if (InputSize.y >= 4.00000000E+02) {\n    _scan_weight = 1.00000000E+00;\n    }\n    _col21 = _col2.xyz;\n    _col2 = _col2*vec3(_scan_weight, _scan_weight, _scan_weight);\n    _col2 = _col2 + _TMP183*(_col21 - _col2);\n    _col2 = _col2*_mask_weight;\n    _TMP28 = pow(_col2.x, 5.55555582E-01);\n    _TMP29 = pow(_col2.y, 5.55555582E-01);\n    _TMP30 = pow(_col2.z, 5.55555582E-01);\n    _col2 = vec3(_TMP28, _TMP29, _TMP30);\n    _TMP37 = _col2*1.20000005E+00;\n    _ret_0 = vec4(_TMP37.x, _TMP37.y, _TMP37.z, 1.00000000E+00);\n    FragColor = _ret_0;\n    return;\n    }\n    #endif\n",
+            "crt-aperture.glsl": "\n/*\nCRT Shader by EasyMode\nLicense: GPL\n*/\n/*\n#pragma parameter SHARPNESS_IMAGE \"Sharpness Image\" 1.0 1.0 5.0 1.0\n#pragma parameter SHARPNESS_EDGES \"Sharpness Edges\" 3.0 1.0 5.0 1.0\n#pragma parameter GLOW_WIDTH \"Glow Width\" 0.5 0.05 0.65 0.05\n#pragma parameter GLOW_HEIGHT \"Glow Height\" 0.5 0.05 0.65 0.05\n#pragma parameter GLOW_HALATION \"Glow Halation\" 0.1 0.0 1.0 0.01\n#pragma parameter GLOW_DIFFUSION \"Glow Diffusion\" 0.05 0.0 1.0 0.01\n#pragma parameter MASK_COLORS \"Mask Colors\" 2.0 2.0 3.0 1.0\n#pragma parameter MASK_STRENGTH \"Mask Strength\" 0.3 0.0 1.0 0.05\n#pragma parameter MASK_SIZE \"Mask Size\" 1.0 1.0 9.0 1.0\n#pragma parameter SCANLINE_SIZE_MIN \"Scanline Size Min.\" 0.5 0.5 1.5 0.05\n#pragma parameter SCANLINE_SIZE_MAX \"Scanline Size Max.\" 1.5 0.5 1.5 0.05\n#pragma parameter GAMMA_INPUT \"Gamma Input\" 2.4 1.0 5.0 0.1\n#pragma parameter GAMMA_OUTPUT \"Gamma Output\" 2.4 1.0 5.0 0.1\n#pragma parameter BRIGHTNESS \"Brightness\" 1.5 0.0 2.0 0.05\n* */\n\n#define Coord TEX0\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define OUT out\n#define IN  in\n#define tex2D texture\n#else\n#define OUT varying \n#define IN attribute \n#define tex2D texture2D\n#endif\n\n#ifdef GL_ES\n#define PRECISION mediump\n#else\n#define PRECISION\n#endif\n\nIN  vec4 VertexCoord;\nIN  vec4 Color;\nIN  vec2 TexCoord;\nOUT vec4 color;\nOUT vec2 Coord;\n\nuniform mat4 MVPMatrix;\nuniform PRECISION int FrameDirection;\nuniform PRECISION int FrameCount;\nuniform PRECISION vec2 OutputSize;\nuniform PRECISION vec2 TextureSize;\nuniform PRECISION vec2 InputSize;\n\nvoid main()\n{\ngl_Position = MVPMatrix * VertexCoord;\ncolor = Color;\nCoord = TexCoord;\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define IN in\n#define tex2D texture\nout vec4 FragColor;\n#else\n#define IN varying\n#define FragColor gl_FragColor\n#define tex2D texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define PRECISION mediump\n#else\n#define PRECISION\n#endif\n\nuniform PRECISION int FrameDirection;\nuniform PRECISION int FrameCount;\nuniform PRECISION vec2 OutputSize;\nuniform PRECISION vec2 TextureSize;\nuniform PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nIN vec2 Coord;\n\n#ifdef PARAMETER_UNIFORM\nuniform PRECISION float SHARPNESS_IMAGE;\nuniform PRECISION float SHARPNESS_EDGES;\nuniform PRECISION float GLOW_WIDTH;\nuniform PRECISION float GLOW_HEIGHT;\nuniform PRECISION float GLOW_HALATION;\nuniform PRECISION float GLOW_DIFFUSION;\nuniform PRECISION float MASK_COLORS;\nuniform PRECISION float MASK_STRENGTH;\nuniform PRECISION float MASK_SIZE;\nuniform PRECISION float SCANLINE_SIZE_MIN;\nuniform PRECISION float SCANLINE_SIZE_MAX;\nuniform PRECISION float GAMMA_INPUT;\nuniform PRECISION float GAMMA_OUTPUT;\nuniform PRECISION float BRIGHTNESS;\n#else\n#define SHARPNESS_IMAGE 1.0\n#define SHARPNESS_EDGES 3.0\n#define GLOW_WIDTH 0.5\n#define GLOW_HEIGHT 0.5\n#define GLOW_HALATION 0.1\n#define GLOW_DIFFUSION 0.05\n#define MASK_COLORS 2.0\n#define MASK_STRENGTH 0.3\n#define MASK_SIZE 1.0\n#define SCANLINE_SIZE_MIN 0.5\n#define SCANLINE_SIZE_MAX 1.5\n#define GAMMA_INPUT 2.4\n#define GAMMA_OUTPUT 2.4\n#define BRIGHTNESS 1.5\n#endif\n\n#define FIX(c) max(abs(c), 1e-5)\n#define PI 3.141592653589\n#define saturate(c) clamp(c, 0.0, 1.0)\n#define TEX2D(c) pow(tex2D(tex, c).rgb, vec3(GAMMA_INPUT))\n\nmat3 get_color_matrix(sampler2D tex, vec2 co, vec2 dx)\n{\nreturn mat3(TEX2D(co - dx), TEX2D(co), TEX2D(co + dx));\n}\n\nvec3 blur(mat3 m, float dist, float rad)\n{\nvec3 x = vec3(dist - 1.0, dist, dist + 1.0) / rad;\nvec3 w = exp2(x * x * -1.0);\n\nreturn (m[0] * w.x + m[1] * w.y + m[2] * w.z) / (w.x + w.y + w.z);\n}\n\nvec3 filter_gaussian(sampler2D tex, vec2 co, vec2 tex_size)\n{\nvec2 dx = vec2(1.0 / tex_size.x, 0.0);\nvec2 dy = vec2(0.0, 1.0 / tex_size.y);\nvec2 pix_co = co * tex_size;\nvec2 tex_co = (floor(pix_co) + 0.5) / tex_size;\nvec2 dist = (fract(pix_co) - 0.5) * -1.0;\n\nmat3 line0 = get_color_matrix(tex, tex_co - dy, dx);\nmat3 line1 = get_color_matrix(tex, tex_co, dx);\nmat3 line2 = get_color_matrix(tex, tex_co + dy, dx);\nmat3 column = mat3(blur(line0, dist.x, GLOW_WIDTH),\n                       blur(line1, dist.x, GLOW_WIDTH),\n                       blur(line2, dist.x, GLOW_WIDTH));\n\nreturn blur(column, dist.y, GLOW_HEIGHT);\n}\n\nvec3 filter_lanczos(sampler2D tex, vec2 co, vec2 tex_size, float sharp)\n{\ntex_size.x *= sharp;\n\nvec2 dx = vec2(1.0 / tex_size.x, 0.0);\nvec2 pix_co = co * tex_size - vec2(0.5, 0.0);\nvec2 tex_co = (floor(pix_co) + vec2(0.5, 0.0)) / tex_size;\nvec2 dist = fract(pix_co);\nvec4 coef = PI * vec4(dist.x + 1.0, dist.x, dist.x - 1.0, dist.x - 2.0);\n\ncoef = FIX(coef);\ncoef = 2.0 * sin(coef) * sin(coef / 2.0) / (coef * coef);\ncoef /= dot(coef, vec4(1.0));\n\nvec4 col1 = vec4(TEX2D(tex_co), 1.0);\nvec4 col2 = vec4(TEX2D(tex_co + dx), 1.0);\n\nreturn (mat4(col1, col1, col2, col2) * coef).rgb;\n}\n\nvec3 get_scanline_weight(float x, vec3 col)\n{\nvec3 beam = mix(vec3(SCANLINE_SIZE_MIN), vec3(SCANLINE_SIZE_MAX), col);\nvec3 x_mul = 2.0 / beam;\nvec3 x_offset = x_mul * 0.5;\n\nreturn smoothstep(0.0, 1.0, 1.0 - abs(x * x_mul - x_offset)) * x_offset;\n}\n\nvec3 get_mask_weight(float x)\n{\nfloat i = mod(floor(x * OutputSize.x * TextureSize.x / (InputSize.x * MASK_SIZE)), MASK_COLORS);\n\nif (i == 0.0) return mix(vec3(1.0, 0.0, 1.0), vec3(1.0, 0.0, 0.0), MASK_COLORS - 2.0);\nelse if (i == 1.0) return vec3(0.0, 1.0, 0.0);\nelse return vec3(0.0, 0.0, 1.0);\n}\n\nvoid main()\n{\nvec3 col_glow = filter_gaussian(Texture, Coord, TextureSize);\nvec3 col_soft = filter_lanczos(Texture, Coord, TextureSize, SHARPNESS_IMAGE);\nvec3 col_sharp = filter_lanczos(Texture, Coord, TextureSize, SHARPNESS_EDGES);\nvec3 col = sqrt(col_sharp * col_soft);\n\ncol *= get_scanline_weight(fract(Coord.y * TextureSize.y), col_soft);\ncol_glow = saturate(col_glow - col);\ncol += col_glow * col_glow * GLOW_HALATION;\ncol = mix(col, col * get_mask_weight(Coord.x) * MASK_COLORS, MASK_STRENGTH);\ncol += col_glow * GLOW_DIFFUSION;\ncol = pow(col * BRIGHTNESS, vec3(1.0 / GAMMA_OUTPUT));\n\nFragColor = vec4(col, 1.0);\n}\n\n#endif\n",
+            "crt-geom.glsl": "\n/*\nCRT-interlaced\n\nCopyright (C) 2010-2012 cgwg, Themaister and DOLLS\n\nThis program is free software; you can redistribute it and/or modify it\nunder the terms of the GNU General Public License as published by the Free\nSoftware Foundation; either version 2 of the License, or (at your option)\nany later version.\n\n(cgwg gave their consent to have the original version of this shader\ndistributed under the GPL in this message:\n\nhttp://board.byuu.org/viewtopic.php?p=26075#p26075\n\n\"Feel free to distribute my shaders under the GPL. After all, the\nbarrel distortion code was taken from the Curvature shader, which is\nunder the GPL.\"\n)\nThis shader variant is pre-configured with screen curvature\n*/\n/*\n#pragma parameter CRTgamma \"CRTGeom Target Gamma\" 2.4 0.1 5.0 0.1\n#pragma parameter monitorgamma \"CRTGeom Monitor Gamma\" 2.2 0.1 5.0 0.1\n#pragma parameter d \"CRTGeom Distance\" 1.6 0.1 3.0 0.1\n#pragma parameter CURVATURE \"CRTGeom Curvature Toggle\" 1.0 0.0 1.0 1.0\n#pragma parameter R \"CRTGeom Curvature Radius\" 2.0 0.1 10.0 0.1\n#pragma parameter cornersize \"CRTGeom Corner Size\" 0.03 0.001 1.0 0.005\n#pragma parameter cornersmooth \"CRTGeom Corner Smoothness\" 1000.0 80.0 2000.0 100.0\n#pragma parameter x_tilt \"CRTGeom Horizontal Tilt\" 0.0 -0.5 0.5 0.05\n#pragma parameter y_tilt \"CRTGeom Vertical Tilt\" 0.0 -0.5 0.5 0.05\n#pragma parameter overscan_x \"CRTGeom Horiz. Overscan %\" 100.0 -125.0 125.0 1.0\n#pragma parameter overscan_y \"CRTGeom Vert. Overscan %\" 100.0 -125.0 125.0 1.0\n#pragma parameter DOTMASK \"CRTGeom Dot Mask Toggle\" 0.3 0.0 0.3 0.3\n#pragma parameter SHARPER \"CRTGeom Sharpness\" 1.0 1.0 3.0 1.0\n#pragma parameter scanline_weight \"CRTGeom Scanline Weight\" 0.3 0.1 0.5 0.05\n*/\n\n#ifndef PARAMETER_UNIFORM\n#define CRTgamma 2.4\n#define monitorgamma 2.2\n#define d 1.6\n#define CURVATURE 1.0\n#define R 2.0\n#define cornersize 0.03\n#define cornersmooth 1000.0\n#define x_tilt 0.0\n#define y_tilt 0.0\n#define overscan_x 100.0\n#define overscan_y 100.0\n#define DOTMASK 0.3\n#define SHARPER 1.0\n#define scanline_weight 0.3\n#endif\n\n#if defined(VERTEX)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\nCOMPAT_VARYING vec2 overscan;\nCOMPAT_VARYING vec2 aspect;\nCOMPAT_VARYING vec3 stretch;\nCOMPAT_VARYING vec2 sinangle;\nCOMPAT_VARYING vec2 cosangle;\nCOMPAT_VARYING vec2 one;\nCOMPAT_VARYING float mod_factor;\nCOMPAT_VARYING vec2 ilfac;\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CRTgamma;\nuniform COMPAT_PRECISION float monitorgamma;\nuniform COMPAT_PRECISION float d;\nuniform COMPAT_PRECISION float CURVATURE;\nuniform COMPAT_PRECISION float R;\nuniform COMPAT_PRECISION float cornersize;\nuniform COMPAT_PRECISION float cornersmooth;\nuniform COMPAT_PRECISION float x_tilt;\nuniform COMPAT_PRECISION float y_tilt;\nuniform COMPAT_PRECISION float overscan_x;\nuniform COMPAT_PRECISION float overscan_y;\nuniform COMPAT_PRECISION float DOTMASK;\nuniform COMPAT_PRECISION float SHARPER;\nuniform COMPAT_PRECISION float scanline_weight;\n#endif\n\n#define FIX(c) max(abs(c), 1e-5);\n\nfloat intersect(vec2 xy)\n{\nfloat A = dot(xy,xy)+d*d;\nfloat B = 2.0*(R*(dot(xy,sinangle)-d*cosangle.x*cosangle.y)-d*d);\nfloat C = d*d + 2.0*R*d*cosangle.x*cosangle.y;\nreturn (-B-sqrt(B*B-4.0*A*C))/(2.0*A);\n}\n\nvec2 bkwtrans(vec2 xy)\n{\nfloat c = intersect(xy);\nvec2 point = vec2(c)*xy;\npoint -= vec2(-R)*sinangle;\npoint /= vec2(R);\nvec2 tang = sinangle/cosangle;\nvec2 poc = point/cosangle;\nfloat A = dot(tang,tang)+1.0;\nfloat B = -2.0*dot(poc,tang);\nfloat C = dot(poc,poc)-1.0;\nfloat a = (-B+sqrt(B*B-4.0*A*C))/(2.0*A);\nvec2 uv = (point-a*sinangle)/cosangle;\nfloat r = R*acos(a);\nreturn uv*r/sin(r/R);\n}\n\nvec2 fwtrans(vec2 uv)\n{\nfloat r = FIX(sqrt(dot(uv,uv)));\nuv *= sin(r/R)/r;\nfloat x = 1.0-cos(r/R);\nfloat D = d/R + x*cosangle.x*cosangle.y+dot(uv,sinangle);\nreturn d*(uv*cosangle-x*sinangle)/D;\n}\n\nvec3 maxscale()\n{\nvec2 c = bkwtrans(-R * sinangle / (1.0 + R/d*cosangle.x*cosangle.y));\nvec2 a = vec2(0.5,0.5)*aspect;\nvec2 lo = vec2(fwtrans(vec2(-a.x,c.y)).x, fwtrans(vec2(c.x,-a.y)).y)/aspect;\nvec2 hi = vec2(fwtrans(vec2(+a.x,c.y)).x, fwtrans(vec2(c.x,+a.y)).y)/aspect;\nreturn vec3((hi+lo)*aspect*0.5,max(hi.x-lo.x,hi.y-lo.y));\n}\n\nvoid main()\n{\n// START of parameters\n\n// gamma of simulated CRT\n//\tCRTgamma = 1.8;\n// gamma of display monitor (typically 2.2 is correct)\n//\tmonitorgamma = 2.2;\n// overscan (e.g. 1.02 for 2% overscan)\noverscan = vec2(1.00,1.00);\n// aspect ratio\naspect = vec2(1.0, 0.75);\n// lengths are measured in units of (approximately) the width\n// of the monitor simulated distance from viewer to monitor\n//\td = 2.0;\n// radius of curvature\n//\tR = 1.5;\n// tilt angle in radians\n// (behavior might be a bit wrong if both components are\n// nonzero)\nconst vec2 angle = vec2(0.0,0.0);\n// size of curved corners\n//\tcornersize = 0.03;\n// border smoothness parameter\n// decrease if borders are too aliased\n//\tcornersmooth = 1000.0;\n\n// END of parameters\n\nvec4 _oColor;\nvec2 _otexCoord;\ngl_Position = VertexCoord.x * MVPMatrix[0] + VertexCoord.y * MVPMatrix[1] + VertexCoord.z * MVPMatrix[2] + VertexCoord.w * MVPMatrix[3];\n_oPosition1 = gl_Position;\n_oColor = COLOR;\n_otexCoord = TexCoord.xy;\nCOL0 = COLOR;\nTEX0.xy = TexCoord.xy;\n\n// Precalculate a bunch of useful values we'll need in the fragment\n// shader.\nsinangle = sin(vec2(x_tilt, y_tilt)) + vec2(0.001);//sin(vec2(max(abs(x_tilt), 1e-3), max(abs(y_tilt), 1e-3)));\ncosangle = cos(vec2(x_tilt, y_tilt)) + vec2(0.001);//cos(vec2(max(abs(x_tilt), 1e-3), max(abs(y_tilt), 1e-3)));\nstretch = maxscale();\n\nilfac = vec2(1.0,clamp(floor(InputSize.y/200.0), 1.0, 2.0));\n\n// The size of one texel, in texture-coordinates.\nvec2 sharpTextureSize = vec2(SHARPER * TextureSize.x, TextureSize.y);\none = ilfac / sharpTextureSize;\n\n// Resulting X pixel-coordinate of the pixel we're drawing.\nmod_factor = TexCoord.x * TextureSize.x * OutputSize.x / InputSize.x;\n\n}\n\n#elif defined(FRAGMENT)\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nstruct output_dummy {\nvec4 _color;\n};\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\n\n// Comment the next line to disable interpolation in linear gamma (and\n// gain speed).\n#define LINEAR_PROCESSING\n\n// Enable screen curvature.\n//        #define CURVATURE\n\n// Enable 3x oversampling of the beam profile\n#define OVERSAMPLE\n\n// Use the older, purely gaussian beam profile\n//#define USEGAUSSIAN\n\n// Macros.\n#define FIX(c) max(abs(c), 1e-5);\n#define PI 3.141592653589\n\n#ifdef LINEAR_PROCESSING\n#       define TEX2D(c) pow(COMPAT_TEXTURE(Texture, (c)), vec4(CRTgamma))\n#else\n#       define TEX2D(c) COMPAT_TEXTURE(Texture, (c))\n#endif\n\nCOMPAT_VARYING vec2 one;\nCOMPAT_VARYING float mod_factor;\nCOMPAT_VARYING vec2 ilfac;\nCOMPAT_VARYING vec2 overscan;\nCOMPAT_VARYING vec2 aspect;\nCOMPAT_VARYING vec3 stretch;\nCOMPAT_VARYING vec2 sinangle;\nCOMPAT_VARYING vec2 cosangle;\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CRTgamma;\nuniform COMPAT_PRECISION float monitorgamma;\nuniform COMPAT_PRECISION float d;\nuniform COMPAT_PRECISION float CURVATURE;\nuniform COMPAT_PRECISION float R;\nuniform COMPAT_PRECISION float cornersize;\nuniform COMPAT_PRECISION float cornersmooth;\nuniform COMPAT_PRECISION float x_tilt;\nuniform COMPAT_PRECISION float y_tilt;\nuniform COMPAT_PRECISION float overscan_x;\nuniform COMPAT_PRECISION float overscan_y;\nuniform COMPAT_PRECISION float DOTMASK;\nuniform COMPAT_PRECISION float SHARPER;\nuniform COMPAT_PRECISION float scanline_weight;\n#endif\n\nfloat intersect(vec2 xy)\n{\nfloat A = dot(xy,xy)+d*d;\nfloat B = 2.0*(R*(dot(xy,sinangle)-d*cosangle.x*cosangle.y)-d*d);\nfloat C = d*d + 2.0*R*d*cosangle.x*cosangle.y;\nreturn (-B-sqrt(B*B-4.0*A*C))/(2.0*A);\n}\n\nvec2 bkwtrans(vec2 xy)\n{\nfloat c = intersect(xy);\nvec2 point = vec2(c)*xy;\npoint -= vec2(-R)*sinangle;\npoint /= vec2(R);\nvec2 tang = sinangle/cosangle;\nvec2 poc = point/cosangle;\nfloat A = dot(tang,tang)+1.0;\nfloat B = -2.0*dot(poc,tang);\nfloat C = dot(poc,poc)-1.0;\nfloat a = (-B+sqrt(B*B-4.0*A*C))/(2.0*A);\nvec2 uv = (point-a*sinangle)/cosangle;\nfloat r = FIX(R*acos(a));\nreturn uv*r/sin(r/R);\n}\n\nvec2 transform(vec2 coord)\n{\ncoord *= TextureSize / InputSize;\ncoord = (coord-vec2(0.5))*aspect*stretch.z+stretch.xy;\nreturn (bkwtrans(coord)/vec2(overscan_x / 100.0, overscan_y / 100.0)/aspect+vec2(0.5)) * InputSize / TextureSize;\n}\n\nfloat corner(vec2 coord)\n{\ncoord *= TextureSize / InputSize;\ncoord = (coord - vec2(0.5)) * vec2(overscan_x / 100.0, overscan_y / 100.0) + vec2(0.5);\ncoord = min(coord, vec2(1.0)-coord) * aspect;\nvec2 cdist = vec2(cornersize);\ncoord = (cdist - min(coord,cdist));\nfloat dist = sqrt(dot(coord,coord));\nreturn clamp((cdist.x-dist)*cornersmooth,0.0, 1.0);\n}\n\n// Calculate the influence of a scanline on the current pixel.\n//\n// 'distance' is the distance in texture coordinates from the current\n// pixel to the scanline in question.\n// 'color' is the colour of the scanline at the horizontal location of\n// the current pixel.\nvec4 scanlineWeights(float distance, vec4 color)\n{\n// \"wid\" controls the width of the scanline beam, for each RGB\n// channel The \"weights\" lines basically specify the formula\n// that gives you the profile of the beam, i.e. the intensity as\n// a function of distance from the vertical center of the\n// scanline. In this case, it is gaussian if width=2, and\n// becomes nongaussian for larger widths. Ideally this should\n// be normalized so that the integral across the beam is\n// independent of its width. That is, for a narrower beam\n// \"weights\" should have a higher peak at the center of the\n// scanline than for a wider beam.\n#ifdef USEGAUSSIAN\nvec4 wid = 0.3 + 0.1 * pow(color, vec4(3.0));\nvec4 weights = vec4(distance / wid);\nreturn 0.4 * exp(-weights * weights) / wid;\n#else\nvec4 wid = 2.0 + 2.0 * pow(color, vec4(4.0));\nvec4 weights = vec4(distance / scanline_weight);\nreturn 1.4 * exp(-pow(weights * inversesqrt(0.5 * wid), wid)) / (0.6 + 0.2 * wid);\n#endif\n}\n\nvoid main()\n{\n// Here's a helpful diagram to keep in mind while trying to\n// understand the code:\n//\n//  |      |      |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//  |  01  |  11  |  21  |  31  | <-- current scanline\n//  |      | @    |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//  |  02  |  12  |  22  |  32  | <-- next scanline\n//  |      |      |      |      |\n// -------------------------------\n//  |      |      |      |      |\n//\n// Each character-cell represents a pixel on the output\n// surface, \"@\" represents the current pixel (always somewhere\n// in the bottom half of the current scan-line, or the top-half\n// of the next scanline). The grid of lines represents the\n// edges of the texels of the underlying texture.\n\n// Texture coordinates of the texel containing the active pixel.\nvec2 xy = (CURVATURE > 0.5) ? transform(TEX0.xy) : TEX0.xy;\n\nfloat cval = corner(xy);\n\n// Of all the pixels that are mapped onto the texel we are\n// currently rendering, which pixel are we currently rendering?\nvec2 ilvec = vec2(0.0,ilfac.y > 1.5 ? mod(float(FrameCount),2.0) : 0.0);\nvec2 ratio_scale = (xy * TextureSize - vec2(0.5) + ilvec)/ilfac;\n#ifdef OVERSAMPLE\nfloat filter_ = InputSize.y/OutputSize.y;//fwidth(ratio_scale.y);\n#endif\nvec2 uv_ratio = fract(ratio_scale);\n\n// Snap to the center of the underlying texel.\nxy = (floor(ratio_scale)*ilfac + vec2(0.5) - ilvec) / TextureSize;\n\n// Calculate Lanczos scaling coefficients describing the effect\n// of various neighbour texels in a scanline on the current\n// pixel.\nvec4 coeffs = PI * vec4(1.0 + uv_ratio.x, uv_ratio.x, 1.0 - uv_ratio.x, 2.0 - uv_ratio.x);\n\n// Prevent division by zero.\ncoeffs = FIX(coeffs);\n\n// Lanczos2 kernel.\ncoeffs = 2.0 * sin(coeffs) * sin(coeffs / 2.0) / (coeffs * coeffs);\n\n// Normalize.\ncoeffs /= dot(coeffs, vec4(1.0));\n\n// Calculate the effective colour of the current and next\n// scanlines at the horizontal location of the current pixel,\n// using the Lanczos coefficients above.\nvec4 col  = clamp(mat4(\n                TEX2D(xy + vec2(-one.x, 0.0)),\n                TEX2D(xy),\n                TEX2D(xy + vec2(one.x, 0.0)),\n                TEX2D(xy + vec2(2.0 * one.x, 0.0))) * coeffs,\n                0.0, 1.0);\nvec4 col2 = clamp(mat4(\n                TEX2D(xy + vec2(-one.x, one.y)),\n                TEX2D(xy + vec2(0.0, one.y)),\n                TEX2D(xy + one),\n                TEX2D(xy + vec2(2.0 * one.x, one.y))) * coeffs,\n                0.0, 1.0);\n\n#ifndef LINEAR_PROCESSING\ncol  = pow(col , vec4(CRTgamma));\ncol2 = pow(col2, vec4(CRTgamma));\n#endif\n\n// Calculate the influence of the current and next scanlines on\n// the current pixel.\nvec4 weights  = scanlineWeights(uv_ratio.y, col);\nvec4 weights2 = scanlineWeights(1.0 - uv_ratio.y, col2);\n#ifdef OVERSAMPLE\nuv_ratio.y =uv_ratio.y+1.0/3.0*filter_;\nweights = (weights+scanlineWeights(uv_ratio.y, col))/3.0;\nweights2=(weights2+scanlineWeights(abs(1.0-uv_ratio.y), col2))/3.0;\nuv_ratio.y =uv_ratio.y-2.0/3.0*filter_;\nweights=weights+scanlineWeights(abs(uv_ratio.y), col)/3.0;\nweights2=weights2+scanlineWeights(abs(1.0-uv_ratio.y), col2)/3.0;\n#endif\n\nvec3 mul_res  = (col * weights + col2 * weights2).rgb * vec3(cval);\n\n// dot-mask emulation:\n// Output pixels are alternately tinted green and magenta.\nvec3 dotMaskWeights = mix(\nvec3(1.0, 1.0 - DOTMASK, 1.0),\nvec3(1.0 - DOTMASK, 1.0, 1.0 - DOTMASK),\nfloor(mod(mod_factor, 2.0))\n);\n\nmul_res *= dotMaskWeights;\n\n// Convert the image gamma for display on our output device.\nmul_res = pow(mul_res, vec3(1.0 / monitorgamma));\n\n// Color the texel.\noutput_dummy _OUT;\n_OUT._color = vec4(mul_res, 1.0);\nFragColor = _OUT._color;\nreturn;\n} \n#endif\n\n",
+            "crt-mattias.glsl": "\n#pragma parameter CURVATURE \"Curvature\" 0.5 0.0 1.0 0.05\n#pragma parameter SCANSPEED \"Scanline Crawl Speed\" 1.0 0.0 10.0 0.5\n#if defined(VERTEX)\n#if __VERSION__ >= 130\n#define COMPAT_VARYING out\n#define COMPAT_ATTRIBUTE in\n#define COMPAT_TEXTURE texture\n#else\n#define COMPAT_VARYING varying \n#define COMPAT_ATTRIBUTE attribute \n#define COMPAT_TEXTURE texture2D\n#endif\n\n#ifdef GL_ES\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\nCOMPAT_ATTRIBUTE vec4 VertexCoord;\nCOMPAT_ATTRIBUTE vec4 COLOR;\nCOMPAT_ATTRIBUTE vec4 TexCoord;\nCOMPAT_VARYING vec4 COL0;\nCOMPAT_VARYING vec4 TEX0;\n\nvec4 _oPosition1; \nuniform mat4 MVPMatrix;\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\n\n#define vTexCoord TEX0.xy\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\nvoid main()\n{\n    gl_Position = MVPMatrix * VertexCoord;\n    TEX0.xy = TexCoord.xy;\n}\n\n#elif defined(FRAGMENT)\n\n#ifdef GL_ES\n#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n#define COMPAT_PRECISION mediump\n#else\n#define COMPAT_PRECISION\n#endif\n\n#if __VERSION__ >= 130\n#define COMPAT_VARYING in\n#define COMPAT_TEXTURE texture\nout COMPAT_PRECISION vec4 FragColor;\n#else\n#define COMPAT_VARYING varying\n#define FragColor gl_FragColor\n#define COMPAT_TEXTURE texture2D\n#endif\n\nuniform COMPAT_PRECISION int FrameDirection;\nuniform COMPAT_PRECISION int FrameCount;\nuniform COMPAT_PRECISION vec2 OutputSize;\nuniform COMPAT_PRECISION vec2 TextureSize;\nuniform COMPAT_PRECISION vec2 InputSize;\nuniform sampler2D Texture;\nCOMPAT_VARYING vec4 TEX0;\n\n// compatibility #defines\n#define Source Texture\n#define vTexCoord TEX0.xy\n\n#define SourceSize vec4(TextureSize, 1.0 / TextureSize) //either TextureSize or InputSize\n#define OutSize vec4(OutputSize, 1.0 / OutputSize)\n\n#ifdef PARAMETER_UNIFORM\nuniform COMPAT_PRECISION float CURVATURE, SCANSPEED;\n#else\n#define CURVATURE 0.5\n#define SCANSPEED 1.0\n#endif\n\n#define iChannel0 Texture\n#define iTime (float(FrameCount) / 60.0)\n#define iResolution OutputSize.xy\n#define fragCoord gl_FragCoord.xy\n\nvec3 sample_( sampler2D tex, vec2 tc )\n{\n    vec3 s = pow(COMPAT_TEXTURE(tex,tc).rgb, vec3(2.2));\n    return s;\n}\n\nvec3 blur(sampler2D tex, vec2 tc, float offs)\n{\n    vec4 xoffs = offs * vec4(-2.0, -1.0, 1.0, 2.0) / (iResolution.x * TextureSize.x / InputSize.x);\n    vec4 yoffs = offs * vec4(-2.0, -1.0, 1.0, 2.0) / (iResolution.y * TextureSize.y / InputSize.y);\n    tc = tc * InputSize / TextureSize;\n    \n    vec3 color = vec3(0.0, 0.0, 0.0);\n    color += sample_(tex,tc + vec2(xoffs.x, yoffs.x)) * 0.00366;\n    color += sample_(tex,tc + vec2(xoffs.y, yoffs.x)) * 0.01465;\n    color += sample_(tex,tc + vec2(    0.0, yoffs.x)) * 0.02564;\n    color += sample_(tex,tc + vec2(xoffs.z, yoffs.x)) * 0.01465;\n    color += sample_(tex,tc + vec2(xoffs.w, yoffs.x)) * 0.00366;\n    \n    color += sample_(tex,tc + vec2(xoffs.x, yoffs.y)) * 0.01465;\n    color += sample_(tex,tc + vec2(xoffs.y, yoffs.y)) * 0.05861;\n    color += sample_(tex,tc + vec2(    0.0, yoffs.y)) * 0.09524;\n    color += sample_(tex,tc + vec2(xoffs.z, yoffs.y)) * 0.05861;\n    color += sample_(tex,tc + vec2(xoffs.w, yoffs.y)) * 0.01465;\n    \n    color += sample_(tex,tc + vec2(xoffs.x, 0.0)) * 0.02564;\n    color += sample_(tex,tc + vec2(xoffs.y, 0.0)) * 0.09524;\n    color += sample_(tex,tc + vec2(    0.0, 0.0)) * 0.15018;\n    color += sample_(tex,tc + vec2(xoffs.z, 0.0)) * 0.09524;\n    color += sample_(tex,tc + vec2(xoffs.w, 0.0)) * 0.02564;\n    \n    color += sample_(tex,tc + vec2(xoffs.x, yoffs.z)) * 0.01465;\n    color += sample_(tex,tc + vec2(xoffs.y, yoffs.z)) * 0.05861;\n    color += sample_(tex,tc + vec2(    0.0, yoffs.z)) * 0.09524;\n    color += sample_(tex,tc + vec2(xoffs.z, yoffs.z)) * 0.05861;\n    color += sample_(tex,tc + vec2(xoffs.w, yoffs.z)) * 0.01465;\n    \n    color += sample_(tex,tc + vec2(xoffs.x, yoffs.w)) * 0.00366;\n    color += sample_(tex,tc + vec2(xoffs.y, yoffs.w)) * 0.01465;\n    color += sample_(tex,tc + vec2(    0.0, yoffs.w)) * 0.02564;\n    color += sample_(tex,tc + vec2(xoffs.z, yoffs.w)) * 0.01465;\n    color += sample_(tex,tc + vec2(xoffs.w, yoffs.w)) * 0.00366;\n\n    return color;\n}\n\nfloat rand(vec2 co)\n{\n    float a = 12.9898;\n    float b = 78.233;\n    float c = 43758.5453;\n    float dt= dot(co.xy ,vec2(a,b));\n    float sn= mod(dt,3.14);\n    return fract(sin(sn) * c);\n}\n\nvec2 curve(vec2 uv)\n{\n    uv = (uv - 0.5) * 2.0;\n    uv *= 1.1;\t\n    uv.x *= 1.0 + pow((abs(uv.y) / 5.0), 2.0);\n    uv.y *= 1.0 + pow((abs(uv.x) / 4.0), 2.0);\n    uv  = (uv / 2.0) + 0.5;\n    uv =  uv *0.92 + 0.04;\n    return uv;\n}\n\nvoid main()\n{\n    vec2 q = (vTexCoord.xy * TextureSize.xy / InputSize.xy);//fragCoord.xy / iResolution.xy;\n    vec2 uv = q;\n    uv = mix( uv, curve( uv ), CURVATURE ) * InputSize.xy / TextureSize.xy;\n    vec3 col;\n    float x =  sin(0.1*iTime+uv.y*21.0)*sin(0.23*iTime+uv.y*29.0)*sin(0.3+0.11*iTime+uv.y*31.0)*0.0017;\n    float o =2.0*mod(fragCoord.y,2.0)/iResolution.x;\n    x+=o;\n    uv = uv * TextureSize / InputSize;\n    col.r = 1.0*blur(iChannel0,vec2(uv.x+0.0009,uv.y+0.0009),1.2).x+0.005;\n    col.g = 1.0*blur(iChannel0,vec2(uv.x+0.000,uv.y-0.0015),1.2).y+0.005;\n    col.b = 1.0*blur(iChannel0,vec2(uv.x-0.0015,uv.y+0.000),1.2).z+0.005;\n    col.r += 0.2*blur(iChannel0,vec2(uv.x+0.0009,uv.y+0.0009),2.25).x-0.005;\n    col.g += 0.2*blur(iChannel0,vec2(uv.x+0.000,uv.y-0.0015),1.75).y-0.005;\n    col.b += 0.2*blur(iChannel0,vec2(uv.x-0.0015,uv.y+0.000),1.25).z-0.005;\n    float ghs = 0.05;\n    col.r += ghs*(1.0-0.299)*blur(iChannel0,0.75*vec2(0.01, -0.027)+vec2(uv.x+0.001,uv.y+0.001),7.0).x;\n    col.g += ghs*(1.0-0.587)*blur(iChannel0,0.75*vec2(-0.022, -0.02)+vec2(uv.x+0.000,uv.y-0.002),5.0).y;\n    col.b += ghs*(1.0-0.114)*blur(iChannel0,0.75*vec2(-0.02, -0.0)+vec2(uv.x-0.002,uv.y+0.000),3.0).z;\n    \n    \n\n    col = clamp(col*0.4+0.6*col*col*1.0,0.0,1.0);\n    float vig = (0.0 + 1.0*16.0*uv.x*uv.y*(1.0-uv.x)*(1.0-uv.y));\n    vig = pow(vig,0.3);\n    col *= vec3(vig);\n\n    col *= vec3(0.95,1.05,0.95);\n    col = mix( col, col * col, 0.3) * 3.8;\n\n    float scans = clamp( 0.35+0.15*sin(3.5*(iTime * SCANSPEED)+uv.y*iResolution.y*1.5), 0.0, 1.0);\n    \n    float s = pow(scans,0.9);\n    col = col*vec3( s) ;\n\n    col *= 1.0+0.0015*sin(300.0*iTime);\n    \n    col*=1.0-0.15*vec3(clamp((mod(fragCoord.x+o, 2.0)-1.0)*2.0,0.0,1.0));\n    col *= vec3( 1.0 ) - 0.25*vec3( rand( uv+0.0001*iTime),  rand( uv+0.0001*iTime + 0.3 ),  rand( uv+0.0001*iTime+ 0.5 )  );\n    col = pow(col, vec3(0.45));\n\n    if (uv.x < 0.0 || uv.x > 1.0)\n        col *= 0.0;\n    if (uv.y < 0.0 || uv.y > 1.0)\n        col *= 0.0;\n    \n\n    float comp = smoothstep( 0.1, 0.9, sin(iTime) );\n\n    FragColor = vec4(col,1.0);\n} \n#endif\n"
         },
         IDBStore = _0x2c1832(0x39),
         _0x550f17 = _0x2c1832(0xb),
@@ -1153,8 +1155,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     },
                     _0x24de8d = null,
                     _0x4e171c = null,
-                    _0xa884ea = null,
-                    _0x1ffb98 = null;
+                    _0xa884ea = null;
                 try {
                     _0x24de8d = new IDBStore({
                         'dbVersion': 1,
@@ -1194,15 +1195,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'onError': function() {
                             _0x5e24fa = true;
                         }
-                    });
-                    _0x1ffb98 = new IDBStore({
-                        'dbVersion': 1,
-                        'storePrefix': 'ejs-',
-                        'storeName': 'romsdata',
-                        'keyPath': null,
-                        'autoIncrement': false,
-                        'onStoreReady': function() {},
-                        'onError': function() {}
                     });
                 } catch (_0x4fc9b6) {
                     _0x528f2b = true;
@@ -1344,18 +1336,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x96b13f instanceof MouseEvent && _0xc6823.started && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)) && _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad)).parentNode.removeChild(_0x4d7024.loading.querySelector('.' .concat(_0x4fce24.ad))), _0xc6823.elements.container.focus();
                     });
                 }
-                let _0x16cf3e = function() {
-                        _0x4e171c.db && _0x4e171c.getAll(function(_0x1a4eaf) {
-                            Array.isArray(_0x1a4eaf) && _0x1a4eaf.length > 0xa && _0x1a4eaf.sort(function(_0x155e15, _0x4a9e7f) {
-                                return (_0x4a9e7f.lastaccess ? _0x4a9e7f.lastaccess : 0x0) - (_0x155e15.lastaccess ? _0x155e15.lastaccess : 0x0);
-                            }).forEach(function(_0x43d1af, _0x2db4e2) {
-                                _0x2db4e2 > 0xa && !_0x4d7024.saveFilenames.includes(_0x43d1af.key) ? (_0x4e171c.remove(_0x43d1af.key), _0x1ffb98.db && _0x1ffb98.remove(_0x43d1af.key)) : (delete _0x43d1af.data, _0x4e171c.put(_0x43d1af.key, _0x43d1af));
-                            });
-                        }, function() {
-                            _0x4e171c.clear(), _0x1ffb98.db && _0x1ffb98.clear();
-                        });
-                    },
-                    _0x5f3757 = function(_0x2bd107) {
+                let _0x5f3757 = function(_0x2bd107) {
                         if (_0x4d7024.gamePatch) {
                             let startName = _0x4d7024.getStartName(true);
                             let _0x17edbf = startName.split('/'),
@@ -1463,7 +1444,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             try {
                                 _0x4bd781();
                                 _0x5f3757(_0x55627a);
-                                _0x16cf3e();
                                 let _0x2c1832 = [startName,
                                     [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                 ];
@@ -1581,75 +1561,49 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x550f17.a.head(_0x3cf3cf, {}).then(function(_0x3d703e) {
                             let _0x21b526 = _0x3d703e.headers['content-length'],
                                 _0x7e8d4c = _0x3d703e.headers['content-type'],
-                                _0x107e8a = (_0x3d703e.headers['last-modified'], '' .concat(_0x594488, '-').concat(_0x139f1c)),
+                                _0x107e8a = ('' .concat(_0x594488, '-').concat(_0x139f1c)),
                                 _0x43a689 = function() {
                                     _0x550f17.a.get(_0x3cf3cf, {
-                                        'onDownloadProgress': function(_0x4e7133) {
-                                            let _0x13b999 = _0x4e7133.total ? '' .concat(Math.floor(_0x4e7133.loaded / _0x4e7133.total * 0x64), '%') : '';
-                                            ['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl ? _0x2c1832.innerHTML = _this.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x17edbf.config.gamePatchUrl ? _0x2c1832.innerHTML = _this.localization('Download Game Data')+' (2/2) ' .concat(_0x13b999) : _0x2c1832.innerHTML = _this.localization('Download Game Data')+' ' .concat(_0x13b999);
+                                        'onDownloadProgress': function(e) {
+                                            const progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
+                                            if (['arcade', 'mame', 'mame2003', 'fba0.2.97.29'].includes(_0x17edbf.system) && _0x17edbf.config.gameParentUrl) {
+                                                _0x2c1832.innerHTML = _this.localization('Download Game Data')+' (2/2)'+progress;
+                                            } else if (_0x17edbf.config.gamePatchUrl) {
+                                                _0x2c1832.innerHTML = _this.localization('Download Game Data')+' (2/2)'+progress;
+                                            } else {
+                                                _0x2c1832.innerHTML = _this.localization('Download Game Data')+progress;
+                                            }
                                         },
                                         'responseType': 'arraybuffer'
                                     }).then(function(_0x22a1f4) {
                                         let _0x17edbf = new Uint8Array(_0x22a1f4.data);
-                                        if (typeof _this.config.gameUrl != 'string' || (typeof _this.config.gameUrl == 'string' && (_this.config.gameUrl.startsWith('blob:') || _this.config.gameUrl.startsWith('file:') || _this.config.gameUrl.startsWith('chrome-extension:') || ((window.location.protocol == 'file:' || window.location.protocol == 'chrome-extension:') && _this.config.gameUrl.split(':').length === 1)))) {
+                                        if (typeof _this.config.gameUrl != 'string' || (typeof _this.config.gameUrl == 'string' && (_this.config.gameUrl.startsWith('blob:') || _this.config.gameUrl.startsWith('file:') || _this.config.gameUrl.startsWith('chrome-extension:') || window.location.protocol === 'file:' || window.location.protocol === 'chrome-extension:'))) {
                                             _0x3512e9(_0x139f1c, _0x17edbf);
                                             return;
                                         };
                                         if (_0x107e8a && _0x4e171c.db)
-                                            if (_0x17edbf.length > 0x6400000)
-                                                for (let _0x2c1832 = Math.ceil(_0x17edbf.length / 0x6400000), _0x257c4d = 0x0; _0x257c4d < _0x2c1832; _0x257c4d += 0x1) {
-                                                    let _0x47d2ae = _0x17edbf.slice ? _0x17edbf.slice(0x6400000 * _0x257c4d, 0x6400000 * (_0x257c4d + 0x1)) : _0x17edbf.subarray(0x6400000 * _0x257c4d, 0x6400000 * (_0x257c4d + 0x1)),
-                                                        _0x6ce9f3 = '' .concat(_0x107e8a);
-                                                    _0x257c4d > 0x0 && (_0x6ce9f3 = '' .concat(_0x107e8a, '-part-').concat(_0x257c4d)), _0x4d7024.saveFilenames.push(_0x6ce9f3), _0x4e171c.put(_0x6ce9f3, {
-                                                        'filename': _0x139f1c,
-                                                        'filesize': _0x17edbf.length,
-                                                        'filetype': _0x7e8d4c,
-                                                        'key': _0x6ce9f3,
-                                                        'lastaccess': new Date().valueOf(),
-                                                        'next': '' .concat(_0x107e8a, '-part-').concat(_0x257c4d + 0x1)
-                                                    }), _0x1ffb98.db && _0x1ffb98.put(_0x6ce9f3, {
-                                                        'filename': _0x139f1c,
-                                                        'filesize': _0x17edbf.length,
-                                                        'filetype': _0x7e8d4c,
-                                                        'key': _0x6ce9f3,
-                                                        'data': _0x47d2ae
-                                                    });
-                                                } else _0x4d7024.saveFilenames.push(_0x107e8a), _0x4e171c.put(_0x107e8a, {
-                                                    'filename': _0x139f1c,
-                                                    'filesize': _0x17edbf.length,
-                                                    'filetype': _0x7e8d4c,
-                                                    'key': _0x107e8a,
-                                                    'lastaccess': new Date().valueOf()
-                                                }), _0x1ffb98.db && _0x1ffb98.put(_0x107e8a, {
-                                                    'filename': _0x139f1c,
-                                                    'filesize': _0x17edbf.length,
-                                                    'filetype': _0x7e8d4c,
-                                                    'key': _0x107e8a,
-                                                    'data': _0x17edbf
-                                                });
+                                            _0x4d7024.saveFilenames.push(_0x107e8a), _0x4e171c.put(_0x107e8a, {
+                                                'filename': _0x139f1c,
+                                                'filesize': _0x17edbf.length,
+                                                'filetype': _0x7e8d4c,
+                                                'key': _0x107e8a,
+                                                'lastaccess': new Date().valueOf()
+                                            });
+                                            _0x4e171c.db && _0x4e171c.put(_0x107e8a, {
+                                                'filename': _0x139f1c,
+                                                'filesize': _0x17edbf.length,
+                                                'filetype': _0x7e8d4c,
+                                                'key': _0x107e8a,
+                                                'data': _0x17edbf
+                                            });
                                         _0x3512e9(_0x139f1c, _0x17edbf);
                                     }).catch(function(_0x2e4d62) {
                                         renderErrorPage(_0x2e4d62, _0x2c1832, _this);
                                     });
                                 };
-                            _0x1ffb98.db ? _0x1ffb98.get(_0x107e8a, function(_0x5afc4a) {
+                            _0x4e171c.db ? _0x4e171c.get(_0x107e8a, function(_0x5afc4a) {
                                 if (_0x5afc4a && _0x5afc4a.filename === _0x139f1c && _0x5afc4a.filesize - _0x21b526 == 0x0 && _0x5afc4a.filetype === _0x7e8d4c && _0x5afc4a.key)
-                                    if (_0x4e171c.get(_0x107e8a, function(_0x2585bd) {
-                                            _0x2585bd.lastaccess = new Date().valueOf(), _0x4e171c.put(_0x2585bd.key, _0x2585bd);
-                                        }), _0x5afc4a.filesize > 0x6400000) {
-                                        let _0x17edbf = new Uint8Array(_0x5afc4a.filesize);
-                                        _0x17edbf.set(_0x5afc4a.data);
-                                        for (let _0x2c1832 = Math.ceil(_0x5afc4a.filesize / 0x6400000), _0x36180f = [], _0x3c1e3a = 0x1; _0x3c1e3a < _0x2c1832; _0x3c1e3a += 0x1) _0x36180f.push('' .concat(_0x107e8a, '-part-').concat(_0x3c1e3a)), _0x4e171c.get('' .concat(_0x107e8a, '-part-').concat(_0x3c1e3a), function(_0x4f1393) {
-                                            _0x4f1393.lastaccess = new Date().valueOf(), _0x4e171c.put(_0x4f1393.key, _0x4f1393);
-                                        });
-                                        _0x1ffb98.getBatch(_0x36180f, function(_0x47ffae) {
-                                            _0x47ffae.filter(function(_0x3d76ae) {
-                                                return _0x3d76ae;
-                                            }).length !== _0x36180f.length ? _0x43a689() : (_0x47ffae.forEach(function(_0x15960c, _0x92d423) {
-                                                _0x17edbf.set(_0x15960c.data, 0x6400000 * (_0x92d423 + 0x1));
-                                            }), _0x3512e9(_0x5afc4a.filename, _0x17edbf));
-                                        }, function() {}, 'sparse');
-                                    } else _0x3512e9(_0x5afc4a.filename, _0x5afc4a.data);
+                                    _0x3512e9(_0x5afc4a.filename, _0x5afc4a.data);
                                 else _0x43a689();
                             }) : _0x43a689();
                         }).catch(function(_0x5ec6be) {
@@ -1666,10 +1620,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x179b43.split('.').pop();
                             _0x2591d9.innerHTML = _this.localization('Download Game Data')+' (1/2)';
                             _0x550f17.a.get(_0x5c896f, {
-                                'onDownloadProgress': function(_0x3da9ab) {
-                                    _0x2591d9.innerHTML = _this.localization('Download Game Data')+' (1/2) ';
-                                    let _0x17edbf = _0x3da9ab.total ? '' .concat(Math.floor(_0x3da9ab.loaded / _0x3da9ab.total * 0x64), '%') : '';
-                                    _0x2591d9.innerHTML += _0x17edbf;
+                                'onDownloadProgress': function(e) {
+                                    let progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
+                                    _0x2591d9.innerHTML = _this.localization('Download Game Data')+' (1/2)'+progress;
                                 },
                                 'responseType': 'arraybuffer'
                             }).then(function(_0x159ae9) {
@@ -1734,48 +1687,33 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     _0x316472 = (_0x35c23a.headers['last-modified'], '' .concat(_0x1143c5, '-').concat(_0xa1889f)),
                                     _0x31f098 = function() {
                                         _0x550f17.a.get(_0x5a21f7, {
-                                            'onDownloadProgress': function(_0x5e449f) {
-                                                let _0x17edbf = _0x5e449f.total ? '' .concat(Math.floor(_0x5e449f.loaded / _0x5e449f.total * 0x64), '%') : '';
-                                                _0x2c1832.innerHTML = _this.localization('Download Game Data')+' (1/2) ' .concat(_0x17edbf);
+                                            'onDownloadProgress': function(e) {
+                                                let progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
+                                                _0x2c1832.innerHTML = _this.localization('Download Game Data')+' (1/2)'+progress;
                                             },
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x191007) {
                                             let _0x17edbf = new Uint8Array(_0x191007.data);
-                                            if (_0x316472 && _0x4e171c.db)
-                                                if (_0x17edbf.length > 0x6400000)
-                                                    for (let _0x2c1832 = Math.ceil(_0x17edbf.length / 0x6400000), _0x3f44d7 = 0x0; _0x3f44d7 < _0x2c1832; _0x3f44d7 += 0x1) {
-                                                        let _0x15a529 = _0x17edbf.slice ? _0x17edbf.slice(0x6400000 * _0x3f44d7, 0x6400000 * (_0x3f44d7 + 0x1)) : _0x17edbf.subarray(0x6400000 * _0x3f44d7, 0x6400000 * (_0x3f44d7 + 0x1)),
-                                                            _0x4a61f1 = '' .concat(_0x316472);
-                                                        _0x3f44d7 > 0x0 && (_0x4a61f1 = '' .concat(_0x316472, '-part-').concat(_0x3f44d7)), _0x4d7024.saveFilenames.push(_0x4a61f1), _0x4e171c.put(_0x4a61f1, {
-                                                            'filename': _0xa1889f,
-                                                            'filesize': _0x17edbf.length,
-                                                            'filetype': _0x500ba1,
-                                                            'key': _0x4a61f1,
-                                                            'lastaccess': new Date().valueOf(),
-                                                            'next': '' .concat(_0x316472, '-part-').concat(_0x3f44d7 + 0x1)
-                                                        }), _0x1ffb98.db && _0x1ffb98.put(_0x4a61f1, {
-                                                            'filename': _0xa1889f,
-                                                            'filesize': _0x17edbf.length,
-                                                            'filetype': _0x500ba1,
-                                                            'key': _0x4a61f1,
-                                                            'data': _0x15a529
-                                                        });
-                                                    } else _0x4d7024.saveFilenames.push(_0x316472), _0x4e171c.put(_0x316472, {
-                                                        'filename': _0xa1889f,
-                                                        'filesize': _0x17edbf.length,
-                                                        'filetype': _0x500ba1,
-                                                        'key': _0x316472,
-                                                        'lastaccess': new Date().valueOf()
-                                                    }), _0x1ffb98.db && _0x1ffb98.put(_0x316472, {
-                                                        'filename': _0xa1889f,
-                                                        'filesize': _0x17edbf.length,
-                                                        'filetype': _0x500ba1,
-                                                        'key': _0x316472,
-                                                        'data': _0x17edbf
-                                                    });
+                                            if (_0x316472 && _0x4e171c.db) {
+                                                _0x4d7024.saveFilenames.push(_0x316472);
+                                                _0x4e171c.put(_0x316472, {
+                                                    'filename': _0xa1889f,
+                                                    'filesize': _0x17edbf.length,
+                                                    'filetype': _0x500ba1,
+                                                    'key': _0x316472,
+                                                    'lastaccess': new Date().valueOf()
+                                                }), _0x4e171c.db && _0x4e171c.put(_0x316472, {
+                                                    'filename': _0xa1889f,
+                                                    'filesize': _0x17edbf.length,
+                                                    'filetype': _0x500ba1,
+                                                    'key': _0x316472,
+                                                    'data': _0x17edbf
+                                                });
+                                            }
                                             let _0x54d79 = _0xa1889f.replace(/\#/g, '');
                                             try {
-                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1), _0x139f68();
+                                                _0x468801 += _0x17edbf.length, _0x4d7024.FS.createDataFile('/', _0x54d79, _0x17edbf, true, !0x1);
+                                                _0x139f68();
                                             } catch (_0x125736) {
                                                 console.log(_0x125736);
                                             }
@@ -1783,21 +1721,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                             renderErrorPage(_0x516cc3, _0x2c1832, _this);
                                         });
                                     };
-                                _0x1ffb98.db ? _0x1ffb98.get(_0x316472, function(_0x3e612b) {
-                                    if (_0x3e612b && _0x3e612b.filename === _0xa1889f && _0x3e612b.filesize - _0x17edbf == 0x0 && _0x3e612b.filetype === _0x500ba1 && _0x3e612b.key)
-                                        if (_0x3e612b.filesize > 0x6400000) {
-                                            let _0x2c1832 = new Uint8Array(_0x3e612b.filesize);
-                                            _0x2c1832.set(_0x3e612b.data);
-                                            for (let _0xa2197 = Math.ceil(_0x3e612b.filesize / 0x6400000), _0x6f30ae = [], _0x32aa3c = 0x1; _0x32aa3c < _0xa2197; _0x32aa3c += 0x1) _0x6f30ae.push('' .concat(_0x316472, '-part-').concat(_0x32aa3c));
-                                            _0x1ffb98.getBatch(_0x6f30ae, function(_0x198a02) {
-                                                _0x198a02.filter(function(_0x1c8a88) {
-                                                    return _0x1c8a88;
-                                                }).length !== _0x6f30ae ? _0x31f098() : (_0x198a02.forEach(function(_0x22b824, _0x16eecf) {
-                                                    _0x2c1832.set(_0x22b824.data, 0x6400000 * (_0x16eecf + 0x1));
-                                                }), _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x2c1832, true, !0x1), _0x139f68());
-                                            }, function() {}, 'sparse');
-                                        } else _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1), _0x139f68();
-                                    else _0x31f098();
+                                _0x4e171c.db ? _0x4e171c.get(_0x316472, function(_0x3e612b) {
+                                    if (_0x3e612b && _0x3e612b.filename === _0xa1889f && _0x3e612b.filesize - _0x17edbf == 0x0 && _0x3e612b.filetype === _0x500ba1 && _0x3e612b.key) {
+                                        _0x4d7024.FS.createDataFile('/', _0x3e612b.filename, _0x3e612b.data, true, !0x1);
+                                        _0x139f68();
+                                    } else _0x31f098();
                                 }) : _0x31f098();
                             }).catch(function(_0x20f2e3) {
                                 renderErrorPage(_0x20f2e3, _0x2c1832, _this);
@@ -1919,9 +1847,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     _0x51bfef = (_0x4bd3bd.headers['last-modified'], _this.system),
                                     _0x574747 = function() {
                                         _0x550f17.a.get(_0x17edbf, {
-                                            'onDownloadProgress': function(_0x107517) {
-                                                let _0x17edbf = _0x107517.total ? '' .concat(Math.floor(_0x107517.loaded / _0x107517.total * 0x64), '%') : '';
-                                                _0x1f8424.innerHTML = 'Download BIOS ' .concat(_0x17edbf);
+                                            'onDownloadProgress': function(e) {
+                                                let progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
+                                                _0x1f8424.innerHTML = _this.localization('Download BIOS')+progress;
                                             },
                                             'responseType': 'arraybuffer'
                                         }).then(function(_0x4b0c1d) {
@@ -2078,8 +2006,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             let path = (_this.customPaths && typeof _this.customPaths[_0x16049b] == 'string') ? _this.customPaths[_0x16049b] : ((_this.coreVer === 2) ? (_this.dataPath+'cores/'+_0x16049b+'?v='+_0x55a075) : (_this.dataPath+'old/'+_0x16049b+'?v='+_0x55a075));
                             _0x550f17.a.get(path, {
                                 'onDownloadProgress': function(e) {
-                                    let progress = e.total ? Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
-                                    status.innerHTML = _this.localization('Download Game Core')+_0x55a075;
+                                    let progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : '';
+                                    status.innerHTML = _this.localization('Download Game Core')+progress;
                                 },
                                 'responseType': 'arraybuffer'
                             }).then(function(e) {
@@ -2443,64 +2371,50 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0xf43a92.closeModal();
             }
         });
-        var _0x378b5c = {
+        const _0x378b5c = {
             'defaultControllers': {
                 0: {
                     0: {
-                        'value': '88',
-                        'value2': '1'
+                        'value': '88'
                     },
                     1: {
-                        'value': '83',
-                        'value2': '3'
+                        'value': '83'
                     },
                     2: {
-                        'value': '16',
-                        'value2': '8'
+                        'value': '16'
                     },
                     3: {
-                        'value': '13',
-                        'value2': '9'
+                        'value': '13'
                     },
                     4: {
-                        'value': '38',
-                        'value2': '12'
+                        'value': '38'
                     },
                     5: {
-                        'value': '40',
-                        'value2': '13'
+                        'value': '40'
                     },
                     6: {
-                        'value': '37',
-                        'value2': '14'
+                        'value': '37'
                     },
                     7: {
-                        'value': '39',
-                        'value2': '15'
+                        'value': '39'
                     },
                     8: {
-                        'value': '90',
-                        'value2': '0'
+                        'value': '90'
                     },
                     9: {
-                        'value': '65',
-                        'value2': '2'
+                        'value': '65'
                     },
                     10: {
-                        'value': '81',
-                        'value2': '4'
+                        'value': '81'
                     },
                     11: {
-                        'value': '69',
-                        'value2': '5'
+                        'value': '69'
                     },
                     12: {
-                        'value': '82',
-                        'value2': '6'
+                        'value': '82'
                     },
                     13: {
-                        'value': '87',
-                        'value2': '7'
+                        'value': '87'
                     },
                     14: {},
                     15: {},
@@ -2849,7 +2763,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 })
             },
             'initShaders': function() {
-                for (let _0xa88a13 = _0x5032e6, _0x17edbf = Object.keys(_0xa88a13), _0x2c1832 = '', _0x26fb6a = 0x0; _0x26fb6a < _0x17edbf.length; _0x26fb6a += 0x1) _0x2c1832 = _0xa88a13[_0x17edbf[_0x26fb6a]], _0x27f4c4.FS.writeFile('/shader/' .concat(_0x17edbf[_0x26fb6a]), _0x2c1832), _0x2593da.storage.get('shader') === _0x17edbf[_0x26fb6a] && _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x2c1832);
+                const _0xa88a13 = shaders;
+                for (let _0x17edbf = Object.keys(_0xa88a13), _0x2c1832 = '', _0x26fb6a = 0x0; _0x26fb6a < _0x17edbf.length; _0x26fb6a += 0x1) _0x2c1832 = _0xa88a13[_0x17edbf[_0x26fb6a]], _0x27f4c4.FS.writeFile('/shader/' .concat(_0x17edbf[_0x26fb6a]), _0x2c1832), _0x2593da.storage.get('shader') === _0x17edbf[_0x26fb6a] && _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x2c1832);
             },
             'setGamepadDialog': function() {
                 let _this = this;
@@ -3458,6 +3373,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "right",
                             left: -10,
                             top: 70,
+                            bold: true,
                             input_value: 0
                         },
                         {
@@ -3467,6 +3383,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "right",
                             left: 60,
                             top: 70,
+                            bold: true,
                             input_value: 8
                         },
                         {
@@ -3481,6 +3398,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "start",
                             location: "center",
                             left: 60,
+                            fontSize: 15,
+                            block: true,
                             input_value: 3
                         },
                         {
@@ -3489,6 +3408,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "select",
                             location: "center",
                             left: -5,
+                            fontSize: 15,
+                            block: true,
                             input_value: 2
                         }
                     ];
@@ -3501,6 +3422,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "top",
                             left: 10,
                             top: -40,
+                            bold: true,
                             input_value: 10
                         });
                         info.push({
@@ -3511,6 +3433,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "top",
                             right: 10,
                             top: -40,
+                            bold: true,
                             input_value: 11
                         });
                     }
@@ -3524,6 +3447,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             left: -10,
                             top: 95,
                             input_value: 0,
+                            bold: true,
                             input_new_cores: 1
                         },
                         {
@@ -3534,6 +3458,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             left: 40,
                             top: 150,
                             input_value: 8,
+                            bold: true,
                             input_new_cores: 0
                         },
                         {
@@ -3549,6 +3474,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "center",
                             left: 30,
                             top: -10,
+                            fontSize: 15,
+                            block: true,
                             input_value: 3
                         },
                         {
@@ -3559,6 +3486,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "top",
                             left: 10,
                             top: -40,
+                            bold: true,
                             input_value: 10
                         },
                         {
@@ -3569,6 +3497,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "top",
                             right: 10,
                             top: -40,
+                            bold: true,
                             input_value: 11
                         },
                         {
@@ -3578,6 +3507,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             block: true,
                             location: "top",
                             left: 10,
+                            bold: true,
                             input_value: 12
                         },
                         {
@@ -3625,6 +3555,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "x",
                             location: "right",
                             left: 40,
+                            bold: true,
                             input_value: 9
                         },
                         {
@@ -3633,6 +3564,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "y",
                             location: "right",
                             top: 40,
+                            bold: true,
                             input_value: 1
                         },
                         {
@@ -3642,6 +3574,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "right",
                             left: 81,
                             top: 40,
+                            bold: true,
                             input_value: 8
                         },
                         {
@@ -3651,6 +3584,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "right",
                             left: 40,
                             top: 80,
+                            bold: true,
                             input_value: 0
                         },
                         {
@@ -3665,6 +3599,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "start",
                             location: "center",
                             left: 60,
+                            fontSize: 15,
+                            block: true,
                             input_value: 3
                         },
                         {
@@ -3673,6 +3609,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "select",
                             location: "center",
                             left: -5,
+                            fontSize: 15,
+                            block: true,
                             input_value: 2
                         }
                     ];
@@ -3684,6 +3622,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "y",
                             location: "right",
                             left: 40,
+                            bold: true,
                             input_value: 9
                         },
                         {
@@ -3692,6 +3631,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "X",
                             location: "right",
                             top: 40,
+                            bold: true,
                             input_value: 1
                         },
                         {
@@ -3701,6 +3641,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "right",
                             left: 81,
                             top: 40,
+                            bold: true,
                             input_value: 8
                         },
                         {
@@ -3710,6 +3651,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             location: "right",
                             left: 40,
                             top: 80,
+                            bold: true,
                             input_value: 0
                         },
                         {
@@ -3724,6 +3666,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "start",
                             location: "center",
                             left: 60,
+                            fontSize: 15,
+                            block: true,
                             input_value: 3
                         },
                         {
@@ -3732,6 +3676,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             id: "select",
                             location: "center",
                             left: -5,
+                            fontSize: 15,
+                            block: true,
                             input_value: 2
                         }
                     ];
@@ -3752,6 +3698,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (info[i].top) {
                             style += 'top:'+info[i].top+'px;';
                         }
+                        if (!info[i].bold) {
+                            style += 'font-weight:normal;';
+                        } else if (info[i].bold) {
+                            style += 'font-weight:bold;';
+                        }
+                        info[i].fontSize = info[i].fontSize || 30;
+                        style += 'font-size:'+info[i].fontSize+'px;';
                         if (info[i].block) {
                             style += blockCSS;
                         }
@@ -3777,6 +3730,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (info[i].block) {
                             style += blockCSS;
                         }
+                        if (!info[i].bold) {
+                            style += 'font-weight:normal;';
+                        } else if (info[i].bold) {
+                            style += 'font-weight:bold;';
+                        }
+                        info[i].fontSize = info[i].fontSize || 30;
+                        style += 'font-size:'+info[i].fontSize+'px;';
                         html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
                     }
                 }
@@ -3799,6 +3759,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (info[i].block) {
                             style += blockCSS;
                         }
+                        if (!info[i].bold) {
+                            style += 'font-weight:normal;';
+                        } else if (info[i].bold) {
+                            style += 'font-weight:bold;';
+                        }
+                        info[i].fontSize = info[i].fontSize || 30;
+                        style += 'font-size:'+info[i].fontSize+'px;';
                         html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
                     }
                 }
@@ -3821,6 +3788,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         if (info[i].block) {
                             style += blockCSS;
                         }
+                        if (!info[i].bold) {
+                            style += 'font-weight:normal;';
+                        } else if (info[i].bold) {
+                            style += 'font-weight:bold;';
+                        }
+                        info[i].fontSize = info[i].fontSize || 30;
+                        style += 'font-size:'+info[i].fontSize+'px;';
                         html += '<div class="'+_0x449eac(opts)+'" style="'+style+'">'+info[i].text+'</div>';
                     }
                 }
@@ -4373,7 +4347,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             throw new TypeError('Invalid attempt to destructure non-iterable instance');
         }();
     }
-    var _0x7f9f36 = {
+    const _0x7f9f36 = {
             'storage': null,
             'coreOptionsValues': {},
             'contextMenu': null,
@@ -4386,7 +4360,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         '4xScaleHQ.glslp': '4xScaleHQ',
                         'crt-easymode.glslp': 'CRT easymode',
                         'crt-aperture.glslp': 'CRT aperture',
-                        'crt-geom.glslp': 'CRT geom'
+                        'crt-geom.glslp': 'CRT geom',
+                        'crt-mattias.glslp': 'CRT mattias'
                     },
                     'default': 'disabled'
                 },
@@ -4951,22 +4926,24 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                 }
                 let _this = this;
-                _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
-                    let _0x5995db = _0x2bef5a.split('; '),
-                        _0x16274c = _0x5995db[0x0];
-                    if (0x0 === _0x16274c.indexOf('fba-dipswitch-') || _this.coreVer === 2) {
-                        let _0x757776 = _0x5995db[0x1].split('|'),
-                            _0x1f895e = _0x16274c.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
-                        _0x757776.slice(1, -1);
-                        if (_0x757776.length === 1) return;
-                        _0xa88a13[_0x16274c.split("|")[0]] = {
-                            'label': _0x1f895e,
-                            'options': _0x757776,
-                            'default': (_0x16274c.split("|").length > 1) ? _0x16274c.split("|")[1] : _0x757776[0].replace('(Default) ', ''),
-                            'netplay': true
-                        };
-                    }
-                });
+                try {
+                    _0xdcec2a.getGameCoreOptions && _0xdcec2a.getGameCoreOptions().split('\n').forEach(function(_0x2bef5a, _0x49b64b) {
+                        let _0x5995db = _0x2bef5a.split('; '),
+                            _0x16274c = _0x5995db[0x0];
+                        if (0x0 === _0x16274c.indexOf('fba-dipswitch-') || _this.coreVer === 2) {
+                            let _0x757776 = _0x5995db[0x1].split('|'),
+                                _0x1f895e = _0x16274c.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
+                            _0x757776.slice(1, -1);
+                            if (_0x757776.length === 1) return;
+                            _0xa88a13[_0x16274c.split("|")[0]] = {
+                                'label': _0x1f895e,
+                                'options': _0x757776,
+                                'default': (_0x16274c.split("|").length > 1) ? _0x16274c.split("|")[1] : _0x757776[0].replace('(Default) ', ''),
+                                'netplay': true
+                            };
+                        }
+                    });
+                } catch(e) {};
                 return _0xa88a13;
             },
             /*
@@ -5602,11 +5579,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     })
                     return false;
                 })
-                addContextHtml(_this.localization('Cache Manage'), true, function(_0x275730) {
+                addContextHtml(_this.localization('Cache Manager'), true, function(_0x275730) {
                     if (_0x27f4c4.romdb) {
                         _0x132da7(_this.elements.dialogs.cache, !0x1);
                         let _0x3360eb = _this.elements.dialogs.cache.querySelector('.' .concat(_0x378b5c.classNames['dialog-content']));
-                        _0x3360eb.innerHTML = '<div>'+_this.localization('Loading')+'</div>', _0x27f4c4.romdb.getAll(function(_0x43586d) {
+                        _0x3360eb.innerHTML = '<div>'+_this.localization('Loading')+'</div>';
+                        _0x27f4c4.romdb.getAll(function(_0x43586d) {
                             if (_0x43586d) {
                                 let _0x275730 = _0x428003('table', {
                                     'style': 'width:100%;padding-left:10px;text-align:left'
@@ -5614,7 +5592,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     _0x1ab9e9 = _0x428003('tbody');
                                 _0x43586d.length > 0x0 ? (_0x3360eb.innerHTML = '', _0x43586d.forEach(function(_0x32b0b7, _0x2d0e11) {
                                     if (_0x32b0b7.key && !/-part-\d+$/ .test(_0x32b0b7.key)) {
-                                        for (let _0x3360eb = Math.ceil(_0x32b0b7.filesize / 0x6400000), _0x277c67 = [_0x32b0b7.key], _0x3edb35 = 0x1; _0x3edb35 < _0x3360eb; _0x3edb35 += 0x1) _0x277c67.push('' .concat(_0x32b0b7.key, '-part-').concat(_0x3edb35));
+                                        let _0x277c67 = [_0x32b0b7.key];
+                                        for (let _0x3360eb = Math.ceil(_0x32b0b7.filesize / 0x6400000), _0x3edb35 = 0x1; _0x3edb35 < _0x3360eb; _0x3edb35 += 0x1) _0x277c67.push('' .concat(_0x32b0b7.key, '-part-').concat(_0x3edb35));
                                         let _0x3e31f6 = _0x428003('tr'),
                                             _0x5b75bd = _0x428003('td'),
                                             _0x227405 = _0x428003('td'),
@@ -6147,7 +6126,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 'state': _0x31e271
                             });
                             else {
-                                let name = _0x17edbf.getStartName(true, true).split('/').pop();
+                                let name = _0x17edbf.getStartName(true).split('/').pop();
                                 let data = new Blob([_0x31e271]);
                                 if (name.includes('.')) {
                                     name = name.substring(0, name.length-name.split('.').pop().length-1);
@@ -6290,7 +6269,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
-                this.version = '2.3.5';
+                this.version = '2.3.9';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6382,7 +6361,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             let text = await res.text();
                             let localJson = JSON.parse(text);
                             _0x39ca5e.i18n = localJson.i18n;
-                            _0x7f9f36.normalOptions = localJson.normalOptions;
                         } catch(e) {
                             console.warn('error setting localization', e);
                         }
@@ -6503,18 +6481,21 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         }, {
             'key': 'getStartName',
-            'value': function(force, noSystem) {
+            'value': function(force) {
                 let rv;
+                const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
                 if (this.startName && (force === true || this.startName !== 'rom')) {
                     rv = this.startName;
-                } else if (!this.config.gameUrl.startsWith('blob:')) {
-                    rv = this.config.gameUrl.split('/').pop().replace(/[^a-z0-9 ,.]/ig, '');
+                } else if (_0x1e2c68.string(this.config.gameUrl) && !this.config.gameUrl.startsWith('blob:')) {
+                    rv = this.config.gameUrl.split('/').pop().split('?')[0].replace(invalidCharacters, '');
                 } else if (this.gameName) {
-                    rv = (noSystem===true?'':this.system+'-')+this.gameName.replace(/\#/g, '');
+                    rv = this.gameName.replace(invalidCharacters, '')+'.'+this.system;
                 } else if (this.config.gameId) {
-                    rv = (noSystem===true?'':this.system+'-')+this.config.gameId;
+                    rv = this.config.gameId+'.'+this.system;
+                } else if (_0x1e2c68.string(this.config.gameUrl) && force === true) {
+                    rv = this.config.gameUrl.split('/').pop().split('?')[0].replace(invalidCharacters, '');
                 } else if (force === true) {
-                    rv = this.config.gameUrl.split('/').pop().replace(/[^a-z0-9 ,.]/ig, '');
+                    return 'rom';
                 }
                 return rv;
             }

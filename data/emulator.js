@@ -192,17 +192,43 @@ var EJS = function(_0x574f5e) {
     }
     module.exports = Gamepad;
 }, null, null, null, null, function(module, _0x4f5203, _0x5028a6) {
-    var _0x33171 = function(url, opts) {
-        var url;
-        try {url=new URL(url)}catch(e){};
-        if (url && !['http:', 'https:'].includes(url.protocol)) {
+    const _0x33171 = function(inUrl, opts) {
+        let url;
+        try {url=new URL(inUrl)}catch(e){};
+        if ((url && ['http:', 'https:'].includes(url.protocol)) || !url) {
+            return new Promise(function(resolve, reject) {
+                let xhr = new XMLHttpRequest();
+                if (opts.onProgress) {
+                    xhr.addEventListener('progress', opts.onProgress);
+                }
+                xhr.onload = function() {
+                    if (xhr.readyState === xhr.DONE) {
+                        let data = xhr.response;
+                        try {data=JSON.parse(data)}catch(e){}
+                        resolve({
+                            data: data,
+                            headers: {
+                                "content-length": xhr.getResponseHeader('content-length'),
+                                "content-type": xhr.getResponseHeader('content-type'),
+                                "last-modified": xhr.getResponseHeader('last-modified')
+                            }
+                        });
+                    }
+                }
+                xhr.responseType = opts.type;
+                xhr.onerror = reject;
+                xhr.open(opts.method, inUrl, true);
+                xhr.send();
+            })
+        } else {
             return new Promise(async function(resolve, reject) {
                 if (opts.method === 'HEAD') {
                     resolve({headers:{}});
                     return;
                 }
+                let res;
                 try {
-                    var res = await fetch(url);
+                    res = await fetch(inUrl);
                     if (opts.type && opts.type.toLowerCase() === 'arraybuffer') {
                         res = await res.arrayBuffer();
                     } else {
@@ -217,40 +243,20 @@ var EJS = function(_0x574f5e) {
                     headers: {}
                 });
             });
-        } else {
-            return new Promise(function(resolve, reject) {
-                var xhr = new XMLHttpRequest();
-                xhr.onload = function() {
-                    if (xhr.readyState === xhr.DONE) {
-                        var data = xhr.response;
-                        try {data=JSON.parse(data)}catch(e){}
-                        resolve({
-                            data: data,
-                            headers: {
-                                "content-length": xhr.getResponseHeader('content-length'),
-                                "content-type": xhr.getResponseHeader('content-type'),
-                                "last-modified": xhr.getResponseHeader('last-modified')
-                            }
-                        });
-                    }
-                }
-                xhr.responseType = opts.type;
-                xhr.onerror = reject;
-                xhr.open(opts.method, url, true);
-                xhr.send();
-            })
         }
     };
     module.exports = {
         a: {
             get: async function(url, set) {
-                var type = (set && set.responseType)?(set && set.responseType):'text';
-                var res = _0x33171(url, {method:"GET", type:type});
+                const type = (set && set.responseType)?(set && set.responseType):'text';
+                const progress = (set && set.onDownloadProgress);
+                const res = _0x33171(url, {method:"GET", type:type, onProgress:progress});
                 return res;
             },
             head: async function(url, set) {
-                var type = (set && set.responseType)?(set && set.responseType):'text';
-                var res = _0x33171(url, {method:"HEAD", type:type});
+                const type = (set && set.responseType)?(set && set.responseType):'text';
+                const progress = (set && set.onDownloadProgress);
+                const res = _0x33171(url, {method:"HEAD", type:type, onProgress:progress});
                 return res;
             }
         }
