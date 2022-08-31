@@ -13,7 +13,7 @@ jobs:
       id: filter
       with:
         filters: |
-          workflows:
+          data:
             - 'data/**'
     # run only if 'data' files were changed
     - name: workflow tests
@@ -22,7 +22,7 @@ jobs:
 
     # run only if not 'data' files were changed
     - name: not workflow tests
-      if: steps.filter.outputs.workflows != 'true'
+      if: steps.filter.outputs.data != 'true'
       run: echo "NOT Data file"
 
   next-job:
