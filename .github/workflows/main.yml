@@ -38,6 +38,7 @@ jobs:
     - run: cd data/minify && npm install
     - run: cd data/minify && npm run build
   push-changes-back:
+    needs: next-job
     runs-on: ubuntu-latest
     steps:
       - uses: EndBug/add-and-commit@v9
