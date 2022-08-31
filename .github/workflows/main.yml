@@ -33,15 +33,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
+    - uses: EndBug/add-and-commit@v9
       with:
         node-version: '12'
+        default_author: github_actions
     - run: cd data/minify && npm install
     - run: cd data/minify && npm run build
-  push-changes-back:
-    needs: next-job
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: EndBug/add-and-commit@v9
-        with:
-          default_author: github_actions
