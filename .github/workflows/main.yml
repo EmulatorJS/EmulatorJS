@@ -37,6 +37,9 @@ jobs:
         node-version: '12'
     - run: cd data/minify && npm install
     - run: cd data/minify && npm run build
-    - uses: EndBug/add-and-commit@v9
+  push-changes-back:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: EndBug/add-and-commit@v9
         with:
           default_author: github_actions
