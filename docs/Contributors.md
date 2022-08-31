@@ -53,6 +53,7 @@
 [![Avatar Nekro]][GitHub Nekro]   
 [![Avatar Grey]][GitHub Grey]   
 [![Avatar Kyle]][GitHub Kyle]
+[![Avatar Protektor]][GitHub Protektor]
   
 </div>
 
@@ -67,6 +68,9 @@
 
 [Avatar Kyle]: https://github.com/cheesykyle.png?size=120
 [GitHub Kyle]: https://github.com/cheesykyle 'CheesyKyle - Kyle Steffel'
+
+[Avatar Protektor]: https://github.com/Protektor-Desura.png?size=120
+[GitHub Protektor]: https://github.com/Protektor-Desura 'Protektor-Desura - Protektor-Desura'
 
 
 <!----------------------------------{ Ethan }----------------------------------->
