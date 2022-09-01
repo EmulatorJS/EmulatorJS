@@ -1,7 +1,8 @@
 
 <div align = center>
     
-<img src = docs/Logo.png width = 300>
+<img width = 300 src = docs/Logo-light.png#gh-dark-mode-only>
+<img width = 300 src = docs/Logo.png#gh-light-mode-only> 
  
 <br>
 <br>
