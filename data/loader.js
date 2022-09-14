@@ -2,12 +2,12 @@
     let VERSION = 23.9;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
-        fetch('https://raw.githack.com/ethanaobrien/emulatorjs/main/data/version.json').then(response => {
+        fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
                     let version = JSON.parse(body);
                     if (VERSION < version.current_version) {
-                        console.log('Using emulatorjs version ' + VERSION + ' but the newest version is ' + version.current_version + '\nopen https://github.com/ethanaobrien/emulatorjs to update');
+                        console.log('Using emulatorjs version ' + VERSION + ' but the newest version is ' + version.current_version + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
                     }
                 })
             }
