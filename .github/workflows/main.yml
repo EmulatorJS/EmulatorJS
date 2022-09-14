@@ -40,6 +40,7 @@ jobs:
       with:
         token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
         branch: main
+        unprotect_reviews: true
         author_name: Ethan O'Brien
         author_email: emulatorjs.ethanaobrien@gmail.com
         committer_name: Ethan O'Brien
