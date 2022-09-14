@@ -906,7 +906,7 @@ var EJS = function(_0x574f5e) {
                             };
                         });
                     });
-                }, 0x64);
+                }, 100);
             }), _0x16647e.collections;
         }
         var _0x57280e, _0x127f2 = !!('ontouchstart' in window),
