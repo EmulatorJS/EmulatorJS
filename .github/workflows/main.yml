@@ -28,8 +28,8 @@ jobs:
   next-job:
     runs-on: ubuntu-latest
     # Wait from the paths-filter to be completed before starting next-job
-    #needs: paths-filter
-    #if: needs.paths-filter.outputs.output1 == 'true'
+    needs: paths-filter
+    if: needs.paths-filter.outputs.output1 == 'true'
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
