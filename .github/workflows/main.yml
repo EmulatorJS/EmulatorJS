@@ -28,15 +28,15 @@ jobs:
   next-job:
     runs-on: ubuntu-latest
     # Wait from the paths-filter to be completed before starting next-job
-    needs: paths-filter
-    if: needs.paths-filter.outputs.output1 == 'true'
+    #needs: paths-filter
+    #if: needs.paths-filter.outputs.output1 == 'true'
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
         node-version: '12'
     - run: cd data/minify && npm install && npm run build
-    - uses: EndBug/add-and-commit@v9
+    - uses: CasperWA/push-protected@v2
       with:
         token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
         branch: protected
