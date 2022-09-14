@@ -41,6 +41,6 @@ jobs:
         author_name: Ethan O'Brien
         author_email: emulatorjs.ethanaobrien@gmail.com
         committer_name: Ethan O'Brien
-        committer_email: emulatorjs.ethanaobrien@gmail.com
+        committer_email: 77750390+ethanaobrien@users.noreply.github.com
         default_author: user_info
         message: 'Minify files'
