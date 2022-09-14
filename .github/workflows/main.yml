@@ -36,10 +36,10 @@ jobs:
       with:
         node-version: '12'
     - run: cd data/minify && npm install && npm run build
-    - uses: CasperWA/push-protected@v2
+    - uses: EndBug/add-and-commit@v9
       with:
         token: ${{ secrets.PUSH_TO_PROTECTED_BRANCH }}
-        branch: protected
+        branch: main
         author_name: Ethan O'Brien
         author_email: emulatorjs.ethanaobrien@gmail.com
         committer_name: Ethan O'Brien
