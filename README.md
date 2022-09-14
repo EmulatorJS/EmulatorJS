@@ -94,9 +94,9 @@ EJS_oldCores = true;
 
 ### Atari
 
-**[2600][Atari 2600]**   |
-**[5200][Atari 5200]**   |
-**[7800][Atari 7800]**   |
+**[2600][Atari 2600]**   | 
+**[5200][Atari 5200]**   | 
+**[7800][Atari 7800]**   | 
 **[Lynx][Atari Lynx]**   | 
 **[Jaguar][Atari Jaguar]**
 
