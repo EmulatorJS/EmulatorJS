@@ -39,8 +39,8 @@ jobs:
     - uses: EndBug/add-and-commit@v9
       with:
         author_name: Ethan O'Brien
-        author_email: emulatorjs.ethanaobrien@gmail.com
+        author_email: ethan.a.obrien@gmail.com
         committer_name: Ethan O'Brien
-        committer_email: 77750390+ethanaobrien@users.noreply.github.com
+        committer_email: ethan.a.obrien@gmail.com
         default_author: user_info
         message: 'Minify files'
