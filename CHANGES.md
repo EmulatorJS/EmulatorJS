@@ -5,7 +5,7 @@
 - Added C label buttons to nintendo 64 virtual gamepad.
 - Fixed EJS_color bug.
 - Savestates are pulled from the core itself, to always be correct.
-- Several new cores. ()
+- Several new cores. (a5200, beetle_vb, desmume2015, fbalpha2012_cps1, fbalpha2012_cps2, fceumm, gambatte, mame2003, mednafen_psx, mednafen_psx_hw, melonds, mgba, mupen64plus_next, nestopia, snes9x)
 - D-pad for virtual gamepad.
 - Updated translation files to include new menu options.
 - Ability to add more than one zone object to virtual gamepads.
