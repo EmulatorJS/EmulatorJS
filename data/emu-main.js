@@ -1858,6 +1858,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     },
                     _0x10b71a = function() {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
+                        _0x4d7024.Module._supports_states && (_0x378b5c.statesSupported = _0x4d7024.Module.cwrap('supports_states', 'number', []));
+                        if (_0xdcec2a.statesSupported) {
+                            try {
+                                _this.statesSupported = !!_0xdcec2a.statesSupported();
+                                _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, !_0x7f9f36.supportNetPlay.call(_this));
+                                _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_this.statesSupported);
+                                _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_this.statesSupported);
+                                _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_this.statesSupported);
+                                _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_this.statesSupported);
+                            }catch(e){}
+                        }
                         let _0x17edbf = _this.config.biosUrl;
                         _0xdcec2a.bindFunction.call(_this);
                         _0xdcec2a.setGamepadDialog.call(_this);
@@ -4758,7 +4769,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0x378b5c.currentFrameNum = _0x27f4c4.Module.cwrap('get_current_frame_count', '', []);
                 _0x378b5c.saveSavFiles = _0x27f4c4.Module.cwrap('cmd_savefiles', '', []);
                 _0x27f4c4.Module._get_core_options && (_0x378b5c.getGameCoreOptions = _0x27f4c4.Module.cwrap('get_core_options', 'string', []));
-                _0x27f4c4.Module._supports_states && (_0x378b5c.statesSupported = _0x27f4c4.Module.cwrap('supports_states', 'number', []));
                 _0x378b5c.systemPause = function(e) {
                     return false;
                 };
@@ -5327,16 +5337,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0xa88a13 = {};
                 }
                 const _this = this;
-                try {
-                    if (_0xdcec2a.statesSupported) {
-                        _this.statesSupported = !!_0xdcec2a.statesSupported();
-                        _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, !_0x7f9f36.supportNetPlay.call(_this));
-                        _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_this.statesSupported);
-                        _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_this.statesSupported);
-                        _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_this.statesSupported);
-                        _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_this.statesSupported);
-                    }
-                } catch(e){console.warn(e)}
                 if (this.coreVer === 2) {
                     _0xa88a13 = {};
                     _0xa88a13['fps'] = {
