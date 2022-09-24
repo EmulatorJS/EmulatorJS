@@ -12,6 +12,7 @@
         "settings": "সেটিংস",
         "saveState": "সেভ স্টেট (Shift + F2)",
         "loadState": "লোড স্টেট (Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "স্ক্রিন রেকর্ডিং শুরু করুন",
         "netplay": "নেটপ্লে",
         "gamepad": "নিয়ন্ত্রণ সেটিংস",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "সিআরটি ইজিমোড",
                 "crt-aperture.glslp": "সিআরটি অ্যাপারচার",
-                "crt-geom.glslp": "সিআরটি জিওম"
+                "crt-geom.glslp": "সিআরটি জিওম",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

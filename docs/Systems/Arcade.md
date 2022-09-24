@@ -1,6 +1,6 @@
 # Arcade
 
-## Code example
+## Code Example
 
 ```html
 <div style='width:640px;height:480px;max-width:100%'>
@@ -8,41 +8,30 @@
 </div>
 
 <script type='text/javascript'>
-
     EJS_player = '#game';
+    
+    // Can also be fbalpha2012_cps1 or fbalpha2012_cps2
     EJS_core = 'arcade';
-
-    // URL to Bios file
-
-    EJS_biosUrl = '';
     
     // URL to Game rom
-     
     EJS_gameUrl = '';
     
-    /*
-     *  Path to the WASM / JS files
-     *  HAS TO BE in the same directory.
-     */
-    
+    // Path to the data directory
     EJS_pathtodata = 'data/';
-    
 </script>
-
 <script src='data/loader.js'></script>
 ```
 
-## ROMS
+## ROM Type
 
-Only use **FBA ROMs** of version`0.2.97.42`
+Your **ROM** can have the following extensions:
+- `zip`
 
-### ROM List
+### CORES
 
-The following **ROMs** must use the listed name.
+The *arcade* system supports 2 cores
+- `fbalpha2012_cps1`
+- `fbalpha2012_cps2`
 
-| Name | MD5 Checksum | Description |
-|------|--------------|-------------|
-| `neogeo.zip` | `410c65b2debdf4f2dac9ea2b23aa496e` | Required for **Neo Geo Games**
-| `pgm.zip` | `653e991a39e867354d090c3394157d1c` | Required for **IGS Games**
-| `isgsm.zip` | `4a56d56e2219c5e2b006b66a4263c01c` | **ISG Selection Master Type 2006 BIOS**
+If set to `arcade`, emulator will use the `fbalpha2012_cps1` core.
 

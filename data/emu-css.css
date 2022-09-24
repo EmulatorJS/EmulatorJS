@@ -935,7 +935,7 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
     margin:0 10px;
     color:#fff !important
 }
-.ejs--5e71fd80268afbb1d588e40b993508 .ejs--580e3c22e63f8a1eb29694fd0b141b a.ejs--ad20569e1449d7b8e99e6465960456{
+.ejs--5e71fd80268afbb1d588e40b993508 .ejs--580e3c22e63f8a1eb29694fd0b141b a.ejs--ad20569e1449d7b8e99e6465960456 a.ejs--ad20569e1449d54yiohfg8u8559656{
     background-color:#929292
 }
 .ejs--5e71fd80268afbb1d588e40b993508 .ejs--8e7922427f460a31935084b7acfb1a{
@@ -969,6 +969,9 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
     opacity:1
 }
 .ejs--ad20569e1449d7b8e99e6465960456{
+    float:none
+}
+.ejs--ad20569e1449d54yiohfg8u8559656{
     float:none
 }
 .ejs--ad20569e1449d7b8e99e6465963825{
@@ -1564,6 +1567,7 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
     width:100%;
     height:auto !important
 }
+
 .ejs--33643265135cf89e6c0a0d9866d6f1{
     transition:none !important
 }
@@ -1578,4 +1582,112 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
 }
 .ejs--7a5f920ceffb2913f6dbda780573cf [hidden]{
     display:none !important
+}
+.ejs--914358605501b11476e86626b2ff16{
+	width:120px;
+	height:120px;
+	user-select:none
+}
+@media (min-width: 480px){
+    .ejs--914358605501b11476e86626b2ff16{
+        width:130px;
+        height:130px
+    }
+}
+
+.ejs--be66239219d594001da38f91c9ad02{
+	opacity:0.7
+}
+.ejs--be66239219d594001da38f91c9ad02,.ejs--9dbb9be3403878e912527181e2d41b{
+	touch-action:none;
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%
+}
+.ejs--f9c7797bdf05569bdc13b4f2074270{
+	width:36px;
+	height:100%;
+	transform:translate(-50%, 0%);
+	position:absolute;
+	left:50%;
+	border-radius:5px;
+	overflow:hidden
+}
+.ejs--f9c7797bdf05569bdc13b4f2074270:before{
+	content:"";
+	position:absolute;
+	top:0;
+	left:50%;
+	z-index:1;
+	transform:translate(-50%, 0%);
+	width:0;
+	height:0;
+	border:8px solid;
+	border-color:transparent transparent #333 transparent
+}
+.ejs--f9c7797bdf05569bdc13b4f2074270:after{
+	content:"";
+	position:absolute;
+	bottom:0;
+	left:50%;
+	z-index:1;
+	transform:translate(-50%, 0);
+	width:0;
+	height:0;
+	border:8px solid;
+	border-color:#333 transparent transparent transparent
+}
+.ejs--f0b89ca5b5621659af184c8e012ccb .ejs--f9c7797bdf05569bdc13b4f2074270:before{
+	border-bottom-color:#fff
+}
+.ejs--8de361d6b01eaa181f8db4ac3eb7af .ejs--f9c7797bdf05569bdc13b4f2074270:after{
+	border-top-color:#fff
+}
+.ejs--2645f3bad105488a313c5e30dab74f{
+	width:100%;
+	height:36px;
+	transform:translate(0%, -50%);
+	position:absolute;
+	left:0;
+	top:50%;
+	border-radius:5px;
+	overflow:hidden
+}
+.ejs--2645f3bad105488a313c5e30dab74f:before{
+	content:"";
+	position:absolute;
+	left:0;
+	top:50%;
+	z-index:1;
+	transform:translate(0%, -50%);
+	width:0;
+	height:0;
+	border:8px solid;
+	border-color:transparent #333 transparent transparent
+}
+.ejs--2645f3bad105488a313c5e30dab74f:after{
+	content:"";
+	position:absolute;
+	right:0;
+	top:50%;
+	z-index:1;
+	transform:translate(0%, -50%);
+	width:0;
+	height:0;
+	border:8px solid;
+	border-color:transparent transparent transparent #333
+}
+.ejs--bd9311b0a4f654af6ab5ba28bcf358 .ejs--2645f3bad105488a313c5e30dab74f:before{
+	border-right-color:#fff
+}
+.ejs--704d45ea060cc6809451a0d9d47ad7 .ejs--2645f3bad105488a313c5e30dab74f:after{
+	border-left-color:#fff
+}
+.ejs--a57cf324c8ff108947112e35e589b5,.ejs--4873d94c18140ab195da609b40b71a{
+	position:absolute;
+	width:100%;
+	height:100%;
+	background:#787878
 }

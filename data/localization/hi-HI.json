@@ -12,6 +12,7 @@
         "settings": "सेटिंग्स",
         "saveState": "राज्य बचाओ (Shift + F2)",
         "loadState": "लोड स्टेट (Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "स्क्रीन रिकॉर्डिंग शुरू करें",
         "netplay": "नेटप्ले",
         "gamepad": "नियंत्रण सेटिंग्स",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "सीआरटी ईज़ीमोड",
                 "crt-aperture.glslp": "सीआरटी एपर्चर",
-                "crt-geom.glslp": "सीआरटी जियोम"
+                "crt-geom.glslp": "सीआरटी जियोम",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

@@ -54,34 +54,30 @@
 [![Avatar Grey]][GitHub Grey]   
 [![Avatar Kyle]][GitHub Kyle]
 [![Avatar Protektor]][GitHub Protektor]
-[![Avatar Eric]][GitHub Eric]
   
 </div>
 
 
 <!------------------------------------------------------------------------------>
 
-[Avatar Nekro]: https://github.com/imneckro.png?size=100
+[Avatar Nekro]: https://github.com/imneckro.png?size=120
 [GitHub Nekro]: https://github.com/imneckro 'ImNekro - ck-oneman'
 
-[Avatar Grey]: https://github.com/Grey41.png?size=100
+[Avatar Grey]: https://github.com/Grey41.png?size=120
 [GitHub Grey]: https://github.com/Grey41 'Grey41 - Grey Hope'
 
-[Avatar Kyle]: https://github.com/cheesykyle.png?size=100
+[Avatar Kyle]: https://github.com/cheesykyle.png?size=120
 [GitHub Kyle]: https://github.com/cheesykyle 'CheesyKyle - Kyle Steffel'
 
 [Avatar Protektor]: https://github.com/Protektor-Desura.png?size=120
-[GitHub Protektor]: https://github.com/Protektor-Desura 'Protektor-Desura - Protektor'
-
-[Avatar Eric]: https://github.com/eric183.png?size=100
-[GitHub Eric]: https://github.com/eric183 'Eric183 - Eric Kuang'
+[GitHub Protektor]: https://github.com/Protektor-Desura 'Protektor-Desura - Protektor-Desura'
 
 
 <!----------------------------------{ Ethan }----------------------------------->
 
 [Badge Ethan GitHub]: https://img.shields.io/badge/Ethan_O'_Brien-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white
 
-[Ethan Avatar]: https://avatars.githubusercontent.com/u/77750390?s=110 'Ethan O\'Brien'
+[Ethan Avatar]: https://avatars.githubusercontent.com/u/77750390?s=80 'Ethan O\'Brien'
 [Ethan GitHub]: https://github.com/ethanaobrien
 
 
@@ -90,7 +86,7 @@
 [Badge Archiver GitHub]: https://img.shields.io/badge/ElectronicsArchiver-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white
 [Badge Archiver Marked]: https://img.shields.io/badge/ＭａｒｋｅｄＤｏｗｎ-49a2d5.svg?style=for-the-badge&logo=GitHub&logoColor=white
 
-[Archiver Avatar]: https://avatars.githubusercontent.com/u/85485984?s=110 'ElectronicsArchiver - トトも'
+[Archiver Avatar]: https://avatars.githubusercontent.com/u/85485984?s=80 'ElectronicsArchiver - トトも'
 [Archiver GitHub]: https://github.com/ElectronicsArchiver
 [Archiver Marked]: https://github.com/MarkedDown
 
@@ -100,6 +96,6 @@
 [Badge Allan GitHub]: https://img.shields.io/badge/allancoding-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white
 [Badge Allan Website]: https://img.shields.io/badge/AllanCoding.ga-lightgray.svg?style=for-the-badge&logo=GitHub&logoColor=white
 
-[Allan Avatar]: https://avatars.githubusercontent.com/u/74841470?s=110 'AllanCoding - Allan Niles'
+[Allan Avatar]: https://avatars.githubusercontent.com/u/74841470?s=80 'AllanCoding - Allan Niles'
 [Allan GitHub]: https://github.com/allancoding
 [Allan Website]: https://allancoding.ga/

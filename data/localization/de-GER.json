@@ -12,6 +12,7 @@
         "settings": "Einstellungen",
         "saveState": "Zustand speichern (Umschalt + F2)",
         "loadState": "Zustand laden (Umschalt + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "Bildschirmaufnahme starten",
         "netplay": "Netzspiel",
         "gamepad": "Steuerungseinstellungen",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "CRT Easymode",
                 "crt-aperture.glslp": "CRT-Öffnung",
-                "crt-geom.glslp": "Kathodengeom"
+                "crt-geom.glslp": "Kathodengeom",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

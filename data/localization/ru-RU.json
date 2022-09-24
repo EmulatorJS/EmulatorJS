@@ -12,6 +12,7 @@
         "settings": "Настройки",
         "saveState": "Сохранить состояние (Shift + F2)",
         "loadState": "Загрузить состояние (Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "Начать запись экрана",
         "netplay": "Сетевая игра",
         "gamepad": "Настройки управления",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "ЭЛТ простой режим",
                 "crt-aperture.glslp": "ЭЛТ-диафрагма",
-                "crt-geom.glslp": "ЭЛТ геометрия"
+                "crt-geom.glslp": "ЭЛТ геометрия",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

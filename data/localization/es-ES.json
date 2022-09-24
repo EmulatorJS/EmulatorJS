@@ -1,28 +1,29 @@
 {
     "i18n": {
-    "restart": "Restart",
-    "play": "Jugar",
-    "pause": "Pausa",
-    "played": "Jugó",
-    "volume": "Volumen",
-    "mute": "Silencio (F9)",
-    "unmute": "Activar (F9)",
-    "enterFullscreen": "Pantalla completa",
-    "exitFullscreen": "Salir de pantalla completa",
-    "settings": "Ajustes",
-    "saveState": "Guardar Estado (Shift + F2)",
-    "loadState": "Cargar Estado (Shift + F4)",
-    "screenRecord": "Comenzar gravacion de pantalla",
-    "netplay": "Netplay",
-    "gamepad": "Ajustes de control",
-    "cheat": "Trampas",
-    "menuBack": "Volver al menú anterior",
-    "normal": "Normal",
-    "all": "Todo",
-    "reset": "Reset",
-    "disabled": "Desactivar",
-    "enabled": "Activar",
-    "playNow": "Jugar ahora"
+        "restart": "Restart",
+        "play": "Jugar",
+        "pause": "Pausa",
+        "played": "Jugó",
+        "volume": "Volumen",
+        "mute": "Silencio (F9)",
+        "unmute": "Activar (F9)",
+        "enterFullscreen": "Pantalla completa",
+        "exitFullscreen": "Salir de pantalla completa",
+        "settings": "Ajustes",
+        "saveState": "Guardar Estado (Shift + F2)",
+        "loadState": "Cargar Estado (Shift + F4)",
+        "cacheManager": "Cache Manager",
+        "screenRecord": "Comenzar gravacion de pantalla",
+        "netplay": "Netplay",
+        "gamepad": "Ajustes de control",
+        "cheat": "Trampas",
+        "menuBack": "Volver al menú anterior",
+        "normal": "Normal",
+        "all": "Todo",
+        "reset": "Reset",
+        "disabled": "Desactivar",
+        "enabled": "Activar",
+        "playNow": "Jugar ahora"
     },
     "normalOptions": {
         "shader": {
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "CRT easymode",
                 "crt-aperture.glslp": "CRT aperture",
-                "crt-geom.glslp": "CRT geom"
+                "crt-geom.glslp": "CRT geom",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },
@@ -43,7 +45,7 @@
                 "disabled": "Discapacitado",
                 "enabled": "Activado"
             },
-        "default": "enabled"
+            "default": "enabled"
         }
     },
     "Control Settings": "Ajustes de control",

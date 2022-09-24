@@ -12,6 +12,7 @@
         "settings": "Ρυθμίσεις",
         "saveState": "Αποθήκευση (Shift + F2)",
         "loadState": "Φόρτωση (Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "Εγγραφή οθόνης",
         "netplay": "Online παιχνίδι",
         "gamepad": "Ρυθμίσεις χειρισμού",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "Κλίμακα x4",
                 "crt-easymode.glslp": "Λειτουργία οθόνης παλαιού τύπου απλή",
                 "crt-aperture.glslp": "Λειτουργία οθόνης παλαιού τύπου με άνοιγμα",
-                "crt-geom.glslp": "Λειτουργία οθόνης παλαιού τύπου με θόλο"
+                "crt-geom.glslp": "Λειτουργία οθόνης παλαιού τύπου με θόλο",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },
