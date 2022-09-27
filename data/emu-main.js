@@ -2655,7 +2655,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'saveLoadDB': function(type) {
                 try {
                     if (!_0x378b5c.saveLoaddbDB.db) return false;
-                    if (_0x2593da && typeof _0x2593da.getCoreOptionsValue == 'function') {
+                    if (_0x2593da && typeof _0x2593da.getCoreOptionsValue === 'function') {
                         let location = _0x2593da.getCoreOptionsValue('save-state-location');
                         if (!location || location === 'download') {
                             return false;
@@ -4760,6 +4760,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }
                     }, 0x1e);
                 };
+                window.EJS_saveState = function() {
+                    return _0x378b5c.saveState();
+                }
                 let _0x840cf4 = _0x27f4c4.Module.cwrap('cmd_take_screenshot', '', []);
                 _0x378b5c.getScreenData = function() {
                     _0x840cf4();
