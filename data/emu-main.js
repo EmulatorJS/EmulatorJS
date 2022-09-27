@@ -1516,7 +1516,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                 ];
                                 'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v');
-                                console.log(_0x2c1832);
                                 _0x4d7024.Module.callMain(_0x2c1832);
                                 if (_0xc6823.coreVer === 2) {
                                     _0x4d7024.Module.resumeMainLoop();
