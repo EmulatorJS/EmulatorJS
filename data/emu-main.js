@@ -1516,6 +1516,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                     [_0x4d7024.hash, _0x4d7024.hash2, _0x4d7024.hash3].join('')
                                 ];
                                 'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX && _0x2c1832.unshift('-v');
+                                console.log(_0x2c1832);
                                 _0x4d7024.Module.callMain(_0x2c1832);
                                 if (_0xc6823.coreVer === 2) {
                                     _0x4d7024.Module.resumeMainLoop();
@@ -2123,7 +2124,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 _0x28ee7f = e.data;
 
                             let status = _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1));
-                            if (!(_this.config.oldCores === true && _0x28ee7f.oldCores[_this.system]) && _0x28ee7f.newCores[getSystem(_this.system)] && (_0x2d904a.wasm || Boolean(_0x28ee7f.newCores[getSystem(_this.system)].asmjs))) {
+                            if (!(_this.config.oldCores === true && _0x28ee7f.oldCores[_this.system]) && _0x28ee7f.newCores[getSystem(_this.system)] && (_0x2d904a.wasm || Boolean(_0x28ee7f.newCores[getSystem(_this.system)].asmjs)) && !_0x59aa33.isIos) {
                                 _this.coreVer = 2;
                                 delete Module.readAsync;
                                 Module.INITIAL_MEMORY = Module.TOTAL_MEMORY;
@@ -2233,6 +2234,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(2), !_0x5b1dcd);
                             _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(3), !_0x5b1dcd);
                             _this.statesSupported = _0x5b1dcd;
+                            if (window.innerWidth < 400) {
+                                _0x1e2c68.element(_this.elements.inputs.volume) && _0x132da7(_this.elements.inputs.volume, true);
+                                _0x1e2c68.element(_this.elements.buttons.mute) && _0x132da7(_this.elements.buttons.mute, true);
+                                _0x1e2c68.element(_this.elements.buttons.cheat) && _0x132da7(_this.elements.buttons.cheat, true);
+                            }
                             
                             if (_this.config.buttons) {
                                 if (_this.config.buttons.playPause === false) {
@@ -5887,7 +5893,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.elements.dialogs.loadState = _0x2c1832;
             },
             'setScreenRecord': function(_0x4c3fdd, _0x289259) {
-                if (! window.MediaRecorder) {
+                if (!window.MediaRecorder) {
                     return;
                 };
                 let _0x2c1832 = _0x7f9f36.createButton.call(this, 'screen-record', {
