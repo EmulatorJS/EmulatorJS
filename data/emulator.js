@@ -84,110 +84,114 @@ var EJS = function(_0x574f5e) {
         }
     }
 }, null, null, null, null, null, function(module) {
-    //I wrote this myself -- theres bound to be bugs
-    function Gamepad() {
-        var gp = navigator.getGamepads || navigator.webkitGetGamepads;
-        if (!gp) {
-            throw new Error("get gamepads not found!");
-        }
-        this.rAF = window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.requestAnimationFrame;
-        if (!this.rAF) {
-            throw new Error("request animation frame was not found!");
-        }
-        this.loop();
-    }
-    Gamepad.prototype = {
-        gamepads: [],
-        rAF: null,
-        getGamepads: function() {
-            return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
-        },
-        loop: async function() {
-            this.updateGamepadState();
-            this.rAF.call(null, this.loop.bind(this));
-        },
-        updateGamepadState: function() {
-            var gamepads = this.getGamepads();
-            for (var i=0; i<gamepads.length; i++) {
-                if (!gamepads[i]) continue;
-                var hasGamepad = false;
-                for (var j=0; j<this.gamepads.length; j++) {
-                    if (!this.gamepads[j]) continue;
-                    if (this.gamepads[j].index === gamepads[i].index) {
-                        hasGamepad = true;
-                        if (typeof this.onaxischanged == 'function') {
-                            for (var q=0; q<this.gamepads[j].axes.length; q++) {
-                                if (gamepads[i].axes[q] !== this.gamepads[j].axes[q]) {
-                                    var axis = function(index) {
-                                        switch (index) {
-                                            case 0:
-                                                return 'LEFT_STICK_X';
-                                            case 1:
-                                                return 'LEFT_STICK_Y';
-                                            case 2:
-                                                return 'RIGHT_STICK_X';
-                                            case 3:
-                                                return 'RIGHT_STICK_Y';
-                                            default:
-                                                return '';
-                                        }
-                                    }(q);
-                                    if (!axis) continue;
-                                    this.onaxischanged({axis:axis, value:gamepads[i].axes[q], index:i, gamepadIndex:gamepads[i].index});
-                                }
-                            }
-                        }
-                        for (var q=0; q<this.gamepads[j].buttons.length; q++) {
-                            let pressed = this.gamepads[j].buttons[q] == 1.0;
-                            if (typeof(this.gamepads[j].buttons[q]) == "object") {
-                                pressed = this.gamepads[j].buttons[q].pressed;
-                            }
-                            let pressed2 = gamepads[i].buttons[q] == 1.0;
-                            if (typeof(gamepads[i].buttons[q]) == "object") {
-                                pressed2 = gamepads[i].buttons[q].pressed;
-                            }
-                            if (pressed !== pressed2) {
-                                if (pressed2) {
-                                    if (typeof this.onbuttondown == 'function') {
-                                        this.onbuttondown({index:q, gamepadIndex:gamepads[i].index});
-                                    }
-                                } else {
-                                    if (typeof this.onbuttonup == 'function') {
-                                        this.onbuttonup({index:q, gamepadIndex:gamepads[i].index});
-                                    }
-                                }
-                            }
-                        }
-                        this.gamepads[j] = gamepads[i];
-                    }
-                }
-                if (!hasGamepad) {
-                    this.gamepads.push(gamepads[i]);
-                    if (typeof this.onconnected == 'function') {
-                        this.onconnected();
-                    }
-                }
+    // Project located at https://github.com/ethanaobrien/gamepad
+    class Gamepad {
+        gamepads;
+        timeout;
+        listeners;
+        constructor() {
+            if (!navigator.getGamepads && !navigator.webkitGetGamepads) {
+                throw new Error("Get gamepads not found!");
             }
-            for (var j=0; j<this.gamepads.length; j++) {
+            if (!window.setTimeout) {
+                throw new Error("setTimeout was not found!");
+            }
+            this.gamepads = [];
+            this.listeners = {};
+            this.timeout = null;
+            this.loop();
+        }
+        terminate() {
+            window.clearTimeout(this.timeout);
+        }
+        getGamepads() {
+            return navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+        }
+        loop() {
+            this.updateGamepadState();
+            this.timeout = setTimeout(this.loop.bind(this), 10);
+        }
+        updateGamepadState() {
+            const gamepads = this.getGamepads();
+            gamepads.forEach((gamepad, index) => {
+                if (!gamepad) return;
+                let hasGamepad = false;
+                this.gamepads.forEach((oldGamepad, oldIndex) => {
+                    if (oldGamepad.index !== gamepad.index) return;
+                    hasGamepad = true;
+
+                    oldGamepad.axes.forEach((axis, axisIndex) => {
+                        if (gamepad.axes[axisIndex] !== axis) {
+                            const axis = function(index) {
+                                switch (index) {
+                                    case 0:
+                                        return 'LEFT_STICK_X';
+                                    case 1:
+                                        return 'LEFT_STICK_Y';
+                                    case 2:
+                                        return 'RIGHT_STICK_X';
+                                    case 3:
+                                        return 'RIGHT_STICK_Y';
+                                    default:
+                                        return null;
+                                }
+                            }(axisIndex);
+                            if (!axis) return;
+                            this.dispatchEvent('axischanged', {axis: axis, value: gamepad.axes[axisIndex], index: gamepad.index, gamepadIndex: gamepad.index});
+                        }
+
+                    })
+                    gamepad.buttons.forEach((button, buttonIndex) => {
+                        let pressed = oldGamepad.buttons[buttonIndex] === 1.0;
+                        if (typeof oldGamepad.buttons[buttonIndex] === "object") {
+                            pressed = oldGamepad.buttons[buttonIndex].pressed;
+                        }
+                        let pressed2 = button === 1.0;
+                        if (typeof button === "object") {
+                            pressed2 = button.pressed;
+                        }
+                        if (pressed !== pressed2) {
+                            if (pressed2) {
+                                this.dispatchEvent('buttondown', {index: buttonIndex, gamepadIndex: gamepad.index});
+                            } else {
+                                this.dispatchEvent('buttonup', {index: buttonIndex, gamepadIndex: gamepad.index});
+                            }
+                        }
+
+                    })
+                    this.gamepads[oldIndex] = gamepads[index];
+                })
+                if (!hasGamepad) {
+                    this.gamepads.push(gamepads[index]);
+                    this.dispatchEvent('connected', {gamepadIndex: gamepad.index});
+                }
+            });
+
+            for (let j=0; j<this.gamepads.length; j++) {
                 if (!this.gamepads[j]) continue;
-                var has = false;
-                for (var i=0; i<gamepads.length; i++) {
+                let has = false;
+                for (let i=0; i<gamepads.length; i++) {
                     if (!gamepads[i]) continue;
                     if (this.gamepads[j].index === gamepads[i].index) {
                         has = true;
+                        break;
                     }
                 }
                 if (!has) {
+                    this.dispatchEvent('disconnected', {gamepadIndex: this.gamepads[j].index});
                     this.gamepads.splice(j, 1);
                     j--;
-                    if (typeof this.ondisconnected == 'function') {
-                        this.ondisconnected();
-                    }
                 }
             }
-        },
-        on: function(name, cb) {
-            this["on"+name.toLowerCase()] = cb;
+        }
+        dispatchEvent(name, arg) {
+            if (typeof this.listeners[name] !== 'function') return;
+            if (!arg) arg={};
+            arg.type = name;
+            this.listeners[name](arg);
+        }
+        on(name, cb) {
+            this.listeners[name.toLowerCase()] = cb;
         }
     }
     module.exports = Gamepad;
