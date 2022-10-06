@@ -54,6 +54,7 @@
 [![Avatar Grey]][GitHub Grey]   
 [![Avatar Kyle]][GitHub Kyle]
 [![Avatar Protektor]][GitHub Protektor]
+[![Avatar ericKuang]][GitHub ericKuang]
   
 </div>
 
@@ -70,7 +71,10 @@
 [GitHub Kyle]: https://github.com/cheesykyle 'CheesyKyle - Kyle Steffel'
 
 [Avatar Protektor]: https://github.com/Protektor-Desura.png?size=120
-[GitHub Protektor]: https://github.com/Protektor-Desura 'Protektor-Desura - Protektor-Desura'
+[GitHub Protektor]: https://github.com/Protektor-Desura 'Protektor-Desura - Protektor'
+
+[Avatar ericKuang]: https://github.com/eric183.png?size=120
+[GitHub ericKuang]: https://github.com/eric183 'eric183 - ericKuang'
 
 
 <!----------------------------------{ Ethan }----------------------------------->
