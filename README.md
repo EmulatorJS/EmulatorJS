@@ -133,11 +133,11 @@ EJS_oldCores = true;
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
-[Configurator]: https://emulatorjs.netlify.app/editor.html
+[Configurator]: https://emulatorjs.org/editor.html
 [Contributors]: docs/Contributors.md
-[Website]: https://emulatorjs.netlify.app/
+[Website]: https://emulatorjs.org/
 [Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
-[Usage]: https://emulatorjs.netlify.app/docs/
+[Usage]: https://emulatorjs.org/docs/
 [Demo]: https://emulatorjs.github.io/EmulatorJS/
 
 
