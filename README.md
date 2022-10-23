@@ -1,7 +1,8 @@
 
 <div align = center>
-    
-<img src = docs/Logo.png width = 300>
+
+<img width = 300 src = docs/Logo-light.png#gh-dark-mode-only>
+<img width = 300 src = docs/Logo.png#gh-light-mode-only> 
  
 <br>
 <br>
@@ -17,8 +18,7 @@ Self-hosted **Javascript** emulation for various system.
 [![Button Usage]][Usage]<br>
 [![Button Configurator]][Configurator]<br>
 [![Button Demo]][Demo] 
-[![Button Legacy]][Legacy] 
-[![Button Beta]][Beta]
+[![Button Legacy]][Legacy]
     
 [![Button Contributors]][Contributors]   
     
@@ -93,9 +93,9 @@ EJS_oldCores = true;
 
 ### Atari
 
-**[2600][Atari 2600]**   |
-**[5200][Atari 5200]**   |
-**[7800][Atari 7800]**   |
+**[2600][Atari 2600]**   | 
+**[5200][Atari 5200]**   | 
+**[7800][Atari 7800]**   | 
 **[Lynx][Atari Lynx]**   | 
 **[Jaguar][Atari Jaguar]**
 
@@ -112,7 +112,8 @@ EJS_oldCores = true;
 **[PlayStation]**   | 
 **[Arcade]**   | 
 **[MSX]**   | 
-**[3DO]**
+**[3DO]**   | 
+**[MAME 2003]**
     
 </div>
 
@@ -132,13 +133,12 @@ EJS_oldCores = true;
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
-[Configurator]: https://emulatorjs.ga/editor.html
+[Configurator]: https://emulatorjs.org/editor.html
 [Contributors]: docs/Contributors.md
-[Website]: https://emulatorjs.ga/
+[Website]: https://emulatorjs.org/
 [Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
-[Usage]: docs/Usage.md
-[Demo]: https://emulatorjs.ga/demo/
-[Beta]: https://emulatorjs.ga/beta/
+[Usage]: https://emulatorjs.org/docs/
+[Demo]: https://emulatorjs.github.io/EmulatorJS/
 
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
@@ -172,6 +172,7 @@ EJS_oldCores = true;
 [Arcade]: docs/Systems/Arcade.md
 [MSX]: docs/Systems/MSX.md
 [3DO]: docs/Systems/3DO.md
+[MAME 2003]: docs/Systems/MAME%202003.md
 
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->

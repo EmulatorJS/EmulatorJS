@@ -12,6 +12,7 @@
         "settings": " Setelan",
         "saveState": "Simpen Status (Shift + F2)",
         "loadState": "Muat Status (Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": " Miwiti Rekaman Layar",
         "netplay": " Netplay",
         "gamepad": " Setelan Kontrol",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xSkalaHQ",
                 "crt-easymode.glslp": "CRT mode gampang",
                 "crt-aperture.glslp": " Bukaan CRT",
-                "crt-geom.glslp": " CRT geom"
+                "crt-geom.glslp": " CRT geom",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

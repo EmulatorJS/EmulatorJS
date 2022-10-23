@@ -12,6 +12,7 @@
         "settings": "설정",
         "saveState": "상태 저장(Shift + F2)",
         "loadState": "로드 상태(Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "화면 녹화 시작",
         "netplay": "넷플레이",
         "gamepad": "제어 설정",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "CRT 이지모드",
                 "crt-aperture.glslp": "CRT 조리개",
-                "crt-geom.glslp": "CRT 지오메트리"
+                "crt-geom.glslp": "CRT 지오메트리",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

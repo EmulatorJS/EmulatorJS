@@ -12,6 +12,7 @@
         "settings": "Paramètres",
         "saveState": "Enregistrer l'état (Maj + F2)",
         "loadState": "État de charge (Maj + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": "Démarrer l'enregistrement d'écran",
         "netplay": "Netplay",
         "gamepad": "Paramètres de contrôle",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": "4xScaleHQ",
                 "crt-easymode.glslp": "CRT mode facile",
                 "crt-aperture.glslp": "Ouverture CRT",
-                "crt-geom.glslp": "CRT geom"
+                "crt-geom.glslp": "CRT geom",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

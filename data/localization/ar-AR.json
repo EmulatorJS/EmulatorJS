@@ -12,6 +12,7 @@
         "settings": " الإعدادات",
         "saveState": " حفظ الحالة (إزاحة + F2)",
         "loadState": " حالة التحميل (Shift + F4)",
+        "cacheManager": "Cache Manager",
         "screenRecord": " بدء تسجيل الشاشة",
         "netplay": " نيت بلاي",
         "gamepad": " إعدادات التحكم",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": " 4xScaleHQ",
                 "crt-easymode.glslp": " وضع CRT السهل",
                 "crt-aperture.glslp": " فتحة CRT",
-                "crt-geom.glslp": " CRT geom"
+                "crt-geom.glslp": " CRT geom",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },

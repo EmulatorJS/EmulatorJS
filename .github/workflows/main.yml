@@ -1,0 +1,42 @@
+name: Minify Code
+
+on: [push, pull_request, workflow_dispatch]
+
+jobs:
+  paths-filter:
+    runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.filter.outputs.data }}
+    steps:
+    - uses: actions/checkout@v2
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          data:
+            - 'data/**'
+    # run only if 'data' files were changed
+    - name: workflow tests
+      if: steps.filter.outputs.data == 'true'
+      run: echo "Data file"
+
+    # run only if not 'data' files were changed
+    - name: not workflow tests
+      if: steps.filter.outputs.data != 'true'
+      run: echo "NOT Data file"
+
+  next-job:
+    runs-on: ubuntu-latest
+    # Wait from the paths-filter to be completed before starting next-job
+    needs: paths-filter
+    if: needs.paths-filter.outputs.output1 == 'true'
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '12'
+    - run: cd data/minify && npm install
+    - run: cd data/minify && npm run build
+    - uses: EndBug/add-and-commit@v9
+      with:
+        default_author: github_actions

@@ -12,6 +12,7 @@
         "settings": "設定",
         "saveState": "状態の保存（Shift + F2）",
         "loadState": "ロード状態（Shift + F4）",
+        "cacheManager": "Cache Manager",
         "screenRecord": "画面記録を開始します",
         "netplay": "ネットプレイ",
         "gamepad": "制御設定",
@@ -33,7 +34,8 @@
                 "4xScaleHQ.glslp": " 4xScaleHQ",
                 "crt-easymode.glslp": " CRTイージーモード",
                 "crt-aperture.glslp": " CRTアパーチャ",
-                "crt-geom.glslp": " CRTジオメトリ"
+                "crt-geom.glslp": " CRTジオメトリ",
+                "crt-mattias.glslp": "CRT mattias"
             },
             "default": "disabled"
         },
