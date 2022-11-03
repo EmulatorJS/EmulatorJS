@@ -75,6 +75,11 @@
             "version":"0",
             "asmjs": 0,
             "wasm": 1
+        },
+        "opera": {
+            "version":"0",
+            "asmjs": 0,
+            "wasm": 1
         }
     }
 }

@@ -1,6 +1,13 @@
 # Changes
 
-# 3.0.5
+# 3.1.0
+- Added ability to drag and drop save states.
+- Fixed some "update" and "cancel" and "close" button confustion
+- Removed save state retroarch messages
+- Beta netplay cleanup (not yet working)
+- (Theoretically) fixed a bug that did not allow iOS devices to work
+
+# 3.0.5 [View Tree](https://github.com/ethanaobrien/emulatorjs/tree/44c31371fb3c314cd8dea36ccbaad89fb3ab98e6)
 - Fixed screen recording on devices that do not support getUserMedia api.
 - Added C label buttons to nintendo 64 virtual gamepad.
 - Fixed EJS_color bug.

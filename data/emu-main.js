@@ -1057,7 +1057,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             'melonds': ['nds'],
                             'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
                             'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
-                            'nestopia': ['fds', 'nes', 'unif', 'unf']
+                            'nestopia': ['fds', 'nes', 'unif', 'unf'],
+                            'opera': ['iso', 'bin', 'chd', 'cue']
                         }
                     },
                     _0x29078e = {
@@ -1107,7 +1108,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                             'nds': 'desmume2015',
                             'mame2003': 'mame2003',
                             'arcade': 'fbalpha2012_cps1', // I need to find a more  compatible arcade core
-                            'psx': 'mednafen_psx_hw'
+                            'psx': 'mednafen_psx_hw',
+                            '3do': 'opera'
                         }
                     },
                     newCoreTypes = {
@@ -1125,7 +1127,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         'mednafen_psx': 'psx',
                         'mednafen_psx_hw': 'psx',
                         'melonds': 'nds',
-                        'nestopia': 'nes'
+                        'nestopia': 'nes',
+                        'opera': '3do'
                     },
                     getSystem = function(core, notRetroarch) {
                         if (notRetroarch === true) {
@@ -1859,9 +1862,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     _0x10b71a = function() {
                         _0x4d7024.loading.querySelector('.' .concat(_0x4fce24.p1)).innerHTML = 'Game Core ready';
                         _0x4d7024.Module._supports_states && (_0x378b5c.statesSupported = _0x4d7024.Module.cwrap('supports_states', 'number', []));
-                        if (_0xdcec2a.statesSupported) {
+                        if (_0x378b5c.statesSupported) {
                             try {
-                                _this.statesSupported = !!_0xdcec2a.statesSupported();
+                                _this.statesSupported = !!_0x378b5c.statesSupported();
                                 _0x1e2c68.element(_this.elements.buttons.netplay) && _0x132da7(_this.elements.buttons.netplay, !_0x7f9f36.supportNetPlay.call(_this));
                                 _0x1e2c68.element(_this.elements.buttons.saveState) && _0x132da7(_this.elements.buttons.saveState, !_this.statesSupported);
                                 _0x1e2c68.element(_this.elements.buttons.loadState) && _0x132da7(_this.elements.buttons.loadState, !_this.statesSupported);
@@ -1872,9 +1875,10 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         let _0x17edbf = _this.config.biosUrl;
                         _0xdcec2a.bindFunction.call(_this);
                         _0xdcec2a.setGamepadDialog.call(_this);
+                        _0xdcec2a.setMessageDialog.call(_this);
                         _0xdcec2a.setCacheDialog.call(_this);
                         _0xdcec2a.setLoadingDialog.call(_this);
-                        //_0xdcec2a.setNetplayDialog.call(_this);
+                        _0xdcec2a.setNetplayDialog.call(_this);
                         _0xdcec2a.setCheatDialog.call(_this);
                         _0xdcec2a.initGamepad.call(_this);
                         _0xdcec2a.initKeyboard.call(_this);
@@ -2875,9 +2879,12 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 const _0xa88a13 = shaders;
                 for (let _0x17edbf = Object.keys(_0xa88a13), _0x2c1832 = '', _0x26fb6a = 0; _0x26fb6a < _0x17edbf.length; _0x26fb6a += 1) _0x2c1832 = _0xa88a13[_0x17edbf[_0x26fb6a]], _0x27f4c4.FS.writeFile('/shader/' .concat(_0x17edbf[_0x26fb6a]), _0x2c1832), _0x2593da.storage.get('shader') === _0x17edbf[_0x26fb6a] && _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x2c1832);
             },
+            'setMessageDialog': function() {
+                this.elements.dialogs.message.innerHTML = '<div class="' + _0x378b5c.classNames['dialog-container'] + '"><div class="' + _0x378b5c.classNames['dialog-title'] + '"><h2>'+this.localization('Drop to load save state')+'</h2></div></div>';
+            },
             'setGamepadDialog': function() {
                 let _this = this;
-                _this.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_this.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_this.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_this.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_this.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_this.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-submit'] + '">'+_this.localization('Update')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_this.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_this.localization('Clear')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-cancel'] + '">'+_this.localization('Cancel')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_this.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        ';
+                _this.elements.dialogs.gamepad.innerHTML = '\n        <div class="' + _0x378b5c.classNames['dialog-container'] + '">\n            <div class="' + _0x378b5c.classNames['dialog-title'] + '">\n                <h4>'+_this.localization('Control Settings')+'</h4>\n            </div>\n            \n            <ul class="' + _0x378b5c.classNames.tabs + '" id="controls-tabs">\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-0" aria-selected="false" id="controls-0-label">'+_this.localization('Player 1')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-1" aria-selected="false" id="controls-1-label">'+_this.localization('Player 2')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-2" aria-selected="false" id="controls-2-label">'+_this.localization('Player 3')+'</a></li>\n                <li class="tabs-title" role="presentation"><a href="#" onclick="return false" role="tab" aria-controls="controls-3" aria-selected="false" id="controls-3-label">'+_this.localization('Player 4')+'</a></li>\n            </ul>\n            <div class="' + _0x378b5c.classNames['dialog-content'] + '">\n            <div class="' + _0x378b5c.classNames['tabs-content'] + ' controls">\n                \n            </div>\n            </div>\n            <div class="' + _0x378b5c.classNames['dialog-buttons'] + '">\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-reset'] + '">'+_this.localization('Reset')+'</a>\n                <a href="#" onclick="return false" class="' + _0x378b5c.classNames['btn-clear'] + '">'+_this.localization('Clear')+'</a>\n                <a href="#" onclick="return false" style="background-color:#929292;" class="' + _0x378b5c.classNames['btn-close'] + '">'+_this.localization('Close')+'</a>\n            </div>\n            <div class="' + _0x378b5c.classNames.overlay + '" hidden>\n                <div class="' + _0x378b5c.classNames['key-setting-popup'] + '">\n                    <span>[Select]</span><br />\n                    <div style="color:#fff !important">'+_this.localization('Press keyboard or gamepad')+'</div>\n                </div>\n            </div>\n        </div>\n        ';
                 
                 let _0x17edbf = '\n        <div class="' .concat(_0x378b5c.classNames['tabs-panel'], '" id="controls-{index}" hidden>\n            <div>\n                <div style="">\n                    <div class="gamepad" style="font-size:12px">Connected gamepad: <span class="gamepad-name">n/a</span></div>\n                </div>\n                <div style="width:25%;float:left">&nbsp;</div>\n                <div style="font-size:12px;width:50%;float:left">\n                    <div class="row">\n                        <div style="text-align:center;width:50%;float:left">'+_this.localization('Gamepad')+'</div>\n                        <div style="text-align:center;width:50%;float:left">'+_this.localization('Keyboard')+'</div>\n                    </div>\n                </div>\n                <div style="clear:both"></div>\n            </div>\n        </div>'),
                     _0x2c1832 = '\n        <div class="' .concat(_0x378b5c.classNames['button-container'], '" data-id="{id}" data-index="{index}" data-label="{label}" style="margin-bottom:10px">\n            <div style="width:25%;float:left;font-size:12px">\n                <label>{label}:</label>\n            </div>\n            <div style="width:50%;float:left">\n                <div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="2" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="width:50%;float:left;padding: 0 5px;">\n                        <input style="text-align:center;height:25px;width: 100%;" type="text" data-id="{id}" data-value="" data-type="1" data-index="{index}" readonly="" placeholder="">\n                    </div>\n                    <div style="clear:both"></div>\n                </div>\n            </div>\n            <div style="width:25%;float:left">\n                <a class="').concat(_0x378b5c.classNames.set, '" href="#" onclick="return false">'+_this.localization('Set')+'</a>\n            </div>\n            <div style="clear:both"></div>\n        </div>')
@@ -3016,7 +3023,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         let _0x19d43b = _0x378b5c.controllers[_0x23d419][_0x21e62d];
                         _0x19d43b && (_0x19d43b.type && 1 !== parseInt(_0x19d43b.type, 0xa) ? _0x1849bc.value = '' : _0x19d43b.value && (_0x294e35.value = _0x378b5c.keyMap[_0x19d43b.value] || '', _0x294e35.setAttribute('data-value', _0x19d43b.value)), _0x19d43b.value2 && (_0x1849bc.value = isNaN(_0x19d43b.value2) ? (_0x19d43b.value2) : ('button ' .concat(parseInt(_0x19d43b.value2, 0xa) + 1)), _0x1849bc.setAttribute('data-value', _0x19d43b.value2)));
                     });
-                }), _0x1093f4.call(this, _this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-submit'])), 'click', function(_0x5f19bd) {
+                }), _0x1093f4.call(this, _this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-close'])), 'click', function(_0x5f19bd) {
                     let _0x2c1832 = _this.elements.dialogs.gamepad.querySelectorAll('input'),
                         _0x2844f7 = {};
                     return Array.from(_0x2c1832).forEach(function(_0x33c024) {
@@ -3064,8 +3071,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x2c1832[i].value = '';
                         _0x2c1832[i].setAttribute('data-value', '');
                     }
-                }), _0x1093f4.call(this, _this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x16d598) {
-                    return _0x132da7(_this.elements.dialogs.gamepad, true), _this.elements.container.focus(), _0x16d598.stopPropagation(), false;
                 }), Array.from(_this.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames.tabs, ' li'))).forEach(function(_0x523f7b) {
                     _0x1093f4.call(_this, _0x523f7b, 'mousedown', function(_0xa99a78) {
                         _0x3a8e2f(_this.elements.dialogs.gamepad.querySelectorAll('.' .concat(_0x378b5c.classNames.tabs, ' li')), _0x378b5c.classNames.active, false);
@@ -3127,7 +3132,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'setCheatDialog': function() {
                 let _this = this;
                 if (_this.elements.dialogs.cheat) {
-                    _this.elements.dialogs.cheat.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>Cheats</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['cheats-list'], '">\n                        \n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['cheats-add'], '">'+_this.localization('Add Cheat')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-submit'], '">'+_this.localization('OK')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">Close</a>\n                </div>\n            </div>\n\n            \n\n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" style="width:100%" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484b-title">\n                    '+_this.localization('Add Cheat Code')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484b-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_this.localization('Code')+'</strong><br />\n                        <textarea style="width:100%;height:80px;" class="').concat(_0x378b5c.classNames['cheat-code-input'], '"></textarea><br />\n                        <strong>'+_this.localization('Description')+'</strong><br />\n                        <input type="text" class="').concat(_0x378b5c.classNames['cheat-name-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_this.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_this.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            ');
+                    _this.elements.dialogs.cheat.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>Cheats</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['cheats-list'], '">\n                        \n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['cheats-add'], '">'+_this.localization('Add Cheat')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">Close</a>\n                </div>\n            </div>\n\n            \n\n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" style="width:100%" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484b-title">\n                    '+_this.localization('Add Cheat Code')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484b-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_this.localization('Code')+'</strong><br />\n                        <textarea style="width:100%;height:80px;" class="').concat(_0x378b5c.classNames['cheat-code-input'], '"></textarea><br />\n                        <strong>'+_this.localization('Description')+'</strong><br />\n                        <input type="text" class="').concat(_0x378b5c.classNames['cheat-name-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_this.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_this.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            ');
                     let _0x17edbf = _this.elements.dialogs.cheat.querySelector('#modal-85cd7a1c543a484b');
                     _0x1093f4.call(this, _this.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['cheats-add'])), 'click', function(_0x2a74b5) {
                         return _0x4d8495.show('modal-85cd7a1c543a484b', {
@@ -3186,9 +3191,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         return _0x576733.stopPropagation(), false;
                     }), _0x1093f4.call(_this, _this.elements.container, 'start-game', function(_0x4c266e) {
                         _0x257001();
-                    }), _0x1093f4.call(this, _this.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x4adb2c) {
-                        return _0x132da7(_this.elements.dialogs.cheat, true), _0x4adb2c.stopPropagation(), _this.elements.container.focus(), false;
-                    }), _0x1093f4.call(this, _this.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-submit'])), 'click', function(_0x5785f6) {
+                    }), _0x1093f4.call(this, _this.elements.dialogs.cheat.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x5785f6) {
                         _0x378b5c.resetCheat();
                         _0x2c1832.querySelectorAll('input:checked').forEach(function(_0xeb7426, _0x45b02d) {
                             let _0x27e2c1 = _this.cheats[_0xeb7426.value];
@@ -3204,376 +3207,394 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 var _0xa88a13 = this,
                     _0x17edbf = this,
                     _this = this;
-                if (_0x17edbf.elements.dialogs.netplay) {
-                    _0x17edbf.elements.dialogs.netplay.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>'+_0x17edbf.localization('Netplay')+'</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['netplay-roomlist'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Rooms')+'</strong>\n                        <table style="width:100%" cellspacing=0>\n                            <thead>\n                                <tr>\n                                    <td>'+_0x17edbf.localization('Room Name')+'</td>\n                                    <td>'+_0x17edbf.localization('Players')+'</td>\n                                    <td></td>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr>\n                                    <td></td>\n                                    <td></td>\n                                    <td></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </div>\n\n                    <div class="').concat(_0x378b5c.classNames['netplay-room'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong>\n                        <div data-room-password>'+_0x17edbf.localization('Password')+': <span></span></div>\n                        <table style="width:100%" cellspacing="0">\n                            <thead>\n                            <tr>\n                                <td>'+_0x17edbf.localization('Player')+'</td>\n                                <td>'+_0x17edbf.localization('Name')+'</td>\n                                <td></td>\n                            </tr>\n                            </thead>\n                            <tbody>\n                            <tr>\n                                <td>1</td>\n                                <td>'+_0x17edbf.localization('Name')+' 1</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>2</td>\n                                <td>'+_0x17edbf.localization('Name')+' 2</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>3</td>\n                                <td>'+_0x17edbf.localization('Name')+' 3</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>4</td>\n                                <td>'+_0x17edbf.localization('Name')+' 4</td>\n                                <td></td>\n                            </tr>\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-quit'], '">'+_0x17edbf.localization('Quit Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-create-room'], '">'+_0x17edbf.localization('Create a Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">'+_0x17edbf.localization('Close')+'</a>\n                </div>\n            </div>\n\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-9de6c4e9ce2b9361" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-9de6c4e9ce2b9361-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-9de6c4e9ce2b9361-title">\n                        '+_0x17edbf.localization('Set Player Name')+'\n                    </h2>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-9de6c4e9ce2b9361-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Player Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-player-name'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484a" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484a-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484a-title">\n                    '+_0x17edbf.localization('Create a Room')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484a-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-name-input'], '" /><br />\n                        <strong>Max Players</strong><br />\n                        <select data-max-players>\n                            <option value="2">2</option>\n                            <option value="3">3</option>\n                            <option value="4">4</option>\n                        </select>\n                        <br />\n                        <strong>'+_0x17edbf.localization('Password (optional)')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-5aa765d61d8327de" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-5aa765d61d8327de-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-5aa765d61d8327de-title">\n                        '+_0x17edbf.localization('Password')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-5aa765d61d8327de-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-7d8fd50ed642340b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-7d8fd50ed642340b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-7d8fd50ed642340b-title"></h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-7d8fd50ed642340b-content">\n                        \n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '" data-modal-close>OK</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            '), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x3d4554) {
-                        return _0x132da7(_0x17edbf.elements.dialogs.netplay, true), _0x378b5c.disableControl(!0x1), _0x378b5c.stopLoadRooms(), _0x3d4554.stopPropagation(), _0x17edbf.elements.container.focus(), !0x1;
-                    }), window.setInterval(function() {
-                        var _0xa88a13 = '<ul>';
-                        _0x378b5c.players.forEach(function(_0x20c45e, _0x14d0b2) {
-                            var _0x57ec9c = null;
-                            _0x20c45e ? (_0x378b5c.connection.peers[_0x20c45e] ? _0x57ec9c = _0x378b5c.connection.peers[_0x20c45e].extra : _0x378b5c.connection.userid === _0x20c45e && (_0x57ec9c = _0x378b5c.connection.extra), _0xa88a13 += '<li>' .concat(_0x14d0b2 + 0x1, '. ').concat(_0x57ec9c.name, '</li>')) : _0xa88a13 += '<li>' .concat(_0x14d0b2 + 0x1, '. </li>');
-                        }), _0xa88a13 += '</ul>', _0x17edbf.elements.widgets.netplay.innerHTML = _0xa88a13;
-                    }, 0x1f4);
-                    var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-9de6c4e9ce2b9361'),
-                        _0x36bde0 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-85cd7a1c543a484a'),
-                        _0x5289c1 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-7d8fd50ed642340b'),
-                        _0x325651 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-5aa765d61d8327de'),
-                        _0x3d0d28 = {};
-                    _0x378b5c.connection = new _0x4a2390.a();
-                    var _0x10d51e = _0xa88a13.socketUrl;
-                    if (! _0x10d51e.endsWith('/')) {
-                        _0x10d51e += '/';
-                    };
-                _0x378b5c.connection.socketURL = '/', _0x378b5c.connection.socketURL = _0x10d51e, _0x378b5c.connection.socketMessageEvent = 'emulatorjs-message', _0x378b5c.connection.socketCustomEvent = 'emulatorjs-custom-message';
-                var _0xda20e9 = _0x59aa33.info();
-                _0x378b5c.connection.extra = {
-                    'name': _0x378b5c.playerName,
-                    'game_id': _0x17edbf.config.gameId,
-                    'browser_name': _0xda20e9.name,
-                    'room_name': ' ',
-                    'domain': document.domain
-                }
-                _0x378b5c.connection.socketMessageEvent = 'netplay';
-                _0x378b5c.connection.enableFileSharing = true;
-                _0x378b5c.connection.enableLogs = true;
-                _0x378b5c.connection.session = {
-                    'data': true
-                };
-                _0x378b5c.connection.sdpConstraints.mandatory = {
-                    'OfferToReceiveAudio': false,
-                    'OfferToReceiveVideo': false
-                }
-                _0x378b5c.connection.onclose = function() {};
-                
-                //TODO - I do not want to use webrtc
-                /*
-                _0x378b5c.connection.iceServers = [{
-                    'urls': ['stun:webrtcweb.com:7788'],
-                    'username': 'muazkh',
-                    'credential': 'muazkh'
-                }, {
-                    'urls': ['turn:webrtcweb.com:7788', 'turn:webrtcweb.com:8877', 'turn:webrtcweb.com:4455'],
-                    'username': 'muazkh',
-                    'credential': 'muazkh'
-                }, {
-                    'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun.l.google.com:19302?transport=udp']
-                }]*/
-                _0x378b5c.connection.maxParticipantsAllowed = 4;
-                _0x378b5c.netPlayInitFrame = 0;
-                var _0x1eb137 = 0,
-                    _0x52eb7d = false;
-                Module.postMainLoop = function() {
-                    var _0xa88a13;
-                    if (_0x378b5c.currentFrame = parseInt(_0x378b5c.currentFrameNum(), 0xa), _0x378b5c.connected) {
-                        if (_0x1eb137 += 0x1, _0x378b5c.connection.isInitiator) _0x1eb137 >= 0x1 && function() {
-                            for (var _0xa88a13 = [], _0x17edbf = _0x378b5c.currentFrame - 0x1; _0x17edbf < _0x378b5c.currentFrame; _0x17edbf += 0x1) _0x378b5c.inputsData[_0x17edbf] ? _0x378b5c.inputsData[_0x17edbf].forEach(function(_0x2a02da, _0x1b2066) {
-                                _0xa88a13.push('' .concat(_0x2a02da.index, '|').concat(_0x2a02da.key, '|').concat(_0x2a02da.status, '|').concat(_0x2a02da.frame));
-                            }) : _0xa88a13.push('-1|||' .concat(_0x17edbf));
-                            _0x378b5c.connection.send(JSON.stringify({
-                                'act': 'sync-control',
-                                'value': _0xa88a13
-                            })), _0x1eb137 = 0x0, _0x378b5c.currentFrame % 0x64 == 0x0 && Object.keys(_0x378b5c.inputsData).forEach(function(_0x3125e4, _0x31ea67) {
-                                _0x3125e4 < _0x378b5c.currentFrame - 0x32 && (_0x378b5c.inputsData[_0x3125e4] = null, delete _0x378b5c.inputsData[_0x3125e4]);
-                            });
-                        }();
-                        else {
-                            if (_0x378b5c.coreOptionData[_0x378b5c.currentFrame]) {
-                                var _0x2c1832 = _0x378b5c.coreOptionData[_0x378b5c.currentFrame].key,
-                                    _0x4fd0cc = _0x378b5c.coreOptionData[_0x378b5c.currentFrame].value;
-                                _0x2593da.updateCoreOptions.call(_0x17edbf, _0x2c1832, _0x4fd0cc), delete _0x378b5c.coreOptionData[_0x378b5c.currentFrame];
-                            }
-                            if (_0x378b5c.currentFrame <= 0x0 || _0x378b5c.inputsData[_0x378b5c.currentFrame]) _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0xa88a13 = _0x378b5c.inputsData[_0x378b5c.currentFrame], _0x378b5c.inputsData[_0x378b5c.currentFrame] = null, delete _0x378b5c.inputsData[_0x378b5c.currentFrame], _0xa88a13 || (_0xa88a13 = []), _0xa88a13.forEach(function(_0x4bb42f, _0x28928a) {
-                                _0x4bb42f.index >= 0x0 && _0x378b5c.simulateInputFn(_0x4bb42f.index, _0x4bb42f.key, _0x4bb42f.status);
-                            });
-                            else {
-                                _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop();
-                                var _0x3a10d1 = !0x1,
-                                    _0x42763c = Object.keys(_0x378b5c.inputsData);
-                                0x0 == _0x42763c.length && (_0x3a10d1 = true);
-                                for (var _0x58af15 = 0x0; _0x58af15 < _0x42763c.length; _0x58af15 += 0x1) {
-                                    if (_0x42763c[_0x58af15] > _0x378b5c.currentFrame) {
-                                        console.log('lost', _0x378b5c.currentFrame), _0x3a10d1 = true;
-                                        break;
-                                    }
-                                }
-                                _0x3a10d1 ? _0x378b5c.wait || (!_0x52eb7d || _0x52eb7d < new Date().valueOf() - 0xbb8) && (_0x378b5c.inputsData = {}, _0x52eb7d = new Date().valueOf(), _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'sync-mem',
-                                    'value': _0x378b5c.connection.userid
-                                }), _0x378b5c.roomMaster)) : (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop());
-                            }
-                            _0x378b5c.currentFrame % 0x64 == 0x0 && Object.keys(_0x378b5c.inputsData).forEach(function(_0x3aa393, _0x3a7829) {
-                                _0x3aa393 < _0x378b5c.currentFrame - 0x32 && (_0x378b5c.inputsData[_0x3aa393] = null, delete _0x378b5c.inputsData[_0x3aa393]);
-                            });
+                if (!_0x17edbf.elements.dialogs.netplay) return;
+                _0x17edbf.elements.dialogs.netplay.innerHTML = '\n            <div class="' .concat(_0x378b5c.classNames['dialog-container'], '">\n                <div class="').concat(_0x378b5c.classNames['dialog-title'], '">\n                    <h4>'+_0x17edbf.localization('Netplay')+'</h4>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-content'], '">\n                    <div class="').concat(_0x378b5c.classNames['netplay-roomlist'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Rooms')+'</strong>\n                        <table style="width:100%" cellspacing=0>\n                            <thead>\n                                <tr>\n                                    <td>'+_0x17edbf.localization('Room Name')+'</td>\n                                    <td>'+_0x17edbf.localization('Players')+'</td>\n                                    <td></td>\n                                </tr>\n                            </thead>\n                            <tbody>\n                                <tr>\n                                    <td></td>\n                                    <td></td>\n                                    <td></td>\n                                </tr>\n                            </tbody>\n                        </table>\n                    </div>\n\n                    <div class="').concat(_0x378b5c.classNames['netplay-room'], '" hidden>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong>\n                        <div data-room-password>'+_0x17edbf.localization('Password')+': <span></span></div>\n                        <table style="width:100%" cellspacing="0">\n                            <thead>\n                            <tr>\n                                <td>'+_0x17edbf.localization('Player')+'</td>\n                                <td>'+_0x17edbf.localization('Name')+'</td>\n                                <td></td>\n                            </tr>\n                            </thead>\n                            <tbody>\n                            <tr>\n                                <td>1</td>\n                                <td>'+_0x17edbf.localization('Name')+' 1</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>2</td>\n                                <td>'+_0x17edbf.localization('Name')+' 2</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>3</td>\n                                <td>'+_0x17edbf.localization('Name')+' 3</td>\n                                <td></td>\n                            </tr>\n                            <tr>\n                                <td>4</td>\n                                <td>'+_0x17edbf.localization('Name')+' 4</td>\n                                <td></td>\n                            </tr>\n                            </tbody>\n                        </table>\n                    </div>\n                </div>\n                <div class="').concat(_0x378b5c.classNames['dialog-buttons'], '">\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-quit'], '">'+_0x17edbf.localization('Quit Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-create-room'], '">'+_0x17edbf.localization('Create a Room')+'</a>\n                    <a href="#" onclick="return false" class="').concat(_0x378b5c.classNames['btn-cancel'], '">'+_0x17edbf.localization('Close')+'</a>\n                </div>\n            </div>\n\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-9de6c4e9ce2b9361" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1">\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-9de6c4e9ce2b9361-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-9de6c4e9ce2b9361-title">\n                        '+_0x17edbf.localization('Set Player Name')+'\n                    </h2>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-9de6c4e9ce2b9361-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Player Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-player-name'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-85cd7a1c543a484a" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-85cd7a1c543a484a-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-85cd7a1c543a484a-title">\n                    '+_0x17edbf.localization('Create a Room')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-85cd7a1c543a484a-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <strong>'+_0x17edbf.localization('Room Name')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-name-input'], '" /><br />\n                        <strong>Max Players</strong><br />\n                        <select data-max-players>\n                            <option value="2">2</option>\n                            <option value="3">3</option>\n                            <option value="4">4</option>\n                        </select>\n                        <br />\n                        <strong>'+_0x17edbf.localization('Password (optional)')+'</strong><br />\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-5aa765d61d8327de" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-5aa765d61d8327de-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-5aa765d61d8327de-title">\n                        '+_0x17edbf.localization('Password')+'\n                    </h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-5aa765d61d8327de-content">\n\n                        <div class="').concat(_0x378b5c.classNames.modal__errmsg, '"></div>\n                        <input type="text" maxlength="10" class="').concat(_0x378b5c.classNames['netplay-room-password-input'], '" /><br />\n\n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '">'+_0x17edbf.localization('Submit')+'</button>\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, '" data-modal-close aria-label="Close">'+_0x17edbf.localization('Close')+'</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            \n            <div class="').concat(_0x378b5c.classNames.modal, ' ').concat(_0x378b5c.classNames['micromodal-slide'], '" id="modal-7d8fd50ed642340b" aria-hidden="true">\n                <div class="').concat(_0x378b5c.classNames.modal__overlay, '" tabindex="-1" data-modal-close>\n                <div class="').concat(_0x378b5c.classNames.modal__container, '" role="dialog" aria-modal="true" aria-labelledby="modal-7d8fd50ed642340b-title">\n                    <div class="').concat(_0x378b5c.classNames.modal__header, '">\n                    <h2 class="').concat(_0x378b5c.classNames.modal__title, '" id="modal-7d8fd50ed642340b-title"></h2>\n                    <button class="').concat(_0x378b5c.classNames.modal__close, '" aria-label="Close modal" data-modal-close></button>\n                    </div>\n                    <main class="').concat(_0x378b5c.classNames.modal__content, '" id="modal-7d8fd50ed642340b-content">\n                        \n                    </main>\n                    <footer class="').concat(_0x378b5c.classNames.modal__footer, '">\n                    <button class="').concat(_0x378b5c.classNames.modal__btn, ' ').concat(_0x378b5c.classNames['modal__btn-primary'], '" data-modal-close>OK</button>\n                    </footer>\n                </div>\n                </div>\n            </div>\n            \n            '), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-cancel'])), 'click', function(_0x3d4554) {
+                    return _0x132da7(_0x17edbf.elements.dialogs.netplay, true), _0x378b5c.disableControl(!0x1), _0x378b5c.stopLoadRooms(), _0x3d4554.stopPropagation(), _0x17edbf.elements.container.focus(), !0x1;
+                }), window.setInterval(function() {
+                    var _0xa88a13 = '<ul>';
+                    _0x378b5c.players.forEach(function(_0x20c45e, _0x14d0b2) {
+                        var _0x57ec9c = null;
+                        if (_0x20c45e) {
+                            _0x378b5c.connection.peers[_0x20c45e] ? _0x57ec9c = _0x378b5c.connection.peers[_0x20c45e].extra : _0x378b5c.connection.userid === _0x20c45e && (_0x57ec9c = _0x378b5c.connection.extra);
+                            _0xa88a13 += '<li>' .concat(_0x14d0b2 + 1, '. ').concat(_0x57ec9c.name, '</li>');
+                        } else {
+                            _0xa88a13 += '<li>' .concat(_0x14d0b2 + 1, '. </li>');
                         }
+                    })
+                    _0xa88a13 += '</ul>';
+                    _0x17edbf.elements.widgets.netplay.innerHTML = _0xa88a13;
+                }, 0x1f4);
+                var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-9de6c4e9ce2b9361'),
+                    _0x36bde0 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-85cd7a1c543a484a'),
+                    _0x5289c1 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-7d8fd50ed642340b'),
+                    _0x325651 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-5aa765d61d8327de'),
+                    _0x3d0d28 = {};
+                
+                _0x378b5c.connection = new _0x4a2390();
+                var _0x10d51e = _0xa88a13.serverURL.replace('http:', 'ws:').replace('https:', 'wss:');
+                if (! _0x10d51e.endsWith('/')) {
+                    _0x10d51e += '/';
+                };
+            _0x378b5c.connection.socketURL = _0x10d51e;
+            var _0xda20e9 = _0x59aa33.info();
+            _0x378b5c.connection.extra = {
+                'name': _0x378b5c.playerName,
+                'game_id': _0x17edbf.config.gameId,
+                'browser_name': _0xda20e9.name,
+                'room_name': ' ',
+                'domain': document.domain
+            }
+            _0x378b5c.connection.maxParticipantsAllowed = 4;
+            _0x378b5c.netPlayInitFrame = 0;
+            var _0x1eb137 = 0,
+                _0x52eb7d = false;
+            Module.postMainLoop = function() {
+                var _0xa88a13;
+                if (_0x378b5c.currentFrame = parseInt(_0x378b5c.currentFrameNum(), 0xa), _0x378b5c.connected) {
+                    if (_0x1eb137 += 0x1, _0x378b5c.connection.isInitiator) _0x1eb137 >= 0x1 && function() {
+                        for (var _0xa88a13 = [], _0x17edbf = _0x378b5c.currentFrame - 0x1; _0x17edbf < _0x378b5c.currentFrame; _0x17edbf += 0x1) _0x378b5c.inputsData[_0x17edbf] ? _0x378b5c.inputsData[_0x17edbf].forEach(function(_0x2a02da, _0x1b2066) {
+                            _0xa88a13.push('' .concat(_0x2a02da.index, '|').concat(_0x2a02da.key, '|').concat(_0x2a02da.status, '|').concat(_0x2a02da.frame));
+                        }) : _0xa88a13.push('-1|||' .concat(_0x17edbf));
+                        _0x378b5c.connection.send(JSON.stringify({
+                            'act': 'sync-control',
+                            'value': _0xa88a13
+                        })), _0x1eb137 = 0x0, _0x378b5c.currentFrame % 0x64 == 0x0 && Object.keys(_0x378b5c.inputsData).forEach(function(_0x3125e4, _0x31ea67) {
+                            _0x3125e4 < _0x378b5c.currentFrame - 0x32 && (_0x378b5c.inputsData[_0x3125e4] = null, delete _0x378b5c.inputsData[_0x3125e4]);
+                        });
+                    }();
+                    else {
+                        if (_0x378b5c.coreOptionData[_0x378b5c.currentFrame]) {
+                            var _0x2c1832 = _0x378b5c.coreOptionData[_0x378b5c.currentFrame].key,
+                                _0x4fd0cc = _0x378b5c.coreOptionData[_0x378b5c.currentFrame].value;
+                            _0x2593da.updateCoreOptions.call(_0x17edbf, _0x2c1832, _0x4fd0cc), delete _0x378b5c.coreOptionData[_0x378b5c.currentFrame];
+                        }
+                        if (_0x378b5c.currentFrame <= 0x0 || _0x378b5c.inputsData[_0x378b5c.currentFrame]) _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0xa88a13 = _0x378b5c.inputsData[_0x378b5c.currentFrame], _0x378b5c.inputsData[_0x378b5c.currentFrame] = null, delete _0x378b5c.inputsData[_0x378b5c.currentFrame], _0xa88a13 || (_0xa88a13 = []), _0xa88a13.forEach(function(_0x4bb42f, _0x28928a) {
+                            _0x4bb42f.index >= 0x0 && _0x378b5c.simulateInputFn(_0x4bb42f.index, _0x4bb42f.key, _0x4bb42f.status);
+                        });
+                        else {
+                            _0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop();
+                            var _0x3a10d1 = !0x1,
+                                _0x42763c = Object.keys(_0x378b5c.inputsData);
+                            0x0 == _0x42763c.length && (_0x3a10d1 = true);
+                            for (var _0x58af15 = 0x0; _0x58af15 < _0x42763c.length; _0x58af15 += 0x1) {
+                                if (_0x42763c[_0x58af15] > _0x378b5c.currentFrame) {
+                                    console.log('lost', _0x378b5c.currentFrame), _0x3a10d1 = true;
+                                    break;
+                                }
+                            }
+                            _0x3a10d1 ? _0x378b5c.wait || (!_0x52eb7d || _0x52eb7d < new Date().valueOf() - 0xbb8) && (_0x378b5c.inputsData = {}, _0x52eb7d = new Date().valueOf(), _0x378b5c.connection.send(JSON.stringify({
+                                'act': 'sync-mem',
+                                'value': _0x378b5c.connection.userid
+                            }), _0x378b5c.roomMaster)) : (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop());
+                        }
+                        _0x378b5c.currentFrame % 0x64 == 0x0 && Object.keys(_0x378b5c.inputsData).forEach(function(_0x3aa393, _0x3a7829) {
+                            _0x3aa393 < _0x378b5c.currentFrame - 0x32 && (_0x378b5c.inputsData[_0x3aa393] = null, delete _0x378b5c.inputsData[_0x3aa393]);
+                        });
                     }
                 }
-                _0x378b5c.connection.onopen = function(userid) {
-                    console.log('open', userid);
-                    _0x378b5c.connected = true, _0x378b5c.connection.isInitiator && (-0x1 === _0x378b5c.players.indexOf(userid) && (_0x378b5c.players.filter(function(_0x3eafb3, _0xabd7b7) {
-                        return null == _0x3eafb3;
-                    }).length > 0x0 ? _0x378b5c.players.forEach(function(_0xbf0f19, _0xa9d540) {
-                        null != _0xbf0f19 || _0x378b5c.players.includes(userid) || (_0x378b5c.players[_0xa9d540] = userid);
-                    }) : _0x378b5c.players.push(userid)), _0x378b5c.connection.send(JSON.stringify({
-                        'act': 'get-players-result',
-                        'value': _0x378b5c.players,
-                        'coreOptions': _0x2593da.coreOptionsValues,
-                        'newuser': userid,
-                        'master': _0x378b5c.connection.userid
-                    }))), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf);
-                }
-                
-                _0x378b5c.connection.onFileStart = function(_0x50eb3a) {
-                    var _0x2c1832 = _0x50eb3a.name.split('-');
-                    'reset' !== _0x2c1832[0x0] && 0x0 != _0x2c1832[0x0] || (_0x378b5c.inputsData = {}, _0x378b5c.disableControl(true));
-                    _0x378b5c.showLoading.call(_0x17edbf);
-                    _0x378b5c.connection.isInitiator ? (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop()) : _0x378b5c.inputsData = {};
-                }
-                _0x378b5c.connection.onFileEnd = function(_0x45d454) {
-                    _0x378b5c.hideLoading.call(_0x17edbf);
-                    var _0x2c1832 = _0x45d454.name.split('-'),
-                        _0x3795d9 = _0x2c1832[0x0] >> 0x0;
-                    'reset' === _0x2c1832[0x0] ? (_0x3795d9 = 0x0, _0x378b5c.connection.isInitiator ? (_0x378b5c.systemPause(0x0), _0x378b5c.disableControl(!0x1), _0x17edbf.playing = true, _0x27f4c4.Module.resumeMainLoop()) : _0x550f17.a.get(_0x45d454.url, {
-                        'responseType': 'arraybuffer'
-                    }).then(function(_0x37db4c) {
+            }
+            _0x378b5c.connection.onopen = function(userid) {
+                console.log('open', userid);
+                _0x378b5c.connected = true, _0x378b5c.connection.isInitiator && (-0x1 === _0x378b5c.players.indexOf(userid) && (_0x378b5c.players.filter(function(_0x3eafb3, _0xabd7b7) {
+                    return null == _0x3eafb3;
+                }).length > 0x0 ? _0x378b5c.players.forEach(function(_0xbf0f19, _0xa9d540) {
+                    null != _0xbf0f19 || _0x378b5c.players.includes(userid) || (_0x378b5c.players[_0xa9d540] = userid);
+                }) : _0x378b5c.players.push(userid)), _0x378b5c.connection.send(JSON.stringify({
+                    'act': 'get-players-result',
+                    'value': _0x378b5c.players,
+                    'coreOptions': _0x2593da.coreOptionsValues,
+                    'newuser': userid,
+                    'master': _0x378b5c.connection.userid
+                }))), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf);
+            }
+            
+            _0x378b5c.connection.onFileStart = function(_0x50eb3a) {
+                var _0x2c1832 = _0x50eb3a.name.split('-');
+                'reset' !== _0x2c1832[0x0] && 0x0 != _0x2c1832[0x0] || (_0x378b5c.inputsData = {}, _0x378b5c.disableControl(true));
+                _0x378b5c.showLoading.call(_0x17edbf);
+                _0x378b5c.connection.isInitiator ? (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop()) : _0x378b5c.inputsData = {};
+            }
+            _0x378b5c.connection.onFileEnd = function(_0x45d454) {
+                _0x378b5c.hideLoading.call(_0x17edbf);
+                var _0x2c1832 = _0x45d454.name.split('-'),
+                    _0x3795d9 = _0x2c1832[0x0] >> 0x0;
+                if ('reset' === _0x2c1832[0x0]) {
+                    _0x3795d9 = 0x0;
+                    if (_0x378b5c.connection.isInitiator) {
+                        _0x378b5c.systemPause(0x0);
+                        _0x378b5c.disableControl(false);
+                        _0x17edbf.playing = true;
+                        _0x27f4c4.Module.resumeMainLoop()
+                    } else {
                         _0x378b5c.inputsData = {};
-                        var _0x2c1832 = new Uint8Array(_0x37db4c.data);
-                        _0x378b5c.loadState(_0x2c1832, _0x3795d9), _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1, _0x17edbf.playing = true, _0x27f4c4.Module.resumeMainLoop();
-                    })) : 'game.state' === _0x2c1832[0x1] && (_0x378b5c.connection.isInitiator ? (_0x378b5c.openRoom(_0x17edbf), _0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop()) : (_0x378b5c.netPlayInitFrame = _0x3795d9, _0x550f17.a.get(_0x45d454.url, {
-                        'responseType': 'arraybuffer'
-                    }).then(function(_0x4d241b) {
-                        var _0x2c1832 = new Uint8Array(_0x4d241b.data);
-                        _0x378b5c.loadState(_0x2c1832, _0x3795d9), _0x378b5c.wait = !0x1, _0x378b5c.disableInput = !0x1, _0x378b5c.connection.send(JSON.stringify({
+                        var _0x2c1832 = _0x45d454.data;
+                        _0x378b5c.loadState(_0x2c1832, _0x3795d9);
+                        _0x378b5c.wait = !0x1;
+                        _0x378b5c.systemPause(0x0);
+                        _0x378b5c.disableInput = !0x1;
+                        _0x17edbf.playing = true;
+                        _0x27f4c4.Module.resumeMainLoop();
+                    }
+                } else if ('game.state' === _0x2c1832[0x1]) {
+                    if (_0x378b5c.connection.isInitiator) {
+                        _0x378b5c.openRoom(_0x17edbf);
+                        _0x378b5c.wait = !0x1;
+                        _0x378b5c.systemPause(0x0);
+                        _0x27f4c4.Module.resumeMainLoop();
+                    } else {
+                        _0x378b5c.netPlayInitFrame = _0x3795d9;
+                        var _0x2c1832 = _0x45d454.data;
+                        _0x378b5c.loadState(_0x2c1832, _0x3795d9);
+                        _0x378b5c.wait = !0x1;
+                        _0x378b5c.disableInput = !0x1;
+                        _0x378b5c.connection.send(JSON.stringify({
                             'act': 'wait-end',
                             'value': _0x378b5c.connection.userid
-                        })), _0x378b5c.hideLoading.call(_0x17edbf), _0x17edbf.playing = true, _0x27f4c4.Module.resumeMainLoop();
-                    }))), _0x378b5c.connection.isInitiator || console.log('recv mem end', _0x378b5c.currentFrame, _0x45d454.name);
-                };
-                
-                var _0x3bdb35 = !0x1;
-                _0x378b5c.connection.onmessage = function(_0x32e81a) {
-                    var _0x2c1832, _0x2dca58 = _0x32e81a.data || _0x32e81a;
-                    try {
-                        _0x2c1832 = JSON.parse(_0x2dca58);
-                    } catch (_0x3fb9cc) {
-                        _0x2c1832 = null;
+                        }))
+                        _0x378b5c.hideLoading.call(_0x17edbf);
+                        _0x17edbf.playing = true;
+                        _0x27f4c4.Module.resumeMainLoop();
+                }
+                }
+                _0x378b5c.connection.isInitiator || console.log('recv mem end', _0x378b5c.currentFrame, _0x45d454.name);
+            };
+            
+            var _0x3bdb35 = !0x1;
+            _0x378b5c.connection.onmessage = function(_0x32e81a) {
+                var _0x2c1832, _0x2dca58 = _0x32e81a.data || _0x32e81a;
+                try {
+                    _0x2c1832 = JSON.parse(_0x2dca58);
+                } catch (_0x3fb9cc) {
+                    _0x2c1832 = null;
+                }
+                if (_0x2c1832) {
+                    if ('room-master' === _0x2c1832.act && (_0x378b5c.roomMaster = _0x2c1832.value), _0x2c1832.act, 'short-pause' === _0x2c1832.act && (_0x3bdb35 || (_0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x3bdb35 = true, _0x378b5c.wait = true, setTimeout(function() {
+                        _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.wait = !0x1, _0x3bdb35 = !0x1;
+                    }, 0x30))), 'sync-control' === _0x2c1832.act) {
+                        var _0xb051c1 = _0x2c1832.value;
+                        _0x17edbf.playing || _0x378b5c.wait;
+                        var _0x2ef644 = _0x378b5c.connection.userid;
+                        _0x378b5c.players.indexOf(_0x2ef644);
+                        _0x378b5c.connection.isInitiator, _0xb051c1.forEach(function(_0x308105, _0x383237) {
+                            var _0x2c1832 = _0x308105.split('|'),
+                                _0x25a5c4 = _0x2c1832[0x0] >> 0x0,
+                                _0x2b3afd = _0x2c1832[0x1] >> 0x0,
+                                _0x4f5761 = _0x2c1832[0x2] >> 0x0,
+                                _0x249303 = _0x2c1832[0x3] >> 0x0,
+                                _0x54e0fd = _0x378b5c.currentFrame;
+                            _0x378b5c.inputsData[_0x249303] || (_0x378b5c.inputsData[_0x249303] = []), -0x1 !== _0x25a5c4 && _0x249303 === _0x54e0fd && _0x378b5c.simulateInputFn(_0x25a5c4, _0x2b3afd, _0x4f5761), _0x378b5c.connection.isInitiator ? _0x25a5c4 >= 0x0 && (_0x378b5c.inputsData[_0x54e0fd] || (_0x378b5c.inputsData[_0x54e0fd] = []), -0x2 != _0x2b3afd && (_0x378b5c.inputsData[_0x54e0fd].push({
+                                'index': _0x25a5c4,
+                                'key': _0x2b3afd,
+                                'status': _0x4f5761,
+                                'frame': _0x54e0fd
+                            }), _0x378b5c.simulateInputFn(_0x25a5c4, _0x2b3afd, _0x4f5761)), _0x3bdb35 || _0x54e0fd - 0xa >= _0x249303 && (_0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x3bdb35 = true, _0x378b5c.wait = true, setTimeout(function() {
+                                _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.wait = !0x1, _0x3bdb35 = !0x1;
+                            }, 0x30))) : ('' !== _0x25a5c4 && _0x378b5c.inputsData[_0x249303].push({
+                                'index': _0x25a5c4,
+                                'key': _0x2b3afd,
+                                'status': _0x4f5761,
+                                'frame': _0x249303
+                            }), _0x378b5c.inputsData[_0x378b5c.currentFrame] && _0x27f4c4.Module.resumeMainLoop(), _0x54e0fd + 0xa <= _0x249303 && _0x249303 > _0x378b5c.netPlayInitFrame + 0x64 && _0x378b5c.connection.send(JSON.stringify({
+                                'act': 'short-pause',
+                                'value': _0x2ef644
+                            }), _0x378b5c.roomMaster));
+                        });
                     }
-                    if (_0x2c1832) {
-                        if ('room-master' === _0x2c1832.act && (_0x378b5c.roomMaster = _0x2c1832.value), _0x2c1832.act, 'short-pause' === _0x2c1832.act && (_0x3bdb35 || (_0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x3bdb35 = true, _0x378b5c.wait = true, setTimeout(function() {
-                            _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.wait = !0x1, _0x3bdb35 = !0x1;
-                        }, 0x30))), 'sync-control' === _0x2c1832.act) {
-                            var _0xb051c1 = _0x2c1832.value;
-                            _0x17edbf.playing || _0x378b5c.wait;
-                            var _0x2ef644 = _0x378b5c.connection.userid;
-                            _0x378b5c.players.indexOf(_0x2ef644);
-                            _0x378b5c.connection.isInitiator, _0xb051c1.forEach(function(_0x308105, _0x383237) {
-                                var _0x2c1832 = _0x308105.split('|'),
-                                    _0x25a5c4 = _0x2c1832[0x0] >> 0x0,
-                                    _0x2b3afd = _0x2c1832[0x1] >> 0x0,
-                                    _0x4f5761 = _0x2c1832[0x2] >> 0x0,
-                                    _0x249303 = _0x2c1832[0x3] >> 0x0,
-                                    _0x54e0fd = _0x378b5c.currentFrame;
-                                _0x378b5c.inputsData[_0x249303] || (_0x378b5c.inputsData[_0x249303] = []), -0x1 !== _0x25a5c4 && _0x249303 === _0x54e0fd && _0x378b5c.simulateInputFn(_0x25a5c4, _0x2b3afd, _0x4f5761), _0x378b5c.connection.isInitiator ? _0x25a5c4 >= 0x0 && (_0x378b5c.inputsData[_0x54e0fd] || (_0x378b5c.inputsData[_0x54e0fd] = []), -0x2 != _0x2b3afd && (_0x378b5c.inputsData[_0x54e0fd].push({
-                                    'index': _0x25a5c4,
-                                    'key': _0x2b3afd,
-                                    'status': _0x4f5761,
-                                    'frame': _0x54e0fd
-                                }), _0x378b5c.simulateInputFn(_0x25a5c4, _0x2b3afd, _0x4f5761)), _0x3bdb35 || _0x54e0fd - 0xa >= _0x249303 && (_0x378b5c.systemPause(0x1), _0x27f4c4.Module.pauseMainLoop(), _0x3bdb35 = true, _0x378b5c.wait = true, setTimeout(function() {
-                                    _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x378b5c.wait = !0x1, _0x3bdb35 = !0x1;
-                                }, 0x30))) : ('' !== _0x25a5c4 && _0x378b5c.inputsData[_0x249303].push({
-                                    'index': _0x25a5c4,
-                                    'key': _0x2b3afd,
-                                    'status': _0x4f5761,
-                                    'frame': _0x249303
-                                }), _0x378b5c.inputsData[_0x378b5c.currentFrame] && _0x27f4c4.Module.resumeMainLoop(), _0x54e0fd + 0xa <= _0x249303 && _0x249303 > _0x378b5c.netPlayInitFrame + 0x64 && _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'short-pause',
-                                    'value': _0x2ef644
-                                }), _0x378b5c.roomMaster));
-                            });
-                        }
-                        if (_0x2c1832.act, _0x2c1832.act, 'update-core-option' === _0x2c1832.act && (_0x378b5c.connection.isInitiator || (_0x378b5c.coreOptionData[_0x2c1832.frame] = {
-                            'key': _0x2c1832.key,
-                            'value': _0x2c1832.value
-                        })), 'restart-game' === _0x2c1832.act && (_0x378b5c.inputsData = {}, _0x378b5c.connection.send(JSON.stringify({
-                            'act': 'sync-mem',
-                            'value': _0x378b5c.connection.userid
-                        }), _0x378b5c.roomMaster)), 'pause' === _0x2c1832.act && _0x27f4c4.Module.pauseMainLoop(), 'resume' === _0x2c1832.act && _0x27f4c4.Module.resumeMainLoop(), 'wait' === _0x2c1832.act && (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x2c1832.value !== _0x378b5c.connection.userid && (_0x378b5c.waitingList[_0x2c1832.value] = 0x1), _0x378b5c.disableControl(true)), 'wait-end' === _0x2c1832.act && (_0x378b5c.waitingList[_0x2c1832.value] && delete _0x378b5c.waitingList[_0x2c1832.value], 0x0 === Object.keys(_0x378b5c.waitingList).length && (_0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1)), 'sync-mem' === _0x2c1832.act) {
-                            _0x378b5c.wait = true, _0x378b5c.systemPause(0x1);
-                            var _0x2a5bce = _0x2c1832.value;
-                            _0x378b5c.disableControl(true), _0x378b5c.connection.send(JSON.stringify({
-                                'act': 'wait',
-                                'value': _0x2a5bce
-                            }));
-                            (async () => {
-                                const state = await _0x378b5c.saveState();
-                                _0x27f4c4.FS.createDataFile('/', 'game.state', state, true, true);
-                                _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number'])('game.state', 0);
-                                //_0x27f4c4.FS.unlink('game.state');
-                                _0x378b5c.inputsData = {};
-                                const file = new File([state], '0-game.state', {
-                                    'type': '',
-                                    'lastModified': new Date()
-                                });
-                                _0x378b5c.connection.shareFile(file, _0x2a5bce);
-                            })()
-                        }
-                        if (_0x2c1832.act, 'get-players-result' === _0x2c1832.act && (_0x378b5c.players = _0x2c1832.value, _0x378b5c.roomMaster = _0x2c1832.master, _0x2c1832.newuser === _0x378b5c.connection.userid)) {
-                            var _0x418ccb = _0x2593da.coreOptionsValues;
-                            _0x2c1832.coreOptions && Object.keys(_0x2c1832.coreOptions).forEach(function(_0x3f4c8f) {
-                                _0x418ccb[_0x3f4c8f] !== _0x2c1832.coreOptions[_0x3f4c8f] && _0x2593da.updateCoreOptions.call(_0x17edbf, _0x3f4c8f, _0x2c1832.coreOptions[_0x3f4c8f]);
-                            }), _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.disableControl(true), setTimeout(function() {
-                                _0x378b5c.connection.send(JSON.stringify({
-                                    'act': 'sync-mem',
-                                    'value': _0x378b5c.connection.userid
-                                }), _0x378b5c.roomMaster);
-                            }, 0x1), _0x378b5c.roomMaster && _0x378b5c.connection.peers[_0x378b5c.roomMaster] && (_0x378b5c.connection.extra.room_name = _0x378b5c.connection.peers[_0x378b5c.roomMaster].extra.room_name, _0x378b5c.connection.updateExtraData()), _0x378b5c.connection.peers[_0x378b5c.roomMaster] && (_0x3d0d28 = _0x378b5c.connection.peers[_0x378b5c.roomMaster].extra), _0x378b5c.openRoom(_0x17edbf);
-                        }
-                    }
-                }, _0x378b5c.connection.onUserStatusChanged = function(_0x4188ba) {
-                    console.log('userstatuschanged', _0x4188ba);
-                    if ('offline' === _0x4188ba.status) {
-                        var _0x17edbf = _0x378b5c.players.indexOf(_0x4188ba.userid);
-                        _0x17edbf >= 0x0 && (_0x378b5c.players[_0x17edbf] = null);
-                    }
-                    _0x4188ba.status;
-                }, _0x378b5c.connection.onExtraDataUpdated = function(_0x20ce61) {
-                    console.log('onExtraDataUpdated', _0x20ce61, _0x378b5c.connection.peers);
-                    _0x20ce61.userid === _0x378b5c.connection.userid && (_0x378b5c.connection.extra = _0x20ce61.extra);
-                }, _0x378b5c.connection.onleave = function(_0x30ebc6) {
-                    console.log('onleave', _0x30ebc6);
-                    if (_0x30ebc6.userid) {
-                        var _0x2c1832 = _0x378b5c.players.indexOf(_0x30ebc6.userid);
-                        _0x2c1832 >= 0x0 && (_0x378b5c.players[_0x2c1832] = null);
-                    }
-                    _0x378b5c.waitingList[_0x30ebc6.userid] && delete _0x378b5c.waitingList[_0x30ebc6.userid], _0x378b5c.connection.isInitiator && 0x0 === Object.keys(_0x378b5c.waitingList).length && _0x378b5c.wait && (_0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1, _0x378b5c.connection.send(JSON.stringify({
-                        'act': 'wait-end',
+                    if (_0x2c1832.act, _0x2c1832.act, 'update-core-option' === _0x2c1832.act && (_0x378b5c.connection.isInitiator || (_0x378b5c.coreOptionData[_0x2c1832.frame] = {
+                        'key': _0x2c1832.key,
+                        'value': _0x2c1832.value
+                    })), 'restart-game' === _0x2c1832.act && (_0x378b5c.inputsData = {}, _0x378b5c.connection.send(JSON.stringify({
+                        'act': 'sync-mem',
                         'value': _0x378b5c.connection.userid
-                    }))), _0x378b5c.openRoom(_0x17edbf), _0x378b5c.inputsData = {}, _0x378b5c.hideLoading.call(_0x17edbf);
-                };
-                var _0x2fba43 = function() {
-                    _0x378b5c.connected = !0x1, _0x378b5c.connection.password = null, _0x378b5c.players = [], _0x378b5c.connection.peersBackup = [], _0x378b5c.waitingList = {}, _0x378b5c.inputsData = {}, _0x378b5c.hideLoading.call(_0x17edbf), _0x132da7(_0x17edbf.elements.buttons.restart, !0x1), _0x132da7(_0x17edbf.elements.buttons.loadState, !0x1), _0x132da7(_0x17edbf.elements.buttons.saveState, !0x1), _0x378b5c.allowCheat && _0x132da7(_0x17edbf.elements.buttons.cheat, !0x1), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !0x1), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !0x1), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x3d296d) {
-                        _0x132da7(_0x3d296d, !0x1);
-                    }), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf);
-                };
-                _0x378b5c.connection.close = _0x2fba43, _0x378b5c.connection.disconnect = _0x2fba43, _0x378b5c.connection.leave = _0x2fba43;
-                var _0x3f9c57, _0x10c0ad = function(_0x42ff74, _0x306f0b, _0x345d4d) {
-                    _0x378b5c.hideLoading.call(_0x17edbf), _0x42ff74 ? (_0x378b5c.stopLoadRooms(), _0x132da7(_0x17edbf.elements.buttons.restart, true), _0x132da7(_0x17edbf.elements.buttons.loadState, true), _0x132da7(_0x17edbf.elements.buttons.saveState, true), _0x378b5c.resetCheat(), _0x132da7(_0x17edbf.elements.buttons.cheat, true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x2911fb) {
+                    }), _0x378b5c.roomMaster)), 'pause' === _0x2c1832.act && _0x27f4c4.Module.pauseMainLoop(), 'resume' === _0x2c1832.act && _0x27f4c4.Module.resumeMainLoop(), 'wait' === _0x2c1832.act && (_0x378b5c.wait = true, _0x378b5c.systemPause(0x1), _0x2c1832.value !== _0x378b5c.connection.userid && (_0x378b5c.waitingList[_0x2c1832.value] = 0x1), _0x378b5c.disableControl(true)), 'wait-end' === _0x2c1832.act && (_0x378b5c.waitingList[_0x2c1832.value] && delete _0x378b5c.waitingList[_0x2c1832.value], 0x0 === Object.keys(_0x378b5c.waitingList).length && (_0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1)), 'sync-mem' === _0x2c1832.act) {
+                        _0x378b5c.wait = true, _0x378b5c.systemPause(0x1);
+                        var _0x2a5bce = _0x2c1832.value;
+                        _0x378b5c.disableControl(true), _0x378b5c.connection.send(JSON.stringify({
+                            'act': 'wait',
+                            'value': _0x2a5bce
+                        }));
+                        (async () => {
+                            const state = await _0x378b5c.saveState();
+                            _0x27f4c4.FS.createDataFile('/', 'game.state', state, true, true);
+                            _0x27f4c4.Module.cwrap('load_state', 'number', ['string', 'number'])('game.state', 0);
+                            //_0x27f4c4.FS.unlink('game.state');
+                            _0x378b5c.inputsData = {};
+                            const file = new File([state], '0-game.state', {
+                                'type': '',
+                                'lastModified': new Date()
+                            });
+                            _0x378b5c.connection.shareFile(file, _0x2a5bce);
+                        })()
+                    }
+                    if (_0x2c1832.act, 'get-players-result' === _0x2c1832.act && (_0x378b5c.players = _0x2c1832.value, _0x378b5c.roomMaster = _0x2c1832.master, _0x2c1832.newuser === _0x378b5c.connection.userid)) {
+                        var _0x418ccb = _0x2593da.coreOptionsValues;
+                        _0x2c1832.coreOptions && Object.keys(_0x2c1832.coreOptions).forEach(function(_0x3f4c8f) {
+                            _0x418ccb[_0x3f4c8f] !== _0x2c1832.coreOptions[_0x3f4c8f] && _0x2593da.updateCoreOptions.call(_0x17edbf, _0x3f4c8f, _0x2c1832.coreOptions[_0x3f4c8f]);
+                        }), _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.disableControl(true), setTimeout(function() {
+                            _0x378b5c.connection.send(JSON.stringify({
+                                'act': 'sync-mem',
+                                'value': _0x378b5c.connection.userid
+                            }), _0x378b5c.roomMaster);
+                        }, 0x1), _0x378b5c.roomMaster && _0x378b5c.connection.peers[_0x378b5c.roomMaster] && (_0x378b5c.connection.extra.room_name = _0x378b5c.connection.peers[_0x378b5c.roomMaster].extra.room_name, _0x378b5c.connection.updateExtraData()), _0x378b5c.connection.peers[_0x378b5c.roomMaster] && (_0x3d0d28 = _0x378b5c.connection.peers[_0x378b5c.roomMaster].extra), _0x378b5c.openRoom(_0x17edbf);
+                    }
+                }
+            }, _0x378b5c.connection.onUserStatusChanged = function(_0x4188ba) {
+                console.log('userstatuschanged', _0x4188ba);
+                if ('offline' === _0x4188ba.status) {
+                    var _0x17edbf = _0x378b5c.players.indexOf(_0x4188ba.userid);
+                    _0x17edbf >= 0x0 && (_0x378b5c.players[_0x17edbf] = null);
+                }
+            }, _0x378b5c.connection.onleave = function(_0x30ebc6) {
+                console.log('onleave', _0x30ebc6);
+                if (_0x30ebc6.userid) {
+                    var _0x2c1832 = _0x378b5c.players.indexOf(_0x30ebc6.userid);
+                    _0x2c1832 >= 0x0 && (_0x378b5c.players[_0x2c1832] = null);
+                }
+                _0x378b5c.waitingList[_0x30ebc6.userid] && delete _0x378b5c.waitingList[_0x30ebc6.userid], _0x378b5c.connection.isInitiator && 0x0 === Object.keys(_0x378b5c.waitingList).length && _0x378b5c.wait && (_0x378b5c.wait = !0x1, _0x378b5c.systemPause(0x0), _0x378b5c.disableInput = !0x1, _0x378b5c.connection.send(JSON.stringify({
+                    'act': 'wait-end',
+                    'value': _0x378b5c.connection.userid
+                }))), _0x378b5c.openRoom(_0x17edbf), _0x378b5c.inputsData = {}, _0x378b5c.hideLoading.call(_0x17edbf);
+            };
+            var _0x2fba43 = function() {
+                _0x378b5c.connected = !0x1, _0x378b5c.connection.password = null, _0x378b5c.players = [], _0x378b5c.connection.peersBackup = [], _0x378b5c.waitingList = {}, _0x378b5c.inputsData = {}, _0x378b5c.hideLoading.call(_0x17edbf), _0x132da7(_0x17edbf.elements.buttons.restart, !0x1), _0x132da7(_0x17edbf.elements.buttons.loadState, !0x1), _0x132da7(_0x17edbf.elements.buttons.saveState, !0x1), _0x378b5c.allowCheat && _0x132da7(_0x17edbf.elements.buttons.cheat, !0x1), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), !0x1), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), !0x1), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x3d296d) {
+                    _0x132da7(_0x3d296d, !0x1);
+                }), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf);
+            };
+            _0x378b5c.connection.close = _0x2fba43, _0x378b5c.connection.disconnect = _0x2fba43, _0x378b5c.connection.leave = _0x2fba43;
+            var _0x3f9c57, _0x10c0ad = function(_0x42ff74, _0x306f0b, _0x345d4d) {
+                _0x378b5c.hideLoading.call(_0x17edbf);
+                if (_0x42ff74) {
+                    _0x378b5c.stopLoadRooms();
+                    _0x132da7(_0x17edbf.elements.buttons.restart, true);
+                    _0x132da7(_0x17edbf.elements.buttons.loadState, true);
+                    _0x132da7(_0x17edbf.elements.buttons.saveState, true);
+                    _0x378b5c.resetCheat(), _0x132da7(_0x17edbf.elements.buttons.cheat, true);
+                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true);
+                    _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true);
+                    Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x2911fb) {
                         _0x132da7(_0x2911fb, true);
-                    }), _0x378b5c.connection.socket && _0x378b5c.connection.socket.on('set-isInitiator-true', function(_0x31da46) {
+                    })/*
+                    _0x378b5c.connection.socket && _0x378b5c.connection.socket.on('set-isInitiator-true', function(_0x31da46) {
                         _0x31da46 === _0x378b5c.connection.sessionid && (_0x378b5c.connection.socket.emit('extra-data-updated', _0x378b5c.connection.extra), _0x378b5c.connection.send(JSON.stringify({
                             'act': 'room-master',
                             'value': _0x378b5c.connection.userid
                         })), _0x378b5c.roomMaster = _0x378b5c.connection.userid, _0x378b5c.systemPause(0x0), _0x27f4c4.Module.resumeMainLoop(), _0x2593da.updateCoreOptionMenuItems.call(_0x17edbf), _0x132da7(_0x17edbf.elements.buttons.restart, !0x1), _0x132da7(_0x17edbf.elements.buttons.loadState, !0x1), _0x132da7(_0x17edbf.elements.buttons.saveState, !0x1), Array.from(_0x17edbf.elements.buttons.play).forEach(function(_0x132034) {
                             _0x132da7(_0x132034, !0x1);
                         }));
-                    })) : (_0x4d8495.close(), _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = _0x345d4d, _0x4d8495.show('modal-7d8fd50ed642340b', {
+                    })*/
+                } else {
+                    _0x4d8495.close();
+                    _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = _0x345d4d;
+                    _0x4d8495.show('modal-7d8fd50ed642340b', {
                         'closeTrigger': 'data-modal-close'
-                    }));
-                },
-                    _0x1e0cdb = function(_0x5b3f13) {
-                        var _0x2c1832 = _0x5b3f13.target.getAttribute('data-id');
-                        if ('Y' === _0x5b3f13.target.getAttribute('data-password')) _0x4d8495.show('modal-5aa765d61d8327de', {
-                            'closeTrigger': 'data-modal-close'
-                        }), _0x325651.setAttribute('data-id', _0x2c1832);
-                        else {
-                            _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.userid = _0x378b5c.connection.token();
-                            try {
-                                _0x378b5c.connection.join(_0x2c1832, _0x10c0ad);
-                            } catch (_0x2767b9) {
-                                _0x378b5c.hideLoading.call(_0x17edbf), _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = 'Error', _0x4d8495.show('modal-7d8fd50ed642340b', {
-                                    'closeTrigger': 'data-modal-close'
-                                });
-                            }
-                        }
-                        return _0x5b3f13.stopPropagation(), !0x1;
-                    };
-                _0x378b5c.loadRoomsList = function() {
-                    _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), true), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), true);
-                    var listUrl = _0x17edbf.listUrl
-                    if (! listUrl.endsWith('/')) {
-                        listUrl += '/';
-                    };
-                    var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])).querySelector('tbody'),
-                        _0x5cf2be = [listUrl, 'list?game_id=', _0x17edbf.config.gameId, '&domain=', document.domain].join('');
-                    _0x550f17.a.get(_0x5cf2be, {}).then(function(_0x37c60b) {
-                        if (_0x37c60b.data) {
-                            var _0x4782da = [],
-                                _0x28e87d = [];
-                            _0x2c1832.querySelectorAll('tr').forEach(function(_0x1e5a22) {
-                                _0x28e87d.push(_0x1e5a22.getAttribute('id'));
-                            }), Object.keys(_0x37c60b.data).forEach(function(_0x47ae0e) {
-                                var _0x4a8f4c = _0x37c60b.data[_0x47ae0e];
-                                if (_0x4782da.push(_0x47ae0e), _0x28e87d.includes(_0x47ae0e)) {
-                                    var _0x2d672f = _0x2c1832.querySelector('tr[id="' .concat(_0x47ae0e, '"]'));
-                                    _0x2c1832.removeChild(_0x2d672f);
-                                }
-                                var _0x295f41 = document.createElement('tr');
-                                _0x295f41.setAttribute('id', _0x47ae0e);
-                                var _0xa2ea61 = _0x4a8f4c.password ? _0x378b5c.icons.lock : '',
-                                    _0x5452b6 = _0x4a8f4c.password ? 'Y' : 'N',
-                                    _0xb3121d = _0x4a8f4c.current < _0x4a8f4c.max ? '<span data-id="' .concat(_0x47ae0e, '" data-password="').concat(_0x5452b6, '" class="').concat(_0x378b5c.classNames['btn-join-room'], '">Join</span>') : '',
-                                    _0x5c8146 = _0x4a8f4c.country ? _0x4a8f4c.country : '?';
-                                _0x295f41.innerHTML = '<td>[' .concat(_0x5c8146, '] ').concat(_0xa2ea61, ' ').concat(_0x4a8f4c.room_name, '</td><td>').concat(_0x4a8f4c.current, '/').concat(_0x4a8f4c.max, '</td><td>').concat(_0xb3121d, '</td>'), _0x1093f4.call(_0xa88a13, _0x295f41.querySelector('.' .concat(_0x378b5c.classNames['btn-join-room'])), 'click', _0x1e0cdb), _0x2c1832.appendChild(_0x295f41);
-                            }), _0x2c1832.querySelectorAll('tr').forEach(function(_0x24dcf7) {
-                                _0x4782da.includes(_0x24dcf7.id) || _0x2c1832.removeChild(_0x24dcf7);
+                    })
+                }
+            },
+                _0x1e0cdb = function(_0x5b3f13) {
+                    var _0x2c1832 = _0x5b3f13.target.getAttribute('data-id');
+                    if ('Y' === _0x5b3f13.target.getAttribute('data-password')) _0x4d8495.show('modal-5aa765d61d8327de', {
+                        'closeTrigger': 'data-modal-close'
+                    }), _0x325651.setAttribute('data-id', _0x2c1832);
+                    else {
+                        _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.userid = _0x378b5c.connection.token();
+                        try {
+                            _0x378b5c.connection.join(_0x2c1832, _0x10c0ad);
+                        } catch (_0x2767b9) {
+                            _0x378b5c.hideLoading.call(_0x17edbf), _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = 'Error', _0x4d8495.show('modal-7d8fd50ed642340b', {
+                                'closeTrigger': 'data-modal-close'
                             });
                         }
-                        _0x378b5c.loadRoomsListTimer = setTimeout(_0x378b5c.loadRoomsList, 0x7d0);
-                    }).catch(function(_0x227055) {
-                        console.log('Network Error', _0x227055), _0x378b5c.loadRoomsListTimer = setTimeout(_0x378b5c.loadRoomsList, 0x7d0);
-                    });
-                }, _0x378b5c.openRoom = function() {
-                    _0x378b5c.stopLoadRooms();
-                    _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), true);
-                    _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), !0x1);
-                    _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), true);
-                    _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), !0x1);
-                    _0x378b5c.resetCheat();
-                    _0x132da7(_this.elements.buttons.cheat, true);
-                    var _0x17edbf = _this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])),
-                        _0x2c1832 = _0x17edbf.querySelector('[data-room-password]');
-                    null === _0x378b5c.connection.password ? _0x132da7(_0x2c1832, true) : (_0x132da7(_0x2c1832, !0x1), _0x2c1832.querySelector('span').innerText = _0x378b5c.connection.password);
-                    var _0x18c1cb = _0x17edbf.querySelector('tbody');
-                    _0x18c1cb.innerHTML = '', _0x17edbf.querySelector('strong').innerText = _0x3d0d28.room_name, _0x378b5c.players.forEach(function(_0x938d55, _0xf3d39a) {
-                        var _0x2c1832 = null;
-                        if (_0x938d55 && (_0x378b5c.connection.peers[_0x938d55] ? _0x2c1832 = _0x378b5c.connection.peers[_0x938d55].extra : _0x378b5c.connection.userid === _0x938d55 && (_0x2c1832 = _0x378b5c.connection.extra), _0x2c1832 && _0x2c1832.name)) {
-                            var _0x564064 = document.createElement('tr');
-                            _0x564064.innerHTML = '<td>' .concat(_0xf3d39a + 0x1, '</td><td>').concat(_0x2c1832.name, '</td><td></td>'), _0x18c1cb.appendChild(_0x564064);
-                        }
-                    });
-                }, _0x1093f4.call(this, _0x325651.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x9ac969) {
-                    var _0x2c1832 = _0x325651.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-password-input'])).value;
-                    _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.password = _0x2c1832;
-                    var _0xcf7207 = _0x325651.getAttribute('data-id');
-                    _0x378b5c.connection.join(_0xcf7207, function(_0x1a0deb, _0x1ef6c8, _0x1ad18e) {
-                        _0x10c0ad(_0x1a0deb, 0x0, _0x1ad18e), _0x1a0deb && _0x325651.classList.remove(_0x449eac({
-                            'is-open': true
-                        }));
-                    }), _0x9ac969.stopPropagation();
-                }), _0x1093f4.call(this, _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x43f795) {
-                    var _0x17edbf = _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames['netplay-player-name'])).value;
-                    _0x17edbf = _0x17edbf.replace(/<|>/g, ''), _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = '', _0x17edbf.trim() && (_0x378b5c.playerName = _0x17edbf.trim(), _0x378b5c.connection.extra.name = _0x17edbf.trim(), _0x4d8495.close()), _0x43f795.stopPropagation();
-                }), _0x1093f4.call(this, _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x202cf6) {
-                    var _0x2c1832 = _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-name-input'])).value;
-                    _0x2c1832 = _0x2c1832.replace(/<|>/g, '');
-                    var _0x3510ed = _0x36bde0.querySelector('select[data-max-players] option:checked').value;
-                    _0x3510ed < 0x2 && (_0x3510ed = 0x2), _0x3510ed > 0x4 && (_0x3510ed = 0x4);
-                    for (var _0x1264b2 = 0x0; _0x1264b2 < _0x3510ed; _0x1264b2++) _0x378b5c.players[_0x1264b2] = null;
-                    _0x378b5c.connection.maxParticipantsAllowed = _0x3510ed;
-                    var _0x140bcf = _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-password-input'])).value;
-                    _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = '', _0x2c1832.trim() ? (_0x378b5c.connection.extra.room_name = _0x2c1832.trim(), '' !== _0x140bcf.trim() && (_0x378b5c.connection.password = _0x140bcf.trim()), _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.open(_0x378b5c.connection.token(), function(_0x3c6c26, _0x203288, _0x210547) {
-                        _0x378b5c.hideLoading.call(_0x17edbf), _0x3c6c26 ? (_0x378b5c.players[0x0] = _0x378b5c.connection.userid, _0x378b5c.roomMaster = _0x378b5c.connection.userid, _0x3f9c57.closeModal(), _0x378b5c.stopLoadRooms(), _0x3d0d28 = _0x378b5c.connection.extra, _0x378b5c.openRoom(_0x17edbf), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true)) : _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = _0x210547;
-                    })) : _0x3f9c57.closeModal(), _0x202cf6.stopPropagation();
-                }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), 'click', function(_0x48cb26) {
-                    return _0x3f9c57 = _0x4d8495.show('modal-85cd7a1c543a484a', {
-                        'closeTrigger': 'data-modal-close',
-                        'onClose': function() {
-                            _0x17edbf.elements.container.focus();
-                        }
-                    }), _0x48cb26.stopPropagation(), !0x1;
-                }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), 'click', function(_0x68459d) {
-                    return _0x378b5c.connection.close(), _0x378b5c.stopLoadRooms(), _0x378b5c.loadRoomsList(), _0x378b5c.inputsData = {}, _0x68459d.stopPropagation(), !0x1;
+                    }
+                    return _0x5b3f13.stopPropagation(), !0x1;
+                };
+            _0x378b5c.loadRoomsList = function() {
+                _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), true), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), !0x1), _0x132da7(_0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), true);
+                let listUrl = _0x17edbf.serverURL;
+                if (! listUrl.endsWith('/')) {
+                    listUrl += '/';
+                };
+                var _0x2c1832 = _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])).querySelector('tbody'),
+                    _0x5cf2be = [listUrl, 'list?game_id=', _0x17edbf.config.gameId, '&domain=', window.location.hostname].join('');
+                _0x550f17.a.get(_0x5cf2be, {}).then(function(_0x37c60b) {
+                    if (_0x37c60b.data) {
+                        var _0x4782da = [],
+                            _0x28e87d = [];
+                        _0x2c1832.querySelectorAll('tr').forEach(function(_0x1e5a22) {
+                            _0x28e87d.push(_0x1e5a22.getAttribute('id'));
+                        })
+                        _0x37c60b.data.forEach(function(_0x4a8f4c) {
+                            var _0x47ae0e = _0x4a8f4c.name;
+                            if (_0x4782da.push(_0x47ae0e), _0x28e87d.includes(_0x47ae0e)) {
+                                var _0x2d672f = _0x2c1832.querySelector('tr[id="' .concat(_0x47ae0e, '"]'));
+                                _0x2c1832.removeChild(_0x2d672f);
+                            }
+                            var _0x295f41 = document.createElement('tr');
+                            _0x295f41.setAttribute('id', _0x47ae0e);
+                            var _0xa2ea61 = _0x4a8f4c.password ? _0x378b5c.icons.lock : '',
+                                _0x5452b6 = _0x4a8f4c.password ? 'Y' : 'N',
+                                _0xb3121d = _0x4a8f4c.users < _0x4a8f4c.max_users ? '<span data-id="' .concat(_0x47ae0e, '" data-password="').concat(_0x5452b6, '" class="').concat(_0x378b5c.classNames['btn-join-room'], '">Join</span>') : '';
+                            _0x295f41.innerHTML = '<td>'.concat(_0xa2ea61, ' ').concat(_0x4a8f4c.name, '</td><td>').concat(_0x4a8f4c.users, '/').concat(_0x4a8f4c.max_users, '</td><td>').concat(_0xb3121d, '</td>'), _0x1093f4.call(_0xa88a13, _0x295f41.querySelector('.' .concat(_0x378b5c.classNames['btn-join-room'])), 'click', _0x1e0cdb), _0x2c1832.appendChild(_0x295f41);
+                        })
+                        _0x2c1832.querySelectorAll('tr').forEach(function(_0x24dcf7) {
+                            _0x4782da.includes(_0x24dcf7.id) || _0x2c1832.removeChild(_0x24dcf7);
+                        });
+                    }
+                    _0x378b5c.loadRoomsListTimer = setTimeout(_0x378b5c.loadRoomsList, 0x7d0);
+                }).catch(function(_0x227055) {
+                    console.log('Network Error', _0x227055), _0x378b5c.loadRoomsListTimer = setTimeout(_0x378b5c.loadRoomsList, 0x7d0);
                 });
-            }
+            }, _0x378b5c.openRoom = function() {
+                _0x378b5c.stopLoadRooms();
+                _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-roomlist'])), true);
+                _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])), !0x1);
+                _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), true);
+                _0x132da7(_this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), !0x1);
+                _0x378b5c.resetCheat();
+                _0x132da7(_this.elements.buttons.cheat, true);
+                var _0x17edbf = _this.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['netplay-room'])),
+                    _0x2c1832 = _0x17edbf.querySelector('[data-room-password]');
+                null === _0x378b5c.connection.password ? _0x132da7(_0x2c1832, true) : (_0x132da7(_0x2c1832, !0x1), _0x2c1832.querySelector('span').innerText = _0x378b5c.connection.password);
+                var _0x18c1cb = _0x17edbf.querySelector('tbody');
+                _0x18c1cb.innerHTML = '', _0x17edbf.querySelector('strong').innerText = _0x3d0d28.room_name, _0x378b5c.players.forEach(function(_0x938d55, _0xf3d39a) {
+                    var _0x2c1832 = null;
+                    if (_0x938d55 && (_0x378b5c.connection.peers[_0x938d55] ? _0x2c1832 = _0x378b5c.connection.peers[_0x938d55].extra : _0x378b5c.connection.userid === _0x938d55 && (_0x2c1832 = _0x378b5c.connection.extra), _0x2c1832 && _0x2c1832.name)) {
+                        var _0x564064 = document.createElement('tr');
+                        _0x564064.innerHTML = '<td>' .concat(_0xf3d39a + 0x1, '</td><td>').concat(_0x2c1832.name, '</td><td></td>'), _0x18c1cb.appendChild(_0x564064);
+                    }
+                });
+            }, _0x1093f4.call(this, _0x325651.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x9ac969) {
+                var _0x2c1832 = _0x325651.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-password-input'])).value;
+                _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.password = _0x2c1832;
+                var _0xcf7207 = _0x325651.getAttribute('data-id');
+                _0x378b5c.connection.join(_0xcf7207, function(_0x1a0deb, _0x1ef6c8, _0x1ad18e) {
+                    _0x10c0ad(_0x1a0deb, 0x0, _0x1ad18e), _0x1a0deb && _0x325651.classList.remove(_0x449eac({
+                        'is-open': true
+                    }));
+                }), _0x9ac969.stopPropagation();
+            }), _0x1093f4.call(this, _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x43f795) {
+                var _0x17edbf = _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames['netplay-player-name'])).value;
+                _0x17edbf = _0x17edbf.replace(/<|>/g, ''), _0x2c1832.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = '', _0x17edbf.trim() && (_0x378b5c.playerName = _0x17edbf.trim(), _0x378b5c.connection.extra.name = _0x17edbf.trim(), _0x4d8495.close()), _0x43f795.stopPropagation();
+            }), _0x1093f4.call(this, _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['modal__btn-primary'])), 'click', function(_0x202cf6) {
+                var _0x2c1832 = _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-name-input'])).value;
+                _0x2c1832 = _0x2c1832.replace(/<|>/g, '');
+                var _0x3510ed = _0x36bde0.querySelector('select[data-max-players] option:checked').value;
+                _0x3510ed < 0x2 && (_0x3510ed = 0x2), _0x3510ed > 0x4 && (_0x3510ed = 0x4);
+                for (var _0x1264b2 = 0x0; _0x1264b2 < _0x3510ed; _0x1264b2++) _0x378b5c.players[_0x1264b2] = null;
+                _0x378b5c.connection.maxParticipantsAllowed = _0x3510ed;
+                var _0x140bcf = _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames['netplay-room-password-input'])).value;
+                _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = '', _0x2c1832.trim() ? (_0x378b5c.connection.extra.room_name = _0x2c1832.trim(), '' !== _0x140bcf.trim() && (_0x378b5c.connection.password = _0x140bcf.trim()), _0x378b5c.showLoading.call(_0x17edbf), _0x378b5c.connection.open(_0x378b5c.connection.token(), function(_0x3c6c26, _0x203288, _0x210547) {
+                    _0x378b5c.hideLoading.call(_0x17edbf), _0x3c6c26 ? (_0x378b5c.players[0x0] = _0x378b5c.connection.userid, _0x378b5c.roomMaster = _0x378b5c.connection.userid, _0x3f9c57.closeModal(), _0x378b5c.stopLoadRooms(), _0x3d0d28 = _0x378b5c.connection.extra, _0x378b5c.openRoom(_0x17edbf), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true)) : _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = _0x210547;
+                })) : _0x3f9c57.closeModal(), _0x202cf6.stopPropagation();
+            }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), 'click', function(_0x48cb26) {
+                return _0x3f9c57 = _0x4d8495.show('modal-85cd7a1c543a484a', {
+                    'closeTrigger': 'data-modal-close',
+                    'onClose': function() {
+                        _0x17edbf.elements.container.focus();
+                    }
+                }), _0x48cb26.stopPropagation(), !0x1;
+            }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-quit'])), 'click', function(_0x68459d) {
+                return _0x378b5c.connection.close(), _0x378b5c.stopLoadRooms(), _0x378b5c.loadRoomsList(), _0x378b5c.inputsData = {}, _0x68459d.stopPropagation(), !0x1;
+            });
             window._0x378b5c = _0x378b5c;
             },
             'initKeyboard': function() {
@@ -4298,10 +4319,51 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     if (_this.started) {
                         saveSaveFiles();
                     }
-                }, 300000)
+                }, 60000) //60000 = 1 minute
             },
             'listeners': function() {
                 let _this = this;
+                const elem = _0x530042.call(_this, '.' .concat(getClass({
+                    'ejs__dialogs': true
+                })));
+                let counter = 0;
+                _0x1093f4.call(_this, elem, 'dragenter', function(e) {
+                    e.preventDefault();
+                    counter++;
+                    _0x132da7(_this.elements.dialogs.message, false);
+                });
+                _0x1093f4.call(_this, elem, 'dragover', function(e) {
+                    e.preventDefault();
+                });
+                _0x1093f4.call(_this, elem, 'dragleave', function(e) {
+                    e.preventDefault();
+                    counter--;
+                    if (counter === 0) {
+                        _0x132da7(_this.elements.dialogs.message, true);
+                    }
+                });
+                _0x1093f4.call(_this, elem, 'dragend', function(e) {
+                    e.preventDefault();
+                    counter = 0;
+                    _0x132da7(_this.elements.dialogs.message, true);
+                });
+                _0x1093f4.call(_this, elem, 'drop', function(e) {
+                    e.preventDefault();
+                    _0x132da7(_this.elements.dialogs.message, true);
+                    counter = 0;
+                    const items = e.dataTransfer.items;
+                    let file;
+                    for (let i=0; i<items.length; i++) {
+                        if (items[i].kind !== 'file') continue;
+                        file = items[i];
+                        break;
+                    }
+                    if (!file) return;
+                    const fileHandle = file.getAsFile();
+                    fileHandle.arrayBuffer().then(data => {
+                        _0x378b5c.loadState(new Uint8Array(data), 0);
+                    })
+                });
                 _this.elements.buttons.restart && _0x1093f4.call(_this, _this.elements.buttons.restart, 'click', function(_0x5cfc51) {
                     _0x378b5c.restartGame();
                     _0x378b5c.inputsData = {};
@@ -5407,12 +5469,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 return _0xa88a13;
             },
             'supportNetPlay': function() {
-                if (!this.listUrl || !this.socketUrl || !this.statesSupported) return false;
+                if (!this.serverURL || !this.statesSupported) return false;
                 if (this.lightgun || this.mouse) return false;
-                let _0xa88a13 = window.RTCPeerConnection || window.webkitPeerConnection00 || window.webkitRTCPeerConnection || window.mozRTCPeerConnection,
-                    _0x17edbf = window.mozRTCIceCandidate || window.RTCIceCandidate,
-                    _0x2c1832 = window.mozRTCSessionDescription || window.RTCSessionDescription;
-                return !!(_0xa88a13 && _0x17edbf && _0x2c1832) && !!(_0xa88a13 && 'createDataChannel' in _0xa88a13.prototype);
+                return true;
             },
             'isNetPlay': function() {},
             'findElements': function() {
@@ -5957,6 +6016,20 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }))).appendChild(_0x13c0e4);
                 this.elements.dialogs.gamepad = _0x13c0e4;
             },
+            'setMessage': function(_0x4c3fdd, _0x289259) {
+                let _0x13c0e4 = _0x428003('div', {
+                        'class': getClass({
+                            'ejs__dialog': true
+                        }),
+                        'hidden': ''
+                    }),
+                    _0xe2c02a = _0x428003('div');
+                _0x13c0e4.appendChild(_0xe2c02a);
+                _0x530042.call(this, '.' .concat(getClass({
+                    'ejs__dialogs': true
+                }))).appendChild(_0x13c0e4);
+                this.elements.dialogs.message = _0x13c0e4;
+            },
             'setCheat': function(_0x328075, _0x21ca37) {
                 let _0x2c1832 = _0x7f9f36.createButton.call(this, 'cheat', {
                     'aria-haspopup': true,
@@ -5994,6 +6067,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.elements.widgets.stateInfoDiv = _0x17edbf;
             },
             'setNetplayWidgets': function() {
+                return;
                 let _0xa88a13 = _0x428003('div', {
                         'class': getClass({
                             'ejs__widget': true,
@@ -6008,6 +6082,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.elements.widgets.netplay = _0xa88a13;
             },
             'setNetplay': function(_0x1859f4, _0x50544d) {
+                return;
                 _0x1859f4.appendChild(_0x7f9f36.createButton.call(this, 'netplay', {
                     'aria-haspopup': true,
                     'aria-expanded': false
@@ -6146,8 +6221,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 _0x7f9f36.setLoadState.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setScreenRecord.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setCacheManager.call(this, _0x17edbf, _0x42e40d);
-                //parseInt(this.config.gameId) > 0 && _0x7f9f36.setNetplay.call(this, _0x17edbf, _0x42e40d);
+                parseInt(this.config.gameId) > 0 && _0x7f9f36.setNetplay.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setGamepad.call(this, _0x17edbf, _0x42e40d);
+                _0x7f9f36.setMessage.call(this, _0x17edbf, _0x42e40d)
                 _0x7f9f36.setStateInfoBarWidget.call(this, _0x17edbf, _0x42e40d);
                 _0x7f9f36.setCheat.call(this, _0x17edbf, _0x42e40d);
                 _0x17edbf.appendChild(_0x428003('span', {
@@ -6752,7 +6828,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return path
                 }
                 this.localization = e => {return e};
-                this.version = '3.0.5';
+                this.version = '3.1.0';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;
@@ -6786,6 +6862,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.mouse = this.config.mouse;
                 this.multitap = this.config.multitap;
                 this.cheats = this.config.cheats;
+                //this.serverURL = "http://127.0.0.1:8887";
                 this.cheats || (this.cheats = []);
                 let server = function(newServer) {
                     if (typeof newServer === 'string') {
