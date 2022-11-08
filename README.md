@@ -138,7 +138,7 @@ EJS_oldCores = true;
 [Website]: https://emulatorjs.org/
 [Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
 [Usage]: https://emulatorjs.org/docs/
-[Demo]: https://emulatorjs.github.io/EmulatorJS/
+[Demo]: https://demo.emulatorjs.org/
 
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
