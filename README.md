@@ -33,6 +33,26 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
+### Ads
+
+*This project has no ads.* <br>
+*Although, the demo page currently has an ad to help fund this project.* <br>
+*Ads on the demo page may come and go depending on how many people are* <br>
+*funding this project.* <br>
+
+*You can help fund this project on* ***[patreon]***
+
+<br>
+
+
+
+### Issues
+
+*If something doesn't work, please consider opening an* ***[Issue]*** <br>
+*with as many details as possible, as well as the console log.*
+
+<br>
+
 ### Extensions
 
  **[GameLibrary]**
@@ -124,6 +144,7 @@ EJS_oldCores = true;
 
 [License]: LICENSE
 [Issue]: https://github.com/ethanaobrien/emulatorjs/issues
+[patreon]: https://patreon.com/EmulatorJS
 
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Extensions   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
