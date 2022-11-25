@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8832864985153925" crossorigin="anonymous"></script>
         <title>EmulatorJS</title>
 
         <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
@@ -168,6 +169,10 @@
                 window.EJS_core = core
                 window.EJS_pathtodata = "data/"
                 window.EJS_startOnLoaded = true;
+
+                if (window.location.hostname === "demo.emulatorjs.org") {
+                    window.EJS_AdUrl = "https://ads.emulatorjs.org/";
+                }
                 
 
                 script.src = "data/loader.js"
