@@ -26,13 +26,6 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-### Issues
-
-*If something doesn't work, please consider opening an* ***[Issue]*** <br>
-*with as many details as possible, as well as the console log.*
-
-<br>
-
 ### Ads
 
 *This project has no ads.* <br>
