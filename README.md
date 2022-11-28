@@ -14,6 +14,10 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
+Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
+
+<br>
+
 [![Button Website]][Website] 
 [![Button Usage]][Usage]<br>
 [![Button Configurator]][Configurator]<br>
