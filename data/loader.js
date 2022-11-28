@@ -1,5 +1,5 @@
 (async function() {
-    let VERSION = 31.0;
+    let VERSION = 31.5;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
@@ -49,8 +49,9 @@
             script.onload = resolve;
         })
     }
+    const isIpad = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
     if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) ||
-        /(iPad|iPhone|iPod)/gi .test(navigator.platform)) {
+        /(iPad|iPhone|iPod)/gi.test(navigator.platform) || isIpad) {
         await loadStyle('emu-css.css');
         await loadScript('emu-main.js');
         await loadScript('emulator.js');
