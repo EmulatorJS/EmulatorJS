@@ -3221,6 +3221,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x5289c1 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-7d8fd50ed642340b'),
                         _0x325651 = _0x17edbf.elements.dialogs.netplay.querySelector('#modal-5aa765d61d8327de'),
                         _0x3d0d28 = {};
+
                     _0x378b5c.connection = new _0x4a2390.a();
                     var _0x10d51e = _0xa88a13.socketUrl;
                     if (! _0x10d51e.endsWith('/')) {
@@ -3248,17 +3249,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }
                 _0x378b5c.connection.onclose = function() {};
                 
-                _0x378b5c.connection.iceServers = [{
-                    'urls': ['stun:webrtcweb.com:7788'],
-                    'username': 'muazkh',
-                    'credential': 'muazkh'
-                }, {
-                    'urls': ['turn:webrtcweb.com:7788', 'turn:webrtcweb.com:8877', 'turn:webrtcweb.com:4455'],
-                    'username': 'muazkh',
-                    'credential': 'muazkh'
-                }, {
-                    'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun.l.google.com:19302?transport=udp']
-                }]
+                _0x378b5c.connection.iceServers = window.EJS_TURN_URLS;
                 _0x378b5c.connection.maxParticipantsAllowed = 4;
                 _0x378b5c.netPlayInitFrame = 0;
                 var _0x1eb137 = 0,
@@ -3470,6 +3461,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }));
                 },
                     _0x1e0cdb = function(_0x5b3f13) {
+                        if (window.EJS_TURN_URLS === null || !window.EJS_TURN_URLS || window.EJS_TURN_URLS.length === 0) {
+                            _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = (window.EJS_TURN_URLS === null || window.EJS_TURN_URLS.length === 0) ? 'Netplay Currently Unavailable' : 'Netplay initializing';
+                            _0x4d8495.show('modal-7d8fd50ed642340b', {
+                                'closeTrigger': 'data-modal-close'
+                            });
+                            return;
+                        }
+                        _0x378b5c.connection.iceServers = window.EJS_TURN_URLS;
                         var _0x2c1832 = _0x5b3f13.target.getAttribute('data-id');
                         if ('Y' === _0x5b3f13.target.getAttribute('data-password')) _0x4d8495.show('modal-5aa765d61d8327de', {
                             'closeTrigger': 'data-modal-close'
@@ -3564,6 +3563,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _0x378b5c.hideLoading.call(_0x17edbf), _0x3c6c26 ? (_0x378b5c.players[0x0] = _0x378b5c.connection.userid, _0x378b5c.roomMaster = _0x378b5c.connection.userid, _0x3f9c57.closeModal(), _0x378b5c.stopLoadRooms(), _0x3d0d28 = _0x378b5c.connection.extra, _0x378b5c.openRoom(_0x17edbf), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x2), true), _0x132da7(_0x2593da.contextMenu.querySelectorAll('ul li').item(0x3), true)) : _0x36bde0.querySelector('.' .concat(_0x378b5c.classNames.modal__errmsg)).innerHTML = _0x210547;
                     })) : _0x3f9c57.closeModal(), _0x202cf6.stopPropagation();
                 }), _0x1093f4.call(this, _0x17edbf.elements.dialogs.netplay.querySelector('.' .concat(_0x378b5c.classNames['btn-create-room'])), 'click', function(_0x48cb26) {
+                    if (window.EJS_TURN_URLS === null || !window.EJS_TURN_URLS || window.EJS_TURN_URLS.length === 0) {
+                        _0x5289c1.querySelector('#modal-7d8fd50ed642340b-content').innerHTML = (window.EJS_TURN_URLS === null || window.EJS_TURN_URLS.length === 0) ? 'Netplay Currently Unavailable' : 'Netplay initializing';
+                        _0x4d8495.show('modal-7d8fd50ed642340b', {
+                            'closeTrigger': 'data-modal-close'
+                        });
+                        return;
+                    }
+                    _0x378b5c.connection.iceServers = window.EJS_TURN_URLS;
                     return _0x3f9c57 = _0x4d8495.show('modal-85cd7a1c543a484a', {
                         'closeTrigger': 'data-modal-close',
                         'onClose': function() {
@@ -6845,6 +6852,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 this.cheats || (this.cheats = []);
                 let server = function(newServer) {
                     if (typeof newServer === 'string') {
+                        if (!newServer.endsWith('/')) newServer+='/';
                         return newServer;
                     } else {
                         return 'https://netplay.emulatorjs.org/';
@@ -6852,6 +6860,15 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }(this.config.netplayUrl);
                 this.listUrl = server;
                 this.socketUrl = server;
+                (async function(server) {
+                    try {
+                        let resp = await fetch(server + 'webrtc');
+                        window.EJS_TURN_URLS = JSON.parse(await resp.text());
+                    } catch(e) {
+                        window.EJS_TURN_URLS = null;
+                        console.warn("Could not contact netplay server", e);
+                    }
+                })(server);
 
                 this.mameCore = this.config.mameCore || null;
                 this.color = this.config.color;

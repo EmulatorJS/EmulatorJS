@@ -3309,17 +3309,7 @@ var EJS = function(_0x574f5e) {
                 },
                 _0x3b9609 = {
                     'getIceServers': function(_0x488e7f) {
-                        return [{
-                            'urls': ['stun:webrtcweb.com:7788'],
-                            'username': 'muazkh',
-                            'credential': 'muazkh'
-                        }, {
-                            'urls': ['turn:webrtcweb.com:7788', 'turn:webrtcweb.com:8877', 'turn:webrtcweb.com:4455'],
-                            'username': 'muazkh',
-                            'credential': 'muazkh'
-                        }, {
-                            'urls': ['stun:stun.l.google.com:19302', 'stun:stun1.l.google.com:19302', 'stun:stun2.l.google.com:19302', 'stun:stun.l.google.com:19302?transport=udp']
-                        }];
+                        return window.EJS_TURN_URLS;
                     }
                 };
 
