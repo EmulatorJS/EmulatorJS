@@ -4531,7 +4531,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 window.EJS_TURN_URLS = null;
                                 console.warn("Could not contact netplay server", e);
                             }
-                        })(server);
+                        })(_this.listUrl);
                     }
                     _0x378b5c.disableControl(true);
                     _0x132da7(_this.elements.dialogs.netplay, false);
