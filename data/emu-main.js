@@ -4522,6 +4522,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         }  
                     });
                 }), _this.elements.buttons.netplay && _0x1093f4.call(_this, _this.elements.buttons.netplay, 'click', function(_0x2317b9) {
+                    if (window.EJS_TURN_URLS !== null && !window.EJS_TURN_URLS) {
+                        (async function(server) {
+                            try {
+                                let resp = await fetch(server + 'webrtc');
+                                window.EJS_TURN_URLS = JSON.parse(await resp.text());
+                            } catch(e) {
+                                window.EJS_TURN_URLS = null;
+                                console.warn("Could not contact netplay server", e);
+                            }
+                        })(server);
+                    }
                     _0x378b5c.disableControl(true);
                     _0x132da7(_this.elements.dialogs.netplay, false);
                     if (_0x378b5c.players.length > 0) {
@@ -6860,15 +6871,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 }(this.config.netplayUrl);
                 this.listUrl = server;
                 this.socketUrl = server;
-                (async function(server) {
-                    try {
-                        let resp = await fetch(server + 'webrtc');
-                        window.EJS_TURN_URLS = JSON.parse(await resp.text());
-                    } catch(e) {
-                        window.EJS_TURN_URLS = null;
-                        console.warn("Could not contact netplay server", e);
-                    }
-                })(server);
 
                 this.mameCore = this.config.mameCore || null;
                 this.color = this.config.color;
