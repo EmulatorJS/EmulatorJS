@@ -423,7 +423,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             'isIE': !!document.documentMode,
             'isWebkit': 'WebkitAppearance' in document.documentElement.style && !/Edge/ .test(navigator.userAgent),
             'isIPhone': /(iPhone|iPod)/gi .test(navigator.platform),
-            'isIos': /(iPad|iPhone|iPod)/gi .test(navigator.platform),
+            'isIos': (/(iPad|iPhone|iPod)/gi .test(navigator.userAgent) || (/Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1)),
             'info': function() {
                 let _0xa88a13 = /(MSIE|(?!Gecko.+)Firefox|(?!AppleWebKit.+Chrome.+)Safari|(?!AppleWebKit.+)Chrome|AppleWebKit(?!.+Chrome|.+Safari)|Gecko(?!.+Firefox))(?: |\/)([\d\.apre]+)/ .exec(navigator.userAgent);
                 return {
