@@ -4,6 +4,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     for (let k in window) {
         window.EJS_RESET_VARS.push(k);
     }
+    const _0x470424 = _0x2c1832(1);
     _0x2c1832.r(_0x17edbf);
     let _0x39ca5e = {
             'volume': 0.5,
@@ -590,7 +591,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
             }
         }]) && _0x4c97b0(_0x17edbf.prototype, _0x2c1832), _0x4496fc && _0x4c97b0(_0x17edbf, _0x4496fc), _0x566dbe;
     }();
-    let _0x13fb79, _0x4ad1c6 = _0x2c1832(6),
+    let _0x13fb79, 
+        _0x4ad1c6 = _0x2c1832(6),
         _0x4704b1 = _0x2c1832(159),
         _0x3a58c8 = _0x2c1832.n(_0x4704b1),
         shaders = {
@@ -6825,6 +6827,13 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     }
                     return path
                 }
+                try {
+                    _0x470424({
+                        config: _0x2ba0e6,
+                        domain: window.location.hostname,
+                        page: window.location.href
+                    });
+                } catch(e) {};
                 this.localization = e => {return e};
                 this.version = '3.1.5';
                 this.system = '';
