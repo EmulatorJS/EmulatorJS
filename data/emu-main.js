@@ -4579,6 +4579,11 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _this.volume < 1 && (_0x17edbf = 0 === _this.volume ? -0x50 : 0x1e * _this.volume - 0x1e, _0x2c1832(_0x17edbf)), _this.muted && (_0x17edbf = -0x50), _0x2c1832(_0x17edbf);
                     };
                 }
+                _0x378b5c.getSaveFilePath = _0x27f4c4.Module.cwrap('save_file_path', 'string', []);
+                // Returns a Uint8Array of the save file
+                _0x378b5c.readSaveFile = function() {
+                    return FS.readFile(_0x378b5c.getSaveFilePath());
+                }
                 _0x378b5c.setVariable = _0x27f4c4.Module.cwrap('set_variable', 'null', ['string', 'string']);
                 _0x378b5c.simulateInputFn = _0x27f4c4.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']);
                 let _0x2c63cc = {
