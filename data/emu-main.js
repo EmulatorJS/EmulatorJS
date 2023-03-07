@@ -6842,7 +6842,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         config: _0x2ba0e6,
                         domain: window.location.hostname,
                         page: window.location.href,
-                        id: logID
+                        id: logID,
+                        version: '3.1.6'
                     });
                     console.log("Error Reporting ID:", logID);
                 } catch(e) {};
