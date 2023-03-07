@@ -89,17 +89,11 @@ var EJS = function(_0x574f5e) {
     }
 }, null, null, null, null, function(module) {
     // Project located at https://github.com/ethanaobrien/gamepad
-    class Gamepad {
+    class GamepadHandler {
         gamepads;
         timeout;
         listeners;
         constructor() {
-            if (!navigator.getGamepads && !navigator.webkitGetGamepads) {
-                throw new Error("Get gamepads not found!");
-            }
-            if (!window.setTimeout) {
-                throw new Error("setTimeout was not found!");
-            }
             this.gamepads = [];
             this.listeners = {};
             this.timeout = null;
@@ -123,27 +117,14 @@ var EJS = function(_0x574f5e) {
                 this.gamepads.forEach((oldGamepad, oldIndex) => {
                     if (oldGamepad.index !== gamepad.index) return;
                     hasGamepad = true;
-
+                    
                     oldGamepad.axes.forEach((axis, axisIndex) => {
                         if (gamepad.axes[axisIndex] !== axis) {
-                            const axis = function(index) {
-                                switch (index) {
-                                    case 0:
-                                        return 'LEFT_STICK_X';
-                                    case 1:
-                                        return 'LEFT_STICK_Y';
-                                    case 2:
-                                        return 'RIGHT_STICK_X';
-                                    case 3:
-                                        return 'RIGHT_STICK_Y';
-                                    default:
-                                        return null;
-                                }
-                            }(axisIndex);
+                            const axis = ['LEFT_STICK_X', 'LEFT_STICK_Y', 'RIGHT_STICK_X', 'RIGHT_STICK_Y'][axisIndex];
                             if (!axis) return;
                             this.dispatchEvent('axischanged', {axis: axis, value: gamepad.axes[axisIndex], index: gamepad.index, gamepadIndex: gamepad.index});
                         }
-
+                        
                     })
                     gamepad.buttons.forEach((button, buttonIndex) => {
                         let pressed = oldGamepad.buttons[buttonIndex] === 1.0;
@@ -161,7 +142,7 @@ var EJS = function(_0x574f5e) {
                                 this.dispatchEvent('buttonup', {index: buttonIndex, gamepadIndex: gamepad.index});
                             }
                         }
-
+                        
                     })
                     this.gamepads[oldIndex] = gamepads[index];
                 })
@@ -170,7 +151,7 @@ var EJS = function(_0x574f5e) {
                     this.dispatchEvent('connected', {gamepadIndex: gamepad.index});
                 }
             });
-
+            
             for (let j=0; j<this.gamepads.length; j++) {
                 if (!this.gamepads[j]) continue;
                 let has = false;
@@ -198,7 +179,7 @@ var EJS = function(_0x574f5e) {
             this.listeners[name.toLowerCase()] = cb;
         }
     }
-    module.exports = Gamepad;
+    module.exports = GamepadHandler;
 }, null, null, null, null, function(module, _0x4f5203, _0x5028a6) {
     const _0x33171 = function(inUrl, opts) {
         let url;

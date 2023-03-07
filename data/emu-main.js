@@ -6837,14 +6837,17 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return path
                 }
                 try {
+                    const logID = new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
                     _0x470424({
                         config: _0x2ba0e6,
                         domain: window.location.hostname,
-                        page: window.location.href
+                        page: window.location.href,
+                        id: logID
                     });
+                    console.log("Error Reporting ID:", logID);
                 } catch(e) {};
                 this.localization = e => {return e};
-                this.version = '3.1.5';
+                this.version = '3.1.6';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;

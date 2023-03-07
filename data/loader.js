@@ -1,5 +1,5 @@
 (async function() {
-    let VERSION = 31.5;
+    let VERSION = 31.6;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
