@@ -2684,6 +2684,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                                 } catch(e) {return false;};
                             } else {
                                 _0x378b5c.saveLoaddbDB.get(key, function(data) {
+                                    console.log(data);
                                     EJS_loadState(data);
                                 });
                             }
@@ -4300,6 +4301,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 window.saveSaveFiles = function() {
                     if (!_this.getStartName()) return;
                     console.log('saving save files');
+                    console.log("nu merge");
                     _0x378b5c.saveSavFiles();
                     _0x27f4c4.FS.syncfs(false, function() {});
                 }
@@ -4563,6 +4565,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     if (_0x378b5c.saveLoadDB.call(_this, 'load')) {
                         return;
                     }
+                    EJS_loadState("eee")
+                    console.log("load");
                     _0x1e2c68.function(_this.config.onloadstate) ? _this.config.onloadstate.call(null, _this.loadState) : _this.game.stateloadField.click(), _this.elements.container.focus();
                 });
                 document.addEventListener('visibilitychange', function() {
@@ -4579,11 +4583,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         _this.volume < 1 && (_0x17edbf = 0 === _this.volume ? -0x50 : 0x1e * _this.volume - 0x1e, _0x2c1832(_0x17edbf)), _this.muted && (_0x17edbf = -0x50), _0x2c1832(_0x17edbf);
                     };
                 }
-                if (_0x27f4c4.Module._save_file_path) {
-                    _0x378b5c.getSaveFilePath = _0x27f4c4.Module.cwrap('save_file_path', 'string', []);
-                } else {
-                    _0x378b5c.getSaveFilePath = () => null;
-                }
+                //_0x378b5c.getSaveFilePath = _0x27f4c4.Module.cwrap('save_file_path', 'string', []);
                 // Returns a Uint8Array of the save file
                 _0x378b5c.readSaveFile = function() {
                     return FS.readFile(_0x378b5c.getSaveFilePath());
@@ -6837,18 +6837,14 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     return path
                 }
                 try {
-                    const logID = new Date().getTime() + '-' + Math.floor(Math.random() * 1000);
                     _0x470424({
                         config: _0x2ba0e6,
                         domain: window.location.hostname,
-                        page: window.location.href,
-                        id: logID,
-                        version: '3.1.6'
+                        page: window.location.href
                     });
-                    console.log("Error Reporting ID:", logID);
                 } catch(e) {};
                 this.localization = e => {return e};
-                this.version = '3.1.6';
+                this.version = '3.1.5';
                 this.system = '';
                 this.adUrl = null;
                 this.gameName = null;

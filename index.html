@@ -1,186 +1,192 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8832864985153925" crossorigin="anonymous"></script>
-        <title>EmulatorJS</title>
+<head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+</head>
+<style>
+    body {
+        background-color: rgb(163, 163, 163);
+    }
+    #myFormId {
+        font-weight: 1000;
+        zoom: 130%;
+        color: rgb(27, 25, 25);
+        font-family: monospace 
+    }
+    input, button {
+        font-size: 10px;
+    }
+    body {
+            font-size: 1.2rem;
+        }
+        input, button {
+            font-size: 1.2rem;
+        }
+        #warn {
+            font-size: 1.2rem;
+        }
 
-        <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
-        <meta name = viewport content = "width = device-width, initial-scale = 1">
+    @media screen and (max-width : 1000px) {
+        body {
+            font-size: 4.2vw;
+        }
+        input, button {
+            font-size: 3.2vw;
+        }
+        #warn {
+            font-size: 3.2vw;
+        }
+    }
+</style>
+<body id="body">
+<div id="dialog" title="Save Game">
+    <p>Do you really wish to save the game?</p> <br>
+        <button id="save-btn">Yes</button> <button onclick="closeModal()">No</button>
+</div>
+<div id="dialog_load" title="Load Game">
+    <p>Do you really wish to load the game?</p> <br>
+        <button id="load-btn">Yes</button> <button onclick="closeModal()">No</button>
+</div>
+<form id="myFormId">
+    <p>
+        <label for="romFile">ROM File: &nbsp; </label>
+        <input type="file" id="romFile" name="romFile">
+    </p>
+    <label for="sele" style="font-size: 1rem;">Select Emulator Core</label>
+    <select id="sele">
+        <option id="nes">nes</option>
+        <option id="snes">snes</option>
+        <option id="gb">gb</option>
+        <option id="gba">gba</option>
+        <option id="vb">vb</option>
+        <option id="nds">nds</option>
+        <option id="a5200">a5200</option>
+        <option id="mame2003">mame2003</option>
+        <option id="arcade">arcade</option>
+        <option id="psx">psx</option>
+    </select>
+    <p>
+        <input type="text" placeholder="Save Name" id="saveName">
+        <input type="text" placeholder="Refresh Token" id="rftoken"><br>
+        <input type="text" placeholder="Client ID" id="clientId">
+        <input type="text" placeholder="Client Secret" id="clientSecret">
+    </p>
+    <button type="submit" id="submit-button load-file">
+        Submit 
+    </button><span style="font-size: 12;"></span>
+</form>
+<script src="data/tempFiles.js"></script>
+<script type='text/javascript'>
+    
+    EJS_player = '#game';
+    EJS_core = $("#sele").val();
+    EJS_gameName = localStorage.gameName
+    document.forms['myFormId'].addEventListener('submit', async (event) => {
+    window.alert("If this is your first time adding your details. Please Refresh the page")
+    event.preventDefault();
+    EJS_gameName = $("#saveName").val()
+    EJS_core = $("#sele").val();
+    if ( $("#saveName").val().length == 0) {
+        if (localStorage.gameName.length == 0) {
+            window.alert("You won't be able to save the game state because the name is empty. Please refresh the page!")
+        } else {
+            EJS_gameName = localStorage.gameName
+        }
+    } else {
+        
+        EJS_gameName = $("#saveName").val()
+        localStorage.gameName = EJS_gameName
+    }
+    if ( $("#rftoken").val().length == 0) {
+        if (localStorage.rftoken.length == 0) {
+            window.alert("You won't be able to save the game state because the refresh token is empty. Please refresh the page!")
+        } else {
+            rftoken = localStorage.rftoken
+        }
+    } else {
+        rftoken = $("#rftoken").val()
+        localStorage.rftoken = rftoken
+    }
 
-        <style>
-            body, html {
-                height: 100%;
-            }
+    if ($("#clientId").val().length == 0) {
+        if (localStorage.clientId.length == 0) {
+        } else {
+            clientId = localStorage.clientId
+        }
+    } else {
+        clientId = $("#clientId").val()
+        localStorage.clientId = clientId
+    }
 
-            body {
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 20px;
-                margin: 0;
-                overflow: hidden;
-                background-color: #222
-            }
+    if ($("#clientSecret").val().length == 0) {
+        if (localStorage.clientSecret.length == 0) {
+        } else {
+            clientSecret = localStorage.clientSecret
+        }
+    } else {
+        clientSecret = $("#clientSecret").val()
+        localStorage.clientSecret = clientSecret
+    }
+    const formData = new FormData(document.forms['myFormId']);
+    var romURL = ""
+    const platform = "";
 
-            body, #box {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+    const romFile = formData.get('romFile');
+    console.log(romFile)
+    const biosFile = formData.get('biosFile');
+    console.log(biosFile)
 
-            #box {
-                color: #aaa;
-                height: 20em;
-                width: 30em;
-                max-width: 80%;
-                max-height: 80%;
-                background-color: #333;
-                border-radius: 0.4em;
-                border: 2px solid #555;
-                position: relative;
-                flex-direction: column;
-                transition-duration: 0.2s;
-                overflow: hidden
-            }
+    var fileType = "";
+    if (platform == "arcade")
+    {
+        fileType = "application/zip";
+    }
 
-            #box:hover, #box[drag] {
-                border-color: #38f;
-                color: #ddd
-            }
+    if (romFile.size == 0)
+    {
+        console.log("No ROM file provided.");
+    }
+    else
+    {
+        console.log("Use the ROM file provided.");
+        romURL = URL.createObjectURL(new Blob([romFile], {type: fileType}))
+    }
+    
+    console.log(romURL);
+    
+    const display = document.createElement("div");
+    const game = document.createElement("div");
+    display.id = "display";
+    game.id = "game";
+    display.style = "width:640px;height:480px;max-width:100%"
+    display.appendChild(game);
+    document.getElementById("body").appendChild(display);
 
-            #input {
-                cursor: pointer;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                opacity: 0
-            }
+    
+    EJS_gameUrl = romURL;
+    
 
-            #display {
-                width: 100%;
-                height: 100%
-            }
+    const script = document.createElement("script")
+    script.id = "emulatorjs";
+    script.src = "data/loader.js";
+    document.body.appendChild(script);
+    document.getElementById("myFormId").remove()
 
-            select, button {
-                padding: 0.6em 0.4em;
-                margin: 0.5em;
-                width: 15em;
-                max-width: 100%;
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 16px;
-                background-color: #444;
-                color: #aaa;
-                border-radius: 0.4em;
-                border: 1px solid #555;
-                cursor: pointer;
-                transition-duration: 0.2s
-            }
+});
 
-            select:hover, button:hover {
-                background-color: #666;
-                color: #ddd
-            }
-        </style>
-    </head>
 
-    <body>
-        <div id = box>
-            <input type = file id = input>
-            Drag ROM file or click here
-        </div>
+$("#load-file").on("click", () => {
+    if ($("#romFile").val() == "") {
+    } else {
+        const romFile = $("#romFile").val()
+        const romURL = URL.createObjectURL(new Blob([romFile]))
+        EJS_gameUrl = romURL
+        console.log(EJS_gameUrl);
+    }
+    $(`<script src='data/loader.js'><\/script>`).appendTo("body");
+})
 
-        <script>
-            input.onchange = async () => {
-                const url = URL.createObjectURL(new Blob([input.files[0]]))
-                const parts = input.files[0].name.split(".")
-
-                const core = await (async (ext) => {
-                    if (["fds", "nes", "unif", "unf"].includes(ext))
-                        return "nes"
-
-                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
-                        return "snes"
-
-                    if (["z64", "n64"].includes(ext))
-                        return "n64"
-
-                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
-                        return ext
-
-                    return await new Promise(resolve => {
-                        const cores = {
-                            "Nintendo 64": "n64",
-                            "Nintendo Game Boy": "gb",
-                            "Nintendo Game Boy Advance": "gba",
-                            "Nintendo DS": "nds",
-                            "Nintendo Entertainment System": "nes",
-                            "Super Nintendo Entertainment System": "snes",
-                            "PlayStation": "psx",
-                            "Virtual Boy": "vb",
-                            "Sega Mega Drive": "segaMD",
-                            "Sega Master System": "segaMS",
-                            "Sega CD": "segaCD",
-                            "Atari Lynx": "lynx",
-                            "Sega 32X": "sega32x",
-                            "Atari Jaguar": "jaguar",
-                            "Sega Game Gear": "segaGG",
-                            "Sega Saturn": "segaSaturn",
-                            "Atari 7800": "atari7800",
-                            "Atari 2600": "atari2600"
-                        }
-
-                        const button = document.createElement("button")
-                        const select = document.createElement("select")
-
-                        for (const type in cores) {
-                            const option = document.createElement("option")
-
-                            option.value = cores[type]
-                            option.textContent = type
-                            select.appendChild(option)
-                        }
-
-                        button.onclick = () => resolve(select[select.selectedIndex].value)
-                        button.textContent = "Load game"
-                        box.innerHTML = ""
-
-                        box.appendChild(select)
-                        box.appendChild(button)
-                    })
-                })(parts.pop())
-
-                const div = document.createElement("div")
-                const sub = document.createElement("div")
-                const script = document.createElement("script")
-
-                sub.id = "game"
-                div.id = "display"
-
-                box.remove()
-                div.appendChild(sub)
-                document.body.appendChild(div)
-
-                window.EJS_player = "#game"
-                window.EJS_gameName = parts.shift()
-                window.EJS_biosUrl = ""
-                window.EJS_gameUrl = url
-                window.EJS_core = core
-                window.EJS_pathtodata = "data/"
-                window.EJS_startOnLoaded = true;
-
-                if (window.location.hostname === "demo.emulatorjs.org") {
-                    window.EJS_AdUrl = "https://ads.emulatorjs.org/";
-                }
-                
-
-                script.src = "data/loader.js"
-                document.body.appendChild(script)
-            }
-
-            box.ondragover = () => box.setAttribute("drag", true)
-            box.ondragleave = () => box.removeAttribute("drag")
-        </script>
-    </body>
-</html>
+    EJS_biosUrl = '';
+    EJS_pathtodata = 'data/';
+</script>
+</body>

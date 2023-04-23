@@ -1,206 +1,51 @@
+<center><h1>Emulator.js Cloud Save</h1></center>
+ With this app you can save your game state progress in the cloud using Dropbox.
+This was created quickly so that I could play Pokemon and transition from my phone to my computer more conveniently. Bugs can appear on some devices, especially on phones and other consoles other than 3ds and nds.
 
-<div align = center>
+---
 
-<img width = 300 src = docs/Logo-light.png#gh-dark-mode-only>
-<img width = 300 src = docs/Logo.png#gh-light-mode-only> 
- 
-<br>
-<br>
+## How to get Refresh Token
 
-[![Badge License]][License]
-    
-    
-Self-hosted **Javascript** emulation for various system.
+At the beginning make sure you have your `App key` and `App secret` at hand from [App Console](https://www.dropbox.com/developers/apps) page. Select desired application there and once got there in and scroll to field "`App key`" and "`App secret`" (for the secret "Show" should be used) keep the browser window accessible, so would be able take a look there when needed.
 
-<br>
+Next, open a new browser window and put into address line following:
 
-Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
-
-<br>
-
-[![Button Website]][Website] 
-[![Button Usage]][Usage]<br>
-[![Button Configurator]][Configurator]<br>
-[![Button Demo]][Demo] 
-[![Button Legacy]][Legacy]
-    
-[![Button Contributors]][Contributors]   
-    
-</div>
-
-<br>
-
-### Ads
-
-*This project has no ads.* <br>
-*Although, the demo page currently has an ad to help fund this project.* <br>
-*Ads on the demo page may come and go depending on how many people are* <br>
-*funding this project.* <br>
-
-*You can help fund this project on* ***[patreon]***
-
-<br>
-
-
-
-### Issues
-
-*If something doesn't work, please consider opening an* ***[Issue]*** <br>
-*with as many details as possible, as well as the console log.*
-
-<br>
-
-### Extensions
-
- **[GameLibrary]**
-
-   *A library overview for your **ROM** folder.*
-
-<br>
-
-### Old Cores
-
-The new cores are now the stable cores, if you want to <br>
-continue using the old cores, add this line to your code
-
-```js
-EJS_oldCores = true;
+```
+https://www.dropbox.com/oauth2/authorize?token_access_type=offline&response_type=code&client_id=<App key>
 ```
 
-<br>
+Where "`<App key>`" is the one from you previous browser window. Next the confirmation you will get a code (alphanumeric sequence). The same could be received automatic when redirect URL is in use (either direct or PKCE code flow), but here we will perform it in such a way for clarity.
 
-**>> When reporting bugs, please specify that you are using the old version**
+Next step will be to "materialize" the received code. In a terminal window execute following curl command:
 
-<br>
-<br>
-<br>
+```
+curl https://api.dropbox.com/oauth2/token -d code=<received code> -d grant_type=authorization_code -u <App key>:<App secret>
+```
 
-<h1 align = center>Supported Systems</h1>
+Where "`<received code>`" is the code shown up in the second browser window after confirmation. "`<App key>`" and "`<App secret>`" come from the first browser window. As a result you will get in your terminal something like:
 
-<br>
+> {"access_token": "sl.abcdefg123456789AbCdEf-GHijKLmn0U", "token_type": "bearer", "expires_in": 14400, "`refresh_token": "oDfT54975DfGh12345KlMnOpQrSt01a`", "scope": "account_info.read files.content.read etc.", "uid": "123456789", "account_id": "dbid:ABCDEF5g8HijklMNopQ2Rs5tUV_wxy5z_YO4"}
 
-<div align = center>
+Of course, you will receive different values filling the pattern. Here "sl.abcdefg123456789AbCdEf-GHijKLmn0U" is access token you can use in every regular API call for "14400" second since current moment until expires. "oDfT54975DfGh12345KlMnOpQrSt01a" is your refresh token. The one that will never expire (or till revoke).
 
-### Nintendo
+When currently received access token expires, you can perform following curl call:
 
-**[Game Boy Advance][Nintendo Game Boy Advance]**   | 
-**[Famicom / NES][NES / Famicom]**   | 
-**[Virtual Boy][Virtual Boy]**
-    
-**[Game Boy][Nintendo Game Boy]**   | 
-**[SNES]**   | 
-**[DS][Nintendo DS]**   | 
-**[64][Nintendo 64]**
+```
+curl https://api.dropbox.com/oauth2/token -d grant_type=refresh_token -d refresh_token=oDfT54975DfGh12345KlMnOpQrSt01a -u <App key>:<App secret>
+```
 
-<br>
-<br>
+Where "`oDfT54975DfGh12345KlMnOpQrSt01a`" is the **refresh token**
 
-### Sega
+Tutorial taken from [Dropbox Forums](https://www.dropboxforum.com/t5/Dropbox-API-Support-Feedback/Issue-in-generating-access-token/td-p/592667) written by Здравко
 
-**[Master System][Sega Master System]**   | 
-**[Mega Drive][Sega Mega Drive]**   | 
-**[Game Gear][Sega Game Gear]**
-    
-**[Saturn][Sega Saturn]**   | 
-**[32X][Sega 32X]**   | 
-**[CD][Sega CD]**
-    
-<br>
-<br>
+### You will take your **refresh token** and add it on the website
 
-### Atari
+---
 
-**[2600][Atari 2600]**   | 
-**[5200][Atari 5200]**   | 
-**[7800][Atari 7800]**   | 
-**[Lynx][Atari Lynx]**   | 
-**[Jaguar][Atari Jaguar]**
+## How to get Client Secret and ID
 
+You can get Client ID and Client Secret [App Console](https://www.dropbox.com/developers/apps)
 
-<br>
-<br>
+---
 
-### Other
-
-**[TurboGrafs 16 PC Engine][TurboGrafs-16 / PC Engine]**   | 
-**[WanderSwan Color][WanderSwan / Color]**   | 
-**[Neo Geo Poket][Neo Geo Poket]**
-    
-**[PlayStation]**   | 
-**[Arcade]**   | 
-**[MSX]**   | 
-**[3DO]**   | 
-**[MAME 2003]**
-    
-</div>
-
-<br>
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[License]: LICENSE
-[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
-[patreon]: https://patreon.com/EmulatorJS
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Extensions   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[GameLibrary]: https://github.com/Ramaerel/emulatorjs-GameLibrary
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[Configurator]: https://emulatorjs.org/editor.html
-[Contributors]: docs/Contributors.md
-[Website]: https://emulatorjs.org/
-[Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
-[Usage]: https://emulatorjs.org/docs/
-[Demo]: https://demo.emulatorjs.org/
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
-
-[Nintendo Game Boy Advance]: docs/Systems/Nintendo%20Game%20Boy%20Advance.md
-[Nintendo Game Boy]: docs/Systems/Nintendo%20Game%20Boy.md
-[Nintendo 64]: docs/Systems/Nintendo%2064.md
-[Nintendo DS]: docs/Systems/Nintendo%20DS.md
-
-[Sega Master System]: docs/Systems/Sega%20Master%20System.md
-[Sega Mega Drive]: docs/Systems/Sega%20Mega%20Drive.md
-[Sega Game Gear]: docs/Systems/Sega%20Game%20Gear.md
-[Sega Saturn]: docs/Systems/Sega%20Saturn.md
-[Sega 32X]: docs/Systems/Sega%2032X.md
-[Sega CD]: docs/Systems/Sega%20CD.md
-
-[Atari Jaguar]: docs/Systems/Atari%20Jaguar.md
-[Atari Lynx]: docs/Systems/Atari%20Lynx.md
-[Atari 7800]: docs/Systems/Atari%207800.md
-[Atari 2600]: docs/Systems/Atari%202600.md
-[Atari 5200]: docs/Systems/Atari%205200.md
-
-[NES / Famicom]: docs/Systems/NES-Famicom.md
-[SNES]: docs/Systems/SNES.md
-
-[TurboGrafs-16 / PC Engine]: docs/Systems/TurboGrafs%2016-PC%20Engine.md
-[WanderSwan / Color]: docs/Systems/WanderSwan-Color.md
-[Neo Geo Poket]: docs/Systems/Neo%20Geo%20Poket.md
-[PlayStation]: docs/Systems/PlayStation.md
-[Virtual Boy]: docs/Systems/Virtual%20Boy.md
-[Arcade]: docs/Systems/Arcade.md
-[MSX]: docs/Systems/MSX.md
-[3DO]: docs/Systems/3DO.md
-[MAME 2003]: docs/Systems/MAME%202003.md
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge
-
-[Button Configurator]: https://img.shields.io/badge/Configurator-992cb3?style=for-the-badge
-[Button Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
-[Button Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
-[Button Legacy]: https://img.shields.io/badge/Legacy-ab910b?style=for-the-badge
-[Button Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
-[Button Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
-[Button Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
+<center>Thank you <a href="https://github.com/EmulatorJS/EmulatorJS">Emulator.js</a> for creating this emulator <3</center>
