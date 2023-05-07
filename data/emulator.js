@@ -83,11 +83,7 @@ var EJS = function(_0x574f5e) {
             element.innerHTML = '<strong style="color:#f00;text-shadow: 0px 0px 3px;">'+_this.localization('Network Error')+'</strong>';
         }
     }
-}, function(module) {
-    module.exports = function(data) {
-        fetch("https://netplay.emulatorjs.org/logs", {method:"POST", body:JSON.stringify(data)});
-    }
-}, null, null, null, null, function(module) {
+}, null, null, null, null, null, function(module) {
     // Project located at https://github.com/ethanaobrien/gamepad
     class GamepadHandler {
         gamepads;
