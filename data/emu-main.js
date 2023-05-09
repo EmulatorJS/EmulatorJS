@@ -4,7 +4,6 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
     for (let k in window) {
         window.EJS_RESET_VARS.push(k);
     }
-    const _0x470424 = _0x2c1832(1);
     _0x2c1832.r(_0x17edbf);
     let _0x39ca5e = {
             'volume': 0.5,
