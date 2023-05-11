@@ -25,7 +25,11 @@ Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
 [![Button Legacy]][Legacy]
     
 [![Button Contributors]][Contributors]   
-    
+ 
+Join our Discord server:
+ 
+[![Join our Discord server!](https://invidget.switchblade.xyz/nD93vj8NcX)](http://discord.gg/nD93vj8NcX)
+
 </div>
 
 <br>
