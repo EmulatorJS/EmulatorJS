@@ -6924,7 +6924,7 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                         try {
                             let res = await fetch(url);
                             let text = await res.text();
-                            let localJson = JSON.parse(text);
+                            localJson = JSON.parse(text);
                             _0x39ca5e.i18n = localJson.i18n;
                             _0x7f9f36.normalOptions = localJson.normalOptions;
                         } catch(e) {
