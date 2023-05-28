@@ -28,7 +28,7 @@ Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
  
 Join our Discord server:
  
-[![Join our Discord server!](https://invidget.switchblade.xyz/nD93vj8NcX)](http://discord.gg/nD93vj8NcX)
+[![Join our Discord server!](https://invidget.switchblade.xyz/6akryGkETU)](https://discord.gg/6akryGkETU)
 
 </div>
 
