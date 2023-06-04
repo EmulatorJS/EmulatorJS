@@ -48,9 +48,8 @@
             document.head.appendChild(script);
         })
     }
-    const isIpad = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
     if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) ||
-        /(iPad|iPhone|iPod)/gi.test(navigator.userAgent) || isIpad) {
+        /(iPad|iPhone|iPod|Macintosh)/gi.test(navigator.userAgent)) {
         await loadStyle('emu-css.css');
         await loadScript('emu-main.js');
         await loadScript('emulator.js');

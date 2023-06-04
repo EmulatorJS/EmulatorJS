@@ -975,8 +975,8 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     if (! _0x4d7024.FS) return;
                     if (typeof _0x4d7024.FS.mkdir == 'function' && window.PATH) {
                         let path = PATH.join2(typeof parent === 'string' ? parent : _0x4d7024.FS.getPath(parent), name);
-                        let mode = _0x4d7024.FS.getMode(canRead, canWrite);
-                        _0x4d7024.FS.mkdir(path, mode);
+                        //let mode = _0x4d7024.FS.getMode(canRead, canWrite);
+                        _0x4d7024.FS.mkdir(path); //, mode);
                     } else {
                         _0x4d7024.FS.createFolder(parent, name, canRead, canWrite);
                     }
@@ -3011,11 +3011,20 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                     delete _0x48ee51[26];
                 }
                 
-                for (let _0x501790 = [2, 3, 4, 5, 6, 7, 8, 0, 9, 1, 10, 11, 12, 13, 14, 15, 19, 18, 17, 16, 23, 22, 21, 20, 24, 25, 26], _0x50fd12 = function(_0x88827f) {
-                        _this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'])).innerHTML += _0x17edbf.replace(/{index}/g, _0x88827f), _0x501790.forEach(function(_0x1bf162) {
-                            _0x48ee51[_0x1bf162] && (_this.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x88827f)).innerHTML += _0x2c1832.replace(/{index}/g, _0x88827f).replace(/{id}/g, _0x1bf162).replace(/{label}/g, _0x48ee51[_0x1bf162]));
-                        }), _this.elements.dialogs.gamepad.querySelector('[data-id="16"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="16"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="17"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="17"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="18"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="18"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="19"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="19"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="20"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="20"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="21"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="21"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="22"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="22"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc'), _this.elements.dialogs.gamepad.querySelector('[data-id="23"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && (_this.elements.dialogs.gamepad.querySelector('[data-id="23"][data-index="' .concat(_0x88827f, '"][data-type="2"]')).style.backgroundColor = '#ccc');
-                    }, _0x3f0824 = 0; _0x3f0824 <= 3; _0x3f0824 += 1) _0x50fd12(_0x3f0824);
+                for (let _0x501790 = [2, 3, 4, 5, 6, 7, 8, 0, 9, 1, 10, 11, 12, 13, 14, 15, 19, 18, 17, 16, 23, 22, 21, 20, 24, 25, 26], _0x88827f = 0; _0x88827f <= 3; _0x88827f++) {
+                    _this.elements.dialogs.gamepad.querySelector('.' .concat(_0x378b5c.classNames['tabs-content'])).innerHTML += _0x17edbf.replace(/{index}/g, _0x88827f);
+                    _0x501790.forEach(function(_0x1bf162) {
+                        _0x48ee51[_0x1bf162] && (_this.elements.dialogs.gamepad.querySelector('#controls-' .concat(_0x88827f)).innerHTML += _0x2c1832.replace(/{index}/g, _0x88827f).replace(/{id}/g, _0x1bf162).replace(/{label}/g, _0x48ee51[_0x1bf162]));
+                    })
+                    const setSpecial = function(elem) {
+                        elem.style.backgroundColor = '#ccc';
+                        elem.setAttribute("title", "This setting is automatically set to your controllers axis.");
+                    }
+                    const special = [16, 17, 18, 19, 20, 21, 22, 23];
+                    for (let i=0; i<special.length; i++) {
+                        _this.elements.dialogs.gamepad.querySelector('[data-id="'+special[i]+'"][data-index="' .concat(_0x88827f, '"][data-type="2"]')) && setSpecial(_this.elements.dialogs.gamepad.querySelector('[data-id="'+special[i]+'"][data-index="' .concat(_0x88827f, '"][data-type="2"]')));
+                    }
+                }
                 Object.keys(_0x378b5c.controllers).forEach(function(_0x23d419) {
                     _0x378b5c.controllers[_0x23d419] && Object.keys(_0x378b5c.controllers[_0x23d419]).forEach(function(_0x21e62d) {
                         let _0x294e35 = _this.elements.dialogs.gamepad.querySelector('[data-id="' .concat(_0x21e62d, '"][data-index="').concat(_0x23d419, '"][data-type="1"]')),
@@ -3802,7 +3811,9 @@ window.EJS_main = function(_0xa88a13, _0x17edbf, _0x2c1832) {
                 else {
                     _0x378b5c.toggleShader && _0x378b5c.toggleShader(0);
                     let _0x17edbf = '/shader/' .concat(_0x4cbec3);
-                    _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x27f4c4.FS.readFile(_0x17edbf));
+                    try {
+                        _0x27f4c4.FS.writeFile('/shader/shader.glslp', _0x27f4c4.FS.readFile(_0x17edbf));
+                    }catch(e){};//This shouldnt matter
                     _0x378b5c.toggleShader && _0x378b5c.toggleShader(1);
                 }
             },
