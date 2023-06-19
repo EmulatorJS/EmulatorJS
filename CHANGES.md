@@ -1,6 +1,10 @@
 # Changes
 
-# 3.1.0
+# 3.1.5
+- Fixed iOS bug for iPads
+- Added netplay! (only working on new cores)
+
+# 3.1.0 [View Tree](https://github.com/ethanaobrien/emulatorjs/tree/614f5cb55e2768199ba05b756b47d0ab7ab283fd)
 - Added ability to drag and drop save states.
 - Fixed some "update" and "cancel" and "close" button confustion
 - Removed save state retroarch messages

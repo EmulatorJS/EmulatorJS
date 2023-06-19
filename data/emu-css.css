@@ -48,7 +48,13 @@
     -webkit-user-select:none;
     -moz-user-select:none;
     -ms-user-select:none;
-    user-select:none
+    user-select:none;
+}
+.ejs--f932566a0af5314da834324c901978 input{
+    user-select: text;
+    -webkit-user-select:text;
+    -moz-user-select:text;
+    -ms-user-select:text;
 }
 .ejs--666d4296310579687cf3cf3d2cf951{
     display:inline-block;
@@ -82,7 +88,7 @@
 .ejs--7a5f920ceffb2913f6dbda780573cf:focus{
     outline:0
 }
-.ejs--7a5f920ceffb2913f6dbda780573cf *{
+.ejs--7a5f920ceffb2913f6dbda780573cf *:not(input,textarea){
     -webkit-user-select:none;
     -moz-user-select:none;
     -ms-user-select:none;
@@ -998,7 +1004,8 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
     cursor:pointer
 }
 .ejs--71527b6509aa48afce3ce1a11c02f0{
-    float:none
+    float:none;
+    user-select: text!important;
 }
 .ejs--7ad35768e3f6b9faf97db01d5b60ae{
     float:none
@@ -1034,10 +1041,11 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
     float:none
 }
 .ejs--0885d5e25e19127b6b516014426a1b{
-    float:none
+    float:none;
 }
 .ejs--25023d28756fdb9dfbbfb6dccb8677{
-    float:none
+    float:none;
+    user-select: text!important;
 }
 .ejs--75b3a8d35aacc6424ed7422fdeaaaa{
     float:none
@@ -1060,7 +1068,8 @@ a.ejs--73f9b4e94a7a1fe74e11107d5ab2ef:hover{
     width:80px
 }
 .ejs--9e670880bb57e824400fa00f09aaad,.ejs--2b4e3c245b7b25dfdac5e09155a68e,.ejs--572b0b3a0345a6b01b01a15a02842c,.ejs--a7d7f80c8999469c991ea452a85dd9{
-    float:none
+    float:none;
+    user-select: text!important;
 }
 .ejs--2b4e3c245b7b25dfdac5e09155a68e{
     max-width:320px;

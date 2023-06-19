@@ -14,6 +14,10 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
+Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
+
+<br>
+
 [![Button Website]][Website] 
 [![Button Usage]][Usage]<br>
 [![Button Configurator]][Configurator]<br>
@@ -21,15 +25,12 @@ Self-hosted **Javascript** emulation for various system.
 [![Button Legacy]][Legacy]
     
 [![Button Contributors]][Contributors]   
-    
+ 
+Join our Discord server:
+
+[![Join our Discord server!](https://invite.caspertheghost.me/?inviteCode=6akryGkETU&format=svg)](https://discord.gg/6akryGkETU)
+
 </div>
-
-<br>
-
-### Issues
-
-*If something doesn't work, please consider opening an* ***[Issue]*** <br>
-*with as many details as possible, as well as the console log.*
 
 <br>
 

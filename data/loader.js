@@ -1,5 +1,5 @@
 (async function() {
-    let VERSION = 31.0;
+    let VERSION = 31.6;
     if ((window.location && ['localhost', '127.0.0.1'].includes(location.hostname)) ||
        'undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) {
         fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
@@ -13,7 +13,6 @@
             }
         })
     }
-    let scriptTag = document.getElementsByTagName('script')[0];
     function loadStyle(file) {
         return new Promise(function(resolve, reject) {
             let css = document.createElement('link');
@@ -45,12 +44,12 @@
                     return file+'?v='+VERSION;
                 }
             }();
-            scriptTag.parentNode.insertBefore(script, scriptTag);
             script.onload = resolve;
+            document.head.appendChild(script);
         })
     }
     if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) ||
-        /(iPad|iPhone|iPod)/gi .test(navigator.platform)) {
+        /(iPad|iPhone|iPod|Macintosh)/gi.test(navigator.userAgent)) {
         await loadStyle('emu-css.css');
         await loadScript('emu-main.js');
         await loadScript('emulator.js');
