@@ -40,6 +40,7 @@
     const config = {};
     config.gameUrl = EJS_gameUrl;
     config.dataPath = scriptPath;
+    'undefined' != typeof EJS_core && (config.system = EJS_core);
     
     new EmulatorJS(EJS_player, config);
     
