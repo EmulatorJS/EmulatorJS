@@ -1,5 +1,6 @@
 .ejs_parent {
-    
+    background: #000;
+    overflow: hidden;
     --ejs-primary-color: 26,175,255;
     position: relative;
     font-family: Avenir,"Avenir Next","Helvetica Neue","Segoe UI",Helvetica,Arial,sans-serif;
@@ -7,6 +8,10 @@
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+    font-weight: 500;
+    line-height: 1.7;
+    width: 100%;
+    height: 100%;
 }
 
 .ejs_game {/* todo. User selectable background loading image */
@@ -42,6 +47,11 @@
     background-color: rgba(var(--ejs-primary-color),1);
 }
 
+.ejs_start_button:active {
+    box-shadow: 0 0 0 0 #222, 0 3px 7px 0 #111, inset 0 1px 1px 0 rgba(250,250,250,0.2), inset 0 -10px 35px 5px rgba(0,0,0,0.5);
+    bottom: 64px;
+}
+
 .ejs_loading_text {
     position: absolute;
     bottom: 20px;
@@ -56,4 +66,42 @@
 .ejs_canvas {
     width: 100%;
     height: 100%;
+}
+
+.ejs_context_menu {
+    position: absolute;
+    display: none;
+    z-index: 9;
+    background: rgba(16,16,16,0.9);
+    border-radius: 3px;
+    font-size: 13px;
+    min-width: 140px;
+    padding: 8px;
+    box-sizing: inherit;
+}
+
+.ejs_context_menu li {
+    padding: 4px 11px;
+    text-align: center;
+}
+
+.ejs_context_menu li a {
+    color: #999;
+    display: block;
+    font-size: 13px;
+}
+.ejs_context_menu ul {
+    color: #999;
+    display: block;
+    font-size: 13px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ejs_context_menu li:hover {
+    background: rgba(var(--ejs-primary-color),1);
+    border-radius: 4px;
+    box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color),0.5);
+    outline: 0;
 }

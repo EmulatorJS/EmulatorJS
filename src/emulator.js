@@ -2,21 +2,72 @@ class EmulatorJS {
     createElement(type) {
         return document.createElement(type);
     }
-    downloadFile(path, cb, progressCB, notWithPath) {
-        //todo. Progress callback
+    downloadFile(path, cb, progressCB, notWithPath, opts) {
         const basePath = notWithPath ? '' : this.config.dataPath;
-        fetch(basePath + path).then(async res => {
-            const ab = await res.arrayBuffer();
-            cb(new Uint8Array(ab));
-        });
-        
+        path = basePath + path;
+        let url;
+        try {url=new URL(path)}catch(e){};
+        if ((url && ['http:', 'https:'].includes(url.protocol)) || !url) {
+            const xhr = new XMLHttpRequest();
+            if (progressCB instanceof Function) {
+                xhr.addEventListener('progress', (e) => {
+                    const progress = e.total ? ' '+Math.floor(e.loaded / e.total * 100).toString()+'%' : ' '+(e.loaded/1048576).toFixed(2)+'MB';
+                    progressCB(progress);
+                });
+            }
+            xhr.onload = function() {
+                if (xhr.readyState === xhr.DONE) {
+                    let data = xhr.response;
+                    try {data=JSON.parse(data)}catch(e){}
+                    cb({
+                        data: data,
+                        headers: {
+                            "content-length": xhr.getResponseHeader('content-length'),
+                            "content-type": xhr.getResponseHeader('content-type'),
+                            "last-modified": xhr.getResponseHeader('last-modified')
+                        }
+                    });
+                }
+            }
+            xhr.responseType = opts.responseType;
+            xhr.onerror = () => cb(-1);
+            xhr.open(opts.method, path, true);
+            xhr.send();
+        } else {
+            (async () => {
+                //Most commonly blob: urls. Not sure what else it could be
+                if (opts.method === 'HEAD') {
+                    cb({headers:{}});
+                    return;
+                }
+                let res;
+                try {
+                    res = await fetch(path);
+                    if (opts.type && opts.type.toLowerCase() === 'arraybuffer') {
+                        res = await res.arrayBuffer();
+                    } else {
+                        res = await res.text();
+                        try {res = JSON.parse(res)} catch(e) {}
+                    }
+                } catch(e) {
+                    cb(-1);
+                }
+                if (path.startsWith('blob:')) URL.revokeObjectURL(path);
+                cb({
+                    data: res,
+                    headers: {}
+                });
+            })
+        }
     }
     constructor(element, config) {
         this.setElements(element);
+        this.started = false;
         this.listeners = [];
         this.config = config;
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
+        this.bindListeners();
         
         
         this.game.classList.add("ejs_game");
@@ -62,7 +113,11 @@ class EmulatorJS {
         //todo
         return text;
     }
-    checkCompression(data) {
+    checkCompression(data, msg) {
+        if (msg) {
+            this.textElem.innerText = msg;
+        }
+        //to be put in another file
         function isCompressed(data) { //https://www.garykessler.net/library/file_sigs.html
             //todo. Use hex instead of numbers
             if ((data[0] === 80 && data[1] === 75) && ((data[2] === 3 && data[3] === 4) || (data[2] === 5 && data[3] === 6) || (data[2] === 7 && data[3] === 8))) {
@@ -75,21 +130,33 @@ class EmulatorJS {
         }
         const createWorker = (path) => {
             return new Promise((resolve, reject) => {
-                this.downloadFile(path, (fileData) => {
-                    const blob = new Blob([fileData], {
+                this.downloadFile(path, (res) => {
+                    if (res === -1) {
+                        this.textElem.innerText = "Error";
+                        this.textElem.style.color = "red";
+                        return;
+                    }
+                    const blob = new Blob([res.data], {
                         'type': 'application/javascript'
                     })
                     const url = window.URL.createObjectURL(blob);
                     resolve(new Worker(url));
-                });
+                }, null, false, {responseType: "arraybuffer", method: "GET"});
             })
         }
         const decompress7z = (file) => {
             return new Promise((resolve, reject) => {
                 const files = {};
-                function onMessage(data) {
+                const onMessage = (data) => {
                     if (!data.data) return;
                     //data.data.t/ 4=progress, 2 is file, 1 is zip done
+                    if (data.data.t === 4 && msg) {
+                        const pg = data.data;
+                        const num = Math.floor(pg.current / pg.total * 100);
+                        if (isNaN(num)) return;
+                        const progress = ' '+num.toString()+'%';
+                        this.textElem.innerText = msg + progress;
+                    }
                     if (data.data.t === 2) {
                         files[data.data.file] = data.data.data;
                     }
@@ -118,8 +185,14 @@ class EmulatorJS {
         
     }
     downloadGameCore() {
-        this.downloadFile('cores/'+this.getCore()+'-wasm.data', (e) => {
-            this.checkCompression(e).then((data) => {
+        this.textElem.innerText = this.localization("Download Game Core");
+        this.downloadFile('cores/'+this.getCore()+'-wasm.data', (res) => {
+            if (res === -1) {
+                this.textElem.innerText = "Error";
+                this.textElem.style.color = "red";
+                return;
+            }
+            this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game Core")).then((data) => {
                 //console.log(data);
                 let js, wasm;
                 for (let k in data) {
@@ -131,14 +204,15 @@ class EmulatorJS {
                 }
                 this.initGameCore(js, wasm);
             });
-        });
+        }, (progress) => {
+            this.textElem.innerText = this.localization("Download Game Core") + progress;
+        }, false, {responseType: "arraybuffer", method: "GET"});
         
     }
     initGameCore(js, wasm) {
         this.initModule(wasm);
         let script = this.createElement("script");
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
-        script.onload = this.downloadRom.bind(this);
         document.body.appendChild(script);
     }
     getCore() {
@@ -149,17 +223,26 @@ class EmulatorJS {
         }
     }
     downloadRom() {
-        this.downloadFile(this.config.gameUrl, (e) => {
-            this.checkCompression(e).then((data) => {
+        this.textElem.innerText = this.localization("Download Game Data");
+        this.downloadFile(this.config.gameUrl, (res) => {
+            if (res === -1) {
+                this.textElem.innerText = "Error";
+                this.textElem.style.color = "red";
+                return;
+            }
+            this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game Data")).then((data) => {
                 FS.writeFile("/game", data);
                 this.startGame();
             });
-        }, null, true);
+        }, (progress) => {
+            this.textElem.innerText = this.localization("Download Game Data") + progress;
+        }, true, {responseType: "arraybuffer", method: "GET"});
     }
     initModule(wasmData) {
         window.Module = {
             'TOTAL_MEMORY': 0x10000000,
             'noInitialRun': true,
+            'onRuntimeInitialized': this.downloadRom.bind(this),
             'arguments': [],
             'preRun': [],
             'postRun': [],
@@ -182,13 +265,12 @@ class EmulatorJS {
                     return URL.createObjectURL(new Blob([wasmData], {type: "application/wasm"}));
                 }
             },
-            'readAsync': function(_0x20d016, _0x9d2de4, _0x1425ee) {
-                console.log(_0x20d016, _0x9d2de4, _0x1425ee)
+            'readAsync': function(a, b, c) {
+                console.log(a, b, c)
             }
         };
     }
     startGame() {
-        this.bindListeners();
         this.textElem.remove();
         this.textElem = null;
         this.game.classList.remove("ejs_game");
@@ -198,9 +280,10 @@ class EmulatorJS {
         args.push('/game');
         Module.callMain(args);
         Module.resumeMainLoop();
+        this.started = true;
         Module.setCanvasSize(800, 600);
         let i=0;
-        // this needs to be fixed. Ugh
+        // this needs to be fixed. Ugh.
         let j = setInterval(function() { // some cores have a messed up screen size on load (for example - gba)
             if (i>20) clearInterval(j);
             i++;
@@ -208,10 +291,53 @@ class EmulatorJS {
         }, 100)
     }
     bindListeners() {
+        this.createContextMenu();
         //keyboard, etc...
+    }
+    createContextMenu() {
+        this.elements.contextmenu = this.createElement('div');
+        this.elements.contextmenu.classList.add("ejs_context_menu");
         this.addEventListener(this.game, 'contextmenu', (e) => {
+            if (this.started) {
+                this.elements.contextmenu.style.display = "block";
+                this.elements.contextmenu.style.left = e.offsetX;
+                this.elements.contextmenu.style.top = e.offsetY;
+            }
             e.preventDefault();
         })
+        this.addEventListener(this.elements.contextmenu, 'contextmenu', (e) => e.preventDefault());
+        this.addEventListener(this.elements.parent, 'contextmenu', (e) => e.preventDefault());
+        this.addEventListener(this.game, 'mousedown', (e) => {
+            this.elements.contextmenu.style.display = "none";
+        })
+        let contextHtml = ['<ul>', '</ul>']
+        let contextFunctions = []
+        const addButton = (title, hidden, functi0n) => {
+            if (functi0n instanceof Function) {
+                contextFunctions.push(functi0n);
+            } else {
+                contextFunctions.push(() => {});
+            }
+            let i = contextHtml.length - 1;
+            if (hidden) {
+                contextHtml.splice(i, 0, '<li hidden><a href="#" onclick="return false">'+title+'</a></li>');
+            } else {
+                contextHtml.splice(i, 0, '<li><a href="#" onclick="return false">'+title+'</a></li>');
+            }
+        }
+        addButton("test 1", false, () => console.log("1"));
+        addButton("test 2", false, () => console.log("2"));
+        addButton("test 3", false, () => console.log("3"));
+        addButton("test 4", false, () => console.log("4"));
+        
+        this.elements.contextmenu.innerHTML = contextHtml.join('');
+        
+        let buttons = this.elements.contextmenu.getElementsByTagName('li')
+        for (let i=0; i<buttons.length; i++) {
+            this.addEventListener(buttons[i], 'click', contextFunctions[i]);
+        }
+        
+        this.elements.parent.appendChild(this.elements.contextmenu);
     }
         
     
