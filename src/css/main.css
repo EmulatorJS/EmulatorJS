@@ -198,3 +198,41 @@
     width: 0;
     z-index: 2;
 }
+
+.ejs_popup_container {
+    background: rgba(0,0,0,0.8);
+    text-align: center;
+    z-index: 9999;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    color: #ccc;
+}
+
+.ejs_popup_container h4 {
+    color: #ccc;
+    font-size: 24px;
+    margin: 0;
+    padding: 10px;
+}
+
+.ejs_button {
+    border-radius: .25rem;
+    font-size: .875rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-top: .5rem;
+    padding-bottom: .5rem;
+    display: inline-block;
+    background-color: rgba(var(--ejs-primary-color),1);
+    margin: 0 10px;
+    color: #fff !important;
+    touch-action: manipulation;
+    cursor: pointer;
+}
+
+.ejs_popup_body {
+    height: calc(100% - 130px);
+}

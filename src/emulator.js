@@ -328,7 +328,10 @@ class EmulatorJS {
             if (hidden) li.hidden = true;
             const a = this.createElement("a");
             if (functi0n instanceof Function) {
-                this.addEventListener(li, 'click', functi0n);
+                this.addEventListener(li, 'click', (e) => {
+                    e.preventDefault();
+                    functi0n();
+                });
             }
             a.href = "#";
             a.onclick = "return false";
@@ -357,11 +360,57 @@ class EmulatorJS {
             this.gameManager.quickLoad();
             hideMenu();
         });
-        addButton("EmulatorJS", false, () => console.log("4"));
+        addButton("EmulatorJS", false, () => {
+            hideMenu();
+            const body = this.createPopup("EmulatorJS", {
+                "Close": () => {
+                    this.closePopup();
+                }
+            });
+            body.innerText = "Todo. Write about, include tabs on side with licenses, links to docs/repo/discord?";
+            
+        });
         
         this.elements.contextmenu.appendChild(parent);
         
         this.elements.parent.appendChild(this.elements.contextmenu);
+    }
+    closePopup() {
+        if (this.currentPopup !== null) {
+            try {
+                this.currentPopup.remove();
+            } catch(e){}
+            this.currentPopup = null;
+        }
+    }
+    //creates a full box popup.
+    createPopup(popupTitle, buttons) {
+        this.closePopup();
+        this.currentPopup = this.createElement('div');
+        this.currentPopup.classList.add("ejs_popup_container");
+        this.elements.parent.appendChild(this.currentPopup);
+        const title = this.createElement("h4");
+        title.innerText = popupTitle;
+        const main = this.createElement("div");
+        main.classList.add("ejs_popup_body");
+        
+        this.currentPopup.appendChild(title);
+        this.currentPopup.appendChild(main);
+        
+        for (let k in buttons) {
+            const button = this.createElement("a");
+            if (buttons[k] instanceof Function) {
+                button.addEventListener("click", (e) => {
+                    buttons[k]();
+                    e.preventDefault();
+                });
+            }
+            button.classList.add("ejs_button");
+            button.innerText = k;
+            this.currentPopup.appendChild(button);
+        }
+        
+        return main;
     }
     selectFile() {
         return new Promise((resolve, reject) => {
