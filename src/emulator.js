@@ -2,6 +2,13 @@ class EmulatorJS {
     createElement(type) {
         return document.createElement(type);
     }
+    addEventListener(element, listener, callback) {
+        const listeners = listener.split(" ");
+        for (let i=0; i<listeners.length; i++) {
+            element.addEventListener(listeners[i], callback);
+            this.listeners.push({cb:callback, elem:element, listener:listeners[i]});
+        }
+    }
     downloadFile(path, cb, progressCB, notWithPath, opts) {
         const basePath = notWithPath ? '' : this.config.dataPath;
         path = basePath + path;
@@ -61,8 +68,10 @@ class EmulatorJS {
         }
     }
     constructor(element, config) {
+        this.debug = (window.EJS_DEBUG_XX === true);
         this.setElements(element);
         this.started = false;
+        this.paused = true;
         this.listeners = [];
         this.config = config;
         this.canvas = this.createElement('canvas');
@@ -83,10 +92,6 @@ class EmulatorJS {
             parent: this.game.parentElement
         }
         this.elements.parent.classList.add("ejs_parent");
-    }
-    addEventListener(element, listener, callback) {
-        element.addEventListener(listener, callback);
-        this.listeners.push({cb:callback, elem:element, listener:listener});
     }
     // Start button
     createStartButton() {
@@ -223,6 +228,8 @@ class EmulatorJS {
         }
     }
     downloadRom() {
+        this.gameManager = new window.EJS_GameManager(this.Module);
+        
         this.textElem.innerText = this.localization("Download Game Data");
         this.downloadFile(this.config.gameUrl, (res) => {
             if (res === -1) {
@@ -247,13 +254,13 @@ class EmulatorJS {
             'preRun': [],
             'postRun': [],
             'canvas': this.canvas,
-            'print': function(msg) {
-                if (window.EJS_DEBUG_XX === true) {
+            'print': (msg) => {
+                if (this.debug) {
                     console.log(msg);
                 }
             },
-            'printErr': function(msg) {
-                if (window.EJS_DEBUG_XX === true) {
+            'printErr': (msg) => {
+                if (this.debug) {
                     console.log(msg);
                 }
             },
@@ -269,6 +276,7 @@ class EmulatorJS {
                 console.log(a, b, c)
             }
         };
+        this.Module = window.Module;
     }
     startGame() {
         this.textElem.remove();
@@ -276,11 +284,12 @@ class EmulatorJS {
         this.game.classList.remove("ejs_game");
         this.game.appendChild(this.canvas);
         const args = [];
-        if (window.EJS_DEBUG_XX === true) args.push('-v');
+        if (this.debug) args.push('-v');
         args.push('/game');
         Module.callMain(args);
         Module.resumeMainLoop();
         this.started = true;
+        this.paused = false;
         Module.setCanvasSize(800, 600);
         let i=0;
         // this needs to be fixed. Ugh.
@@ -292,6 +301,7 @@ class EmulatorJS {
     }
     bindListeners() {
         this.createContextMenu();
+        this.createBottomMenuBar();
         //keyboard, etc...
     }
     createContextMenu() {
@@ -305,41 +315,139 @@ class EmulatorJS {
             }
             e.preventDefault();
         })
+        const hideMenu = () => {
+            this.elements.contextmenu.style.display = "none";
+        }
         this.addEventListener(this.elements.contextmenu, 'contextmenu', (e) => e.preventDefault());
         this.addEventListener(this.elements.parent, 'contextmenu', (e) => e.preventDefault());
-        this.addEventListener(this.game, 'mousedown', (e) => {
-            this.elements.contextmenu.style.display = "none";
-        })
-        let contextHtml = ['<ul>', '</ul>']
-        let contextFunctions = []
+        this.addEventListener(this.game, 'mousedown', hideMenu);
+        const parent = this.createElement("ul");
         const addButton = (title, hidden, functi0n) => {
+            //<li><a href="#" onclick="return false">'+title+'</a></li>
+            const li = this.createElement("li");
+            if (hidden) li.hidden = true;
+            const a = this.createElement("a");
             if (functi0n instanceof Function) {
-                contextFunctions.push(functi0n);
-            } else {
-                contextFunctions.push(() => {});
+                this.addEventListener(li, 'click', functi0n);
             }
-            let i = contextHtml.length - 1;
-            if (hidden) {
-                contextHtml.splice(i, 0, '<li hidden><a href="#" onclick="return false">'+title+'</a></li>');
-            } else {
-                contextHtml.splice(i, 0, '<li><a href="#" onclick="return false">'+title+'</a></li>');
-            }
+            a.href = "#";
+            a.onclick = "return false";
+            a.innerText = title;
+            li.appendChild(a);
+            parent.appendChild(li);
+            hideMenu();
         }
-        addButton("test 1", false, () => console.log("1"));
-        addButton("test 2", false, () => console.log("2"));
-        addButton("test 3", false, () => console.log("3"));
-        addButton("test 4", false, () => console.log("4"));
+        let screenshotUrl;
+        addButton("Take Screenshot", false, () => {
+            if (screenshotUrl) URL.revokeObjectURL(screenshotUrl);
+            const screenshot = this.gameManager.screenshot();
+            const blob = new Blob([screenshot]);
+            screenshotUrl = URL.createObjectURL(blob);
+            const a = this.createElement("a");
+            a.href = screenshotUrl;
+            a.download = "screenshot.png";
+            a.click();
+            hideMenu();
+        });
+        addButton("Quick Save", false, () => {
+            this.gameManager.quickSave();
+            hideMenu();
+        });
+        addButton("Quick Load", false, () => {
+            this.gameManager.quickLoad();
+            hideMenu();
+        });
+        addButton("EmulatorJS", false, () => console.log("4"));
         
-        this.elements.contextmenu.innerHTML = contextHtml.join('');
-        
-        let buttons = this.elements.contextmenu.getElementsByTagName('li')
-        for (let i=0; i<buttons.length; i++) {
-            this.addEventListener(buttons[i], 'click', contextFunctions[i]);
-        }
+        this.elements.contextmenu.appendChild(parent);
         
         this.elements.parent.appendChild(this.elements.contextmenu);
     }
+    selectFile() {
+        return new Promise((resolve, reject) => {
+            const file = this.createElement("input");
+            file.type = "file";
+            this.addEventListener(file, "change", (e) => {
+                resolve(e.target.files[0]);
+            })
+            file.click();
+        })
+    }
+    createBottomMenuBar() {
+        this.elements.menu = this.createElement("div");
+        this.elements.menu.classList.add("ejs_menu_bar");
+        this.elements.menu.classList.add("ejs_menu_bar_hidden");
         
-    
+        let timeout = null;
+        const hide = () => {
+            if (this.paused) return;
+            this.elements.menu.classList.add("ejs_menu_bar_hidden");
+        }
+        
+        this.addEventListener(this.elements.parent, 'mousemove click', (e) => {
+            if (!this.started) return;
+            if (timeout !== null) clearTimeout(timeout);
+            timeout = setTimeout(hide, 3000);
+            this.elements.menu.classList.remove("ejs_menu_bar_hidden");
+        })
+        this.menu = {
+            close: () => {
+                if (!this.started) return;
+                if (timeout !== null) clearTimeout(timeout);
+                this.elements.menu.classList.remove("ejs_menu_bar_hidden");
+            },
+            open: () => {
+                if (!this.started) return;
+                if (timeout !== null) clearTimeout(timeout);
+                timeout = setTimeout(hide, 3000);
+                this.elements.menu.classList.remove("ejs_menu_bar_hidden");
+            }
+        }
+        this.elements.parent.appendChild(this.elements.menu);
+        
+        //Now add buttons
+        const addButton = (title, image, callback) => {
+            const button = this.createElement("button");
+            button.type = "button";
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute("role", "presentation");
+            svg.setAttribute("focusable", "false");
+            svg.innerHTML = image;
+            const text = this.createElement("span");
+            text.innerText = title;
+            text.classList.add("ejs_menu_text");
+            
+            button.classList.add("ejs_menu_button");
+            button.appendChild(svg);
+            button.appendChild(text);
+            this.elements.menu.appendChild(button);
+            if (callback instanceof Function) {
+                this.addEventListener(button, 'click', callback);
+            }
+        }
+        
+        //todo. Center text on not restart button
+        
+        addButton("Restart", '<svg viewBox="0 0 512 512"><path d="M496 48V192c0 17.69-14.31 32-32 32H320c-17.69 0-32-14.31-32-32s14.31-32 32-32h63.39c-29.97-39.7-77.25-63.78-127.6-63.78C167.7 96.22 96 167.9 96 256s71.69 159.8 159.8 159.8c34.88 0 68.03-11.03 95.88-31.94c14.22-10.53 34.22-7.75 44.81 6.375c10.59 14.16 7.75 34.22-6.375 44.81c-39.03 29.28-85.36 44.86-134.2 44.86C132.5 479.9 32 379.4 32 256s100.5-223.9 223.9-223.9c69.15 0 134 32.47 176.1 86.12V48c0-17.69 14.31-32 32-32S496 30.31 496 48z"/></svg>', () => {
+            this.gameManager.restart();
+        });
+        let stateUrl;
+        addButton("Save State", '<svg viewBox="0 0 448 512"><path fill="currentColor" d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64 0-35.346 28.654-64 64-64s64 28.654 64 64c0 35.346-28.654 64-64 64zm96-304.52V212c0 6.627-5.373 12-12 12H76c-6.627 0-12-5.373-12-12V108c0-6.627 5.373-12 12-12h228.52c3.183 0 6.235 1.264 8.485 3.515l3.48 3.48A11.996 11.996 0 0 1 320 111.48z"/></svg>', async () => {
+            if (stateUrl) URL.revokeObjectURL(stateUrl);
+            const state = await this.gameManager.getState();
+            const blob = new Blob([state]);
+            stateUrl = URL.createObjectURL(blob);
+            const a = this.createElement("a");
+            a.href = stateUrl;
+            a.download = "game.state";
+            a.click();
+        });
+        addButton("Load State", '<svg viewBox="0 0 576 512"><path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/></svg>', async () => {
+            const file = await this.selectFile();
+            const state = new Uint8Array(await file.arrayBuffer());
+            this.gameManager.loadState(state);
+        });
+        
+    }
     
 }
