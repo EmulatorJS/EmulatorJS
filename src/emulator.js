@@ -302,6 +302,7 @@ class EmulatorJS {
     bindListeners() {
         this.createContextMenu();
         this.createBottomMenuBar();
+        this.createControlSettingMenu();
         //keyboard, etc...
     }
     createContextMenu() {
@@ -384,18 +385,18 @@ class EmulatorJS {
         }
     }
     //creates a full box popup.
-    createPopup(popupTitle, buttons) {
-        this.closePopup();
-        this.currentPopup = this.createElement('div');
-        this.currentPopup.classList.add("ejs_popup_container");
-        this.elements.parent.appendChild(this.currentPopup);
+    createPopup(popupTitle, buttons, hidden) {
+        if (!hidden) this.closePopup();
+        const popup = this.createElement('div');
+        popup.classList.add("ejs_popup_container");
+        this.elements.parent.appendChild(popup);
         const title = this.createElement("h4");
         title.innerText = popupTitle;
         const main = this.createElement("div");
         main.classList.add("ejs_popup_body");
         
-        this.currentPopup.appendChild(title);
-        this.currentPopup.appendChild(main);
+        popup.appendChild(title);
+        popup.appendChild(main);
         
         for (let k in buttons) {
             const button = this.createElement("a");
@@ -407,7 +408,11 @@ class EmulatorJS {
             }
             button.classList.add("ejs_button");
             button.innerText = k;
-            this.currentPopup.appendChild(button);
+            popup.appendChild(button);
+        }
+        if (!hidden) {
+            popup.style.display = "none";
+            this.currentPopup = popup;
         }
         
         return main;
@@ -496,6 +501,111 @@ class EmulatorJS {
             const state = new Uint8Array(await file.arrayBuffer());
             this.gameManager.loadState(state);
         });
+        addButton("Control Settings", '<svg viewBox="0 0 640 512"><path fill="currentColor" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"/></svg>', () => {
+            this.controlMenu.style.display = "";
+        });
+        
+    }
+    createControlSettingMenu() {
+        const body = this.createPopup("Control Settings", {
+            "Close": () => {
+                this.controlMenu.style.display = "none";
+            }
+        });
+        this.controlMenu = body.parentElement;
+        
+        const buttons = {
+            0: 'B',
+            1: 'Y',
+            2: 'SELECT',
+            3: 'START',
+            4: 'UP',
+            5: 'DOWN',
+            6: 'LEFT',
+            7: 'RIGHT',
+            8: 'A',
+            9: 'X',
+            10: 'L',
+            11: 'R',
+            12: 'L2',
+            13: 'R2',
+            14: 'L3',
+            15: 'R3',
+            19: 'L STICK UP',
+            18: 'L STICK DOWN',
+            17: 'L STICK LEFT',
+            16: 'L STICK RIGHT',
+            23: 'R STICK UP',
+            22: 'R STICK DOWN',
+            21: 'R STICK LEFT',
+            20: 'R STICK RIGHT',
+            24: this.localization('QUICK SAVE STATE'),
+            25: this.localization('QUICK LOAD STATE'),
+            26: this.localization('CHANGE STATE SLOT')
+        }
+        body.classList.add("ejs_control_body");
+        
+        const addRow = (number, title, player) => {
+            const div = this.createElement('div');
+            div.setAttribute("data-id", number);
+            div.setAttribute("data-index", player);
+            div.setAttribute("data-label", title);
+            div.style = "margin-bottom: 10px;";
+            
+            const titleElem = this.createElement("div")
+            const titleLabel = this.createElement("label");
+            titleLabel.innerText = title+":";
+            titleLabel.style = "width:25%;float:left;font-size:12px;";
+            div.appendChild(titleLabel);
+            
+            const input = this.createElement("div");
+            input.style = "width:50%;float:left";
+            const container = this.createElement("div");
+            
+            for (let i=2; i>0; i--) {
+                const inputClick = this.createElement("div");
+                inputClick.style = "width:45%;float:left;padding: 0 5px;"
+                const inputBox = this.createElement("input");
+                inputBox.style = "text-align:center;height:25px;width: 100%;";
+                inputBox.type = "text";
+                inputBox.setAttribute("data-id", number);
+                inputBox.setAttribute("data-index", player);
+                inputBox.setAttribute("data-type", i); //1=keyboard, 2=controller
+                inputBox.setAttribute("data-value", ""); //currently selected option
+                inputBox.setAttribute("placeholder", "");
+                inputBox.setAttribute("readonly", "");
+                
+                inputClick.appendChild(inputBox);
+                container.appendChild(inputClick);
+            }
+            const padding = this.createElement("div");
+            padding.style = "clear:both";
+            container.appendChild(padding);
+            
+            const setButton = this.createElement("div");
+            setButton.style = "width:25%;float:left";
+            const button = this.createElement("button");
+            this.addEventListener(button, "click", (e) => {
+                e.preventDefault();
+            })
+            button.innerText = "Set";
+            
+            setButton.appendChild(button);
+            
+            input.appendChild(container);
+            
+            const padding2 = this.createElement("div");
+            padding2.style = "clear:both";
+            
+            div.appendChild(input);
+            div.appendChild(setButton);
+            div.appendChild(padding2);
+            body.appendChild(div);
+        }
+        
+        for (const k in buttons) {
+            addRow(k, buttons[k], 0);
+        }
         
     }
     
