@@ -513,6 +513,7 @@ class EmulatorJS {
             }
         });
         this.controlMenu = body.parentElement;
+        body.classList.add("ejs_control_body");
         
         const buttons = {
             0: 'B',
@@ -543,69 +544,35 @@ class EmulatorJS {
             25: this.localization('QUICK LOAD STATE'),
             26: this.localization('CHANGE STATE SLOT')
         }
-        body.classList.add("ejs_control_body");
+        let selectedPlayer;
+        let players = [];
         
-        const addRow = (number, title, player) => {
-            const div = this.createElement('div');
-            div.setAttribute("data-id", number);
-            div.setAttribute("data-index", player);
-            div.setAttribute("data-label", title);
-            div.style = "margin-bottom: 10px;";
-            
-            const titleElem = this.createElement("div")
-            const titleLabel = this.createElement("label");
-            titleLabel.innerText = title+":";
-            titleLabel.style = "width:25%;float:left;font-size:12px;";
-            div.appendChild(titleLabel);
-            
-            const input = this.createElement("div");
-            input.style = "width:50%;float:left";
-            const container = this.createElement("div");
-            
-            for (let i=2; i>0; i--) {
-                const inputClick = this.createElement("div");
-                inputClick.style = "width:45%;float:left;padding: 0 5px;"
-                const inputBox = this.createElement("input");
-                inputBox.style = "text-align:center;height:25px;width: 100%;";
-                inputBox.type = "text";
-                inputBox.setAttribute("data-id", number);
-                inputBox.setAttribute("data-index", player);
-                inputBox.setAttribute("data-type", i); //1=keyboard, 2=controller
-                inputBox.setAttribute("data-value", ""); //currently selected option
-                inputBox.setAttribute("placeholder", "");
-                inputBox.setAttribute("readonly", "");
-                
-                inputClick.appendChild(inputBox);
-                container.appendChild(inputClick);
-            }
-            const padding = this.createElement("div");
-            padding.style = "clear:both";
-            container.appendChild(padding);
-            
-            const setButton = this.createElement("div");
-            setButton.style = "width:25%;float:left";
-            const button = this.createElement("button");
-            this.addEventListener(button, "click", (e) => {
-                e.preventDefault();
+        const playerSelect = this.createElement("ul");
+        playerSelect.classList.add("ejs_control_player_bar");
+        for (let i=1; i<5; i++) {
+            const playerContainer = this.createElement("li");
+            playerContainer.classList.add("tabs-title");
+            playerContainer.setAttribute("role", "presentation");
+            const player = this.createElement("a");
+            player.innerText = "Player "+i;
+            player.setAttribute("role", "tab");
+            player.setAttribute("aria-controls", "controls-"+(i-1));
+            player.setAttribute("aria-selected", "false");
+            player.id = "controls-"+(i-1)+"-label";
+            this.addEventListener(player, "click", () => {
+                players[selectedPlayer].classList.remove("ejs_control_selected");
+                selectedPlayer = i-1;
+                players[i-1].classList.add("ejs_control_selected");
             })
-            button.innerText = "Set";
-            
-            setButton.appendChild(button);
-            
-            input.appendChild(container);
-            
-            const padding2 = this.createElement("div");
-            padding2.style = "clear:both";
-            
-            div.appendChild(input);
-            div.appendChild(setButton);
-            div.appendChild(padding2);
-            body.appendChild(div);
+            playerContainer.appendChild(player);
+            playerSelect.appendChild(playerContainer);
+            players.push(playerContainer);
         }
+        body.appendChild(playerSelect);
         
-        for (const k in buttons) {
-            addRow(k, buttons[k], 0);
-        }
+        selectedPlayer = 0;
+        players[0].classList.add("ejs_control_selected");
+        
         
     }
     

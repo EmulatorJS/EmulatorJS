@@ -238,6 +238,10 @@
     color: #ccc;
 }
 
+.ejs_popup_container *, .ejs_popup_container *::after, .ejs_popup_container *::before {
+    box-sizing: border-box;
+}
+
 .ejs_popup_container h4 {
     color: #ccc;
     font-size: 24px;
@@ -265,6 +269,11 @@
     overflow: auto;
 }
 
+.ejs_control_body {
+    color: #bcbcbc !important;
+    border: unset;
+}
+
 .ejs_control_body input[type='text'] {
     overflow: auto;
     background-color: #fff;
@@ -273,4 +282,28 @@
     font-weight: 700;
     color: #000 !important;
 }
+.ejs_control_player_bar {
+    margin: 0;
+    padding: 0;
+}
+.ejs_control_player_bar ul {
+    list-style: none;
+}
+.ejs_control_player_bar li {
+    color: #bcbcbc !important;
+    display: inline-block;
+}
+.ejs_control_player_bar a {
+    padding: 2px 5px;
+    color: #bcbcbc !important;
+    font-size: 14px;
+    cursor: pointer;
+}
 
+.ejs_control_selected {
+    border-bottom: 1px solid #fff;
+    background-color: #fff;
+}
+.ejs_control_selected a {
+    color: #000 !important;
+}
