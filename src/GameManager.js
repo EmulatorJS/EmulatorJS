@@ -7,7 +7,9 @@ class EJS_GameManager {
             getStateInfo: this.Module.cwrap('get_state_info', 'string', []), //these names are dumb
             saveStateInfo: this.Module.cwrap('save_state_info', 'null', []),
             loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
-            screenshot: this.Module.cwrap('cmd_take_screenshot', '', [])
+            screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
+            simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
+            toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number'])
         }
     }
     restart() {
@@ -70,6 +72,12 @@ class EJS_GameManager {
             let name = slot + '-quick.state';
             this.functions.loadState(name, 0);
         })();
+    }
+    simulateInput(player, index, value) {
+        this.functions.simulateInput(player, index, value);
+    }
+    toggleMainLoop(playing) {
+        this.functions.toggleMainLoop(playing);
     }
 
 }

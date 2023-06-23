@@ -275,7 +275,6 @@
 }
 
 .ejs_control_body input[type='text'] {
-    overflow: auto;
     background-color: #fff;
     border: 1px solid #000;
     font-size: 12px;
@@ -306,4 +305,19 @@
 }
 .ejs_control_selected a {
     color: #000 !important;
+}
+
+.ejs_control_bar:hover {
+    background-color: #2d2d2d;
+}
+
+.ejs_popup_box {
+    position: absolute;
+    width: 300px;
+    top: 50%;
+    margin-left: -150px;
+    margin-top: -50px;
+    left: 50%;
+    background: rgba(0,0,0,0.8) !important;
+    padding: 15px 0;
 }
