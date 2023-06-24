@@ -12,6 +12,7 @@
     line-height: 1.7;
     width: 100%;
     height: 100%;
+    color: #bcbcbc;
 }
 
 .ejs_parent ::-webkit-scrollbar{
@@ -321,3 +322,52 @@
     background: rgba(0,0,0,0.8) !important;
     padding: 15px 0;
 }
+
+.ejs_virtualGamepad_parent {
+    width: 100%;
+    position: absolute;
+    bottom: 50px;
+}
+.ejs_virtualGamepad_top {
+    position: absolute;
+    bottom: 250px;
+    width: 100%;
+}
+.ejs_virtualGamepad_bottom {
+    position: absolute;
+    bottom: 10px;
+    height: 30px;
+    width: 124px;
+    left: 50%;
+    margin-left: -62px;
+}
+.ejs_virtualGamepad_left {
+    position: absolute;
+    bottom: 50px;
+    width: 125px;
+    height: 125px;
+    left: 10px;
+}
+.ejs_virtualGamepad_right {
+    position: absolute;
+    bottom: 50px;
+    width: 130px;
+    height: 130px;
+    right: 10px;
+}
+.ejs_virtualGamepad_button {
+    position: absolute;
+    font-size: 20px;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    font-size: 30px;
+    font-weight: bold;
+    background-color: rgba(255,255,255,0.15);
+    user-select: none;
+    transition: all .2s;
+}
+

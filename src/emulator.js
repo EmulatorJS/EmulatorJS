@@ -317,6 +317,7 @@ class EmulatorJS {
         this.createContextMenu();
         this.createBottomMenuBar();
         this.createControlSettingMenu();
+        this.setVirtualGamepad();
         this.addEventListener(document, "keydown keyup", this.keyChange.bind(this));
         //keyboard, etc...
     }
@@ -883,6 +884,75 @@ class EmulatorJS {
                 }
             }
         }
+    }
+    setVirtualGamepad() {
+        this.virtualGamepad = this.createElement("div");
+        this.virtualGamepad.style.display = "none";
+        this.virtualGamepad.classList.add("ejs_virtualGamepad_parent");
+        this.elements.parent.appendChild(this.virtualGamepad);
+        const info = [{"type":"button","text":"B","id":"b","location":"right","right":-10,"top":70,"bold":true,"input_value":0},{"type":"button","text":"A","id":"a","location":"right","right":60,"top":70,"bold":true,"input_value":8},{"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+        //todo next
+        const up = this.createElement("div");
+        up.classList.add("ejs_virtualGamepad_top");
+        const down = this.createElement("div");
+        down.classList.add("ejs_virtualGamepad_bottom");
+        const left = this.createElement("div");
+        left.classList.add("ejs_virtualGamepad_left");
+        const right = this.createElement("div");
+        right.classList.add("ejs_virtualGamepad_right");
+        const elems = {top:up, center:down, left, right};
+        
+        this.virtualGamepad.appendChild(up);
+        this.virtualGamepad.appendChild(down);
+        this.virtualGamepad.appendChild(left);
+        this.virtualGamepad.appendChild(right);
+        
+        const leftHandedMode = false;
+        const blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
+        
+        for (let i=0; i<info.length; i++) {
+            if (info[i].type !== 'button') continue;
+            if (leftHandedMode && ['left', 'right'].includes(info[i].location)) {
+                info[i].location = (info[i].location==='left') ? 'right' : 'left';
+                const amnt = JSON.parse(JSON.stringify(info[i]));
+                if (amnt.left) {
+                    info[i].right = amnt.left;
+                }
+                if (amnt.right) {
+                    info[i].left = amnt.right;
+                }
+            }
+            let style = '';
+            if (info[i].left) {
+                style += 'left:'+info[i].left+(typeof info[i].left === 'number'?'px':'')+';';
+            }
+            if (info[i].right) {
+                style += 'right:'+info[i].right+(typeof info[i].right === 'number'?'px':'')+';';
+            }
+            if (info[i].top) {
+                style += 'top:'+info[i].top+(typeof info[i].top === 'number'?'px':'')+';';
+            }
+            if (!info[i].bold) {
+                style += 'font-weight:normal;';
+            } else if (info[i].bold) {
+                style += 'font-weight:bold;';
+            }
+            info[i].fontSize = info[i].fontSize || 30;
+            style += 'font-size:'+info[i].fontSize+'px;';
+            if (info[i].block) {
+                style += blockCSS;
+            }
+            if (['top', 'center', 'left', 'right'].includes(info[i].location)) {
+                const button = this.createElement("div");
+                button.style = style;
+                button.innerText = info[i].text;
+                button.classList.add("ejs_virtualGamepad_button");
+                elems[info[i].location].appendChild(button);
+            }
+        }
+        
+        //todo - zone and dpad (and input)
+        
         
     }
 }
