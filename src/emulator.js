@@ -69,6 +69,7 @@ class EmulatorJS {
     }
     constructor(element, config) {
         window.EJS_TESTING = this;
+        this.touch = false;
         this.debug = (window.EJS_DEBUG_XX === true);
         this.setElements(element);
         this.started = false;
@@ -101,6 +102,9 @@ class EmulatorJS {
         button.classList.add("ejs_start_button");
         button.innerText = this.localization("Start Game");
         this.elements.parent.appendChild(button);
+        this.addEventListener(button, "touchstart", () => {
+            this.touch = true;
+        })
         this.addEventListener(button, "click", this.startButtonClicked.bind(this));
     }
     startButtonClicked(e) {
@@ -179,15 +183,86 @@ class EmulatorJS {
                 })
             })
         }
-        async function decompressRar() {
-            
+        const decompressRar = (file) => {
+            return new Promise((resolve, reject) => {
+                const files = {};
+                const onMessage = (data) => {
+                    if (!data.data) return;
+                    //data.data.t/ 4=progress, 2 is file, 1 is zip done
+                    if (data.data.t === 4 && msg) {
+                        const pg = data.data;
+                        const num = Math.floor(pg.current / pg.total * 100);
+                        if (isNaN(num)) return;
+                        const progress = ' '+num.toString()+'%';
+                        this.textElem.innerText = msg + progress;
+                    }
+                    if (data.data.t === 2) {
+                        files[data.data.file] = data.data.data;
+                    }
+                    if (data.data.t === 1) {
+                        resolve(files);
+                    }
+                }
+                
+                this.downloadFile("compression/libunrar.js", (res) => {
+                    if (res === -1) {
+                        this.textElem.innerText = "Error";
+                        this.textElem.style.color = "red";
+                        return;
+                    }
+                    const path = origin + this.config.dataPath + 'compression/libunrar.js.mem';
+                    let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+path+'\';\n    }\n};\n'+res.data+'\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
+                    const blob = new Blob([data], {
+                        'type': 'application/javascript'
+                    })
+                    const url = window.URL.createObjectURL(blob);
+                    const worker = new Worker(url);
+                    worker.onmessage = onMessage;
+                    worker.postMessage(file);
+                }, null, false, {responseType: "text", method: "GET"});
+                
+            })
+        }
+        const decompressZip = (file) => {
+            return new Promise((resolve, reject) => {
+                const files = {};
+                const onMessage = (data) => {
+                    console.log(data);
+                    if (!data.data) return;
+                    //data.data.t/ 4=progress, 2 is file, 1 is zip done
+                    if (data.data.t === 4 && msg) {
+                        const pg = data.data;
+                        const num = Math.floor(pg.current / pg.total * 100);
+                        if (isNaN(num)) return;
+                        const progress = ' '+num.toString()+'%';
+                        this.textElem.innerText = msg + progress;
+                    }
+                    if (data.data.t === 2) {
+                        files[data.data.file] = data.data.data;
+                    }
+                    if (data.data.t === 1) {
+                        resolve(files);
+                    }
+                }
+                
+                createWorker('compression/extractzip.js').then((worker) => {
+                    worker.onmessage = onMessage;
+                    worker.postMessage(file);
+                })
+            })
         }
         const compression = isCompressed(data.slice(0, 10));
         if (compression) {
             //Need to do zip and rar still
-            return decompress7z(data);
+            if (compression === "7z") {
+                return decompress7z(data);
+            } else if (compression === "zip") {
+                return decompressZip(data);
+            } else if (compression === "rar") {
+                return decompressRar(data);
+            }
         } else {
-            return new Promise(resolve => resolve(data));
+            return new Promise(resolve => resolve({file: data}));
         }
         
     }
@@ -222,8 +297,29 @@ class EmulatorJS {
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
         document.body.appendChild(script);
     }
-    getCore() {
+    getCore(generic) {
         const core = this.config.system;
+        if (generic) {
+            const options = {
+                'fceumm': 'nes',
+                'snes9x': 'snes',
+                'a5200': 'atari5200',
+                'gambatte': 'gb',
+                'mgba': 'gba',
+                'beetle_vb': 'vb',
+                'mupen64plus_next': 'n64',
+                'desmume2015': 'nds',
+                'mame2003': 'mame2003',
+                'fbalpha2012_cps1': 'arcade',
+                'fbalpha2012_cps2': 'arcade',
+                'mednafen_psx': 'psx',
+                'mednafen_psx_hw': 'psx',
+                'melonds': 'nds',
+                'nestopia': 'nes',
+                'opera': '3do'
+            }
+            return options[core] || core;
+        }
         const options = {
             'nes': 'fceumm',
             'snes': 'snes9x',
@@ -251,7 +347,11 @@ class EmulatorJS {
                 return;
             }
             this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game Data")).then((data) => {
-                FS.writeFile("/game", data);
+                for (const k in data) {
+                    this.fileName = k;
+                    FS.writeFile(k, data[k]); //needs to be cleaned up
+                    break;
+                }
                 this.startGame();
             });
         }, (progress) => {
@@ -298,11 +398,14 @@ class EmulatorJS {
         this.game.appendChild(this.canvas);
         const args = [];
         if (this.debug) args.push('-v');
-        args.push('/game');
+        args.push('/'+this.fileName);
         this.Module.callMain(args);
         this.Module.resumeMainLoop();
         this.started = true;
         this.paused = false;
+        if (this.touch) {
+            this.virtualGamepad.style.display = "";
+        }
         
         //this needs to be fixed...
         setInterval(() => {
@@ -890,8 +993,66 @@ class EmulatorJS {
         this.virtualGamepad.style.display = "none";
         this.virtualGamepad.classList.add("ejs_virtualGamepad_parent");
         this.elements.parent.appendChild(this.virtualGamepad);
-        const info = [{"type":"button","text":"B","id":"b","location":"right","right":-10,"top":70,"bold":true,"input_value":0},{"type":"button","text":"A","id":"a","location":"right","right":60,"top":70,"bold":true,"input_value":8},{"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
-        //todo next
+        let info;
+        if (this.config.VirtualGamepadSettings && function(set) {
+            if (!Array.isArray(set)) {
+                console.warn("Vritual gamepad settings is not array! Using default gamepad settings");
+                return false;
+            }
+            if (!set.length) {
+                console.warn("Virtual gamepad settings is empty! Using default gamepad settings");
+                return false;
+            }
+            for (let i=0; i<set.length; i++) {
+                if (!set[i].type) continue;
+                try {
+                    if (set[i].type === 'zone' || set[i].type === 'dpad') {
+                        if (!set[i].location) {
+                            console.warn("Missing location value for "+set[i].type+"! Using default gamepad settings");
+                            return false;
+                        } else if (!set[i].inputValues) {
+                            console.warn("Missing inputValues for "+set[i].type+"! Using default gamepad settings");
+                            return false;
+                        }
+                        continue;
+                    }
+                    if (!set[i].location) {
+                        console.warn("Missing location value for button "+set[i].text+"! Using default gamepad settings");
+                        return false;
+                    } else if (!set[i].type) {
+                        console.warn("Missing type value for button "+set[i].text+"! Using default gamepad settings");
+                        return false;
+                    } else if (!set[i].id.toString()) {
+                        console.warn("Missing id value for button "+set[i].text+"! Using default gamepad settings");
+                        return false;
+                    } else if (!set[i].input_value.toString()) {
+                        console.warn("Missing input_value for button "+set[i].text+"! Using default gamepad settings");
+                        return false;
+                    }
+                } catch(e) {
+                    console.warn("Error checking values! Using default gamepad settings");
+                    return false;
+                }
+            }
+            return true;
+        }(this.config.VirtualGamepadSettings)) {
+            info = this.config.VirtualGamepadSettings;
+        } else if (['gba', 'gb', 'vb', 'nes'].includes(this.getCore(true))) {
+            info = [{"type":"button","text":"B","id":"b","location":"right","right":-10,"top":70,"bold":true,"input_value":0},{"type":"button","text":"A","id":"a","location":"right","right":60,"top":70,"bold":true,"input_value":8},{"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+            if (this.getCore(true) === 'gba') {
+                info.push({"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10});
+                info.push({"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11});
+            }
+        } else if (this.getCore(true) === 'n64') {
+            info = [{"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":150,"input_value":0,"bold":true},{"type":"zone","location":"left","left":"50%","top":"100%","joystickInput":true,"inputValues":[16, 17, 18, 19]},{"type":"zone","location":"left","left":"50%","top":"0%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":30,"top":-10,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10},{"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11},{"type":"button","text":"Z","id":"z","block":true,"location":"top","left":10,"bold":true,"input_value":12},{"fontSize":20,"type":"button","text":"CU","id":"cu","location":"right","left":25,"top":-65,"input_value":23},{"fontSize":20,"type":"button","text":"CD","id":"cd","location":"right","left":25,"top":15,"input_value":22},{"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},{"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}];
+        } else if (['snes', 'nds'].includes(this.getCore(true))) {
+            info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+        } else {
+            info = [{"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+        }
+        info = JSON.parse(JSON.stringify(info));
+        
+        
         const up = this.createElement("div");
         up.classList.add("ejs_virtualGamepad_top");
         const down = this.createElement("div");
@@ -948,8 +1109,262 @@ class EmulatorJS {
                 button.innerText = info[i].text;
                 button.classList.add("ejs_virtualGamepad_button");
                 elems[info[i].location].appendChild(button);
+                const value = info[i].input_new_cores || info[i].input_value;
+                this.addEventListener(button, "touchstart touchend touchcancel", (e) => {
+                    e.preventDefault();
+                    if (e.type === 'touchend' || e.type === 'touchcancel') {
+                        e.target.classList.remove("ejs_virtualGamepad_button_down");
+                        window.setTimeout(() => {
+                            this.gameManager.simulateInput(0, value, 0);
+                        })
+                    } else {
+                        e.target.classList.add("ejs_virtualGamepad_button_down");
+                        this.gameManager.simulateInput(0, value, 1);
+                    }
+                })
             }
         }
+        
+        const createDPad = (opts) => {
+            const container = opts.container;
+            const callback = opts.event;
+            const dpadMain = this.createElement("div");
+            dpadMain.classList.add("ejs_dpad_main");
+            const vertical = this.createElement("div");
+            vertical.classList.add("ejs_dpad_vertical");
+            const horizontal = this.createElement("div");
+            horizontal.classList.add("ejs_dpad_horizontal");
+            const bar1 = this.createElement("div");
+            bar1.classList.add("ejs_dpad_bar");
+            const bar2 = this.createElement("div");
+            bar2.classList.add("ejs_dpad_bar");
+            
+            horizontal.appendChild(bar1);
+            vertical.appendChild(bar2);
+            dpadMain.appendChild(vertical);
+            dpadMain.appendChild(horizontal);
+            
+            const updateCb = (e) => {
+                e.preventDefault();
+                const touch = e.targetTouches[0];
+                if (!touch) return;
+                const rect = dpadMain.getBoundingClientRect();
+                const x = touch.clientX - rect.left - dpadMain.clientWidth / 2;
+                const y = touch.clientY - rect.top - dpadMain.clientHeight / 2;
+                let up = 0,
+                    down = 0,
+                    left = 0,
+                    right = 0,
+                    angle = Math.atan(x / y) / (Math.PI / 180);
+                
+                if (y <= -10) {
+                    up = 1;
+                }
+                if (y >= 10) {
+                    down = 1;
+                }
+                
+                if (x >= 10) {
+                    right = 1;
+                    left = 0;
+                    if (angle < 0 && angle >= -35 || angle > 0 && angle <= 35) {
+                        right = 0;
+                    }
+                    up = (angle < 0 && angle >= -55 ? 1 : 0);
+                    down = (angle > 0 && angle <= 55 ? 1 : 0);
+                }
+                
+                if (x <= -10) {
+                    right = 0;
+                    left = 1;
+                    if (angle < 0 && angle >= -35 || angle > 0 && angle <= 35) {
+                        left = 0;
+                    }
+                    up = (angle > 0 && angle <= 55 ? 1 : 0);
+                    down = (angle < 0 && angle >= -55 ? 1 : 0);
+                }
+                
+                dpadMain.classList.toggle("ejs_dpad_up_pressed", up);
+                dpadMain.classList.toggle("ejs_dpad_down_pressed", down);
+                dpadMain.classList.toggle("ejs_dpad_right_pressed", right);
+                dpadMain.classList.toggle("ejs_dpad_left_pressed", left);
+                
+                callback(up, down, left, right);
+            }
+            const cancelCb = (e) => {
+                e.preventDefault();
+                dpadMain.classList.remove("ejs_dpad_up_pressed");
+                dpadMain.classList.remove("ejs_dpad_down_pressed");
+                dpadMain.classList.remove("ejs_dpad_right_pressed");
+                dpadMain.classList.remove("ejs_dpad_left_pressed");
+                
+                callback(0, 0, 0, 0);
+            }
+            
+            this.addEventListener(dpadMain, 'touchstart touchmove', updateCb);
+            this.addEventListener(dpadMain, 'touchend touchcancel', cancelCb);
+            
+            
+            container.appendChild(dpadMain);
+        }
+        
+        info.forEach((dpad, index) => {
+            if (dpad.type !== 'dpad') return;
+            if (leftHandedMode && ['left', 'right'].includes(dpad.location)) {
+                dpad.location = (dpad.location==='left') ? 'right' : 'left';
+                const amnt = JSON.parse(JSON.stringify(dpad));
+                if (amnt.left) {
+                    dpad.right = amnt.left;
+                }
+                if (amnt.right) {
+                    dpad.left = amnt.right;
+                }
+            }
+            const elem = this.createElement("div");
+            let style = '';
+            if (dpad.left) {
+                style += 'left:'+dpad.left+';';
+            }
+            if (dpad.right) {
+                style += 'right:'+dpad.right+';';
+            }
+            if (dpad.top) {
+                style += 'top:'+dpad.top+';';
+            }
+            elem.style = style;
+            elems[dpad.location].appendChild(elem);
+            createDPad({container: elem, event: (up, down, left, right) => {
+                if (dpad.joystickInput) {
+                    if (up === 1) up=0x7fff;
+                    if (down === 1) up=0x7fff;
+                    if (left === 1) up=0x7fff;
+                    if (right === 1) up=0x7fff;
+                }
+                this.gameManager.simulateInput(0, dpad.inputValues[0], up);
+                this.gameManager.simulateInput(0, dpad.inputValues[1], down);
+                this.gameManager.simulateInput(0, dpad.inputValues[2], left);
+                this.gameManager.simulateInput(0, dpad.inputValues[3], right);
+            }});
+        })
+        
+        
+        info.forEach((zone, index) => {
+            if (zone.type !== 'zone') return;
+            if (leftHandedMode && ['left', 'right'].includes(zone.location)) {
+                zone.location = (zone.location==='left') ? 'right' : 'left';
+                const amnt = JSON.parse(JSON.stringify(zone));
+                if (amnt.left) {
+                    zone.right = amnt.left;
+                }
+                if (amnt.right) {
+                    zone.left = amnt.right;
+                }
+            }
+            const elem = this.createElement("div");
+            this.addEventListener(elem, "touchstart touchmove touchend touchcancel", (e) => {
+                e.preventDefault();
+            });
+            elems[zone.location].appendChild(elem);
+            const zoneObj = nipplejs.create({
+                'zone': elem,
+                'mode': 'static',
+                'position': {
+                    'left': zone.left,
+                    'top': zone.top
+                },
+                'color': zone.color || 'red'
+            });
+            zoneObj.on('end', () => {
+                this.gameManager.simulateInput(0, zone.inputValues[0], 0);
+                this.gameManager.simulateInput(0, zone.inputValues[1], 0);
+                this.gameManager.simulateInput(0, zone.inputValues[2], 0);
+                this.gameManager.simulateInput(0, zone.inputValues[3], 0);
+            });
+            zoneObj.on('move', (e, info) => {
+                const degree = info.angle.degree;
+                const distance = info.distance;
+                if (zone.joystickInput === true) {
+                    let x = 0, y = 0;
+                    if (degree > 0 && degree <= 45) {
+                        x = distance / 50;
+                        y = -0.022222222222222223 * degree * distance / 50;
+                    }
+                    if (degree > 45 && degree <= 90) {
+                        x = 0.022222222222222223 * (90 - degree) * distance / 50;
+                        y = -distance / 50;
+                    }
+                    if (degree > 90 && degree <= 135) {
+                        x = 0.022222222222222223 * (90 - degree) * distance / 50;
+                        y = -distance / 50;
+                    }
+                    if (degree > 135 && degree <= 180) {
+                        x = -distance / 50;
+                        y = -0.022222222222222223 * (180 - degree) * distance / 50;
+                    }
+                    if (degree > 135 && degree <= 225) {
+                        x = -distance / 50;
+                        y = -0.022222222222222223 * (180 - degree) * distance / 50;
+                    }
+                    if (degree > 225 && degree <= 270) {
+                        x = -0.022222222222222223 * (270 - degree) * distance / 50;
+                        y = distance / 50;
+                    }
+                    if (degree > 270 && degree <= 315) {
+                        x = -0.022222222222222223 * (270 - degree) * distance / 50;
+                        y = distance / 50;
+                    }
+                    if (degree > 315 && degree <= 359.9) {
+                        x = distance / 50;
+                        y = 0.022222222222222223 * (360 - degree) * distance / 50;
+                    }
+                    if (x > 0) {
+                        this.gameManager.simulateInput(0, zone.inputValues[0], 0x7fff * x);
+                        this.gameManager.simulateInput(0, zone.inputValues[1], 0);
+                    } else {
+                        this.gameManager.simulateInput(0, zone.inputValues[1], 0x7fff * -x);
+                        this.gameManager.simulateInput(0, zone.inputValues[0], 0);
+                    }
+                    if (y > 0) {
+                        this.gameManager.simulateInput(0, zone.inputValues[2], 0x7fff * y);
+                        this.gameManager.simulateInput(0, zone.inputValues[3], 0);
+                    } else {
+                        this.gameManager.simulateInput(0, zone.inputValues[3], 0x7fff * -y);
+                        this.gameManager.simulateInput(0, zone.inputValues[2], 0);
+                    }
+                    
+                } else {
+                    if (degree >= 30 && degree < 150) {
+                        this.gameManager.simulateInput(0, zone.inputValues[0], 1);
+                    } else {
+                        window.setTimeout(() => {
+                            this.gameManager.simulateInput(0, zone.inputValues[0], 0);
+                        }, 30);
+                    }
+                    if (degree >= 210 && degree < 330) {
+                        this.gameManager.simulateInput(0, zone.inputValues[1], 1);
+                    } else {
+                        window.setTimeout(() => {
+                            this.gameManager.simulateInput(0, zone.inputValues[1], 0);
+                        }, 30);
+                    }
+                    if (degree >= 120 && degree < 240) {
+                        this.gameManager.simulateInput(0, zone.inputValues[2], 1);
+                    } else {
+                        window.setTimeout(() => {
+                            this.gameManager.simulateInput(0, zone.inputValues[2], 0);
+                        }, 30);
+                    }
+                    if (degree >= 300 || degree >= 0 && degree < 60) {
+                        this.gameManager.simulateInput(0, zone.inputValues[3], 1);
+                    } else {
+                        window.setTimeout(() => {
+                            this.gameManager.simulateInput(0, zone.inputValues[3], 0);
+                        }, 30);
+                    }
+                }
+            });
+        })
+        
         
         //todo - zone and dpad (and input)
         

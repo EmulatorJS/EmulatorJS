@@ -370,4 +370,101 @@
     user-select: none;
     transition: all .2s;
 }
+.ejs_virtualGamepad_button_down {
+    background-color:#000000ad;
+}
 
+.ejs_dpad_main {
+    touch-action: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: .7;
+}
+.ejs_dpad_horizontal {
+    width: 100%;
+    height: 36px;
+    transform: translate(0,-50%);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.ejs_dpad_horizontal:before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    z-index: 1;
+    transform: translate(0,-50%);
+    width: 0;
+    height: 0;
+    border: 8px solid;
+    border-color: transparent #333 transparent transparent;
+}
+.ejs_dpad_horizontal:after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    z-index: 1;
+    transform: translate(0,-50%);
+    width: 0;
+    height: 0;
+    border: 8px solid;
+    border-color: transparent transparent transparent #333;
+}
+.ejs_dpad_vertical {
+    width: 36px;
+    height: 100%;
+    transform: translate(-50%,0);
+    position: absolute;
+    left: 50%;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.ejs_dpad_vertical:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 1;
+    transform: translate(-50%,0);
+    width: 0;
+    height: 0;
+    border: 8px solid;
+    border-color: transparent transparent #333 transparent;
+}
+.ejs_dpad_vertical:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    z-index: 1;
+    transform: translate(-50%,0);
+    width: 0;
+    height: 0;
+    border: 8px solid;
+    border-color: #333 transparent transparent transparent;
+}
+.ejs_dpad_bar {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #787878;
+}
+.ejs_dpad_left_pressed .ejs_dpad_horizontal:before {
+    border-right-color:#fff;
+}
+.ejs_dpad_right_pressed .ejs_dpad_horizontal:after {
+    border-left-color:#fff;
+}
+.ejs_dpad_up_pressed .ejs_dpad_vertical:before {
+    border-bottom-color:#fff;
+}
+.ejs_dpad_down_pressed .ejs_dpad_vertical:after {
+    border-top-color:#fff
+}
