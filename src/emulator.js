@@ -422,6 +422,7 @@ class EmulatorJS {
         this.createControlSettingMenu();
         this.setVirtualGamepad();
         this.addEventListener(document, "keydown keyup", this.keyChange.bind(this));
+        //this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         //keyboard, etc...
     }
     createContextMenu() {
@@ -893,6 +894,7 @@ class EmulatorJS {
         this.controlPopup = popupMsg;
         popup.appendChild(popupMsg);
         this.controlMenu.appendChild(popup);
+        
     }
     defaultControllers = {
         0: {

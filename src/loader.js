@@ -36,6 +36,7 @@
     if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX) || true) {
         await loadScript('emulator.js');
         await loadScript('nipplejs.js');
+        await loadScript('gamepad.js');
         await loadScript('GameManager.js');
         await loadStyle('css/main.css');
     }
