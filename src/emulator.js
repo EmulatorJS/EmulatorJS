@@ -227,7 +227,7 @@ class EmulatorJS {
             return new Promise((resolve, reject) => {
                 const files = {};
                 const onMessage = (data) => {
-                    console.log(data);
+                    //console.log(data);
                     if (!data.data) return;
                     //data.data.t/ 4=progress, 2 is file, 1 is zip done
                     if (data.data.t === 4 && msg) {
@@ -262,7 +262,7 @@ class EmulatorJS {
                 return decompressRar(data);
             }
         } else {
-            return new Promise(resolve => resolve({file: data}));
+            return new Promise(resolve => resolve({"!!notCompressedData": data}));
         }
         
     }
@@ -336,6 +336,42 @@ class EmulatorJS {
         }
         return options[core] || core;
     }
+    getBaseFileName() {
+        //Only once game and core is loaded
+        if (!this.started) return null;
+        let parts = this.fileName.split(".");
+        parts.splice(parts.length-1, 1);
+        return parts.join(".");
+    }
+    downloadBios() {
+        if (!this.config.biosUrl) {
+            this.startGame();
+            return;
+        }
+        this.textElem.innerText = this.localization("Download Game BIOS");
+        this.downloadFile(this.config.biosUrl, (res) => {
+            if (res === -1) {
+                this.textElem.innerText = "Error";
+                this.textElem.style.color = "red";
+                return;
+            }
+            this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game BIOS")).then((data) => {
+                for (const k in data) {
+                    if (k === "!!notCompressedData") {
+                        FS.writeFile(this.config.biosUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
+                        break;
+                    }
+                    if (k.endsWith('/')) continue;
+                    console.log(k.split('/').pop());
+                    FS.writeFile(k.split('/').pop(), data[k]);
+                }
+                this.startGame();
+            });
+        }, (progress) => {
+            this.textElem.innerText = this.localization("Download Game Data") + progress;
+        }, true, {responseType: "arraybuffer", method: "GET"});
+        
+    }
     downloadRom() {
         this.gameManager = new window.EJS_GameManager(this.Module);
         
@@ -348,11 +384,20 @@ class EmulatorJS {
             }
             this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game Data")).then((data) => {
                 for (const k in data) {
+                    if (k === "!!notCompressedData") {
+                        this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                        FS.writeFile(this.fileName, data[k]);
+                        break;
+                    }
+                    if (k.endsWith('/')) {
+                        FS.mkdir(k);
+                        continue;
+                    }
                     this.fileName = k;
-                    FS.writeFile(k, data[k]); //needs to be cleaned up
-                    break;
+                    console.log(k);
+                    FS.writeFile(k, data[k]);
                 }
-                this.startGame();
+                this.downloadBios();
             });
         }, (progress) => {
             this.textElem.innerText = this.localization("Download Game Data") + progress;
@@ -399,6 +444,7 @@ class EmulatorJS {
         const args = [];
         if (this.debug) args.push('-v');
         args.push('/'+this.fileName);
+        console.log(args);
         this.Module.callMain(args);
         this.Module.resumeMainLoop();
         this.started = true;
@@ -407,14 +453,7 @@ class EmulatorJS {
             this.virtualGamepad.style.display = "";
         }
         
-        //this needs to be fixed...
-        setInterval(() => {
-            if (document.fullscreenElement !== null) {
-                this.Module.setCanvasSize(this.canvas.getBoundingClientRect().width-10, this.canvas.getBoundingClientRect().height-10);
-            } else {
-                this.Module.setCanvasSize(800, 600);
-            }
-        }, 100)
+        this.handleResize();
     }
     bindListeners() {
         this.createContextMenu();
@@ -422,6 +461,7 @@ class EmulatorJS {
         this.createControlSettingMenu();
         this.setVirtualGamepad();
         this.addEventListener(document, "keydown keyup", this.keyChange.bind(this));
+        this.addEventListener(window, "resize", this.handleResize.bind(this));
         //this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         //keyboard, etc...
     }
@@ -469,7 +509,8 @@ class EmulatorJS {
             screenshotUrl = URL.createObjectURL(blob);
             const a = this.createElement("a");
             a.href = screenshotUrl;
-            a.download = "screenshot.png";
+            const date = new Date();
+            a.download = this.getBaseFileName()+"-"+date.getMonth()+"-"+date.getDate()+"-"+date.getFullYear()+".png";
             a.click();
             hideMenu();
         });
@@ -635,7 +676,7 @@ class EmulatorJS {
             stateUrl = URL.createObjectURL(blob);
             const a = this.createElement("a");
             a.href = stateUrl;
-            a.download = "game.state";
+            a.download = this.getBaseFileName()+".state";
             a.click();
         });
         addButton("Load State", '<svg viewBox="0 0 576 512"><path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/></svg>', async () => {
@@ -1367,9 +1408,12 @@ class EmulatorJS {
             });
         })
         
-        
-        //todo - zone and dpad (and input)
-        
-        
+    }
+    handleResize() {
+        const dpr = window.devicePixelRatio || 1;
+        const positionInfo = this.game.getBoundingClientRect();
+        const width = positionInfo.width * dpr;
+        const height = (positionInfo.height * dpr);
+        Module.setCanvasSize(width, height);
     }
 }
