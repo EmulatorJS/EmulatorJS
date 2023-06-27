@@ -166,6 +166,12 @@
     transform: translateY(100%);
 }
 
+.ejs_svg_rotate {
+    transform: rotate(90deg);
+}
+.ejs_menu_button svg {
+    transition: transform .3s ease;
+}
 .ejs_menu_button {
     margin-right: 2px;
     touch-action: manipulation;
