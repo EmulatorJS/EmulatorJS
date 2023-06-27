@@ -9,7 +9,8 @@ class EJS_GameManager {
             loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
             screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
             simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
-            toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number'])
+            toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number']),
+            getCoreOptions: this.Module.cwrap('get_core_options', 'string', [])
         }
     }
     restart() {
@@ -78,6 +79,9 @@ class EJS_GameManager {
     }
     toggleMainLoop(playing) {
         this.functions.toggleMainLoop(playing);
+    }
+    getCoreOptions() {
+        return this.functions.getCoreOptions();
     }
 
 }
