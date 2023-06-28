@@ -1495,6 +1495,11 @@ class EmulatorJS {
                 optionButton.classList.add("ejs_option_row");
                 optionButton.classList.add("ejs_button_style");
                 
+                this.addEventListener(optionButton, "click", (e) => {
+                    this.settings[title] = options[i];
+                    
+                    //todo, change color
+                })
                 
                 const msg = this.createElement("span");
                 msg.innerText = options[i];
