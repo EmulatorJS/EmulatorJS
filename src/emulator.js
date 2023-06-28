@@ -4,9 +4,18 @@ class EmulatorJS {
     }
     addEventListener(element, listener, callback) {
         const listeners = listener.split(" ");
+        let rv = [];
         for (let i=0; i<listeners.length; i++) {
             element.addEventListener(listeners[i], callback);
-            this.listeners.push({cb:callback, elem:element, listener:listeners[i]});
+            const data = {cb:callback, elem:element, listener:listeners[i]};
+            rv.push(data);
+            this.listeners.push(data);
+        }
+        return rv;
+    }
+    removeEventListener(data) {
+        for (let i=0; i<data.length; i++) {
+            data[i].elem.removeEventListener(data[i].listener, data[i].cb);
         }
     }
     downloadFile(path, cb, progressCB, notWithPath, opts) {
@@ -1434,11 +1443,25 @@ class EmulatorJS {
         const height = (positionInfo.height * dpr);
         this.Module.setCanvasSize(width, height);
     }
+    getElementSize(element) {
+        let elem = element.cloneNode(true);
+        elem.style.position = 'absolute';
+        elem.style.opacity = 0;
+        elem.removeAttribute('hidden');
+        element.parentNode.appendChild(elem);
+        let width = elem.scrollWidth,
+            height = elem.scrollHeight;
+        elem.remove();
+        return {
+            'width': width,
+            'height': height
+        };
+    }
     setupSettingsMenu() {
         this.settingsMenu = this.createElement("div");
-        this.settingsMenu.style.display = "none";
         this.settingsMenu.classList.add("ejs_settings_parent");
         const nested = this.createElement("div");
+        nested.classList.add("ejs_settings_transition");
         this.settings = {};
         
         const home = this.createElement("div");
@@ -1461,18 +1484,23 @@ class EmulatorJS {
             menuOption.appendChild(span);
             home.appendChild(menuOption);
             
-            
             const menu = this.createElement("div");
             menu.setAttribute("hidden", "");
             const button = this.createElement("button");
-            
             this.addEventListener(menuOption, "click", (e) => {
-                menu.removeAttribute("hidden", "");
+                const targetSize = this.getElementSize(menu);
+                nested.style.width = targetSize.width + "px";
+                nested.style.height = targetSize.height + "px";
+                menu.removeAttribute("hidden");
                 home.setAttribute("hidden", "");
             })
             this.addEventListener(button, "click", (e) => {
+                const homeSize = this.getElementSize(home);
+                
+                nested.style.width = homeSize.width + "px";
+                nested.style.height = homeSize.height + "px";
                 menu.setAttribute("hidden", "");
-                home.removeAttribute("hidden", "");
+                home.removeAttribute("hidden");
             })
             
             button.type = "button";
@@ -1488,8 +1516,10 @@ class EmulatorJS {
             optionsMenu.style["max-height"] = "385px";
             optionsMenu.style.overflow  = "auto";
             
+            let buttons = [];
             for (let i=0; i<options.length; i++) {
                 const optionButton = this.createElement("button");
+                buttons.push(optionButton);
                 optionButton.type = "button";
                 optionButton.value = options[i];
                 optionButton.classList.add("ejs_option_row");
@@ -1497,7 +1527,10 @@ class EmulatorJS {
                 
                 this.addEventListener(optionButton, "click", (e) => {
                     this.settings[title] = options[i];
-                    
+                    for (let j=0; j<buttons.length; j++) {
+                        buttons[j].classList.remove("ejs_option_row_selected");
+                    }
+                    optionButton.classList.add("ejs_option_row_selected");
                     //todo, change color
                 })
                 
@@ -1523,5 +1556,12 @@ class EmulatorJS {
         
         this.settingParent.appendChild(this.settingsMenu);
         this.settingParent.style.position = "relative";
+        
+        
+        const homeSize = this.getElementSize(home);
+        nested.style.width = homeSize.width + "px";
+        nested.style.height = homeSize.height + "px";
+        
+        this.settingsMenu.style.display = "none";
     }
 }

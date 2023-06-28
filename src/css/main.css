@@ -475,7 +475,19 @@
     border-top-color:#fff
 }
 
+@keyframes ejs_settings_parent_animation{
+    0%{
+        opacity:0.5;
+        transform:translateY(10px)
+    }
+    to{
+        opacity:1;
+        transform:translateY(0)
+    }
+}
+
 .ejs_settings_parent {
+    animation: ejs_settings_parent_animation .2s ease;
     background: rgba(16,16,16,0.9);
     border-radius: 4px;
     bottom: 100%;
@@ -499,7 +511,7 @@
     top: 100%;
     width: 0;
 }
-.ejs_settings_parent>div {
+.ejs_settings_transition {
     overflow: hidden;
     transition: height .35s cubic-bezier(0.4,0,0.2,1),width .35s cubic-bezier(0.4,0,0.2,1);
 }
@@ -635,11 +647,6 @@
     border-radius: 100%;
 }
 .ejs_option_row::after {
-    /*
-    once selected
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
-    */
     background: #fff;
     border: 0;
     height: 6px;
@@ -652,6 +659,13 @@
     border-radius: 100%;
     content: '';
     position: absolute;
+}
+.ejs_option_row_selected::before {
+    background: rgba(var(--ejs-primary-color),1);
+}
+.ejs_option_row_selected::after {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
 }
 .ejs_option_row>span {
     align-items: center;

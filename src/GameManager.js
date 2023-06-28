@@ -12,6 +12,20 @@ class EJS_GameManager {
             toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number']),
             getCoreOptions: this.Module.cwrap('get_core_options', 'string', [])
         }
+        this.mkdir("/home");
+        this.mkdir("/home/web_user");
+        this.mkdir("/home/web_user/retroarch");
+        this.mkdir("/home/web_user/retroarch/userdata");
+        
+        this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+    }
+    mkdir(path) {
+        try {
+            this.FS.mkdir(path);
+        } catch(e) {}
+    }
+    getRetroArchCfg() {
+        return "\naudio_latency: 256\n";
     }
     restart() {
         this.functions.restart();
