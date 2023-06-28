@@ -1438,11 +1438,15 @@ class EmulatorJS {
         this.settingsMenu = this.createElement("div");
         this.settingsMenu.style.display = "none";
         this.settingsMenu.classList.add("ejs_settings_parent");
+        const nested = this.createElement("div");
         
-        const home = this.createElement("div");
-        home.classList.add("ejs_setting_home");
+        //const home = this.createElement("div");
+        //home.classList.add("ejs_setting_home");
+        //home.classList.add("ejs_setting_menu");
+        //nested.appendChild(home);
         
         const addToMenu = (title, options) => {
+            /*
             const menuOption = this.createElement("div");
             menuOption.classList.add("ejs_settings_main_bar");
             const span = this.createElement("span");
@@ -1455,13 +1459,47 @@ class EmulatorJS {
             
             menuOption.appendChild(span);
             home.appendChild(menuOption);
+            */
+            const menu = this.createElement("div");
+            const button = this.createElement("button");
+            button.type = "button";
+            button.classList.add("ejs_back_button");
+            menu.appendChild(button);
+            const pageTitle = this.createElement("span");
+            pageTitle.innerText = title;
+            pageTitle.classList.add("ejs_menu_text_a");
+            button.appendChild(pageTitle);
+            
+            const optionsMenu = this.createElement("div");
+            optionsMenu.classList.add("ejs_setting_menu");
+            optionsMenu.style["max-height"] = "385px";
+            optionsMenu.style.overflow  = "auto";
+            
+            for (let i=0; i<options.length; i++) {
+                const optionButton = this.createElement("button");
+                optionButton.type = "button";
+                optionButton.value = options[i];
+                optionButton.classList.add("ejs_option_row");
+                optionButton.classList.add("ejs_button_style");
+                
+                const msg = this.createElement("span");
+                msg.innerText = options[i];
+                optionButton.appendChild(msg);
+                
+                optionsMenu.appendChild(optionButton);
+            }
+            
+            menu.appendChild(optionsMenu);
+            
+            
+            nested.appendChild(menu);
         }
         
         addToMenu("Test", [1, 2, 3]);
-        addToMenu("Test2", [4, 5, 6]);
-        addToMenu("Testertthgfd", [7, 8, 9]);
+        //addToMenu("Test2", [4, 5, 6]);
+        //addToMenu("Testertthgfd", [7, 8, 9]);
         
-        this.settingsMenu.appendChild(home);
+        this.settingsMenu.appendChild(nested);
         
         
         this.settingParent.appendChild(this.settingsMenu);
