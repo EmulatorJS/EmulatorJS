@@ -1439,14 +1439,15 @@ class EmulatorJS {
         this.settingsMenu.style.display = "none";
         this.settingsMenu.classList.add("ejs_settings_parent");
         const nested = this.createElement("div");
+        this.settings = {};
         
-        //const home = this.createElement("div");
-        //home.classList.add("ejs_setting_home");
-        //home.classList.add("ejs_setting_menu");
-        //nested.appendChild(home);
+        const home = this.createElement("div");
+        home.classList.add("ejs_setting_home");
+        home.classList.add("ejs_setting_menu");
+        nested.appendChild(home);
         
         const addToMenu = (title, options) => {
-            /*
+            
             const menuOption = this.createElement("div");
             menuOption.classList.add("ejs_settings_main_bar");
             const span = this.createElement("span");
@@ -1459,9 +1460,21 @@ class EmulatorJS {
             
             menuOption.appendChild(span);
             home.appendChild(menuOption);
-            */
+            
+            
             const menu = this.createElement("div");
+            menu.setAttribute("hidden", "");
             const button = this.createElement("button");
+            
+            this.addEventListener(menuOption, "click", (e) => {
+                menu.removeAttribute("hidden", "");
+                home.setAttribute("hidden", "");
+            })
+            this.addEventListener(button, "click", (e) => {
+                menu.setAttribute("hidden", "");
+                home.removeAttribute("hidden", "");
+            })
+            
             button.type = "button";
             button.classList.add("ejs_back_button");
             menu.appendChild(button);
@@ -1482,6 +1495,7 @@ class EmulatorJS {
                 optionButton.classList.add("ejs_option_row");
                 optionButton.classList.add("ejs_button_style");
                 
+                
                 const msg = this.createElement("span");
                 msg.innerText = options[i];
                 optionButton.appendChild(msg);
@@ -1496,8 +1510,8 @@ class EmulatorJS {
         }
         
         addToMenu("Test", [1, 2, 3]);
-        //addToMenu("Test2", [4, 5, 6]);
-        //addToMenu("Testertthgfd", [7, 8, 9]);
+        addToMenu("Test2", [4, 5, 6]);
+        addToMenu("Testertthgfd", [7, 8, 9]);
         
         this.settingsMenu.appendChild(nested);
         
