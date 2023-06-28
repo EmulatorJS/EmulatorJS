@@ -10,7 +10,8 @@ class EJS_GameManager {
             screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
             simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
             toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number']),
-            getCoreOptions: this.Module.cwrap('get_core_options', 'string', [])
+            getCoreOptions: this.Module.cwrap('get_core_options', 'string', []),
+            setVariable: this.Module.cwrap('set_variable', 'null', ['string', 'string'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -96,6 +97,9 @@ class EJS_GameManager {
     }
     getCoreOptions() {
         return this.functions.getCoreOptions();
+    }
+    setVariable(option, value) {
+        this.functions.setVariable(option, value);
     }
 
 }

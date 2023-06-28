@@ -732,6 +732,7 @@ class EmulatorJS {
             exit.style.display = "";
             enter.style.display = "none";
         });
+        //todo, when user exits by pressing esc, labels dont currently change
         const exit = addButton("Exit Fullscreen", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M215.1 272h-136c-12.94 0-24.63 7.797-29.56 19.75C45.47 303.7 48.22 317.5 57.37 326.6l30.06 30.06l-78.06 78.07c-12.5 12.5-12.5 32.75-.0012 45.25l22.62 22.62c12.5 12.5 32.76 12.5 45.26 .0013l78.06-78.07l30.06 30.06c6.125 6.125 14.31 9.367 22.63 9.367c4.125 0 8.279-.7891 12.25-2.43c11.97-4.953 19.75-16.62 19.75-29.56V296C239.1 282.7 229.3 272 215.1 272zM296 240h136c12.94 0 24.63-7.797 29.56-19.75c4.969-11.97 2.219-25.72-6.938-34.87l-30.06-30.06l78.06-78.07c12.5-12.5 12.5-32.76 .0002-45.26l-22.62-22.62c-12.5-12.5-32.76-12.5-45.26-.0003l-78.06 78.07l-30.06-30.06c-9.156-9.141-22.87-11.84-34.87-6.937c-11.97 4.953-19.75 16.62-19.75 29.56v135.1C272 229.3 282.7 240 296 240z"/></svg>', () => {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
@@ -1457,6 +1458,10 @@ class EmulatorJS {
             'height': height
         };
     }
+    menuOptionChanged(option, value) {
+        //console.log(option, value);
+        this.gameManager.setVariable(option, value);
+    }
     setupSettingsMenu() {
         this.settingsMenu = this.createElement("div");
         this.settingsMenu.classList.add("ejs_settings_parent");
@@ -1469,7 +1474,7 @@ class EmulatorJS {
         home.classList.add("ejs_setting_menu");
         nested.appendChild(home);
         
-        const addToMenu = (title, options) => {
+        const addToMenu = (title, id, options, defaultOption) => {
             
             const menuOption = this.createElement("div");
             menuOption.classList.add("ejs_settings_main_bar");
@@ -1477,7 +1482,7 @@ class EmulatorJS {
             span.innerText = title;
             
             const current = this.createElement("div");
-            current.innerText = "boogers";
+            current.innerText = "";
             current.classList.add("ejs_settings_main_bar_selected");
             span.appendChild(current);
             
@@ -1487,6 +1492,14 @@ class EmulatorJS {
             const menu = this.createElement("div");
             menu.setAttribute("hidden", "");
             const button = this.createElement("button");
+            const goToHome = () => {
+                const homeSize = this.getElementSize(home);
+                
+                nested.style.width = homeSize.width + "px";
+                nested.style.height = homeSize.height + "px";
+                menu.setAttribute("hidden", "");
+                home.removeAttribute("hidden");
+            }
             this.addEventListener(menuOption, "click", (e) => {
                 const targetSize = this.getElementSize(menu);
                 nested.style.width = targetSize.width + "px";
@@ -1494,14 +1507,7 @@ class EmulatorJS {
                 menu.removeAttribute("hidden");
                 home.setAttribute("hidden", "");
             })
-            this.addEventListener(button, "click", (e) => {
-                const homeSize = this.getElementSize(home);
-                
-                nested.style.width = homeSize.width + "px";
-                nested.style.height = homeSize.height + "px";
-                menu.setAttribute("hidden", "");
-                home.removeAttribute("hidden");
-            })
+            this.addEventListener(button, "click", goToHome);
             
             button.type = "button";
             button.classList.add("ejs_back_button");
@@ -1517,25 +1523,40 @@ class EmulatorJS {
             optionsMenu.style.overflow  = "auto";
             
             let buttons = [];
-            for (let i=0; i<options.length; i++) {
+            let opts = options;
+            if (Array.isArray(options)) {
+                opts = {};
+                for (let i=0; i<options.length; i++) {
+                    opts[options[i]] = options[i];
+                }
+            }
+            
+            for (const opt in opts) {
                 const optionButton = this.createElement("button");
                 buttons.push(optionButton);
                 optionButton.type = "button";
-                optionButton.value = options[i];
+                optionButton.value = opts[opt];
                 optionButton.classList.add("ejs_option_row");
                 optionButton.classList.add("ejs_button_style");
                 
                 this.addEventListener(optionButton, "click", (e) => {
-                    this.settings[title] = options[i];
+                    this.settings[id] = opt;
                     for (let j=0; j<buttons.length; j++) {
                         buttons[j].classList.remove("ejs_option_row_selected");
                     }
                     optionButton.classList.add("ejs_option_row_selected");
-                    //todo, change color
+                    this.menuOptionChanged(id, opt);
+                    current.innerText = opts[opt];
+                    goToHome();
                 })
+                if (defaultOption === opt) {
+                    optionButton.classList.add("ejs_option_row_selected");
+                    this.menuOptionChanged(id, opt);
+                    current.innerText = opts[opt];
+                }
                 
                 const msg = this.createElement("span");
-                msg.innerText = options[i];
+                msg.innerText = opts[opt];
                 optionButton.appendChild(msg);
                 
                 optionsMenu.appendChild(optionButton);
@@ -1543,13 +1564,33 @@ class EmulatorJS {
             
             menu.appendChild(optionsMenu);
             
-            
             nested.appendChild(menu);
         }
         
-        addToMenu("Test", [1, 2, 3]);
-        addToMenu("Test2", [4, 5, 6]);
-        addToMenu("Testertthgfd", [7, 8, 9]);
+        this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
+            let option = line.split('; ');
+            let name = option[0];
+            let options = option[1].split('|'),
+                optionName = name.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
+            options.slice(1, -1);
+            if (options.length === 1) return;
+            let availableOptions = {};
+            for (let i=0; i<options.length; i++) {
+                availableOptions[options[i]] = this.localization(options[i]);
+            }
+            addToMenu(this.localization(optionName),
+                      name.split("|")[0], availableOptions,
+                      (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
+        })
+        //addToMenu("Test", 'test', {a:1, b:2, c:3}, 2);
+        //addToMenu("Test2", 'test_2', [4, 5, 6]);
+        //addToMenu("Testertthgfd", 'booger', [7, 8, 9]);
+        
+        
+        addToMenu(this.localization('FPS'), 'fps', {
+            'show': this.localization("show"),
+            'hide': this.localization("hide")
+        }, 'hide');
         
         this.settingsMenu.appendChild(nested);
         
