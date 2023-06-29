@@ -13,6 +13,9 @@
     width: 100%;
     height: 100%;
     color: #bcbcbc;
+    outline-width: 0;
+    outline: none;
+    font-size: 14px;
 }
 
 .ejs_parent ::-webkit-scrollbar{
@@ -321,6 +324,15 @@
 
 .ejs_control_bar:hover {
     background-color: #2d2d2d;
+}
+.ejs_control_set_button {
+    float: none;
+    padding: .1rem .5rem;
+    background-color: rgba(var(--ejs-primary-color),1);
+    color: #fff !important;
+    border-radius: .25rem;
+    cursor: pointer;
+    font-size: 14px;
 }
 
 .ejs_popup_box {

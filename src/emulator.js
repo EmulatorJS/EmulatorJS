@@ -105,6 +105,7 @@ class EmulatorJS {
             parent: this.game.parentElement
         }
         this.elements.parent.classList.add("ejs_parent");
+        this.elements.parent.setAttribute("tabindex", -1);
     }
     // Start button
     createStartButton() {
@@ -467,6 +468,7 @@ class EmulatorJS {
         this.setupSettingsMenu();
         this.handleResize();
         this.updateCheatUI();
+        this.elements.parent.focus();
     }
     bindListeners() {
         this.createContextMenu();
@@ -474,8 +476,12 @@ class EmulatorJS {
         this.createControlSettingMenu();
         this.createCheatsMenu()
         this.setVirtualGamepad();
-        this.addEventListener(document, "keydown keyup", this.keyChange.bind(this));
+        this.addEventListener(this.elements.parent, "keydown keyup", this.keyChange.bind(this));
+        this.addEventListener(this.elements.parent, "mousedown mouseup click touchstart touchend touchcancel", (e) => {
+            this.elements.parent.focus();
+        })
         this.addEventListener(window, "resize", this.handleResize.bind(this));
+        //this.addEventListener(window, "blur", e => console.log(e), true); //TODO - add "click to make keyboard keys work" message
         //this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         //keyboard, etc...
     }
@@ -603,6 +609,9 @@ class EmulatorJS {
             file.click();
         })
     }
+    isPopupOpen() {
+        return this.cheatMenu.style.display !== "none" || this.controlMenu.style.display !== "none";
+    }
     createBottomMenuBar() {
         this.elements.menu = this.createElement("div");
         this.elements.menu.classList.add("ejs_menu_bar");
@@ -616,6 +625,7 @@ class EmulatorJS {
         
         this.addEventListener(this.elements.parent, 'mousemove click', (e) => {
             if (!this.started) return;
+            if (this.isPopupOpen()) return;
             if (timeout !== null) clearTimeout(timeout);
             timeout = setTimeout(hide, 3000);
             this.elements.menu.classList.remove("ejs_menu_bar_hidden");
@@ -769,10 +779,31 @@ class EmulatorJS {
         });
         exit.style.display = "none";
         
+        this.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {
+            if (e.target !== this.elements.parent) return;
+            if (document.fullscreenElement === null) {
+                exit.style.display = "none";
+                enter.style.display = "";
+            } else {
+                //not sure if this is possible, lets put it here anyways
+                exit.style.display = "";
+                enter.style.display = "none";
+            }
+        })
+        
     }
     createControlSettingMenu() {
+        let buttonListeners = [];
         this.controls = this.defaultControllers;
         const body = this.createPopup("Control Settings", {
+            "Reset": () => {
+                this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
+                buttonListeners.forEach(elem => elem());
+            },
+            "Clear": () => {
+                this.controls = {0:{},1:{},2:{},3:{}};
+                buttonListeners.forEach(elem => elem());
+            },
             "Close": () => {
                 this.controlMenu.style.display = "none";
             }
@@ -838,7 +869,6 @@ class EmulatorJS {
             players.push(playerContainer);
         }
         body.appendChild(playerSelect);
-        
         
         const controls = this.createElement("div");
         for (let i=0; i<4; i++) {
@@ -915,6 +945,17 @@ class EmulatorJS {
                 textBox2.setAttribute("placeholder", "");
                 textBox2Parent.appendChild(textBox2);
                 
+                buttonListeners.push(() => {
+                    textBox2.value = "";
+                    textBox1.value = "";
+                    if (this.controls[i][k] && this.controls[i][k].value) {
+                        textBox2.value = this.controls[i][k].value;
+                    }
+                    if (this.controls[i][k] && this.controls[i][k].value2) {
+                        textBox1.value = this.controls[i][k].value2;
+                    }
+                })
+                
                 if (this.controls[i][k] && this.controls[i][k].value) {
                     textBox2.value = this.controls[i][k].value;
                 }
@@ -931,7 +972,8 @@ class EmulatorJS {
                 
                 const setButton = this.createElement("div");
                 setButton.style = "width:25%;float:left;";
-                const button = this.createElement("button");
+                const button = this.createElement("a");
+                button.classList.add("ejs_control_set_button");
                 button.innerText = "Set";
                 setButton.appendChild(button);
                 
@@ -948,7 +990,7 @@ class EmulatorJS {
                 this.addEventListener(buttonText, "mousedown", (e) => {
                     e.preventDefault();
                     this.controlPopup.parentElement.removeAttribute("hidden");
-                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\ntest";
+                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\n";
                     this.controlPopup.setAttribute("button-num", k);
                     this.controlPopup.setAttribute("player-num", i);
                     this.updateTextBoxes = () => {
@@ -1058,7 +1100,7 @@ class EmulatorJS {
     controls;
     keyChange(e) {
         if (!this.started) return;
-        if (this.cheatMenu.style.display !== "none" || this.settingsMenu.style.display !== "none") return;
+        if (this.settingsMenu.style.display !== "none" || this.cheatMenu.style.display !== "none") return;
         e.preventDefault();
         if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
             const num = this.controlPopup.getAttribute("button-num");
