@@ -1523,6 +1523,18 @@ class EmulatorJS {
         };
     }
     menuOptionChanged(option, value) {
+        if (option === "shader") {
+            try {
+                this.Module.FS.unlink("/shader/shader.glslp");
+            } catch(e) {}
+            if (value === "disabled") {
+                this.gameManager.toggleShader(0);
+                return;
+            }
+            this.Module.FS.writeFile("/shader/shader.glslp", window.EJS_SHADERS[value]);
+            this.gameManager.toggleShader(1);
+            return;
+        }
         //console.log(option, value);
         this.gameManager.setVariable(option, value);
     }
@@ -1658,6 +1670,18 @@ class EmulatorJS {
             'show': this.localization("show"),
             'hide': this.localization("hide")
         }, 'hide');
+        
+        if (window.EJS_SHADERS) {
+            addToMenu(this.localization('Shaders'), 'shader', {
+                'disabled': "Disabled",
+                '2xScaleHQ.glslp': "2xScaleHQ",
+                '4xScaleHQ.glslp': "4xScaleHQ",
+                'crt-easymode.glslp': 'CRT easymode',
+                'crt-aperture.glslp': 'CRT aperture',
+                'crt-geom.glslp': 'CRT geom',
+                'crt-mattias.glslp': 'CRT mattias'
+            }, 'disabled');
+        }
         
         this.settingsMenu.appendChild(nested);
         

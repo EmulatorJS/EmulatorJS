@@ -13,7 +13,8 @@ class EJS_GameManager {
             getCoreOptions: this.Module.cwrap('get_core_options', 'string', []),
             setVariable: this.Module.cwrap('set_variable', 'null', ['string', 'string']),
             setCheat: this.Module.cwrap('set_cheat', 'null', ['number', 'number', 'string']),
-            resetCheat: this.Module.cwrap('reset_cheat', 'null', [])
+            resetCheat: this.Module.cwrap('reset_cheat', 'null', []),
+            toggleShader: this.Module.cwrap('shader_enable', 'null', ['number'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -21,6 +22,8 @@ class EJS_GameManager {
         this.mkdir("/home/web_user/retroarch/userdata");
         
         this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        
+        this.initShaders();
     }
     mkdir(path) {
         try {
@@ -29,6 +32,13 @@ class EJS_GameManager {
     }
     getRetroArchCfg() {
         return "\naudio_latency: 256\n";
+    }
+    initShaders() {
+        if (!window.EJS_SHADERS) return;
+        this.mkdir("/shader");
+        for (const shader in window.EJS_SHADERS) {
+            this.FS.writeFile('/shader/'+shader, window.EJS_SHADERS[shader]);
+        }
     }
     restart() {
         this.functions.restart();
@@ -108,6 +118,9 @@ class EJS_GameManager {
     }
     resetCheat() {
         this.functions.resetCheat();
+    }
+    toggleShader(active) {
+        this.functions.toggleShader(active);
     }
 }
 
