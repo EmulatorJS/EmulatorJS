@@ -80,6 +80,7 @@ class EmulatorJS {
         window.EJS_TESTING = this;
         this.touch = false;
         this.debug = (window.EJS_DEBUG_XX === true);
+        this.cheats = [];
         this.setElements(element);
         this.started = false;
         this.paused = true;
@@ -448,6 +449,7 @@ class EmulatorJS {
     startGame() {
         this.textElem.remove();
         this.textElem = null;
+        
         this.game.classList.remove("ejs_game");
         this.game.appendChild(this.canvas);
         const args = [];
@@ -464,11 +466,13 @@ class EmulatorJS {
         
         this.setupSettingsMenu();
         this.handleResize();
+        this.updateCheatUI();
     }
     bindListeners() {
         this.createContextMenu();
         this.createBottomMenuBar();
         this.createControlSettingMenu();
+        this.createCheatsMenu()
         this.setVirtualGamepad();
         this.addEventListener(document, "keydown keyup", this.keyChange.bind(this));
         this.addEventListener(window, "resize", this.handleResize.bind(this));
@@ -700,6 +704,9 @@ class EmulatorJS {
         });
         addButton("Control Settings", '<svg viewBox="0 0 640 512"><path fill="currentColor" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"/></svg>', () => {
             this.controlMenu.style.display = "";
+        });
+        addButton("Cheats", '<svg viewBox="0 0 496 512"><path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200zm-80-216c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm4 72.6c-20.8 25-51.5 39.4-84 39.4s-63.2-14.3-84-39.4c-8.5-10.2-23.7-11.5-33.8-3.1-10.2 8.5-11.5 23.6-3.1 33.8 30 36 74.1 56.6 120.9 56.6s90.9-20.6 120.9-56.6c8.5-10.2 7.1-25.3-3.1-33.8-10.1-8.4-25.3-7.1-33.8 3.1z" class=""></path></svg>', () => {
+            this.cheatMenu.style.display = "";
         });
         
         const spacer = this.createElement("span");
@@ -957,7 +964,7 @@ class EmulatorJS {
         popup.classList.add("ejs_popup_container");
         const popupMsg = this.createElement("div");
         popupMsg.classList.add("ejs_popup_box");
-        popupMsg.innerText = "yes";
+        popupMsg.innerText = "";
         popup.setAttribute("hidden", "");
         this.controlPopup = popupMsg;
         popup.appendChild(popupMsg);
@@ -1037,6 +1044,7 @@ class EmulatorJS {
     controls;
     keyChange(e) {
         if (!this.started) return;
+        if (this.cheatMenu.style.display !== "none" || this.settingsMenu.style.display !== "none") return;
         e.preventDefault();
         if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
             const num = this.controlPopup.getAttribute("button-num");
@@ -1594,15 +1602,149 @@ class EmulatorJS {
         
         this.settingsMenu.appendChild(nested);
         
-        
         this.settingParent.appendChild(this.settingsMenu);
         this.settingParent.style.position = "relative";
-        
         
         const homeSize = this.getElementSize(home);
         nested.style.width = homeSize.width + "px";
         nested.style.height = homeSize.height + "px";
         
         this.settingsMenu.style.display = "none";
+    }
+    createSubPopup(hidden) {
+        const popup = this.createElement('div');
+        popup.classList.add("ejs_popup_container");
+        popup.classList.add("ejs_popup_container_box");
+        const popupMsg = this.createElement("div");
+        popupMsg.innerText = "";
+        if (hidden) popup.setAttribute("hidden", "");
+        popup.appendChild(popupMsg);
+        return [popup, popupMsg];
+    }
+    createCheatsMenu() {
+        const body = this.createPopup("Cheats", {
+            "Add Cheat": () => {
+                const popups = this.createSubPopup();
+                this.cheatMenu.appendChild(popups[0]);
+                popups[1].classList.add("ejs_cheat_parent");
+                popups[1].style.width = "100%";
+                const popup = popups[1];
+                const header = this.createElement("div");
+                header.classList.add("ejs_cheat_header");
+                const title = this.createElement("h2");
+                title.innerText = "Add Cheat Code";
+                title.classList.add("ejs_cheat_heading");
+                const close = this.createElement("button");
+                close.classList.add("ejs_cheat_close");
+                header.appendChild(title);
+                header.appendChild(close);
+                popup.appendChild(header);
+                this.addEventListener(close, "click", (e) => {
+                    popups[0].remove();
+                })
+                
+                const main = this.createElement("div");
+                main.classList.add("ejs_cheat_main");
+                const header3 = this.createElement("strong");
+                header3.innerText = "Code";
+                main.appendChild(header3);
+                main.appendChild(this.createElement("br"));
+                const mainText = this.createElement("textarea");
+                mainText.classList.add("ejs_cheat_code");
+                mainText.style.width = "100%";
+                mainText.style.height = "80px";
+                main.appendChild(mainText);
+                main.appendChild(this.createElement("br"));
+                const header2 = this.createElement("strong");
+                header2.innerText = "Description";
+                main.appendChild(header2);
+                main.appendChild(this.createElement("br"));
+                const mainText2 = this.createElement("input");
+                mainText2.type = "text";
+                mainText2.classList.add("ejs_cheat_code");
+                main.appendChild(mainText2);
+                main.appendChild(this.createElement("br"));
+                popup.appendChild(main);
+                
+                const footer = this.createElement("footer");
+                const submit = this.createElement("button");
+                const closeButton = this.createElement("button");
+                submit.innerText = "Submit";
+                closeButton.innerText = "Close";
+                submit.classList.add("ejs_button_button");
+                closeButton.classList.add("ejs_button_button");
+                submit.classList.add("ejs_popup_submit");
+                closeButton.classList.add("ejs_popup_submit");
+                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+                footer.appendChild(submit);
+                const span = this.createElement("span");
+                span.innerText = " ";
+                footer.appendChild(span);
+                footer.appendChild(closeButton);
+                popup.appendChild(footer);
+                
+                this.addEventListener(submit, "click", (e) => {
+                    if (!mainText.value.trim() || !mainText2.value.trim()) return;
+                    popups[0].remove();
+                    this.cheats.push({
+                        code: mainText.value,
+                        desc: mainText2.value,
+                        checked: false
+                    });
+                    this.updateCheatUI();
+                })
+                this.addEventListener(closeButton, "click", (e) => {
+                    popups[0].remove();
+                })
+                
+            },
+            "Close": () => {
+                this.cheatMenu.style.display = "none";
+            }
+        }, true);
+        this.cheatMenu = body.parentElement;
+        const rows = this.createElement("div");
+        body.appendChild(rows);
+        rows.classList.add("ejs_cheat_rows");
+        this.elements.cheatRows = rows;
+    }
+    updateCheatUI() {
+        if (!this.cheats) this.cheats = [];
+        this.elements.cheatRows.innerHTML = "";
+        
+        const addToMenu = (desc, checked, code, i) => {
+            const row = this.createElement("div");
+            row.classList.add("ejs_cheat_row");
+            const input = this.createElement("input");
+            input.type = "checkbox";
+            input.checked = checked;
+            input.value = i;
+            input.id = "ejs_cheat_switch_"+i;
+            row.appendChild(input);
+            const label = this.createElement("label");
+            label.for = "ejs_cheat_switch_"+i;
+            label.innerText = desc;
+            row.appendChild(label);
+            label.addEventListener("click", (e) => {
+                input.checked = !input.checked;
+                this.cheats[i].checked = input.checked;
+                this.cheatChanged(input.checked, code, i);
+            })
+            const close = this.createElement("a");
+            close.classList.add("ejs_cheat_row_button");
+            close.innerText = "×";
+            row.appendChild(close);
+            
+            this.elements.cheatRows.appendChild(row);
+            this.cheatChanged(checked, code, i);
+            
+        }
+        this.gameManager.resetCheat();
+        for (let i=0; i<this.cheats.length; i++) {
+            addToMenu(this.cheats[i].desc, this.cheats[i].checked, this.cheats[i].code, i);
+        }
+    }
+    cheatChanged(checked, code, index) {
+        this.gameManager.setCheat(index, checked, code);
     }
 }

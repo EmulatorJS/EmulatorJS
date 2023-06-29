@@ -11,7 +11,9 @@ class EJS_GameManager {
             simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
             toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number']),
             getCoreOptions: this.Module.cwrap('get_core_options', 'string', []),
-            setVariable: this.Module.cwrap('set_variable', 'null', ['string', 'string'])
+            setVariable: this.Module.cwrap('set_variable', 'null', ['string', 'string']),
+            setCheat: this.Module.cwrap('set_cheat', 'null', ['number', 'number', 'string']),
+            resetCheat: this.Module.cwrap('reset_cheat', 'null', [])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -101,7 +103,12 @@ class EJS_GameManager {
     setVariable(option, value) {
         this.functions.setVariable(option, value);
     }
-
+    setCheat(index, enabled, code) {
+        this.functions.setCheat(index, enabled, code);
+    }
+    resetCheat() {
+        this.functions.resetCheat();
+    }
 }
 
 window.EJS_GameManager = EJS_GameManager;
