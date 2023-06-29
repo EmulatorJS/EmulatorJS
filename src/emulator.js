@@ -468,6 +468,7 @@ class EmulatorJS {
         this.setupSettingsMenu();
         this.handleResize();
         this.updateCheatUI();
+        this.updateGamepadLabels();
         this.elements.parent.focus();
     }
     bindListeners() {
@@ -482,8 +483,33 @@ class EmulatorJS {
         })
         this.addEventListener(window, "resize", this.handleResize.bind(this));
         //this.addEventListener(window, "blur", e => console.log(e), true); //TODO - add "click to make keyboard keys work" message
-        //this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
-        //keyboard, etc...
+        this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
+        this.gamepad.on('connected', (e) => {
+            if (!this.gamepadLabels) return;
+            this.updateGamepadLabels();
+        })
+        this.gamepad.on('disconnected', (e) => {
+            setTimeout(this.updateGamepadLabels.bind(this), 10);
+        })
+        this.gamepad.on('axischanged', function(e) {
+            console.log('axischanged', e);
+        })
+        this.gamepad.on('buttondown', function(e) {
+            console.log('buttondown', e);
+        })
+        this.gamepad.on('buttonup', function(e) {
+            console.log('buttonup', e);
+        })
+    }
+    updateGamepadLabels() {
+        for (let i=0; i<this.gamepadLabels.length; i++) {
+            console.log(this.gamepad.gamepads[i]);
+            if (this.gamepad.gamepads[i]) {
+                this.gamepadLabels[i].innerText = this.gamepad.gamepads[i].id;
+            } else {
+                this.gamepadLabels[i].innerText = "n/a";
+            }
+        }
     }
     createContextMenu() {
         this.elements.contextmenu = this.createElement('div');
@@ -794,6 +820,7 @@ class EmulatorJS {
     }
     createControlSettingMenu() {
         let buttonListeners = [];
+        this.gamepadLabels = [];
         this.controls = this.defaultControllers;
         const body = this.createPopup("Control Settings", {
             "Reset": () => {
@@ -880,6 +907,7 @@ class EmulatorJS {
             gamepadTitle.innerText = "Connected Gamepad: ";
             
             const gamepadName = this.createElement("span");
+            this.gamepadLabels.push(gamepadName);
             gamepadName.innerText = "n/a";
             gamepadTitle.appendChild(gamepadName);
             

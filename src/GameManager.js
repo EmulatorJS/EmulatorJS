@@ -21,9 +21,10 @@ class EJS_GameManager {
         this.mkdir("/home/web_user/retroarch");
         this.mkdir("/home/web_user/retroarch/userdata");
         
-        this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        //this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
         this.initShaders();
+        window.RA.nonblock = true; //lets see if this works
     }
     mkdir(path) {
         try {
