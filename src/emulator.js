@@ -1113,8 +1113,6 @@ class EmulatorJS {
     controls;
     keyChange(e) {
         if (!this.started) return;
-        if (this.settingsMenu.style.display !== "none" || this.cheatMenu.style.display !== "none") return;
-        e.preventDefault();
         if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
             const num = this.controlPopup.getAttribute("button-num");
             const player = this.controlPopup.getAttribute("player-num");
@@ -1126,6 +1124,8 @@ class EmulatorJS {
             this.checkGamepadInputs();
             return;
         }
+        if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
+        e.preventDefault();
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
             for (let j=0; j<26; j++) {
@@ -1137,7 +1137,6 @@ class EmulatorJS {
     }
     gamepadEvent(e) {
         if (!this.started) return;
-        if (this.settingsMenu.style.display !== "none" || this.cheatMenu.style.display !== "none") return;
         const value = function(value) {
             if (value > 0.5 || value < -0.5) {
                 return (value > 0) ? 1 : -1;
@@ -1157,13 +1156,14 @@ class EmulatorJS {
             this.checkGamepadInputs();
             return;
         }
+        if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
             for (let j=0; j<26; j++) {
-                if (['buttonup', 'buttondown'].includes(e.type) || (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
+                if (['buttonup', 'buttondown'].includes(e.type) && (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
                     this.gameManager.simulateInput(i, j, (e.type === 'buttondown' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 } else if (e.type === "axischanged") {
-                    if (this.controls[i][j] && this.controls[i][j].value2 && this.controls[i][j].value2.split(":")[0] === e.axis) {
+                    if (this.controls[i][j] && typeof this.controls[i][j].value2 === 'string' && this.controls[i][j].value2.split(":")[0] === e.axis) {
                         if (special.includes(j)) {
                             if (e.axis === 'LEFT_STICK_X') {
                                 if (e.value > 0) {
@@ -1653,19 +1653,20 @@ class EmulatorJS {
             home.appendChild(menuOption);
             
             const menu = this.createElement("div");
+            menu.style["max-height"] = "385px";
+            menu.style.overflow  = "auto";
             menu.setAttribute("hidden", "");
             const button = this.createElement("button");
             const goToHome = () => {
                 const homeSize = this.getElementSize(home);
-                
-                nested.style.width = homeSize.width + "px";
+                nested.style.width = (homeSize.width+20) + "px";
                 nested.style.height = homeSize.height + "px";
                 menu.setAttribute("hidden", "");
                 home.removeAttribute("hidden");
             }
             this.addEventListener(menuOption, "click", (e) => {
                 const targetSize = this.getElementSize(menu);
-                nested.style.width = targetSize.width + "px";
+                nested.style.width = (targetSize.width+20) + "px";
                 nested.style.height = targetSize.height + "px";
                 menu.removeAttribute("hidden");
                 home.setAttribute("hidden", "");
@@ -1682,8 +1683,8 @@ class EmulatorJS {
             
             const optionsMenu = this.createElement("div");
             optionsMenu.classList.add("ejs_setting_menu");
-            optionsMenu.style["max-height"] = "385px";
-            optionsMenu.style.overflow  = "auto";
+            //optionsMenu.style["max-height"] = "385px";
+            //optionsMenu.style.overflow  = "auto";
             
             let buttons = [];
             let opts = options;
