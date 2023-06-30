@@ -24,7 +24,6 @@ class EJS_GameManager {
         //this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
         this.initShaders();
-        //window.RA.nonblock = true; //lets see if this works
     }
     mkdir(path) {
         try {
@@ -32,7 +31,7 @@ class EJS_GameManager {
         } catch(e) {}
     }
     getRetroArchCfg() {
-        return "\naudio_latency: 256\n";
+        return "\n";
     }
     initShaders() {
         if (!window.EJS_SHADERS) return;
