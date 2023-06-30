@@ -1,4 +1,20 @@
 class EmulatorJS {
+    version = {
+        a5200: 1,
+        beetle_vb: 1,
+        desmume2015: 1,
+        fbalpha2012_cps1: 1,
+        fbalpha2012_cps2: 1,
+        fceumm: 1,
+        gambatte: 1,
+        mame2003: 1,
+        mednafen_psx_hw: 1,
+        melonds: 1,
+        mgba: 1,
+        mupen64plus_next: 1,
+        nestopia: 1,
+        snes9x: 1
+    }
     createElement(type) {
         return document.createElement(type);
     }
@@ -38,14 +54,12 @@ class EmulatorJS {
                     cb({
                         data: data,
                         headers: {
-                            "content-length": xhr.getResponseHeader('content-length'),
-                            "content-type": xhr.getResponseHeader('content-type'),
-                            "last-modified": xhr.getResponseHeader('last-modified')
+                            "content-length": xhr.getResponseHeader('content-length')
                         }
                     });
                 }
             }
-            xhr.responseType = opts.responseType;
+            if (opts.responseType) xhr.responseType = opts.responseType;
             xhr.onerror = () => cb(-1);
             xhr.open(opts.method, path, true);
             xhr.send();
@@ -90,6 +104,11 @@ class EmulatorJS {
         this.canvas.classList.add('ejs_canvas');
         this.bindListeners();
         this.fullscreen = false;
+        this.storage = {
+            rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
+            bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
+            core: new window.EJS_STORAGE("EmulatorJS-core", "core")
+        }
         
         
         this.game.classList.add("ejs_game");
@@ -279,13 +298,8 @@ class EmulatorJS {
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
-        this.downloadFile('cores/'+this.getCore()+'-wasm.data', (res) => {
-            if (res === -1) {
-                this.textElem.innerText = "Error";
-                this.textElem.style.color = "red";
-                return;
-            }
-            this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game Core")).then((data) => {
+        const gotCore = (data) => {
+            this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
                 //console.log(data);
                 let js, wasm;
                 for (let k in data) {
@@ -297,10 +311,27 @@ class EmulatorJS {
                 }
                 this.initGameCore(js, wasm);
             });
-        }, (progress) => {
-            this.textElem.innerText = this.localization("Download Game Core") + progress;
-        }, false, {responseType: "arraybuffer", method: "GET"});
-        
+        }
+        this.storage.core.get(this.getCore()+'-wasm.data').then((result) => {
+            if (result && result.version === this.version[this.getCore()] && !this.debug) {
+                gotCore(result.data);
+                return;
+            }
+            this.downloadFile('cores/'+this.getCore()+'-wasm.data', (res) => {
+                if (res === -1) {
+                    this.textElem.innerText = "Error";
+                    this.textElem.style.color = "red";
+                    return;
+                }
+                gotCore(res.data);
+                this.storage.core.put(this.getCore()+'-wasm.data', {
+                    version: this.version[this.getCore()],
+                    data: res.data
+                });
+            }, (progress) => {
+                this.textElem.innerText = this.localization("Download Game Core") + progress;
+            }, false, {responseType: "arraybuffer", method: "GET"});
+        })
     }
     initGameCore(js, wasm) {
         this.initModule(wasm);
@@ -360,13 +391,8 @@ class EmulatorJS {
             return;
         }
         this.textElem.innerText = this.localization("Download Game BIOS");
-        this.downloadFile(this.config.biosUrl, (res) => {
-            if (res === -1) {
-                this.textElem.innerText = "Error";
-                this.textElem.style.color = "red";
-                return;
-            }
-            this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game BIOS")).then((data) => {
+        const gotBios = (data) => {
+            this.checkCompression(new Uint8Array(data), this.localization("Decompress Game BIOS")).then((data) => {
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
                         FS.writeFile(this.config.biosUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
@@ -377,23 +403,39 @@ class EmulatorJS {
                     FS.writeFile(k.split('/').pop(), data[k]);
                 }
                 this.startGame();
-            });
-        }, (progress) => {
-            this.textElem.innerText = this.localization("Download Game Data") + progress;
-        }, true, {responseType: "arraybuffer", method: "GET"});
+            })
+        }
+        
+        this.downloadFile(this.config.biosUrl, (res) => {
+            this.storage.bios.get(this.config.biosUrl.split("/").pop()).then((result) => {
+                if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
+                    gotBios(result.data);
+                    return;
+                }
+                this.downloadFile(this.config.biosUrl, (res) => {
+                    if (res === -1) {
+                        this.textElem.innerText = "Error";
+                        this.textElem.style.color = "red";
+                        return;
+                    }
+                    gotBios(res.data);
+                    this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
+                        "content-length": res.headers['content-length'],
+                        data: res.data
+                    })
+                }, (progress) => {
+                    this.textElem.innerText = this.localization("Download Game BIOS") + progress;
+                }, true, {responseType: "arraybuffer", method: "GET"});
+            })
+        }, null, true, {method: "HEAD"})
         
     }
     downloadRom() {
         this.gameManager = new window.EJS_GameManager(this.Module);
         
         this.textElem.innerText = this.localization("Download Game Data");
-        this.downloadFile(this.config.gameUrl, (res) => {
-            if (res === -1) {
-                this.textElem.innerText = "Error";
-                this.textElem.style.color = "red";
-                return;
-            }
-            this.checkCompression(new Uint8Array(res.data), this.localization("Decompress Game Data")).then((data) => {
+        const gotGameData = (data) => {
+            this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data")).then((data) => {
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
                         this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
@@ -410,9 +452,29 @@ class EmulatorJS {
                 }
                 this.downloadBios();
             });
-        }, (progress) => {
-            this.textElem.innerText = this.localization("Download Game Data") + progress;
-        }, true, {responseType: "arraybuffer", method: "GET"});
+        }
+        this.downloadFile(this.config.gameUrl, (res) => {
+            this.storage.rom.get(this.config.gameUrl.split("/").pop()).then((result) => {
+                if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
+                    gotGameData(result.data);
+                    return;
+                }
+                this.downloadFile(this.config.gameUrl, (res) => {
+                    if (res === -1) {
+                        this.textElem.innerText = "Error";
+                        this.textElem.style.color = "red";
+                        return;
+                    }
+                    gotGameData(res.data);
+                    this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
+                        "content-length": res.headers['content-length'],
+                        data: res.data
+                    })
+                }, (progress) => {
+                    this.textElem.innerText = this.localization("Download Game Data") + progress;
+                }, true, {responseType: "arraybuffer", method: "GET"});
+            })
+        }, null, true, {method: "HEAD"})
     }
     initModule(wasmData) {
         window.Module = {
@@ -440,9 +502,6 @@ class EmulatorJS {
                 if (fileName.endsWith(".wasm")) {
                     return URL.createObjectURL(new Blob([wasmData], {type: "application/wasm"}));
                 }
-            },
-            'readAsync': function(a, b, c) {
-                console.log(a, b, c)
             }
         };
         this.Module = window.Module;

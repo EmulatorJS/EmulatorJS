@@ -37,6 +37,7 @@
         await loadScript('emulator.js');
         await loadScript('nipplejs.js');
         await loadScript('shaders.js');
+        await loadScript('storage.js');
         await loadScript('gamepad.js');
         await loadScript('GameManager.js');
         await loadStyle('css/main.css');
