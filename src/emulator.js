@@ -491,19 +491,12 @@ class EmulatorJS {
         this.gamepad.on('disconnected', (e) => {
             setTimeout(this.updateGamepadLabels.bind(this), 10);
         })
-        this.gamepad.on('axischanged', function(e) {
-            console.log('axischanged', e);
-        })
-        this.gamepad.on('buttondown', function(e) {
-            console.log('buttondown', e);
-        })
-        this.gamepad.on('buttonup', function(e) {
-            console.log('buttonup', e);
-        })
+        this.gamepad.on('axischanged', this.gamepadEvent.bind(this));
+        this.gamepad.on('buttondown', this.gamepadEvent.bind(this));
+        this.gamepad.on('buttonup', this.gamepadEvent.bind(this));
     }
     updateGamepadLabels() {
         for (let i=0; i<this.gamepadLabels.length; i++) {
-            console.log(this.gamepad.gamepads[i]);
             if (this.gamepad.gamepads[i]) {
                 this.gamepadLabels[i].innerText = this.gamepad.gamepads[i].id;
             } else {
@@ -820,16 +813,17 @@ class EmulatorJS {
     }
     createControlSettingMenu() {
         let buttonListeners = [];
+        this.checkGamepadInputs = () => buttonListeners.forEach(elem => elem());
         this.gamepadLabels = [];
-        this.controls = this.defaultControllers;
+        this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
         const body = this.createPopup("Control Settings", {
             "Reset": () => {
                 this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
-                buttonListeners.forEach(elem => elem());
+                this.checkGamepadInputs();
             },
             "Clear": () => {
                 this.controls = {0:{},1:{},2:{},3:{}};
-                buttonListeners.forEach(elem => elem());
+                this.checkGamepadInputs();
             },
             "Close": () => {
                 this.controlMenu.style.display = "none";
@@ -976,10 +970,10 @@ class EmulatorJS {
                 buttonListeners.push(() => {
                     textBox2.value = "";
                     textBox1.value = "";
-                    if (this.controls[i][k] && this.controls[i][k].value) {
+                    if (this.controls[i][k] && this.controls[i][k].value !== undefined) {
                         textBox2.value = this.controls[i][k].value;
                     }
-                    if (this.controls[i][k] && this.controls[i][k].value2) {
+                    if (this.controls[i][k] && this.controls[i][k].value2 !== undefined) {
                         textBox1.value = this.controls[i][k].value2;
                     }
                 })
@@ -988,7 +982,7 @@ class EmulatorJS {
                     textBox2.value = this.controls[i][k].value;
                 }
                 if (this.controls[i][k] && this.controls[i][k].value2) {
-                    textBox1.value = this.controls[i][k].value2;
+                    textBox1.value = "button " + this.controls[i][k].value2;
                 }
                 
                 textBoxes.appendChild(textBox1Parent);
@@ -1021,15 +1015,6 @@ class EmulatorJS {
                     this.controlPopup.innerText = "[ " + buttons[k] + " ]\n";
                     this.controlPopup.setAttribute("button-num", k);
                     this.controlPopup.setAttribute("player-num", i);
-                    this.updateTextBoxes = () => {
-                        if (this.controls[i][k] && this.controls[i][k].value) {
-                            textBox2.value = this.controls[i][k].value;
-                        }
-                        if (this.controls[i][k] && this.controls[i][k].value2) {
-                            textBox1.value = this.controls[i][k].value2;
-                        }
-                        delete this.updateTextBoxes;
-                    }
                 })
             }
             controls.appendChild(player);
@@ -1138,7 +1123,7 @@ class EmulatorJS {
             }
             this.controls[player][num].value = e.key.toLowerCase();
             this.controlPopup.parentElement.setAttribute("hidden", "");
-            this.updateTextBoxes();
+            this.checkGamepadInputs();
             return;
         }
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
@@ -1146,6 +1131,77 @@ class EmulatorJS {
             for (let j=0; j<26; j++) {
                 if (this.controls[i][j] && this.controls[i][j].value === e.key.toLowerCase()) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
+                }
+            }
+        }
+    }
+    gamepadEvent(e) {
+        if (!this.started) return;
+        if (this.settingsMenu.style.display !== "none" || this.cheatMenu.style.display !== "none") return;
+        const value = function(value) {
+            if (value > 0.5 || value < -0.5) {
+                return (value > 0) ? 1 : -1;
+            } else {
+                return 0;
+            }
+        }(e.value || 0);
+        if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
+            if ('buttonup' === e.type || (e.type === "axischanged" && value === 0)) return;
+            const num = this.controlPopup.getAttribute("button-num");
+            const player = this.controlPopup.getAttribute("player-num");
+            if (!this.controls[player][num]) {
+                this.controls[player][num] = {};
+            }
+            this.controls[player][num].value2 = (e.type === "axischanged" ? e.axis+":"+value : e.index);
+            this.controlPopup.parentElement.setAttribute("hidden", "");
+            this.checkGamepadInputs();
+            return;
+        }
+        const special = [16, 17, 18, 19, 20, 21, 22, 23];
+        for (let i=0; i<4; i++) {
+            for (let j=0; j<26; j++) {
+                if (['buttonup', 'buttondown'].includes(e.type) || (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
+                    this.gameManager.simulateInput(i, j, (e.type === 'buttondown' ? 0 : (special.includes(j) ? 0x7fff : 1)));
+                } else if (e.type === "axischanged") {
+                    if (this.controls[i][j] && this.controls[i][j].value2 && this.controls[i][j].value2.split(":")[0] === e.axis) {
+                        if (special.includes(j)) {
+                            if (e.axis === 'LEFT_STICK_X') {
+                                if (e.value > 0) {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 16, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 17, 0);
+                                } else {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 17, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 16, 0);
+                                }
+                            } else if (e.axis === 'LEFT_STICK_Y') {
+                                if (e.value > 0) {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 18, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 19, 0);
+                                } else {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 19, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 18, 0);
+                                }
+                            } else if (e.axis === 'RIGHT_STICK_X') {
+                                if (e.value > 0) {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 20, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 21, 0);
+                                } else {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 21, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 20, 0);
+                                }
+                            } else if (e.axis === 'RIGHT_STICK_Y') {
+                                if (e.value > 0) {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 22, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 23, 0);
+                                } else {
+                                    this.gameManager.simulateInput(e.gamepadIndex, 23, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(e.gamepadIndex, 22, 0);
+                                }
+                            }
+                        } else if (this.controls[i][j].value2 === e.axis+":"+value || value === 0) {
+                            this.gameManager.simulateInput(i, j, ((value === 0) ? 0 : 1));
+                        }
+                    }
                 }
             }
         }
