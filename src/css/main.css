@@ -1,7 +1,6 @@
 .ejs_parent {
     background: #000;
     overflow: hidden;
-    --ejs-primary-color: 26,175,255;
     position: relative;
     font-family: Avenir, "Avenir Next", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
     -webkit-user-select: none;

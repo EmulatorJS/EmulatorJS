@@ -4,6 +4,7 @@ class EJS_STORAGE {
         this.storeName = storeName;
     }
     get(key) {
+        if (!window.indexedDB) return null;
         return new Promise((resolve, reject) => {
             let openRequest = indexedDB.open(this.dbName, 1);
             openRequest.onerror = () => {};
@@ -26,6 +27,7 @@ class EJS_STORAGE {
         });
     }
     put(key, data) {
+        if (!window.indexedDB) return null;
         return new Promise((resolve, reject) => {
             let openRequest = indexedDB.open(this.dbName, 1);
             openRequest.onerror = () => {};
@@ -46,6 +48,7 @@ class EJS_STORAGE {
         })
     }
     remove(key) {
+        if (!window.indexedDB) return null;
         return new Promise((resolve, reject) => {
             let openRequest = indexedDB.open(this.dbName, 1);
             openRequest.onerror = () => {};

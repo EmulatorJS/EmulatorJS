@@ -47,6 +47,8 @@
     config.dataPath = scriptPath;
     config.system = window.EJS_core;
     config.biosUrl = window.EJS_biosUrl;
+    config.gameName = window.EJS_gameName;
+    config.color = window.EJS_color;
     
     new EmulatorJS(EJS_player, config);
     
