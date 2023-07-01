@@ -17,7 +17,8 @@ class EJS_GameManager {
             toggleShader: this.Module.cwrap('shader_enable', 'null', ['number']),
             getDiskCount: this.Module.cwrap('get_disk_count', 'number', []),
             getCurrentDisk: this.Module.cwrap('get_current_disk', 'number', []),
-            setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number'])
+            setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number']),
+            setVolume: this.Module.cwrap('set_volume', 'null', ['number'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -133,6 +134,9 @@ class EJS_GameManager {
     }
     setCurrentDisk(disk) {
         this.functions.setCurrentDisk(disk);
+    }
+    setVolume(volume) {
+        this.functions.setVolume(volume);
     }
 }
 
