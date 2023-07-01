@@ -149,6 +149,7 @@ class EmulatorJS {
     }
     constructor(element, config) {
         window.EJS_TESTING = this;
+        this.currentPopup = null;
         this.touch = false;
         this.debug = (window.EJS_DEBUG_XX === true);
         this.cheats = [];
@@ -802,7 +803,7 @@ class EmulatorJS {
         })
     }
     isPopupOpen() {
-        return this.cheatMenu.style.display !== "none" || this.controlMenu.style.display !== "none";
+        return this.cheatMenu.style.display !== "none" || this.controlMenu.style.display !== "none" || this.currentPopup !== null;
     }
     createBottomMenuBar() {
         this.elements.menu = this.createElement("div");
@@ -916,6 +917,10 @@ class EmulatorJS {
             this.cheatMenu.style.display = "";
         });
         
+        const cache = addButton("Cache Manager", '<svg viewBox="0 0 1800 1800"><path d="M896 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5T231 896 128 768V598q119 84 325 127t443 43zm0 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-384q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128V982q119 84 325 127t443 43zM896 0q208 0 385 34.5t280 93.5 103 128v128q0 69-103 128t-280 93.5T896 640t-385-34.5T231 512 128 384V256q0-69 103-128t280-93.5T896 0z"/></svg>', () => {
+            this.openCacheMenu();
+        });
+        
         const spacer = this.createElement("span");
         spacer.style = "flex:1;";
         this.elements.menu.appendChild(spacer);
@@ -988,6 +993,7 @@ class EmulatorJS {
             }
         })
         
+        
         if (this.config.buttonOpts) {
             if (!this.config.buttonOpts.playPause) {
                 pauseButton.style.display = "none";
@@ -1003,8 +1009,62 @@ class EmulatorJS {
             if (!this.config.buttonOpts.loadState) loadState.setAttribute("hidden", "");
             if (!this.config.buttonOpts.gamepad) controlMenu.setAttribute("hidden", "");
             if (!this.config.buttonOpts.cheat) cheatMenu.setAttribute("hidden", "");
+            if (!this.config.buttonOpts.cacheManager) cache.setAttribute("hidden", "");
         }
-        
+    }
+    openCacheMenu() {
+        (async () => {
+            const list = this.createElement("table");
+            const tbody = this.createElement("tbody");
+            const body = this.createPopup("Cache Manager", {
+                "Clear All": async () => {
+                    const roms = await this.storage.rom.getSizes();
+                    for (const k in roms) {
+                        await this.storage.rom.remove(k);
+                    }
+                    tbody.innerHTML = "";
+                },
+                "Close": () => {
+                    this.closePopup();
+                }
+            });
+            const roms = await this.storage.rom.getSizes();
+            list.style.width = "100%";
+            list.style["padding-left"] = "10px";
+            list.style["text-align"] = "left";
+            body.appendChild(list);
+            list.appendChild(tbody);
+            const getSize = function(size) {
+                let i = -1;
+                do {
+                    size /= 1024, i++;
+                } while (size > 1024);
+                return Math.max(size, 0.1).toFixed(1) + [' kB', ' MB', ' GB', ' TB', 'PB', 'EB', 'ZB', 'YB'][i];
+            }
+            for (const k in roms) {
+                const line = this.createElement("tr");
+                const name = this.createElement("td");
+                const size = this.createElement("td");
+                const remove = this.createElement("td");
+                remove.style.cursor = "pointer";
+                name.innerText = k;
+                size.innerText = getSize(roms[k]);
+                
+                const a = this.createElement("a");
+                a.innerText = "Remove";
+                this.addEventListener(remove, "click", () => {
+                    this.storage.rom.remove(k);
+                    line.remove();
+                })
+                remove.appendChild(a);
+                
+                line.appendChild(name);
+                line.appendChild(size);
+                line.appendChild(remove);
+                tbody.appendChild(line);
+            }
+            
+        })();
     }
     createControlSettingMenu() {
         let buttonListeners = [];

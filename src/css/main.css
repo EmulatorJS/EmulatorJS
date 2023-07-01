@@ -302,6 +302,7 @@
 
 .ejs_popup_container *, .ejs_popup_container *::after, .ejs_popup_container *::before {
     box-sizing: border-box;
+    color: #bcbcbc !important;
     
     -webkit-user-select: none;
     -moz-user-select: none;

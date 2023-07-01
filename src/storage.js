@@ -3,17 +3,31 @@ class EJS_STORAGE {
         this.dbName = dbName;
         this.storeName = storeName;
     }
+    addFileToDB(key, add) {
+        (async () => {
+            if (key === "?EJS_KEYS!") return;
+            let keys = await this.get("?EJS_KEYS!");
+            if (!keys) keys = [];
+            if (add) {
+                if (!keys.includes(key)) keys.push(key);
+            } else {
+                const index = keys.indexOf(key);
+                if (index !== -1) keys.splice(index, 1);
+            }
+            this.put("?EJS_KEYS!", keys);
+        })();
+    }
     get(key) {
-        if (!window.indexedDB) return null;
         return new Promise((resolve, reject) => {
+            if (!window.indexedDB) return resolve();
             let openRequest = indexedDB.open(this.dbName, 1);
-            openRequest.onerror = () => {};
+            openRequest.onerror = () => resolve();
             openRequest.onsuccess = () => {
                 let db = openRequest.result;
                 let transaction = db.transaction([this.storeName], "readwrite");
                 let objectStore = transaction.objectStore(this.storeName);
                 let request = objectStore.get(key);
-                request.onsuccess = async (e) => {
+                request.onsuccess = (e) => {
                     resolve(request.result);
                 };
                 request.onerror = () => resolve();
@@ -27,8 +41,8 @@ class EJS_STORAGE {
         });
     }
     put(key, data) {
-        if (!window.indexedDB) return null;
         return new Promise((resolve, reject) => {
+            if (!window.indexedDB) return resolve();
             let openRequest = indexedDB.open(this.dbName, 1);
             openRequest.onerror = () => {};
             openRequest.onsuccess = () => {
@@ -37,7 +51,10 @@ class EJS_STORAGE {
                 let objectStore = transaction.objectStore(this.storeName);
                 let request = objectStore.put(data, key);
                 request.onerror = () => resolve();
-                request.onsuccess = () => resolve();
+                request.onsuccess = () => {
+                    this.addFileToDB(key, true);
+                    resolve();
+                }
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
@@ -48,8 +65,8 @@ class EJS_STORAGE {
         })
     }
     remove(key) {
-        if (!window.indexedDB) return null;
         return new Promise((resolve, reject) => {
+            if (!window.indexedDB) return resolve();
             let openRequest = indexedDB.open(this.dbName, 1);
             openRequest.onerror = () => {};
             openRequest.onsuccess = () => {
@@ -57,6 +74,7 @@ class EJS_STORAGE {
                 let transaction = db.transaction([this.storeName], "readwrite");
                 let objectStore = transaction.objectStore(this.storeName);
                 let request2 = objectStore.delete(key);
+                this.addFileToDB(key, false);
                 request2.onsuccess = () => resolve();
                 request2.onerror = () => {};
             };
@@ -67,6 +85,20 @@ class EJS_STORAGE {
                 };
             };
         });
+    }
+    getSizes() {
+        return new Promise(async (resolve, reject) => {
+            if (!window.indexedDB) resolve({});
+            const keys = await this.get("?EJS_KEYS!");
+            if (!keys) resolve({});
+            let rv = {};
+            for (let i=0; i<keys.length; i++) {
+                const result = await this.get(keys[i]);
+                if (!result || !result.data || typeof result.data.byteLength !== "number") continue;
+                rv[keys[i]] = result.data.byteLength;
+            }
+            resolve(rv);
+        })
     }
 }
 window.EJS_STORAGE = EJS_STORAGE;
