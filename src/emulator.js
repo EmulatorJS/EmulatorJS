@@ -225,6 +225,11 @@ class EmulatorJS {
         
         this.on("start", () => {
             closeParent.removeAttribute("hidden");
+            const time = (typeof this.config.adTimer === "number" && this.config.adTimer > 0) ? this.config.adTimer : 10000;
+            if (this.config.adTimer === 0) return;
+            setTimeout(() => {
+                div.remove();
+            }, time);
         })
         
     }

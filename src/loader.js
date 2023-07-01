@@ -50,6 +50,8 @@
     config.gameName = window.EJS_gameName;
     config.color = window.EJS_color;
     config.adUrl = window.EJS_AdUrl;
+    config.adTimer = window.EJS_AdTimer
+    config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
     
     new EmulatorJS(EJS_player, config);
     
