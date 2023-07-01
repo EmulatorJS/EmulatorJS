@@ -14,7 +14,10 @@ class EJS_GameManager {
             setVariable: this.Module.cwrap('set_variable', 'null', ['string', 'string']),
             setCheat: this.Module.cwrap('set_cheat', 'null', ['number', 'number', 'string']),
             resetCheat: this.Module.cwrap('reset_cheat', 'null', []),
-            toggleShader: this.Module.cwrap('shader_enable', 'null', ['number'])
+            toggleShader: this.Module.cwrap('shader_enable', 'null', ['number']),
+            getDiskCount: this.Module.cwrap('get_disk_count', 'number', []),
+            getCurrentDisk: this.Module.cwrap('get_current_disk', 'number', []),
+            setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -121,6 +124,15 @@ class EJS_GameManager {
     }
     toggleShader(active) {
         this.functions.toggleShader(active);
+    }
+    getDiskCount() {
+        return this.functions.getDiskCount();
+    }
+    getCurrentDisk() {
+        return this.functions.getCurrentDisk();
+    }
+    setCurrentDisk(disk) {
+        this.functions.setCurrentDisk(disk);
     }
 }
 

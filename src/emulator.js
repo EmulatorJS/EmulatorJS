@@ -15,6 +15,63 @@ class EmulatorJS {
         nestopia: 1,
         snes9x: 1
     }
+    getCore(generic) {
+        const core = this.config.system;
+        if (generic) {
+            const options = {
+                'fceumm': 'nes',
+                'snes9x': 'snes',
+                'a5200': 'atari5200',
+                'gambatte': 'gb',
+                'mgba': 'gba',
+                'beetle_vb': 'vb',
+                'mupen64plus_next': 'n64',
+                'desmume2015': 'nds',
+                'mame2003': 'mame2003',
+                'fbalpha2012_cps1': 'arcade',
+                'fbalpha2012_cps2': 'arcade',
+                'mednafen_psx': 'psx',
+                'mednafen_psx_hw': 'psx',
+                'melonds': 'nds',
+                'nestopia': 'nes',
+                'opera': '3do'
+            }
+            return options[core] || core;
+        }
+        const options = {
+            'nes': 'fceumm',
+            'snes': 'snes9x',
+            'atari5200': 'a5200',
+            'gb': 'gambatte',
+            'gba': 'mgba',
+            'vb': 'beetle_vb',
+            'n64': 'mupen64plus_next',
+            'nds': 'desmume2015',
+            'mame2003': 'mame2003',
+            'arcade': 'fbalpha2012_cps1', // I need to find a more  compatible arcade core
+            'psx': 'mednafen_psx_hw',
+            '3do': 'opera'
+        }
+        return options[core] || core;
+    }
+    extensions = {
+        'fceumm': ['fds', 'nes', 'unif', 'unf'],
+        'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
+        'a5200': ['a52', 'bin'],
+        'gambatte': ['gb', 'gbc', 'dmg'],
+        'mgba': ['gb', 'gbc', 'gba'],
+        'beetle_vb': ['vb', 'vboy', 'bin'],
+        'mupen64plus_next': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
+        'fbalpha2012_cps1': ['zip'],
+        'fbalpha2012_cps2': ['zip'],
+        'mame2003': ['zip'],
+        'desmume2015': ['nds', 'bin'],
+        'melonds': ['nds'],
+        'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
+        'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
+        'nestopia': ['fds', 'nes', 'unif', 'unf'],
+        'opera': ['iso', 'bin', 'chd', 'cue']
+    }
     createElement(type) {
         return document.createElement(type);
     }
@@ -339,45 +396,6 @@ class EmulatorJS {
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
         document.body.appendChild(script);
     }
-    getCore(generic) {
-        const core = this.config.system;
-        if (generic) {
-            const options = {
-                'fceumm': 'nes',
-                'snes9x': 'snes',
-                'a5200': 'atari5200',
-                'gambatte': 'gb',
-                'mgba': 'gba',
-                'beetle_vb': 'vb',
-                'mupen64plus_next': 'n64',
-                'desmume2015': 'nds',
-                'mame2003': 'mame2003',
-                'fbalpha2012_cps1': 'arcade',
-                'fbalpha2012_cps2': 'arcade',
-                'mednafen_psx': 'psx',
-                'mednafen_psx_hw': 'psx',
-                'melonds': 'nds',
-                'nestopia': 'nes',
-                'opera': '3do'
-            }
-            return options[core] || core;
-        }
-        const options = {
-            'nes': 'fceumm',
-            'snes': 'snes9x',
-            'atari5200': 'a5200',
-            'gb': 'gambatte',
-            'gba': 'mgba',
-            'vb': 'beetle_vb',
-            'n64': 'mupen64plus_next',
-            'nds': 'desmume2015',
-            'mame2003': 'mame2003',
-            'arcade': 'fbalpha2012_cps1', // I need to find a more  compatible arcade core
-            'psx': 'mednafen_psx_hw',
-            '3do': 'opera'
-        }
-        return options[core] || core;
-    }
     getBaseFileName() {
         //Only once game and core is loaded
         if (!this.started) return null;
@@ -435,6 +453,12 @@ class EmulatorJS {
         
         this.textElem.innerText = this.localization("Download Game Data");
         const gotGameData = (data) => {
+            if (['arcade', 'mame2003'].includes(this.getCore(true))) {
+                this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                FS.writeFile(this.fileName, data[k]);
+                this.downloadBios();
+                return;
+            }
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data")).then((data) => {
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
@@ -446,7 +470,11 @@ class EmulatorJS {
                         FS.mkdir(k);
                         continue;
                     }
-                    this.fileName = k;
+                    if (!this.fileName || (this.extensions[this.getCore()].includes(k.split(".").pop()) &&
+                        //always prefer m3u files for psx cores
+                        !(this.getCore(true) === "psx" && this.fileName.split(".").pop() === "m3u"))) {
+                        this.fileName = k;
+                    }
                     console.log(k);
                     FS.writeFile(k, data[k]);
                 }
@@ -1677,8 +1705,10 @@ class EmulatorJS {
             this.Module.FS.writeFile("/shader/shader.glslp", window.EJS_SHADERS[value]);
             this.gameManager.toggleShader(1);
             return;
+        } else if (option === "disk") {
+            this.gameManager.setCurrentDisk(value);
+            return;
         }
-        //console.log(option, value);
         this.gameManager.setVariable(option, value);
     }
     setupSettingsMenu() {
@@ -1789,25 +1819,17 @@ class EmulatorJS {
             
             nested.appendChild(menu);
         }
-        
-        this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
-            let option = line.split('; ');
-            let name = option[0];
-            let options = option[1].split('|'),
-                optionName = name.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
-            options.slice(1, -1);
-            if (options.length === 1) return;
-            let availableOptions = {};
-            for (let i=0; i<options.length; i++) {
-                availableOptions[options[i]] = this.localization(options[i]);
-            }
-            addToMenu(this.localization(optionName),
-                      name.split("|")[0], availableOptions,
-                      (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
-        })
         //addToMenu("Test", 'test', {a:1, b:2, c:3}, 2);
         //addToMenu("Test2", 'test_2', [4, 5, 6]);
         //addToMenu("Testertthgfd", 'booger', [7, 8, 9]);
+        
+        if (this.gameManager.getDiskCount() > 1) {
+            const diskLabels = {};
+            for (let i=0; i<this.gameManager.getDiskCount(); i++) {
+                diskLabels[i.toString()] = "Disk "+(i+1);
+            }
+            addToMenu(this.localization("Disk"), "disk", diskLabels, this.gameManager.getCurrentDisk().toString());
+        }
         
         
         addToMenu(this.localization('FPS'), 'fps', {
@@ -1826,6 +1848,22 @@ class EmulatorJS {
                 'crt-mattias.glslp': 'CRT mattias'
             }, 'disabled');
         }
+        
+        this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
+            let option = line.split('; ');
+            let name = option[0];
+            let options = option[1].split('|'),
+                optionName = name.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
+            options.slice(1, -1);
+            if (options.length === 1) return;
+            let availableOptions = {};
+            for (let i=0; i<options.length; i++) {
+                availableOptions[options[i]] = this.localization(options[i]);
+            }
+            addToMenu(this.localization(optionName),
+                      name.split("|")[0], availableOptions,
+                      (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
+        })
         
         this.settingsMenu.appendChild(nested);
         
