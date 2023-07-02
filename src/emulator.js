@@ -619,6 +619,7 @@ class EmulatorJS {
     startGame() {
         this.textElem.remove();
         this.textElem = null;
+        this.initAudio();
         
         this.game.classList.remove("ejs_game");
         this.game.appendChild(this.canvas);
@@ -961,7 +962,35 @@ class EmulatorJS {
             volumeSlider.setAttribute("aria-valuenow", volume*100);
             volumeSlider.setAttribute("aria-valuetext", (volume*100).toFixed(1) + "%");
             volumeSlider.setAttribute("style", "--value: "+volume*100+"%;margin-left: 5px;position: relative;z-index: 2;");
-            if (this.gameManager) this.gameManager.setVolume(volume);
+            if (this.gameManager) {
+                //this.gameManager.setVolume(volume);
+            }
+        }
+        this.initAudio = () => {
+              RA.queueAudio = () => {
+                 var index = RA.bufIndex;
+
+                 var startTime;
+                 if (RA.bufIndex) startTime = RA.buffers[RA.bufIndex - 1].endTime;
+                 else startTime = RA.context.currentTime;
+                 RA.buffers[index].endTime = startTime + RA.buffers[index].duration;
+
+                 const bufferSource = RA.context.createBufferSource();
+                 bufferSource.buffer = RA.buffers[index];
+                 if (this.volume === 1) {
+                    bufferSource.connect(RA.context.destination);
+                 } else {
+                     var gain = RA.context.createGain();
+                     bufferSource.connect(gain);
+                     gain.connect(RA.context.destination);
+                     gain.gain.setValueAtTime(this.volume, RA.context.currentTime, 0);
+                 }
+                 
+                 bufferSource.start(startTime);
+
+                 RA.bufIndex++;
+                 RA.bufOffset = 0;
+            }
         }
         this.setVolume(this.volume);
         
