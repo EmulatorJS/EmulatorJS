@@ -827,6 +827,13 @@ class EmulatorJS {
             timeout = setTimeout(hide, 3000);
             this.elements.menu.classList.remove("ejs_menu_bar_hidden");
         })
+        this.addEventListener(this.elements.menu, 'touchstart touchend touchmove', (e) => {
+            if (!this.started) return;
+            if (this.isPopupOpen()) return;
+            if (timeout !== null) clearTimeout(timeout);
+            timeout = setTimeout(hide, 3000);
+            this.elements.menu.classList.remove("ejs_menu_bar_hidden");
+        })
         this.menu = {
             close: () => {
                 if (!this.started) return;
@@ -890,6 +897,15 @@ class EmulatorJS {
                 playButton.style.display = "none";
             }
             this.gameManager.toggleMainLoop(this.paused ? 0 : 1);
+            
+            //I now realize its not easy to pause it while the cursor is locked, just in case I guess
+            if (this.getCore(true) === "nds") {
+                if (this.canvas.exitPointerLock) {
+                    this.canvas.exitPointerLock();
+                } else if (this.canvas.mozExitPointerLock) {
+                    this.canvas.mozExitPointerLock();
+                }
+            }
         }
         
         
@@ -958,7 +974,8 @@ class EmulatorJS {
         volumeSlider.setAttribute("aria-valuemax", 100);
     
         this.setVolume = (volume) => {
-            volumeSlider.setAttribute("value", volume);
+            this.muted = (volume === 0);
+            volumeSlider.value = volume;
             volumeSlider.setAttribute("aria-valuenow", volume*100);
             volumeSlider.setAttribute("aria-valuetext", (volume*100).toFixed(1) + "%");
             volumeSlider.setAttribute("style", "--value: "+volume*100+"%;margin-left: 5px;position: relative;z-index: 2;");
@@ -969,6 +986,7 @@ class EmulatorJS {
         this.initAudio = () => {
               RA.queueAudio = () => {
                  var index = RA.bufIndex;
+                 let volume = this.volume;
 
                  var startTime;
                  if (RA.bufIndex) startTime = RA.buffers[RA.bufIndex - 1].endTime;
@@ -977,13 +995,14 @@ class EmulatorJS {
 
                  const bufferSource = RA.context.createBufferSource();
                  bufferSource.buffer = RA.buffers[index];
-                 if (this.volume === 1) {
+                 if (this.muted) volume = 0;
+                 if (volume === 1) {
                     bufferSource.connect(RA.context.destination);
                  } else {
                      var gain = RA.context.createGain();
                      bufferSource.connect(gain);
                      gain.connect(RA.context.destination);
-                     gain.gain.setValueAtTime(this.volume, RA.context.currentTime, 0);
+                     gain.gain.setValueAtTime(volume, RA.context.currentTime, 0);
                  }
                  
                  bufferSource.start(startTime);
@@ -1036,6 +1055,15 @@ class EmulatorJS {
                 }
                 this.closeSettingsMenu();
             }, 10)
+        })
+        this.addEventListener(this.canvas, "click", (e) => {
+            if (this.getCore(true) === "nds" && !this.paused) {
+                if (this.canvas.requestPointerLock) {
+                    this.canvas.requestPointerLock();
+                } else if (this.canvas.mozRequestPointerLock) {
+                    this.canvas.mozRequestPointerLock();
+                }
+            }
         })
         
         const enter = addButton("Enter Fullscreen", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M208 281.4c-12.5-12.5-32.76-12.5-45.26-.002l-78.06 78.07l-30.06-30.06c-6.125-6.125-14.31-9.367-22.63-9.367c-4.125 0-8.279 .7891-12.25 2.43c-11.97 4.953-19.75 16.62-19.75 29.56v135.1C.0013 501.3 10.75 512 24 512h136c12.94 0 24.63-7.797 29.56-19.75c4.969-11.97 2.219-25.72-6.938-34.87l-30.06-30.06l78.06-78.07c12.5-12.49 12.5-32.75 .002-45.25L208 281.4zM487.1 0h-136c-12.94 0-24.63 7.797-29.56 19.75c-4.969 11.97-2.219 25.72 6.938 34.87l30.06 30.06l-78.06 78.07c-12.5 12.5-12.5 32.76 0 45.26l22.62 22.62c12.5 12.5 32.76 12.5 45.26 0l78.06-78.07l30.06 30.06c9.156 9.141 22.87 11.84 34.87 6.937C504.2 184.6 512 172.9 512 159.1V23.1C512 10.74 501.3 0 487.1 0z"/></svg>', () => {
@@ -1996,7 +2024,7 @@ class EmulatorJS {
             home.appendChild(menuOption);
             
             const menu = this.createElement("div");
-            menu.style["max-height"] = "385px";
+            menu.style["max-height"] = "300px";
             menu.style.overflow  = "auto";
             menu.setAttribute("hidden", "");
             const button = this.createElement("button");

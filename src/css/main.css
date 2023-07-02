@@ -583,11 +583,11 @@
 }
 .ejs_settings_transition {
     overflow: hidden;
-    max-height: 385px;
+    max-height: 300px;
     transition: height .35s cubic-bezier(0.4,0,0.2,1),width .35s cubic-bezier(0.4,0,0.2,1);
 }
 .ejs_setting_home {
-    max-height: 385px;
+    max-height: 300px;
     overflow: scroll;
 }
 .ejs_settings_main_bar {
