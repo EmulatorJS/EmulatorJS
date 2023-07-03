@@ -54,6 +54,7 @@
     config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
     config.buttonOpts = window.EJS_Buttons;
     config.volume = window.EJS_volume;
+    config.defaultControllers = window.EJS_defaultControls
     
     new EmulatorJS(EJS_player, config);
     

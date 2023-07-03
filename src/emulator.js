@@ -156,6 +156,7 @@ class EmulatorJS {
         this.cheats = [];
         this.started = false;
         this.volume = (typeof this.config.volume === "number") ? this.config.volume : 0.5;
+        if (this.config.defaultControllers) this.defaultControllers = this.config.defaultControllers;
         this.muted = false;
         this.paused = true;
         this.listeners = [];
@@ -1288,6 +1289,7 @@ class EmulatorJS {
         
         const controls = this.createElement("div");
         for (let i=0; i<4; i++) {
+            if (!this.controls[i]) this.controls[i] = {};
             const player = this.createElement("div");
             const playerTitle = this.createElement("div");
             
