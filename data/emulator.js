@@ -311,8 +311,13 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text) {
-        //return "-";
-        //todo
+        if (!isNaN(text)) return text;
+        if (this.config.langJson) {
+            if (!this.config.langJson[text]) {
+                console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
+            }
+            return this.config.langJson[text] || text;
+        }
         return text;
     }
     checkCompression(data, msg) {

@@ -61,6 +61,21 @@
     config.cacheLimit = window.EJS_CacheLimit;
     config.cheats = window.EJS_cheats;
     
+    if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
+        try {
+            let path;
+            if ('undefined' != typeof EJS_paths && typeof EJS_paths[window.EJS_language] === 'string') {
+                path = EJS_paths[window.EJS_language];
+            } else {
+                path = scriptPath+"localization/"+window.EJS_language+".json";
+            }
+            config.language = window.EJS_language;
+            config.langJson = JSON.parse(await (await fetch(path)).text());
+        } catch(e) {
+            config.langJson = {};
+        }
+    }
+    
     new EmulatorJS(EJS_player, config);
     
 })();
