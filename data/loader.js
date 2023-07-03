@@ -58,6 +58,7 @@
     config.startOnLoad = window.EJS_startOnLoaded;
     config.filePaths = window.EJS_paths;
     config.loadState = window.EJS_loadStateURL;
+    config.cacheLimit = window.EJS_CacheLimit;
     
     new EmulatorJS(EJS_player, config);
     

@@ -612,10 +612,13 @@ class EmulatorJS {
                         return;
                     }
                     gotGameData(res.data);
-                    this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
-                        "content-length": res.headers['content-length'],
-                        data: res.data
-                    })
+                    const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
+                    if (parseFloat(res.headers['content-length']) < limit) {
+                        this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
+                            "content-length": res.headers['content-length'],
+                            data: res.data
+                        })
+                    }
                 }, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;
                 }, true, {responseType: "arraybuffer", method: "GET"});
