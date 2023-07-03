@@ -57,6 +57,7 @@
     config.defaultControllers = window.EJS_defaultControls;
     config.startOnLoad = window.EJS_startOnLoaded;
     config.filePaths = window.EJS_paths;
+    config.loadState = window.EJS_loadStateURL;
     
     new EmulatorJS(EJS_player, config);
     

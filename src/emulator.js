@@ -498,9 +498,32 @@ class EmulatorJS {
         parts.splice(parts.length-1, 1);
         return parts.join(".");
     }
-    downloadBios() {
-        if (!this.config.biosUrl) {
+    downloadStartState() {
+        if (typeof this.config.loadState !== "string") {
             this.startGame();
+            return;
+        }
+        this.textElem.innerText = this.localization("Download Game State");
+        
+        this.downloadFile(this.config.loadState, (res) => {
+            if (res === -1) {
+                this.textElem.innerText = "Error";
+                this.textElem.style.color = "red";
+                return;
+            }
+            this.on("start", () => {
+                setTimeout(() => {
+                    this.gameManager.loadState(new Uint8Array(res.data));
+                }, 10);
+            })
+            this.startGame();
+        }, (progress) => {
+            this.textElem.innerText = this.localization("Download Game State") + progress;
+        }, true, {responseType: "arraybuffer", method: "GET"});
+    }
+    downloadBios() {
+        if (typeof this.config.biosUrl !== "string") {
+            this.downloadStartState();
             return;
         }
         this.textElem.innerText = this.localization("Download Game BIOS");
@@ -515,7 +538,7 @@ class EmulatorJS {
                     console.log(k.split('/').pop());
                     FS.writeFile(k.split('/').pop(), data[k]);
                 }
-                this.startGame();
+                this.downloadStartState();
             })
         }
         
@@ -541,7 +564,6 @@ class EmulatorJS {
                 }, true, {responseType: "arraybuffer", method: "GET"});
             })
         }, null, true, {method: "HEAD"})
-        
     }
     downloadRom() {
         this.gameManager = new window.EJS_GameManager(this.Module);
