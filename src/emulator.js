@@ -635,6 +635,7 @@ class EmulatorJS {
             this.virtualGamepad.style.display = "";
         }
         
+        this.checkSupportedOpts();
         this.setupSettingsMenu();
         this.handleResize();
         this.updateCheatUI();
@@ -666,6 +667,12 @@ class EmulatorJS {
         this.gamepad.on('axischanged', this.gamepadEvent.bind(this));
         this.gamepad.on('buttondown', this.gamepadEvent.bind(this));
         this.gamepad.on('buttonup', this.gamepadEvent.bind(this));
+    }
+    checkSupportedOpts() {
+        if (!this.gameManager.supportsStates()) {
+            this.elements.bottomBar.saveState.setAttribute("hidden", "");
+            this.elements.bottomBar.loadState.setAttribute("hidden", "");
+        }
     }
     updateGamepadLabels() {
         for (let i=0; i<this.gamepadLabels.length; i++) {
@@ -1106,6 +1113,25 @@ class EmulatorJS {
                 enter.style.display = "none";
             }
         })
+        
+        const hasFullscreen = !!(this.elements.parent.requestFullscreen || this.elements.parent.mozRequestFullScreen || this.elements.parent.webkitRequestFullscreen || this.elements.parent.msRequestFullscreen);
+        
+        if (!hasFullscreen) {
+            exit.style.display = "none";
+            enter.style.display = "none";
+        }
+        
+        this.elements.bottomBar = {
+            playPause: [pauseButton, playButton],
+            restart: [restartButton],
+            settings: [settingButton],
+            fullscreen: [enter, exit],
+            saveState: [saveState],
+            loadState: [loadState],
+            gamepad: [controlMenu],
+            cheat: [cheatMenu],
+            cacheManager: [cache]
+        }
         
         
         if (this.config.buttonOpts) {

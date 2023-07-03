@@ -18,7 +18,9 @@ class EJS_GameManager {
             getDiskCount: this.Module.cwrap('get_disk_count', 'number', []),
             getCurrentDisk: this.Module.cwrap('get_current_disk', 'number', []),
             setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number']),
-            setVolume: this.Module.cwrap('set_volume', 'null', ['number'])
+            getSaveFilePath: this.Module.cwrap('save_file_path', 'string', []),
+            saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
+            supportsStates: this.Module.cwrap('supports_states', 'number', [])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -135,8 +137,14 @@ class EJS_GameManager {
     setCurrentDisk(disk) {
         this.functions.setCurrentDisk(disk);
     }
-    setVolume(volume) {
-        this.functions.setVolume(volume);
+    getSaveFilePath() {
+        return this.functions.getSaveFilePath();
+    }
+    saveSaveFiles() {
+        this.functions.saveSaveFiles();
+    }
+    supportsStates() {
+        return !!this.functions.supportsStates();
     }
 }
 
