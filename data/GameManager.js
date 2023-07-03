@@ -82,16 +82,18 @@ class EJS_GameManager {
         this.FS.writeFile('/game.state', state);
         this.functions.loadState("game.state", 0);
         setTimeout(() => {
-            this.FS.unlink('game.state');
+            try {
+                this.FS.unlink('game.state');
+            } catch(e){}
         }, 5000)
     }
     screenshot() {
         this.functions.screenshot();
         return this.FS.readFile('screenshot.png');
     }
-    quickSave() {
+    quickSave(slot) {
+        if (!slot) slot = 1;
         (async () => {
-            let slot = 0;
             let name = slot + '-quick.state';
             try {
                 this.FS.unlink(name);
@@ -100,9 +102,9 @@ class EJS_GameManager {
             this.FS.writeFile('/'+name, data);
         })();
     }
-    quickLoad() {
+    quickLoad(slot) {
+        if (!slot) slot = 1;
         (async () => {
-            let slot = 0;
             let name = slot + '-quick.state';
             this.functions.loadState(name, 0);
         })();

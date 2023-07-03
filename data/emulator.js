@@ -175,7 +175,8 @@ class EmulatorJS {
         this.storage = {
             rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
             bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
-            core: new window.EJS_STORAGE("EmulatorJS-core", "core")
+            core: new window.EJS_STORAGE("EmulatorJS-core", "core"),
+            states: new window.EJS_STORAGE("EmulatorJS-states", "states")
         }
         
         this.game.classList.add("ejs_game");
@@ -508,7 +509,7 @@ class EmulatorJS {
     getBaseFileName() {
         //Only once game and core is loaded
         if (!this.started) return null;
-        if (this.config.gameName) {
+        if (typeof this.config.gameName === "string") {
             const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
             const name = this.config.gameName.replace(invalidCharacters, "").trim();
             if (name) return name;
@@ -516,6 +517,9 @@ class EmulatorJS {
         let parts = this.fileName.split(".");
         parts.splice(parts.length-1, 1);
         return parts.join(".");
+    }
+    saveInBrowserSupported() {
+        return !!window.indexedDB && (typeof this.config.gameName === "string" || !this.config.gameUrl.startsWith("blob:"));
     }
     downloadStartState() {
         if (typeof this.config.loadState !== "string") {
@@ -798,11 +802,13 @@ class EmulatorJS {
             hideMenu();
         });
         const qSave = addButton("Quick Save", false, () => {
-            this.gameManager.quickSave();
+            const slot = this.settings['save-state-slot'] ? this.settings['save-state-slot'] : "1";
+            this.gameManager.quickSave(slot);
             hideMenu();
         });
         const qLoad = addButton("Quick Load", false, () => {
-            this.gameManager.quickLoad();
+            const slot = this.settings['save-state-slot'] ? this.settings['save-state-slot'] : "1";
+            this.gameManager.quickLoad(slot);
             hideMenu();
         });
         addButton("EmulatorJS", false, () => {
@@ -989,19 +995,29 @@ class EmulatorJS {
             });
             if (called > 0) return;
             if (stateUrl) URL.revokeObjectURL(stateUrl);
-            const blob = new Blob([state]);
-            stateUrl = URL.createObjectURL(blob);
-            const a = this.createElement("a");
-            a.href = stateUrl;
-            a.download = this.getBaseFileName()+".state";
-            a.click();
+            if (this.settings['save-state-location'] === "browser" && this.saveInBrowserSupported()) {
+                this.storage.states.put(this.getBaseFileName()+".state", state);
+            } else {
+                const blob = new Blob([state]);
+                stateUrl = URL.createObjectURL(blob);
+                const a = this.createElement("a");
+                a.href = stateUrl;
+                a.download = this.getBaseFileName()+".state";
+                a.click();
+            }
         });
         const loadState = addButton("Load State", '<svg viewBox="0 0 576 512"><path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/></svg>', async () => {
             const called = this.callEvent("load");
             if (called > 0) return;
-            const file = await this.selectFile();
-            const state = new Uint8Array(await file.arrayBuffer());
-            this.gameManager.loadState(state);
+            if (this.settings['save-state-location'] === "browser" && this.saveInBrowserSupported()) {
+                this.storage.states.get(this.getBaseFileName()+".state").then(e => {
+                    this.gameManager.loadState(e);
+                })
+            } else {
+                const file = await this.selectFile();
+                const state = new Uint8Array(await file.arrayBuffer());
+                this.gameManager.loadState(state);
+            }
         });
         const controlMenu = addButton("Control Settings", '<svg viewBox="0 0 640 512"><path fill="currentColor" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"/></svg>', () => {
             this.controlMenu.style.display = "";
@@ -2136,6 +2152,7 @@ class EmulatorJS {
     }
     menuOptionChanged(option, value) {
         this.saveSettings();
+        console.log(option, value);
         if (option === "shader") {
             try {
                 this.Module.FS.unlink("/shader/shader.glslp");
@@ -2289,12 +2306,6 @@ class EmulatorJS {
             addToMenu(this.localization("Disk"), "disk", diskLabels, this.gameManager.getCurrentDisk().toString());
         }
         
-        
-        addToMenu(this.localization('FPS'), 'fps', {
-            'show': this.localization("show"),
-            'hide': this.localization("hide")
-        }, 'hide');
-        
         if (window.EJS_SHADERS) {
             addToMenu(this.localization('Shaders'), 'shader', {
                 'disabled': this.localization("Disabled"),
@@ -2305,6 +2316,19 @@ class EmulatorJS {
                 'crt-geom.glslp': this.localization('CRT geom'),
                 'crt-mattias.glslp': this.localization('CRT mattias')
             }, 'disabled');
+        }
+        
+        addToMenu(this.localization('FPS'), 'fps', {
+            'show': this.localization("show"),
+            'hide': this.localization("hide")
+        }, 'hide');
+        
+        if (this.saveInBrowserSupported()) {
+            addToMenu(this.localization('Save State Slot'), 'save-state-slot', ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1");
+            addToMenu(this.localization('Save State Location'), 'save-state-location', {
+                'download': this.localization("Download"),
+                'browser': this.localization("Keep in Browser")
+            }, 'download');
         }
         
         this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
