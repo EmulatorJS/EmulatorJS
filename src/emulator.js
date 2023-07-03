@@ -618,31 +618,38 @@ class EmulatorJS {
         this.Module = window.Module;
     }
     startGame() {
-        this.textElem.remove();
-        this.textElem = null;
-        this.initAudio();
-        
-        this.game.classList.remove("ejs_game");
-        this.game.appendChild(this.canvas);
-        const args = [];
-        if (this.debug) args.push('-v');
-        args.push('/'+this.fileName);
-        console.log(args);
-        this.Module.callMain(args);
-        this.Module.resumeMainLoop();
-        this.started = true;
-        this.paused = false;
-        if (this.touch) {
-            this.virtualGamepad.style.display = "";
+        try {
+            this.initAudio();
+            
+            const args = [];
+            if (this.debug) args.push('-v');
+            args.push('/'+this.fileName);
+            console.log(args);
+            this.Module.callMain(args);
+            this.Module.resumeMainLoop();
+            this.started = true;
+            this.paused = false;
+            if (this.touch) {
+                this.virtualGamepad.style.display = "";
+            }
+            
+            this.checkSupportedOpts();
+            this.setupSettingsMenu();
+            this.loadSettings();
+            this.updateCheatUI();
+            this.updateGamepadLabels();
+            this.setVolume(this.volume);
+            this.elements.parent.focus();
+            this.textElem.remove();
+            this.textElem = null;
+            this.game.classList.remove("ejs_game");
+            this.game.appendChild(this.canvas);
+            this.handleResize();
+        } catch(e) {
+            console.warn("failed to start game", e);
+            this.textElem.innerText = "Failed to start game";
+            this.textElem.style.color = "red";
         }
-        
-        this.checkSupportedOpts();
-        this.setupSettingsMenu();
-        this.handleResize();
-        this.updateCheatUI();
-        this.updateGamepadLabels();
-        this.setVolume(this.volume);
-        this.elements.parent.focus();
         this.callEvent("start");
     }
     bindListeners() {
@@ -652,11 +659,11 @@ class EmulatorJS {
         this.createCheatsMenu()
         this.setVirtualGamepad();
         this.addEventListener(this.elements.parent, "keydown keyup", this.keyChange.bind(this));
-        this.addEventListener(this.elements.parent, "mousedown mouseup click touchstart touchend touchcancel", (e) => {
-            this.elements.parent.focus();
+        this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
+            if (document.activeElement !== this.elements.parent) this.elements.parent.focus();
         })
         this.addEventListener(window, "resize", this.handleResize.bind(this));
-        //this.addEventListener(window, "blur", e => console.log(e), true); //TODO - add "click to make keyboard keys work" message
+        //this.addEventListener(window, "blur", e => console.log(e), true); //TODO - add "click to make keyboard keys work" message?
         this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         this.gamepad.on('connected', (e) => {
             if (!this.gamepadLabels) return;
@@ -962,6 +969,7 @@ class EmulatorJS {
             this.setVolume(0);
         }, volumeSettings);
         const unmuteButton = addButton("Unmute", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><path d="M301.2 34.85c-11.5-5.188-25.02-3.122-34.44 5.253L131.8 160H48c-26.51 0-48 21.49-48 47.1v95.1c0 26.51 21.49 47.1 48 47.1h83.84l134.9 119.9c5.984 5.312 13.58 8.094 21.26 8.094c4.438 0 8.972-.9375 13.17-2.844c11.5-5.156 18.82-16.56 18.82-29.16V64C319.1 51.41 312.7 40 301.2 34.85zM513.9 255.1l47.03-47.03c9.375-9.375 9.375-24.56 0-33.94s-24.56-9.375-33.94 0L480 222.1L432.1 175c-9.375-9.375-24.56-9.375-33.94 0s-9.375 24.56 0 33.94l47.03 47.03l-47.03 47.03c-9.375 9.375-9.375 24.56 0 33.94c9.373 9.373 24.56 9.381 33.94 0L480 289.9l47.03 47.03c9.373 9.373 24.56 9.381 33.94 0c9.375-9.375 9.375-24.56 0-33.94L513.9 255.1z"/></svg>', () => {
+            if (this.volume === 0) this.volume = 0.5;
             muteButton.style.display = "";
             unmuteButton.style.display = "none";
             this.muted = false;
@@ -982,6 +990,7 @@ class EmulatorJS {
         volumeSlider.setAttribute("aria-valuemax", 100);
     
         this.setVolume = (volume) => {
+            this.saveSettings();
             this.muted = (volume === 0);
             volumeSlider.value = volume;
             volumeSlider.setAttribute("aria-valuenow", volume*100);
@@ -990,6 +999,8 @@ class EmulatorJS {
             if (this.gameManager) {
                 //this.gameManager.setVolume(volume);
             }
+            unmuteButton.style.display = (volume === 0) ? "" : "none";
+            muteButton.style.display = (volume === 0) ? "none" : "";
         }
         this.initAudio = () => {
               RA.queueAudio = () => {
@@ -1023,10 +1034,10 @@ class EmulatorJS {
         
         this.addEventListener(volumeSlider, "change mousemove touchmove mousedown touchstart mouseup", (e) => {
             setTimeout(() => {
-                this.volume = parseFloat(volumeSlider.value);
+                const newVal = parseFloat(volumeSlider.value);
+                if (newVal === 0 && this.muted) return;
+                this.volume = newVal;
                 this.setVolume(this.volume);
-                unmuteButton.style.display = (this.volume === 0) ? "" : "none";
-                muteButton.style.display = (this.volume === 0) ? "none" : "";
             }, 5);
         })
         
@@ -1216,10 +1227,12 @@ class EmulatorJS {
             "Reset": () => {
                 this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
                 this.checkGamepadInputs();
+                this.saveSettings();
             },
             "Clear": () => {
                 this.controls = {0:{},1:{},2:{},3:{}};
                 this.checkGamepadInputs();
+                this.saveSettings();
             },
             "Close": () => {
                 this.controlMenu.style.display = "none";
@@ -1519,6 +1532,7 @@ class EmulatorJS {
             this.controls[player][num].value = e.key.toLowerCase();
             this.controlPopup.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
+            this.saveSettings();
             return;
         }
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
@@ -1551,6 +1565,7 @@ class EmulatorJS {
             this.controls[player][num].value2 = (e.type === "axischanged" ? e.axis+":"+value : e.index);
             this.controlPopup.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
+            this.saveSettings();
             return;
         }
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
@@ -2003,7 +2018,53 @@ class EmulatorJS {
             'height': height
         };
     }
+    saveSettings() {
+        if (!window.localStorage || !this.settingsLoaded) return;
+        const coreSpecific = {
+            controlSettings: this.controls,
+            settings: this.settings,
+            cheats: this.cheats
+        }
+        const ejs_settings = {
+            volume: this.volume,
+            muted: this.muted
+        }
+        localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
+        localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
+    }
+    loadSettings() {
+        if (!window.localStorage) return;
+        this.settingsLoaded = true;
+        let ejs_settings = localStorage.getItem("ejs-settings");
+        let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+        if (coreSpecific) {
+            try {
+                coreSpecific = JSON.parse(coreSpecific);
+                if (!(coreSpecific.controlSettings instanceof Object) || !(coreSpecific.settings instanceof Object) || !(coreSpecific.cheats instanceof Object)) return;
+                this.controls = coreSpecific.controlSettings;
+                this.checkGamepadInputs();
+                for (const k in coreSpecific.settings) {
+                    this.changeSettingOption(k, coreSpecific.settings[k]);
+                }
+                this.cheats = coreSpecific.cheats;
+            } catch(e) {
+                console.warn("Could not load previous settings", e);
+            }
+        }
+        if (ejs_settings) {
+            try {
+                ejs_settings = JSON.parse(ejs_settings);
+                if (typeof ejs_settings.volume !== "number" || typeof ejs_settings.muted !== "boolean") return;
+                this.volume = ejs_settings.volume;
+                this.muted = ejs_settings.muted;
+                this.setVolume(this.muted ? 0 : this.volume);
+            } catch(e) {
+                console.warn("Could not load previous settings", e);
+            }
+        }
+    }
     menuOptionChanged(option, value) {
+        this.saveSettings();
         if (option === "shader") {
             try {
                 this.Module.FS.unlink("/shader/shader.glslp");
@@ -2035,9 +2096,13 @@ class EmulatorJS {
         home.classList.add("ejs_setting_home");
         home.classList.add("ejs_setting_menu");
         nested.appendChild(home);
+        let funcs = [];
+        this.changeSettingOption = (title, newValue) => {
+            this.settings[title] = newValue;
+            funcs.forEach(e => e(title));
+        }
         
         const addToMenu = (title, id, options, defaultOption) => {
-            
             const menuOption = this.createElement("div");
             menuOption.classList.add("ejs_settings_main_bar");
             const span = this.createElement("span");
@@ -2094,9 +2159,19 @@ class EmulatorJS {
                 }
             }
             
+            funcs.push((title) => {
+                if (id !== title) return;
+                for (let j=0; j<buttons.length; j++) {
+                    buttons[j].classList.toggle("ejs_option_row_selected", buttons[j].getAttribute("ejs_value") === this.settings[id]);
+                }
+                this.menuOptionChanged(id, this.settings[id]);
+                current.innerText = opts[this.settings[id]];
+            });
+            
             for (const opt in opts) {
                 const optionButton = this.createElement("button");
                 buttons.push(optionButton);
+                optionButton.setAttribute("ejs_value", opt);
                 optionButton.type = "button";
                 optionButton.value = opts[opt];
                 optionButton.classList.add("ejs_option_row");
