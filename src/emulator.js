@@ -148,17 +148,17 @@ class EmulatorJS {
         }
     }
     constructor(element, config) {
+        this.config = config;
         window.EJS_TESTING = this;
         this.currentPopup = null;
         this.touch = false;
         this.debug = (window.EJS_DEBUG_XX === true);
         this.cheats = [];
         this.started = false;
-        this.volume = 0.5;
+        this.volume = (typeof this.config.volume === "number") ? this.config.volume : 0.5;
         this.muted = false;
         this.paused = true;
         this.listeners = [];
-        this.config = config;
         this.setElements(element);
         this.setColor(this.config.color || "");
         if (this.config.adUrl) this.setupAds(this.config.adUrl);

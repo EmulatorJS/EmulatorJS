@@ -53,6 +53,7 @@
     config.adTimer = window.EJS_AdTimer
     config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
     config.buttonOpts = window.EJS_Buttons;
+    config.volume = window.EJS_volume;
     
     new EmulatorJS(EJS_player, config);
     
