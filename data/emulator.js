@@ -180,6 +180,19 @@ class EmulatorJS {
         
         this.game.classList.add("ejs_game");
         
+        if (Array.isArray(this.config.cheats)) {
+            for (let i=0; i<this.config.cheats.length; i++) {
+                const cheat = this.config.cheats[i];
+                if (Array.isArray(cheat) && cheat[0] && cheat[1]) {
+                    this.cheats.push({
+                        desc: cheat[0],
+                        checked: false,
+                        code: cheat[1]
+                    })
+                }
+            }
+        }
+        
         this.createStartButton();
         
         console.log(this)
@@ -2080,13 +2093,26 @@ class EmulatorJS {
         if (coreSpecific) {
             try {
                 coreSpecific = JSON.parse(coreSpecific);
-                if (!(coreSpecific.controlSettings instanceof Object) || !(coreSpecific.settings instanceof Object) || !(coreSpecific.cheats instanceof Object)) return;
+                if (!(coreSpecific.controlSettings instanceof Object) || !(coreSpecific.settings instanceof Object) || !Array.isArray(coreSpecific.cheats)) return;
                 this.controls = coreSpecific.controlSettings;
                 this.checkGamepadInputs();
                 for (const k in coreSpecific.settings) {
                     this.changeSettingOption(k, coreSpecific.settings[k]);
                 }
-                this.cheats = coreSpecific.cheats;
+                for (let i=0; i<coreSpecific.cheats.length; i++) {
+                    const cheat = coreSpecific.cheats[i];
+                    let includes = false;
+                    for (let j=0; j<this.cheats.length; j++) {
+                        if (this.cheats[j].desc === cheat.desc && this.cheats[j].code === cheat.code) {
+                            this.cheats[j].checked = cheat.checked;
+                            includes = true;
+                            break;
+                        }
+                    }
+                    if (includes) continue;
+                    this.cheats.push(cheat);
+                }
+                
             } catch(e) {
                 console.warn("Could not load previous settings", e);
             }
@@ -2400,7 +2426,6 @@ class EmulatorJS {
         this.elements.cheatRows = rows;
     }
     updateCheatUI() {
-        if (!this.cheats) this.cheats = [];
         this.elements.cheatRows.innerHTML = "";
         
         const addToMenu = (desc, checked, code, i) => {
