@@ -2172,6 +2172,7 @@ class EmulatorJS {
             this.settings[title] = newValue;
             funcs.forEach(e => e(title));
         }
+        let allOpts = {};
         
         const addToMenu = (title, id, options, defaultOption) => {
             const menuOption = this.createElement("div");
@@ -2229,6 +2230,7 @@ class EmulatorJS {
                     opts[options[i]] = options[i];
                 }
             }
+            allOpts[id] = opts;
             
             funcs.push((title) => {
                 if (id !== title) return;
@@ -2331,6 +2333,16 @@ class EmulatorJS {
         nested.style.height = homeSize.height + "px";
         
         this.settingsMenu.style.display = "none";
+        
+        if (this.debug) {
+            console.log("Available core options", allOpts);
+        }
+        
+        if (this.config.defaultOptions) {
+            for (const k in this.config.defaultOptions) {
+                this.changeSettingOption(k, this.config.defaultOptions[k]);
+            }
+        }
     }
     createSubPopup(hidden) {
         const popup = this.createElement('div');

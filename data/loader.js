@@ -60,6 +60,7 @@
     config.loadState = window.EJS_loadStateURL;
     config.cacheLimit = window.EJS_CacheLimit;
     config.cheats = window.EJS_cheats;
+    config.defaultOptions = window.EJS_defaultOptions;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
