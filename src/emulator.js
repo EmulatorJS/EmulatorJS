@@ -2342,6 +2342,7 @@ class EmulatorJS {
                         checked: false
                     });
                     this.updateCheatUI();
+                    this.saveSettings();
                 })
                 this.addEventListener(closeButton, "click", (e) => {
                     popups[0].remove();
@@ -2379,6 +2380,7 @@ class EmulatorJS {
                 input.checked = !input.checked;
                 this.cheats[i].checked = input.checked;
                 this.cheatChanged(input.checked, code, i);
+                this.saveSettings();
             })
             const close = this.createElement("a");
             close.classList.add("ejs_cheat_row_button");
