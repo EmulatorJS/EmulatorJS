@@ -1,3 +1,4 @@
 **/node_modules/
 data/minify/package-lock.json
 *.db
+roms/
