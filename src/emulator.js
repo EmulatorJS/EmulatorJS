@@ -298,6 +298,7 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text) {
+        //return "-";
         //todo
         return text;
     }
@@ -818,7 +819,7 @@ class EmulatorJS {
         popup.classList.add("ejs_popup_container");
         this.elements.parent.appendChild(popup);
         const title = this.createElement("h4");
-        title.innerText = popupTitle;
+        title.innerText = this.localization(popupTitle);
         const main = this.createElement("div");
         main.classList.add("ejs_popup_body");
         
@@ -834,7 +835,7 @@ class EmulatorJS {
                 });
             }
             button.classList.add("ejs_button");
-            button.innerText = k;
+            button.innerText = this.localization(k);
             popup.appendChild(button);
         }
         if (!hidden) {
@@ -907,7 +908,7 @@ class EmulatorJS {
             svg.setAttribute("focusable", "false");
             svg.innerHTML = image;
             const text = this.createElement("span");
-            text.innerText = title;
+            text.innerText = this.localization(title);
             text.classList.add("ejs_menu_text");
             
             button.classList.add("ejs_menu_button");
@@ -1239,7 +1240,7 @@ class EmulatorJS {
                 size.innerText = getSize(roms[k]);
                 
                 const a = this.createElement("a");
-                a.innerText = "Remove";
+                a.innerText = this.localization("Remove");
                 this.addEventListener(remove, "click", () => {
                     this.storage.rom.remove(k);
                     line.remove();
@@ -1317,7 +1318,7 @@ class EmulatorJS {
             playerContainer.classList.add("tabs-title");
             playerContainer.setAttribute("role", "presentation");
             const player = this.createElement("a");
-            player.innerText = "Player "+i;
+            player.innerText = this.localization("Player")+" "+i;
             player.setAttribute("role", "tab");
             player.setAttribute("aria-controls", "controls-"+(i-1));
             player.setAttribute("aria-selected", "false");
@@ -1442,7 +1443,7 @@ class EmulatorJS {
                 setButton.style = "width:25%;float:left;";
                 const button = this.createElement("a");
                 button.classList.add("ejs_control_set_button");
-                button.innerText = "Set";
+                button.innerText = this.localization("Set");
                 setButton.appendChild(button);
                 
                 const padding2 = this.createElement("div");
@@ -2260,13 +2261,13 @@ class EmulatorJS {
         
         if (window.EJS_SHADERS) {
             addToMenu(this.localization('Shaders'), 'shader', {
-                'disabled': "Disabled",
-                '2xScaleHQ.glslp': "2xScaleHQ",
-                '4xScaleHQ.glslp': "4xScaleHQ",
-                'crt-easymode.glslp': 'CRT easymode',
-                'crt-aperture.glslp': 'CRT aperture',
-                'crt-geom.glslp': 'CRT geom',
-                'crt-mattias.glslp': 'CRT mattias'
+                'disabled': this.localization("Disabled"),
+                '2xScaleHQ.glslp': this.localization("2xScaleHQ"),
+                '4xScaleHQ.glslp': this.localization("4xScaleHQ"),
+                'crt-easymode.glslp': this.localization('CRT easymode'),
+                'crt-aperture.glslp': this.localization('CRT aperture'),
+                'crt-geom.glslp': this.localization('CRT geom'),
+                'crt-mattias.glslp': this.localization('CRT mattias')
             }, 'disabled');
         }
         
@@ -2318,7 +2319,7 @@ class EmulatorJS {
                 const header = this.createElement("div");
                 header.classList.add("ejs_cheat_header");
                 const title = this.createElement("h2");
-                title.innerText = "Add Cheat Code";
+                title.innerText = this.localization("Add Cheat Code");
                 title.classList.add("ejs_cheat_heading");
                 const close = this.createElement("button");
                 close.classList.add("ejs_cheat_close");
@@ -2332,7 +2333,7 @@ class EmulatorJS {
                 const main = this.createElement("div");
                 main.classList.add("ejs_cheat_main");
                 const header3 = this.createElement("strong");
-                header3.innerText = "Code";
+                header3.innerText = this.localization("Code");
                 main.appendChild(header3);
                 main.appendChild(this.createElement("br"));
                 const mainText = this.createElement("textarea");
@@ -2342,7 +2343,7 @@ class EmulatorJS {
                 main.appendChild(mainText);
                 main.appendChild(this.createElement("br"));
                 const header2 = this.createElement("strong");
-                header2.innerText = "Description";
+                header2.innerText = this.localization("Description");
                 main.appendChild(header2);
                 main.appendChild(this.createElement("br"));
                 const mainText2 = this.createElement("input");
@@ -2355,8 +2356,8 @@ class EmulatorJS {
                 const footer = this.createElement("footer");
                 const submit = this.createElement("button");
                 const closeButton = this.createElement("button");
-                submit.innerText = "Submit";
-                closeButton.innerText = "Close";
+                submit.innerText = this.localization("Submit");
+                closeButton.innerText = this.localization("Close");
                 submit.classList.add("ejs_button_button");
                 closeButton.classList.add("ejs_button_button");
                 submit.classList.add("ejs_popup_submit");
