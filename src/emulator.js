@@ -94,6 +94,11 @@ class EmulatorJS {
     downloadFile(path, cb, progressCB, notWithPath, opts) {
         const basePath = notWithPath ? '' : this.config.dataPath;
         path = basePath + path;
+        if (!notWithPath && this.config.filePaths) {
+            if (typeof this.config.filePaths[path.split('/').pop()] === "string") {
+                path = this.config.filePaths[path.split('/').pop()];
+            }
+        }
         let url;
         try {url=new URL(path)}catch(e){};
         if ((url && ['http:', 'https:'].includes(url.protocol)) || !url) {
@@ -271,10 +276,17 @@ class EmulatorJS {
             this.touch = true;
         })
         this.addEventListener(button, "click", this.startButtonClicked.bind(this));
+        if (this.config.startOnLoad === true) {
+            this.startButtonClicked(button);
+        }
     }
     startButtonClicked(e) {
-        e.preventDefault();
-        e.target.remove();
+        if (e.preventDefault) {
+            e.preventDefault();
+            e.target.remove();
+        } else {
+            e.remove();
+        }
         this.createText();
         this.downloadGameCore();
     }
@@ -941,6 +953,8 @@ class EmulatorJS {
             a.click();
         });
         const loadState = addButton("Load State", '<svg viewBox="0 0 576 512"><path fill="currentColor" d="M572.694 292.093L500.27 416.248A63.997 63.997 0 0 1 444.989 448H45.025c-18.523 0-30.064-20.093-20.731-36.093l72.424-124.155A64 64 0 0 1 152 256h399.964c18.523 0 30.064 20.093 20.73 36.093zM152 224h328v-48c0-26.51-21.49-48-48-48H272l-64-64H48C21.49 64 0 85.49 0 112v278.046l69.077-118.418C86.214 242.25 117.989 224 152 224z"/></svg>', async () => {
+            const called = this.callEvent("load");
+            if (called > 0) return;
             const file = await this.selectFile();
             const state = new Uint8Array(await file.arrayBuffer());
             this.gameManager.loadState(state);
