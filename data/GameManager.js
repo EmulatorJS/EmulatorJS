@@ -1,5 +1,6 @@
 class EJS_GameManager {
-    constructor(Module) {
+    constructor(Module, EJS) {
+        this.EJS = EJS;
         this.Module = Module;
         this.FS = this.Module.FS;
         this.functions = {
@@ -110,6 +111,30 @@ class EJS_GameManager {
         })();
     }
     simulateInput(player, index, value) {
+        if ([24, 25, 26].includes(index)) {
+            if (index === 24 && value === 1) {
+                const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
+                this.quickSave(slot);
+                this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT")+" "+slot);
+            }
+            if (index === 25 && value === 1) {
+                const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
+                this.quickLoad(slot);
+                this.EJS.displayMessage(this.EJS.localization("LOADED STATE FROM SLOT")+" "+slot);
+            }
+            if (index === 26 && value === 1) {
+                let newSlot;
+                try {
+                    newSlot = parseFloat(this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1") + 1;
+                } catch(e) {
+                    newSlot = 1;
+                }
+                if (newSlot > 9) newSlot = 1;
+                this.EJS.displayMessage(this.EJS.localization("SET SAVE STATE SLOT TO")+" "+newSlot);
+                this.EJS.changeSettingOption('save-state-slot', newSlot.toString());
+            }
+            return;
+        }
         this.functions.simulateInput(player, index, value);
     }
     toggleMainLoop(playing) {

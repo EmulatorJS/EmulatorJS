@@ -1083,3 +1083,15 @@
 .ejs_volume_parent input[type='range']:active::-ms-thumb {
     box-shadow:0 1px 1px rgba(0,0,0,0.15),0 0 0 1px rgba(47,52,61,0.2),0 0 0 3px rgba(255,255,255,0.5)
 }
+
+.ejs_message {
+    float: none;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    color: red;
+    font-size: 17px;
+    padding: 10px;
+    text-align: left;
+    text-shadow: rgb(0, 0, 0) 1px 1px 1px;
+}

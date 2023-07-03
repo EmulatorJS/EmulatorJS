@@ -521,6 +521,18 @@ class EmulatorJS {
     saveInBrowserSupported() {
         return !!window.indexedDB && (typeof this.config.gameName === "string" || !this.config.gameUrl.startsWith("blob:"));
     }
+    displayMessage(message) {
+        if (!this.msgElem) {
+            this.msgElem = this.createElement("div");
+            this.msgElem.classList.add("ejs_message");
+            this.elements.parent.appendChild(this.msgElem);
+        }
+        clearTimeout(this.msgTimeout);
+        this.msgTimeout = setTimeout(() => {
+            this.msgElem.innerText = "";
+        }, 3000)
+        this.msgElem.innerText = message;
+    }
     downloadStartState() {
         if (typeof this.config.loadState !== "string") {
             this.startGame();
@@ -589,7 +601,7 @@ class EmulatorJS {
         }, null, true, {method: "HEAD"})
     }
     downloadRom() {
-        this.gameManager = new window.EJS_GameManager(this.Module);
+        this.gameManager = new window.EJS_GameManager(this.Module, this);
         
         this.textElem.innerText = this.localization("Download Game Data");
         const gotGameData = (data) => {
@@ -804,11 +816,13 @@ class EmulatorJS {
         const qSave = addButton("Quick Save", false, () => {
             const slot = this.settings['save-state-slot'] ? this.settings['save-state-slot'] : "1";
             this.gameManager.quickSave(slot);
+            this.displayMessage(this.localization("SAVED STATE TO SLOT")+" "+slot);
             hideMenu();
         });
         const qLoad = addButton("Quick Load", false, () => {
             const slot = this.settings['save-state-slot'] ? this.settings['save-state-slot'] : "1";
             this.gameManager.quickLoad(slot);
+            this.displayMessage(this.localization("LOADED STATE FROM SLOT")+" "+slot);
             hideMenu();
         });
         addButton("EmulatorJS", false, () => {
@@ -997,6 +1011,7 @@ class EmulatorJS {
             if (stateUrl) URL.revokeObjectURL(stateUrl);
             if (this.settings['save-state-location'] === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.put(this.getBaseFileName()+".state", state);
+                this.displayMessage(this.localization("SAVED LOADED TO BROWSER"));
             } else {
                 const blob = new Blob([state]);
                 stateUrl = URL.createObjectURL(blob);
@@ -1012,6 +1027,7 @@ class EmulatorJS {
             if (this.settings['save-state-location'] === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.get(this.getBaseFileName()+".state").then(e => {
                     this.gameManager.loadState(e);
+                    this.displayMessage(this.localization("SAVED LOADED FROM BROWSER"));
                 })
             } else {
                 const file = await this.selectFile();
@@ -1596,6 +1612,7 @@ class EmulatorJS {
     }
     controls;
     keyChange(e) {
+        if (e.repeat) return;
         if (!this.started) return;
         if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
             const num = this.controlPopup.getAttribute("button-num");
@@ -1613,7 +1630,7 @@ class EmulatorJS {
         e.preventDefault();
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            for (let j=0; j<26; j++) {
+            for (let j=0; j<27; j++) {
                 if (this.controls[i][j] && this.controls[i][j].value === e.key.toLowerCase()) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 }
@@ -1645,7 +1662,7 @@ class EmulatorJS {
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            for (let j=0; j<26; j++) {
+            for (let j=0; j<27; j++) {
                 if (['buttonup', 'buttondown'].includes(e.type) && (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
                     this.gameManager.simulateInput(i, j, (e.type === 'buttondown' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 } else if (e.type === "axischanged") {
