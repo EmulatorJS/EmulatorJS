@@ -135,7 +135,7 @@ class EmulatorJS {
                 let res;
                 try {
                     res = await fetch(path);
-                    if (opts.type && opts.type.toLowerCase() === 'arraybuffer') {
+                    if ((opts.type && opts.type.toLowerCase() === 'arraybuffer') || !opts.type) {
                         res = await res.arrayBuffer();
                     } else {
                         res = await res.text();
@@ -149,7 +149,7 @@ class EmulatorJS {
                     data: res,
                     headers: {}
                 });
-            })
+            })();
         }
     }
     constructor(element, config) {
@@ -558,7 +558,7 @@ class EmulatorJS {
         }, true, {responseType: "arraybuffer", method: "GET"});
     }
     downloadBios() {
-        if (typeof this.config.biosUrl !== "string") {
+        if (typeof this.config.biosUrl !== "string" || !this.config.biosUrl.trim()) {
             this.downloadStartState();
             return;
         }
@@ -591,10 +591,12 @@ class EmulatorJS {
                         return;
                     }
                     gotBios(res.data);
-                    this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
-                        "content-length": res.headers['content-length'],
-                        data: res.data
-                    })
+                    if (this.saveInBrowserSupported()) {
+                        this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
+                            "content-length": res.headers['content-length'],
+                            data: res.data
+                        })
+                    }
                 }, (progress) => {
                     this.textElem.innerText = this.localization("Download Game BIOS") + progress;
                 }, true, {responseType: "arraybuffer", method: "GET"});
@@ -615,7 +617,7 @@ class EmulatorJS {
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data")).then((data) => {
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
-                        this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                        this.fileName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                         FS.writeFile(this.fileName, data[k]);
                         break;
                     }
@@ -648,7 +650,7 @@ class EmulatorJS {
                     }
                     gotGameData(res.data);
                     const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                    if (parseFloat(res.headers['content-length']) < limit) {
+                    if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported()) {
                         this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
                             "content-length": res.headers['content-length'],
                             data: res.data
@@ -700,8 +702,6 @@ class EmulatorJS {
             console.log(args);
             this.Module.callMain(args);
             this.Module.resumeMainLoop();
-            this.started = true;
-            this.paused = false;
             if (this.touch) {
                 this.virtualGamepad.style.display = "";
             }
@@ -718,10 +718,13 @@ class EmulatorJS {
             this.game.classList.remove("ejs_game");
             this.game.appendChild(this.canvas);
             this.handleResize();
+            this.started = true;
+            this.paused = false;
         } catch(e) {
             console.warn("failed to start game", e);
             this.textElem.innerText = "Failed to start game";
             this.textElem.style.color = "red";
+            return;
         }
         this.callEvent("start");
     }
