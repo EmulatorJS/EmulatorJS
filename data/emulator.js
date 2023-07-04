@@ -773,8 +773,8 @@ class EmulatorJS {
         this.addEventListener(this.game, 'contextmenu', (e) => {
             if (this.started) {
                 this.elements.contextmenu.style.display = "block";
-                this.elements.contextmenu.style.left = e.offsetX;
-                this.elements.contextmenu.style.top = e.offsetY;
+                this.elements.contextmenu.style.left = e.offsetX+"px";
+                this.elements.contextmenu.style.top = e.offsetY+"px";
             }
             e.preventDefault();
         })
@@ -2133,7 +2133,7 @@ class EmulatorJS {
     handleResize() {
         if (!this.Module) return;
         const dpr = window.devicePixelRatio || 1;
-        const positionInfo = this.game.getBoundingClientRect();
+        const positionInfo = this.elements.parent.getBoundingClientRect();
         const width = positionInfo.width * dpr;
         const height = (positionInfo.height * dpr);
         this.Module.setCanvasSize(width, height);
@@ -2428,7 +2428,7 @@ class EmulatorJS {
         this.settingParent.style.position = "relative";
         
         const homeSize = this.getElementSize(home);
-        nested.style.width = homeSize.width + "px";
+        nested.style.width = (homeSize.width+20) + "px";
         nested.style.height = homeSize.height + "px";
         
         this.settingsMenu.style.display = "none";

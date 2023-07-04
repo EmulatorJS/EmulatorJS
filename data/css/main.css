@@ -17,6 +17,16 @@
     font-size: 14px;
 }
 
+.ejs_parent *, .ejs_parent *::after, .ejs_parent *::before {
+    font-family: Avenir, "Avenir Next", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
+    box-sizing: border-box;
+    
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
 .ejs_parent ::-webkit-scrollbar{
     width: 8px;
     height: 16px;
@@ -228,6 +238,9 @@
     transition: transform .3s ease;
 }
 .ejs_menu_button {
+    width: auto;
+    margin: auto;
+    font-family: Avenir, "Avenir Next", "Helvetica Neue", "Segoe UI", Helvetica, Arial, sans-serif;
     margin-right: 2px;
     touch-action: manipulation;
     background: transparent;
