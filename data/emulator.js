@@ -22,7 +22,7 @@ class EmulatorJS {
             const options = {
                 'virtualjaguar': 'jaguar',
                 'handy': 'lynx',
-                'yabause': 'segaSaturn', //NOT WORKING
+                'yabause': 'segaSaturn',
                 'genesis_plus_gx': 'uh oh',//MS, MD, GG, CD... which do we return?
                 'fceumm': 'nes',
                 'snes9x': 'snes',
