@@ -90,7 +90,7 @@ class EJS_STORAGE {
         return new Promise(async (resolve, reject) => {
             if (!window.indexedDB) resolve({});
             const keys = await this.get("?EJS_KEYS!");
-            if (!keys) resolve({});
+            if (!keys) return resolve({});
             let rv = {};
             for (let i=0; i<keys.length; i++) {
                 const result = await this.get(keys[i]);
