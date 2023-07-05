@@ -1383,35 +1383,121 @@ class EmulatorJS {
         this.controlMenu = body.parentElement;
         body.classList.add("ejs_control_body");
         
-        const buttons = {
-            0: 'B',
-            1: 'Y',
-            2: 'SELECT',
-            3: 'START',
-            4: 'UP',
-            5: 'DOWN',
-            6: 'LEFT',
-            7: 'RIGHT',
-            8: 'A',
-            9: 'X',
-            10: 'L',
-            11: 'R',
-            12: 'L2',
-            13: 'R2',
-            14: 'L3',
-            15: 'R3',
-            19: 'L STICK UP',
-            18: 'L STICK DOWN',
-            17: 'L STICK LEFT',
-            16: 'L STICK RIGHT',
-            23: 'R STICK UP',
-            22: 'R STICK DOWN',
-            21: 'R STICK LEFT',
-            20: 'R STICK RIGHT',
-            24: this.localization('QUICK SAVE STATE'),
-            25: this.localization('QUICK LOAD STATE'),
-            26: this.localization('CHANGE STATE SLOT')
+        let buttons;
+        if ('nes' === this.getCore(true)) {
+            buttons = {
+                8: 'A',
+                0: 'B',
+                2: 'SELECT',
+                3: 'START',
+                4: 'UP',
+                5: 'DOWN',
+                6: 'LEFT',
+                7: 'RIGHT',
+                24: this.localization('QUICK SAVE STATE'),
+                25: this.localization('QUICK LOAD STATE'),
+                26: this.localization('CHANGE STATE SLOT')
+            }
+        } else if ('snes' === this.getCore(true)) {
+            buttons = {
+                0: 'B',
+                1: 'Y',
+                2: 'SELECT',
+                3: 'START',
+                4: 'UP',
+                5: 'DOWN',
+                6: 'LEFT',
+                7: 'RIGHT',
+                8: 'A',
+                9: 'X',
+                10: 'L',
+                11: 'R',
+                24: this.localization('QUICK SAVE STATE'),
+                25: this.localization('QUICK LOAD STATE'),
+                26: this.localization('CHANGE STATE SLOT')
+            };
+        } else if ('n64' === this.getCore(true)) {
+            buttons = {
+                0: 'A',
+                1: 'B',
+                3: 'START',
+                4: 'UP',
+                5: 'DOWN',
+                6: 'LEFT',
+                7: 'RIGHT',
+                10: 'L',
+                11: 'R',
+                12: 'Z',
+                19: 'L STICK UP',
+                18: 'L STICK DOWN',
+                17: 'L STICK LEFT',
+                16: 'L STICK RIGHT',
+                23: 'R STICK UP',
+                22: 'R STICK DOWN',
+                21: 'R STICK LEFT',
+                20: 'R STICK RIGHT',
+                24: this.localization('QUICK SAVE STATE'),
+                25: this.localization('QUICK LOAD STATE'),
+                26: this.localization('CHANGE STATE SLOT')
+            };
+        } else if ('nds' === this.getCore(true)) {
+            buttons = {
+                0: 'B',
+                1: 'Y',
+                2: 'SELECT',
+                3: 'START',
+                4: 'UP',
+                5: 'DOWN',
+                6: 'LEFT',
+                7: 'RIGHT',
+                8: 'A',
+                9: 'X',
+                10: 'L',
+                11: 'R',
+                14: 'Microphone',
+                24: this.localization('QUICK SAVE STATE'),
+                25: this.localization('QUICK LOAD STATE'),
+                26: this.localization('CHANGE STATE SLOT')
+            };
+        } else {
+            buttons = {
+                0: 'B',
+                1: 'Y',
+                2: 'SELECT',
+                3: 'START',
+                4: 'UP',
+                5: 'DOWN',
+                6: 'LEFT',
+                7: 'RIGHT',
+                8: 'A',
+                9: 'X',
+                10: 'L',
+                11: 'R',
+                12: 'L2',
+                13: 'R2',
+                14: 'L3',
+                15: 'R3',
+                19: 'L STICK UP',
+                18: 'L STICK DOWN',
+                17: 'L STICK LEFT',
+                16: 'L STICK RIGHT',
+                23: 'R STICK UP',
+                22: 'R STICK DOWN',
+                21: 'R STICK LEFT',
+                20: 'R STICK RIGHT',
+                24: this.localization('QUICK SAVE STATE'),
+                25: this.localization('QUICK LOAD STATE'),
+                26: this.localization('CHANGE STATE SLOT')
+            };
         }
+        if (['arcade', 'mame'].includes(this.getCore(true))) {
+            buttons[2] = this.localization('INSERT COIN');
+        }
+        //if (_this.statesSupported === false) {
+        //    delete buttons[24];
+        //    delete buttons[25];
+        //    delete buttons[26];
+        //}
         let selectedPlayer;
         let players = [];
         let playerDivs = [];
