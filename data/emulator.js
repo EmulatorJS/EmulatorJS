@@ -312,6 +312,9 @@ class EmulatorJS {
         }
     }
     startButtonClicked(e) {
+        if (e.pointerType === "touch") {
+            this.touch = true;
+        }
         if (e.preventDefault) {
             e.preventDefault();
             e.target.remove();
@@ -2411,7 +2414,7 @@ class EmulatorJS {
             }, 'download');
         }
         
-        if (this.touch) {
+        if (this.touch || navigator.maxTouchPoints > 0) {
             addToMenu(this.localization('Virtual Gamepad'), 'virtual-gamepad', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
@@ -2422,21 +2425,23 @@ class EmulatorJS {
             }, 'disabled');
         }
         
-        this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
-            let option = line.split('; ');
-            let name = option[0];
-            let options = option[1].split('|'),
-                optionName = name.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
-            options.slice(1, -1);
-            if (options.length === 1) return;
-            let availableOptions = {};
-            for (let i=0; i<options.length; i++) {
-                availableOptions[options[i]] = this.localization(options[i]);
-            }
-            addToMenu(this.localization(optionName),
-                      name.split("|")[0], availableOptions,
-                      (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
-        })
+        if (this.gameManager.getCoreOptions()) {
+            this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
+                let option = line.split('; ');
+                let name = option[0];
+                let options = option[1].split('|'),
+                    optionName = name.split("|")[0].replace(/_/g, ' ').replace(/.+\-(.+)/, '$1');
+                options.slice(1, -1);
+                if (options.length === 1) return;
+                let availableOptions = {};
+                for (let i=0; i<options.length; i++) {
+                    availableOptions[options[i]] = this.localization(options[i]);
+                }
+                addToMenu(this.localization(optionName),
+                          name.split("|")[0], availableOptions,
+                          (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
+            })
+        }
         
         this.settingsMenu.appendChild(nested);
         
