@@ -17,8 +17,13 @@ class EmulatorJS {
     }
     getCore(generic) {
         const core = this.config.system;
+        //todo: sega32x, TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
         if (generic) {
             const options = {
+                'virtualjaguar': 'jaguar',
+                'handy': 'lynx',
+                'yabause': 'segaSaturn', //NOT WORKING
+                'genesis_plus_gx': 'uh oh',//MS, MD, GG, CD... which do we return? //NOT WORKING
                 'fceumm': 'nes',
                 'snes9x': 'snes',
                 'a5200': 'atari5200',
@@ -34,11 +39,22 @@ class EmulatorJS {
                 'mednafen_psx_hw': 'psx',
                 'melonds': 'nds',
                 'nestopia': 'nes',
-                'opera': '3do'
+                'opera': '3do',
+                'prosystem': 'atari7800',
+                'stella2014': 'atari2600'
             }
             return options[core] || core;
         }
         const options = {
+            'jaguar': 'virtualjaguar',
+            'lynx': 'handy',
+            'segaSaturn': 'yabause',
+            'segaMS': 'genesis_plus_gx',
+            'segaMD': 'genesis_plus_gx',
+            'segaGG': 'genesis_plus_gx',
+            'segaCD': 'genesis_plus_gx',
+            'atari2600': 'stella2014',
+            'atari7800': 'prosystem',
             'nes': 'fceumm',
             'snes': 'snes9x',
             'atari5200': 'a5200',
