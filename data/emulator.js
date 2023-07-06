@@ -62,7 +62,7 @@ class EmulatorJS {
             'gba': 'mgba',
             'vb': 'beetle_vb',
             'n64': 'mupen64plus_next',
-            'nds': 'desmume2015',
+            'nds': 'melonds',
             'mame2003': 'mame2003',
             'arcade': 'fbalpha2012_cps1', // I need to find a more  compatible arcade core
             'psx': 'mednafen_psx_hw',
