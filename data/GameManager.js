@@ -139,13 +139,15 @@ class EJS_GameManager {
     }
     createCueFile(fileNames) {
         try {
-            fileNames = fileNames.sort((a, b) => {
-                return (parseInt(a.charAt()[0]) > parseInt(b.charAt()[0])) ? 1 : -1;
-            })
             fileNames = fileNames.filter((item) => {
                 return ["toc", "ccd", "exe", "pbp", "chd", "img", "bin"].includes(item.split(".").pop().toLowerCase());
             })
+            fileNames = fileNames.sort((a, b) => {
+                if (isNaN(a.charAt()) || isNaN(b.charAt())) throw new Error("Incorrect file name format");
+                return (parseInt(a.charAt()) > parseInt(b.charAt())) ? 1 : -1;
+            })
         } catch(e) {
+            console.log(fileNames);
             if (fileNames.length > 1) {
                 console.warn("Could not auto-create cue file(s).");
                 return null;
