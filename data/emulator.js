@@ -1849,7 +1849,6 @@ class EmulatorJS {
     }
     setVirtualGamepad() {
         this.virtualGamepad = this.createElement("div");
-        this.virtualGamepad.style.display = "none";
         this.toggleVirtualGamepad = (show) => {
             this.virtualGamepad.style.display = show ? "" : "none";
         }
@@ -2233,7 +2232,7 @@ class EmulatorJS {
                 }
             });
         })
-        
+        this.virtualGamepad.style.display = "none";
     }
     handleResize() {
         if (!this.Module) return;
@@ -2504,7 +2503,7 @@ class EmulatorJS {
             addToMenu(this.localization('Virtual Gamepad'), 'virtual-gamepad', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
-            }, 'enabled');
+            }, this.touch ? 'enabled' : 'disabled');
             addToMenu(this.localization('Left Handed Mode'), 'virtual-gamepad-left-handed-mode', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
