@@ -8,7 +8,7 @@ class EmulatorJS {
                 'virtualjaguar': 'jaguar',
                 'handy': 'lynx',
                 'yabause': 'segaSaturn',
-                'genesis_plus_gx': 'uh oh',//MS, MD, GG, CD... which do we return?
+                'genesis_plus_gx': 'sega',//MS, MD, GG, CD... which do we return?
                 'fceumm': 'nes',
                 'snes9x': 'snes',
                 'a5200': 'atari5200',
