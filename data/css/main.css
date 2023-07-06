@@ -1108,3 +1108,18 @@
     text-align: left;
     text-shadow: rgb(0, 0, 0) 1px 1px 1px;
 }
+
+.ejs_virtualGamepad_open {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    opacity: .5;
+    z-index: 999;
+}
+.ejs_virtualGamepad_open svg {
+    fill: currentColor;
+}
