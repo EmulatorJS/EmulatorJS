@@ -1,20 +1,5 @@
 class EmulatorJS {
-    version = {
-        a5200: 1,
-        beetle_vb: 1,
-        desmume2015: 1,
-        fbalpha2012_cps1: 1,
-        fbalpha2012_cps2: 1,
-        fceumm: 1,
-        gambatte: 1,
-        mame2003: 1,
-        mednafen_psx_hw: 1,
-        melonds: 1,
-        mgba: 1,
-        mupen64plus_next: 1,
-        nestopia: 1,
-        snes9x: 1
-    }
+    version = 1; //All versions for the core
     getCore(generic) {
         const core = this.config.system;
         //todo: sega32x, TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
@@ -422,20 +407,22 @@ class EmulatorJS {
                 }
                 
                 this.downloadFile("compression/libunrar.js", (res) => {
-                    if (res === -1) {
-                        this.textElem.innerText = "Error";
-                        this.textElem.style.color = "red";
-                        return;
-                    }
-                    const path = origin + this.config.dataPath + 'compression/libunrar.js.mem';
-                    let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+path+'\';\n    }\n};\n'+res.data+'\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
-                    const blob = new Blob([data], {
-                        'type': 'application/javascript'
-                    })
-                    const url = window.URL.createObjectURL(blob);
-                    const worker = new Worker(url);
-                    worker.onmessage = onMessage;
-                    worker.postMessage(file);
+                    this.downloadFile("compression/libunrar.js.mem", (res2) => {
+                        if (res === -1 || res2 === -1) {
+                            this.textElem.innerText = "Error";
+                            this.textElem.style.color = "red";
+                            return;
+                        }
+                        const path = URL.createObjectURL(new Blob([res2]));
+                        let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+path+'\';\n    }\n};\n'+res.data+'\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
+                        const blob = new Blob([data], {
+                            'type': 'application/javascript'
+                        })
+                        const url = window.URL.createObjectURL(blob);
+                        const worker = new Worker(url);
+                        worker.onmessage = onMessage;
+                        worker.postMessage(file);
+                    }, null, false, {responseType: "text", method: "GET"})
                 }, null, false, {responseType: "text", method: "GET"});
                 
             })
@@ -500,7 +487,7 @@ class EmulatorJS {
             });
         }
         this.storage.core.get(this.getCore()+'-wasm.data').then((result) => {
-            if (result && result.version === this.version[this.getCore()] && !this.debug) {
+            if (result && result.version === this.version && !this.debug) {
                 gotCore(result.data);
                 return;
             }
@@ -512,7 +499,7 @@ class EmulatorJS {
                 }
                 gotCore(res.data);
                 this.storage.core.put(this.getCore()+'-wasm.data', {
-                    version: this.version[this.getCore()],
+                    version: this.version,
                     data: res.data
                 });
             }, (progress) => {
@@ -590,8 +577,8 @@ class EmulatorJS {
                         break;
                     }
                     if (k.endsWith('/')) continue;
-                    console.log(k.split('/').pop());
-                    FS.writeFile(k.split('/').pop(), data[k]);
+                    let folder = this.fileName.substring(0, this.fileName.length - this.fileName.split("/").pop().length);
+                    FS.writeFile(folder + k.split('/').pop(), data[k]);
                 }
                 this.downloadStartState();
             })
@@ -634,10 +621,25 @@ class EmulatorJS {
                 return;
             }
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data")).then((data) => {
+                const fileNames = (() => {
+                    let rv = [];
+                    for (const k in data) rv.push(k);
+                    return rv;
+                })();
+                let execFile = null;
+                if (this.getCore(true) === "psx") {
+                    execFile = this.gameManager.createCueFile(fileNames);
+                }
+                console.log(data);
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
-                        this.fileName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
-                        FS.writeFile(this.fileName, data[k]);
+                        const fileName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                        if (this.getCore(true) === "psx" && execFile !== null) {
+                            this.fileName = execFile;
+                        } else {
+                            this.fileName = fileName;
+                        }
+                        FS.writeFile(fileName, data[k]);
                         break;
                     }
                     if (k.endsWith('/')) {
@@ -646,11 +648,25 @@ class EmulatorJS {
                     }
                     if (!this.fileName || (this.extensions[this.getCore()].includes(k.split(".").pop()) &&
                         //always prefer m3u files for psx cores
-                        !(this.getCore(true) === "psx" && this.fileName.split(".").pop() === "m3u"))) {
+                        !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
                         this.fileName = k;
                     }
-                    console.log(k);
-                    FS.writeFile(k, data[k]);
+                    if (k.includes("/")) {
+                        const paths = k.split("/");
+                        let cp = "";
+                        for (let i=0; i<paths.length-1; i++) {
+                            if (paths[i] === "") continue;
+                            cp += "/"+paths[i];
+                            if (!FS.analyzePath(cp).exists) {
+                                FS.mkdir(cp);
+                            }
+                        }
+                    }
+                    if (this.getCore(true) === "psx" && execFile !== null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) continue;
+                    FS.writeFile("/"+k, data[k]);
+                }
+                if (this.getCore(true) === "psx" && execFile !== null) {
+                    this.fileName = execFile;
                 }
                 this.downloadBios();
             });

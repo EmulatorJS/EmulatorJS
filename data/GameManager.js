@@ -137,6 +137,49 @@ class EJS_GameManager {
         }
         this.functions.simulateInput(player, index, value);
     }
+    createCueFile(fileNames) {
+        try {
+            fileNames = fileNames.sort((a, b) => {
+                return (parseInt(a.charAt()[0]) > parseInt(b.charAt()[0])) ? 1 : -1;
+            })
+            fileNames = fileNames.filter((item) => {
+                return ["toc", "ccd", "exe", "pbp", "chd", "img", "bin"].includes(item.split(".").pop().toLowerCase());
+            })
+        } catch(e) {
+            if (fileNames.length > 1) {
+                console.warn("Could not auto-create cue file(s).");
+                return null;
+            }
+        }
+        for (let i=0; i<fileNames.length; i++) {
+            if (fileNames[i].split(".").pop().toLowerCase() === "ccd") {
+                console.warn("Did not auto-create cue file(s). Found a ccd.");
+                return null;
+            }
+        }
+        if (fileNames.length === 0) {
+            console.warn("Could not auto-create cue file(s).");
+            return null;
+        }
+        console.log(fileNames);
+        let baseFileName = fileNames[0].split("/").pop();
+        if (baseFileName.includes(".")) {
+            baseFileName = baseFileName.substring(0, baseFileName.length - baseFileName.split(".").pop().length - 1);
+            console.log(baseFileName);
+        }
+        for (let i=0; i<fileNames.length; i++) {
+            const contents = " FILE \""+fileNames[i]+"\" BINARY\n  TRACK 01 MODE1/2352\n   INDEX 01 00:00:00";
+            FS.writeFile("/"+baseFileName+"-"+i+".cue", contents);
+        }
+        if (fileNames.length > 1) {
+            let contents = "";
+            for (let i=0; i<fileNames.length; i++) {
+                contents += "/"+baseFileName+"-"+i+".cue\n";
+            }
+            FS.writeFile("/"+baseFileName+".m3u", contents);
+        }
+        return (fileNames.length === 1) ? baseFileName+"-0.cue" : baseFileName+".m3u";
+    }
     toggleMainLoop(playing) {
         this.functions.toggleMainLoop(playing);
     }
