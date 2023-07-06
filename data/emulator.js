@@ -635,7 +635,6 @@ class EmulatorJS {
                 if (this.getCore(true) === "psx") {
                     execFile = this.gameManager.createCueFile(fileNames);
                 }
-                console.log(data);
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
                         const fileName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
