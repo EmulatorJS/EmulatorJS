@@ -28,7 +28,10 @@ class EJS_GameManager {
         this.mkdir("/home/web_user/retroarch");
         this.mkdir("/home/web_user/retroarch/userdata");
         
-        //this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        this.mkdir("/data");
+        this.mkdir("/data/saves");
+        
+        this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
         this.initShaders();
     }
@@ -38,7 +41,7 @@ class EJS_GameManager {
         } catch(e) {}
     }
     getRetroArchCfg() {
-        return "\n";
+        return "autosave_interval = 10\nsavefile_directory = \"/data/saves\"\n";
     }
     initShaders() {
         if (!window.EJS_SHADERS) return;
@@ -217,6 +220,15 @@ class EJS_GameManager {
     }
     supportsStates() {
         return !!this.functions.supportsStates();
+    }
+    getSaveFile() {
+        return new Promise((resolve) => {
+            this.saveSaveFiles();
+            setTimeout(() => {
+                const exists = FS.analyzePath(this.getSaveFilePath()).exists;
+                resolve(exists ? FS.readFile(this.getSaveFilePath()) : null);
+            }, 250);
+        })
     }
 }
 

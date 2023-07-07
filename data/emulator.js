@@ -211,7 +211,7 @@ class EmulatorJS {
             color = color.toLowerCase();
             if (color && /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/.test(color)) {
                 if (color.length === 4) {
-                    let rv = '#'
+                    let rv = '#';
                     for (let i=1; i<4; i++) {
                         rv += color.slice(i, i+1)+color.slice(i, i+1);
                     }
@@ -621,7 +621,7 @@ class EmulatorJS {
         const gotGameData = (data) => {
             if (['arcade', 'mame2003'].includes(this.getCore(true))) {
                 this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
-                FS.writeFile(this.fileName, data[k]);
+                FS.writeFile(this.fileName, new Uint8Array(data));
                 this.downloadBios();
                 return;
             }
@@ -1041,6 +1041,7 @@ class EmulatorJS {
         //todo. Center text on not restart button
         
         const restartButton = addButton("Restart", '<svg viewBox="0 0 512 512"><path d="M496 48V192c0 17.69-14.31 32-32 32H320c-17.69 0-32-14.31-32-32s14.31-32 32-32h63.39c-29.97-39.7-77.25-63.78-127.6-63.78C167.7 96.22 96 167.9 96 256s71.69 159.8 159.8 159.8c34.88 0 68.03-11.03 95.88-31.94c14.22-10.53 34.22-7.75 44.81 6.375c10.59 14.16 7.75 34.22-6.375 44.81c-39.03 29.28-85.36 44.86-134.2 44.86C132.5 479.9 32 379.4 32 256s100.5-223.9 223.9-223.9c69.15 0 134 32.47 176.1 86.12V48c0-17.69 14.31-32 32-32S496 30.31 496 48z"/></svg>', () => {
+            this.gameManager.saveSaveFiles();
             this.gameManager.restart();
         });
         const pauseButton = addButton("Pause", '<svg viewBox="0 0 320 512"><path d="M272 63.1l-32 0c-26.51 0-48 21.49-48 47.1v288c0 26.51 21.49 48 48 48L272 448c26.51 0 48-21.49 48-48v-288C320 85.49 298.5 63.1 272 63.1zM80 63.1l-32 0c-26.51 0-48 21.49-48 48v288C0 426.5 21.49 448 48 448l32 0c26.51 0 48-21.49 48-48v-288C128 85.49 106.5 63.1 80 63.1z"/></svg>', () => {
@@ -1083,7 +1084,7 @@ class EmulatorJS {
             if (stateUrl) URL.revokeObjectURL(stateUrl);
             if (this.settings['save-state-location'] === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.put(this.getBaseFileName()+".state", state);
-                this.displayMessage(this.localization("SAVED LOADED TO BROWSER"));
+                this.displayMessage(this.localization("SAVE SAVED TO BROWSER"));
             } else {
                 const blob = new Blob([state]);
                 stateUrl = URL.createObjectURL(blob);
@@ -1099,13 +1100,14 @@ class EmulatorJS {
             if (this.settings['save-state-location'] === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.get(this.getBaseFileName()+".state").then(e => {
                     this.gameManager.loadState(e);
-                    this.displayMessage(this.localization("SAVED LOADED FROM BROWSER"));
+                    this.displayMessage(this.localization("SAVE LOADED FROM BROWSER"));
                 })
             } else {
                 const file = await this.selectFile();
                 const state = new Uint8Array(await file.arrayBuffer());
                 this.gameManager.loadState(state);
             }
+            this.gameManager.saveSaveFiles();
         });
         const controlMenu = addButton("Control Settings", '<svg viewBox="0 0 640 512"><path fill="currentColor" d="M480 96H160C71.6 96 0 167.6 0 256s71.6 160 160 160c44.8 0 85.2-18.4 114.2-48h91.5c29 29.6 69.5 48 114.2 48 88.4 0 160-71.6 160-160S568.4 96 480 96zM256 276c0 6.6-5.4 12-12 12h-52v52c0 6.6-5.4 12-12 12h-40c-6.6 0-12-5.4-12-12v-52H76c-6.6 0-12-5.4-12-12v-40c0-6.6 5.4-12 12-12h52v-52c0-6.6 5.4-12 12-12h40c6.6 0 12 5.4 12 12v52h52c6.6 0 12 5.4 12 12v40zm184 68c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm80-80c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z"/></svg>', () => {
             this.controlMenu.style.display = "";
@@ -1116,6 +1118,32 @@ class EmulatorJS {
         
         const cache = addButton("Cache Manager", '<svg viewBox="0 0 1800 1800"><path d="M896 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5T231 896 128 768V598q119 84 325 127t443 43zm0 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-384q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128V982q119 84 325 127t443 43zM896 0q208 0 385 34.5t280 93.5 103 128v128q0 69-103 128t-280 93.5T896 640t-385-34.5T231 512 128 384V256q0-69 103-128t280-93.5T896 0z"/></svg>', () => {
             this.openCacheMenu();
+        });
+        
+        let savUrl;
+        
+        const saveSavFiles = addButton("Export Save File", '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 23 23"><path d="M3 6.5V5C3 3.89543 3.89543 3 5 3H16.1716C16.702 3 17.2107 3.21071 17.5858 3.58579L20.4142 6.41421C20.7893 6.78929 21 7.29799 21 7.82843V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V17.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M8 3H16V8.4C16 8.73137 15.7314 9 15.4 9H8.6C8.26863 9 8 8.73137 8 8.4V3Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M18 21V13.6C18 13.2686 17.7314 13 17.4 13H15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M6 21V17.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M12 12H1M1 12L4 9M1 12L4 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>', async () => {
+            const file = await this.gameManager.getSaveFile();
+            const blob = new Blob([file]);
+            savUrl = URL.createObjectURL(blob);
+            const a = this.createElement("a");
+            a.href = savUrl;
+            a.download = this.gameManager.getSaveFilePath().split("/").pop();
+            a.click();
+        });
+        const loadSavFiles = addButton("Import Save File", '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 23 23"><path d="M3 7.5V5C3 3.89543 3.89543 3 5 3H16.1716C16.702 3 17.2107 3.21071 17.5858 3.58579L20.4142 6.41421C20.7893 6.78929 21 7.29799 21 7.82843V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V16.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M6 21V17" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M18 21V13.6C18 13.2686 17.7314 13 17.4 13H15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M16 3V8.4C16 8.73137 15.7314 9 15.4 9H13.5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="transparent"></path><path d="M8 3V6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path><path d="M1 12H12M12 12L9 9M12 12L9 15" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"></path></svg>', async () => {
+            const file = await this.selectFile();
+            const sav = new Uint8Array(await file.arrayBuffer());
+            const path = this.gameManager.getSaveFilePath();
+            const paths = path.split("/");
+            let cp = "";
+            for (let i=0; i<paths.length-1; i++) {
+                if (paths[i] === "") continue;
+                cp += "/"+paths[i];
+                if (!FS.analyzePath(cp).exists) FS.mkdir(cp);
+            }
+            if (FS.analyzePath(path).exists) FS.unlink(path);
+            FS.writeFile(path, sav);
         });
         
         const spacer = this.createElement("span");
