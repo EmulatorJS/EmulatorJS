@@ -21,7 +21,8 @@ class EJS_GameManager {
             setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number']),
             getSaveFilePath: this.Module.cwrap('save_file_path', 'string', []),
             saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
-            supportsStates: this.Module.cwrap('supports_states', 'number', [])
+            supportsStates: this.Module.cwrap('supports_states', 'number', []),
+            loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', [])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -33,7 +34,15 @@ class EJS_GameManager {
         
         this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
+        this.FS.mount(IDBFS, {}, '/data/saves');
+        this.FS.syncfs(true, () => {});
+        
         this.initShaders();
+        
+        this.EJS.addEventListener(window, "beforeunload", () => {
+            this.saveSaveFiles();
+            this.FS.syncfs(() => {});
+        })
     }
     mkdir(path) {
         try {
@@ -41,7 +50,15 @@ class EJS_GameManager {
         } catch(e) {}
     }
     getRetroArchCfg() {
-        return "autosave_interval = 10\nsavefile_directory = \"/data/saves\"\n";
+        return "autosave_interval = 60\n" +
+               "screenshot_directory = /\n" +
+               "block_sram_overwrite = false\n" +
+               "video_font_enable = false\n" +
+               "video_scale = 1.0\n" +
+               "video_gpu_screenshot = false\n" +
+               "audio_latency = 96\n" +
+               "video_vsync = true\n" +
+               "savefile_directory = \"/data/saves\"\n";
     }
     initShaders() {
         if (!window.EJS_SHADERS) return;
@@ -217,18 +234,18 @@ class EJS_GameManager {
     }
     saveSaveFiles() {
         this.functions.saveSaveFiles();
+        this.FS.syncfs(false, () => {});
     }
     supportsStates() {
         return !!this.functions.supportsStates();
     }
     getSaveFile() {
-        return new Promise((resolve) => {
-            this.saveSaveFiles();
-            setTimeout(() => {
-                const exists = FS.analyzePath(this.getSaveFilePath()).exists;
-                resolve(exists ? FS.readFile(this.getSaveFilePath()) : null);
-            }, 250);
-        })
+        this.saveSaveFiles();
+        const exists = FS.analyzePath(this.getSaveFilePath()).exists;
+        return (exists ? FS.readFile(this.getSaveFilePath()) : null);
+    }
+    loadSaveFiles() {
+        this.functions.loadSaveFiles();
     }
 }
 
