@@ -53,8 +53,6 @@ class EJS_GameManager {
         return "autosave_interval = 60\n" +
                "screenshot_directory = /\n" +
                "block_sram_overwrite = false\n" +
-               "video_font_enable = false\n" +
-               "video_scale = 1.0\n" +
                "video_gpu_screenshot = false\n" +
                "audio_latency = 96\n" +
                "video_vsync = true\n" +
