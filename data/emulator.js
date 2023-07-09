@@ -626,24 +626,26 @@ class EmulatorJS {
                 return;
             }
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data")).then((data) => {
+                const altName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 const fileNames = (() => {
                     let rv = [];
                     for (const k in data) rv.push(k);
                     return rv;
                 })();
+                if (fileNames.length === 1) fileNames[0] = altName;
                 let execFile = null;
                 if (this.getCore(true) === "psx") {
                     execFile = this.gameManager.createCueFile(fileNames);
                 }
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
-                        const fileName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                        
                         if (this.getCore(true) === "psx" && execFile !== null) {
                             this.fileName = execFile;
                         } else {
-                            this.fileName = fileName;
+                            this.fileName = altName;
                         }
-                        FS.writeFile(fileName, data[k]);
+                        FS.writeFile(altName, data[k]);
                         break;
                     }
                     if (k.endsWith('/')) {
