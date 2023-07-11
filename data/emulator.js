@@ -2315,6 +2315,7 @@ class EmulatorJS {
         const width = positionInfo.width * dpr;
         const height = (positionInfo.height * dpr);
         this.Module.setCanvasSize(width, height);
+        this.handleSettingsResize();
     }
     getElementSize(element) {
         let elem = element.cloneNode(true);
@@ -2322,12 +2323,11 @@ class EmulatorJS {
         elem.style.opacity = 0;
         elem.removeAttribute('hidden');
         element.parentNode.appendChild(elem);
-        let width = elem.scrollWidth,
-            height = elem.scrollHeight;
+        const res = elem.getBoundingClientRect();
         elem.remove();
         return {
-            'width': width,
-            'height': height
+            'width': res.width,
+            'height': res.height
         };
     }
     saveSettings() {
@@ -2423,7 +2423,18 @@ class EmulatorJS {
         this.settings = {};
         
         const home = this.createElement("div");
-        home.classList.add("ejs_setting_home");
+        home.style.overflow = "auto";
+        const menus = [];
+        this.handleSettingsResize = () => {
+            let height = this.elements.parent.getBoundingClientRect().height;
+            if (height > 375) height = 375;
+            home.style['max-height'] = (height - 95) + "px";
+            nested.style['max-height'] = (height - 95) + "px";
+            for (let i=0; i<menus.length; i++) {
+                menus[i].style['max-height'] = (height - 95) + "px";
+            }
+        }
+        
         home.classList.add("ejs_setting_menu");
         nested.appendChild(home);
         let funcs = [];
@@ -2448,7 +2459,7 @@ class EmulatorJS {
             home.appendChild(menuOption);
             
             const menu = this.createElement("div");
-            menu.style["max-height"] = "300px";
+            menus.push(menu);
             menu.style.overflow  = "auto";
             menu.setAttribute("hidden", "");
             const button = this.createElement("button");
