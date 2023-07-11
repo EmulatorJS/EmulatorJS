@@ -61,6 +61,8 @@
     config.cacheLimit = window.EJS_CacheLimit;
     config.cheats = window.EJS_cheats;
     config.defaultOptions = window.EJS_defaultOptions;
+    config.gamePatchUrl = window.EJS_gamePatchUrl;
+    config.gameParentUrl = window.EJS_gameParentUrl;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
