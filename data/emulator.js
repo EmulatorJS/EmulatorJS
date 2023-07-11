@@ -976,25 +976,39 @@ class EmulatorJS {
     isPopupOpen() {
         return this.cheatMenu.style.display !== "none" || this.controlMenu.style.display !== "none" || this.currentPopup !== null;
     }
+    isChild(first, second) {
+        if (!first || !second) return false;
+        const adown = first.nodeType === 9 ? first.documentElement : first;
+
+        if (first === second) return true;
+
+        if (adown.contains) { 
+            return adown.contains(second);
+        }
+
+        return first.compareDocumentPosition && first.compareDocumentPosition(second) & 16;
+    }
     createBottomMenuBar() {
         this.elements.menu = this.createElement("div");
         this.elements.menu.classList.add("ejs_menu_bar");
         this.elements.menu.classList.add("ejs_menu_bar_hidden");
         
         let timeout = null;
+        let ignoreEvents = false;
         const hide = () => {
             if (this.paused || this.settingsMenuOpen) return;
             this.elements.menu.classList.add("ejs_menu_bar_hidden");
         }
         
         this.addEventListener(this.elements.parent, 'mousemove click', (e) => {
-            if (!this.started) return;
+            if (e.pointerType === "touch") return;
+            if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
             if (this.isPopupOpen()) return;
             clearTimeout(timeout);
             timeout = setTimeout(hide, 3000);
             this.elements.menu.classList.remove("ejs_menu_bar_hidden");
         })
-        this.addEventListener(this.elements.menu, 'touchstart touchend touchmove', (e) => {
+        this.addEventListener(this.elements.menu, 'touchstart touchend', (e) => {
             if (!this.started) return;
             if (this.isPopupOpen()) return;
             clearTimeout(timeout);
@@ -1005,7 +1019,7 @@ class EmulatorJS {
             close: () => {
                 if (!this.started) return;
                 clearTimeout(timeout);
-                this.elements.menu.classList.remove("ejs_menu_bar_hidden");
+                this.elements.menu.classList.add("ejs_menu_bar_hidden");
             },
             open: () => {
                 if (!this.started) return;
@@ -1024,6 +1038,21 @@ class EmulatorJS {
             }
         }
         this.elements.parent.appendChild(this.elements.menu);
+        
+        let tmout;
+        this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
+            if (this.isChild(this.elements.menu, e.target) || this.isChild(this.elements.menuToggle, e.target)) return;
+            if (!this.started || this.elements.menu.classList.contains("ejs_menu_bar_hidden") || this.isPopupOpen()) return;
+            const width = this.elements.parent.getBoundingClientRect().width;
+            if (width > 575) return;
+            clearTimeout(tmout);
+            tmout = setTimeout(() => {
+                ignoreEvents = false;
+            }, 2000)
+            ignoreEvents = true;
+            this.menu.close();
+        })
+        
         
         //Now add buttons
         const addButton = (title, image, callback, element, both) => {
@@ -1268,15 +1297,11 @@ class EmulatorJS {
             settingButton[2].classList.toggle("ejs_settings_text", this.settingsMenuOpen);
             this.settingsMenu.style.display = "none";
         }
-        this.addEventListener(this.elements.parent, "click", (e) => {
+        this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
+            if (this.isChild(this.settingsMenu, e.target)) return;
+            if (e.pointerType === "touch") return;
             if (e.target === settingButton[0] || e.target === settingButton[2]) return;
-            setTimeout(() => {
-                if (this.settingsJustClicked) {
-                    this.settingsJustClicked = false;
-                    return;
-                }
-                this.closeSettingsMenu();
-            }, 10)
+            this.closeSettingsMenu();
         })
         this.addEventListener(this.canvas, "click", (e) => {
             if (e.pointerType === "touch") return;
@@ -1286,6 +1311,7 @@ class EmulatorJS {
                 } else if (this.canvas.mozRequestPointerLock) {
                     this.canvas.mozRequestPointerLock();
                 }
+                this.menu.close();
             }
         })
         
@@ -1720,8 +1746,8 @@ class EmulatorJS {
                 
                 this.addEventListener(buttonText, "mousedown", (e) => {
                     e.preventDefault();
-                    this.controlPopup.parentElement.removeAttribute("hidden");
-                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\n";
+                    this.controlPopup.parentElement.parentElement.removeAttribute("hidden");
+                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\nPress Keyboard";
                     this.controlPopup.setAttribute("button-num", k);
                     this.controlPopup.setAttribute("player-num", i);
                 })
@@ -1741,11 +1767,34 @@ class EmulatorJS {
         const popup = this.createElement('div');
         popup.classList.add("ejs_popup_container");
         const popupMsg = this.createElement("div");
+        this.addEventListener(popup, "mousedown click touchstart", (e) => {
+            if (this.isChild(popupMsg, e.target)) return;
+            this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
+        })
+        const btn = this.createElement("a");
+        btn.classList.add("ejs_control_set_button");
+        btn.innerText = this.localization("Clear");
+        this.addEventListener(btn, "mousedown click touchstart", (e) => {
+            const num = this.controlPopup.getAttribute("button-num");
+            const player = this.controlPopup.getAttribute("player-num");
+            if (!this.controls[player][num]) {
+                this.controls[player][num] = {};
+            }
+            this.controls[player][num].value = "";
+            this.controls[player][num].value2 = "";
+            this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
+            this.checkGamepadInputs();
+            this.saveSettings();
+        })
         popupMsg.classList.add("ejs_popup_box");
         popupMsg.innerText = "";
         popup.setAttribute("hidden", "");
-        this.controlPopup = popupMsg;
+        const popMsg = this.createElement("div");
+        this.controlPopup = popMsg;
         popup.appendChild(popupMsg);
+        popupMsg.appendChild(popMsg);
+        popupMsg.appendChild(this.createElement("br"));
+        popupMsg.appendChild(btn);
         this.controlMenu.appendChild(popup);
         
     }
@@ -1823,14 +1872,14 @@ class EmulatorJS {
     keyChange(e) {
         if (e.repeat) return;
         if (!this.started) return;
-        if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
+        if (this.controlPopup.parentElement.parentElement.getAttribute("hidden") === null) {
             const num = this.controlPopup.getAttribute("button-num");
             const player = this.controlPopup.getAttribute("player-num");
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
             this.controls[player][num].value = e.key.toLowerCase();
-            this.controlPopup.parentElement.setAttribute("hidden", "");
+            this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
             return;
@@ -1855,7 +1904,7 @@ class EmulatorJS {
                 return 0;
             }
         }(e.value || 0);
-        if (this.controlPopup.parentElement.getAttribute("hidden") === null) {
+        if (this.controlPopup.parentElement.parentElement.getAttribute("hidden") === null) {
             if ('buttonup' === e.type || (e.type === "axischanged" && value === 0)) return;
             const num = this.controlPopup.getAttribute("button-num");
             const player = this.controlPopup.getAttribute("player-num");
@@ -1863,7 +1912,7 @@ class EmulatorJS {
                 this.controls[player][num] = {};
             }
             this.controls[player][num].value2 = (e.type === "axischanged" ? e.axis+":"+value : e.index);
-            this.controlPopup.parentElement.setAttribute("hidden", "");
+            this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
             return;
@@ -2323,6 +2372,7 @@ class EmulatorJS {
                 e.preventDefault();
                 this.menu.toggle();
             })
+            this.elements.menuToggle = menuButton;
         }
         
         this.virtualGamepad.style.display = "none";
@@ -2335,6 +2385,14 @@ class EmulatorJS {
         const height = (positionInfo.height * dpr);
         this.Module.setCanvasSize(width, height);
         this.handleSettingsResize();
+        if (this.virtualGamepad.style.display === "none") {
+            this.virtualGamepad.style.opacity = 0;
+            this.virtualGamepad.style.display = "";
+            setTimeout(() => {
+                this.virtualGamepad.style.display = "none";
+                this.virtualGamepad.style.opacity = "";
+            }, 250)
+        }
     }
     getElementSize(element) {
         let elem = element.cloneNode(true);
@@ -2433,9 +2491,6 @@ class EmulatorJS {
     }
     setupSettingsMenu() {
         this.settingsMenu = this.createElement("div");
-        this.addEventListener(this.settingsMenu, "click", (e) => {
-            this.settingsJustClicked = true;
-        })
         this.settingsMenu.classList.add("ejs_settings_parent");
         const nested = this.createElement("div");
         nested.classList.add("ejs_settings_transition");

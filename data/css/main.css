@@ -200,11 +200,6 @@
 }
 
 
-.ejs_menu_bar_hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(100%);
-}
 
 .ejs_svg_rotate {
     transform: rotate(90deg);
@@ -216,7 +211,7 @@
     .ejs_menu_bar {
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;
         position: absolute;
-        transform: translate(-50%,0)!important;
+        transform: translate(-50%,0);
         width: 300px;
         max-height: 260px;
         display: flex;
@@ -227,6 +222,11 @@
         z-index: 999;
         left: 50%;
         bottom: 0;
+    }
+    .ejs_menu_bar_hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translate(-50%, 100%);
     }
     .ejs_menu_button {
         width: 135px;
@@ -272,6 +272,11 @@
     }
 }
 @media (min-width: 575px) {
+    .ejs_menu_bar_hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(100%);
+    }
     .ejs_settings_parent {
         right: -3px;
     }
