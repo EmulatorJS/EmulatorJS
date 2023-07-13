@@ -230,6 +230,7 @@
     }
     .ejs_menu_button {
         width: 135px;
+        margin: 0px;
         margin-left: 2px!important;
         margin-right: 0!important;
         line-height: 1;
