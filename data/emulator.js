@@ -479,7 +479,6 @@ class EmulatorJS {
         this.textElem.innerText = this.localization("Download Game Core");
         const gotCore = (data) => {
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
-                //console.log(data);
                 let js, wasm;
                 for (let k in data) {
                     if (k.endsWith(".wasm")) {
