@@ -22,7 +22,8 @@ class EJS_GameManager {
             getSaveFilePath: this.Module.cwrap('save_file_path', 'string', []),
             saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
             supportsStates: this.Module.cwrap('supports_states', 'number', []),
-            loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', [])
+            loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', []),
+            setVolume: this.Module.cwrap('set_volume', 'null', ['number'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");

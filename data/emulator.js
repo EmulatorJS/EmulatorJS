@@ -815,7 +815,6 @@ class EmulatorJS {
     }
     initModule(wasmData) {
         window.Module = {
-            'TOTAL_MEMORY': 0x10000000,
             'noInitialRun': true,
             'onRuntimeInitialized': this.downloadFiles.bind(this),
             'arguments': [],
@@ -845,8 +844,6 @@ class EmulatorJS {
     }
     startGame() {
         try {
-            this.initAudio();
-            
             const args = [];
             if (this.debug) args.push('-v');
             args.push('/'+this.fileName);
@@ -1339,38 +1336,10 @@ class EmulatorJS {
             volumeSlider.setAttribute("aria-valuetext", (volume*100).toFixed(1) + "%");
             volumeSlider.setAttribute("style", "--value: "+volume*100+"%;margin-left: 5px;position: relative;z-index: 2;");
             if (this.gameManager) {
-                //this.gameManager.setVolume(volume);
+                //this.gameManager.setVolume(volume);//broken
             }
             unmuteButton.style.display = (volume === 0) ? "" : "none";
             muteButton.style.display = (volume === 0) ? "none" : "";
-        }
-        this.initAudio = () => {
-              RA.queueAudio = () => {
-                 var index = RA.bufIndex;
-                 let volume = this.volume;
-
-                 var startTime;
-                 if (RA.bufIndex) startTime = RA.buffers[RA.bufIndex - 1].endTime;
-                 else startTime = RA.context.currentTime;
-                 RA.buffers[index].endTime = startTime + RA.buffers[index].duration;
-
-                 const bufferSource = RA.context.createBufferSource();
-                 bufferSource.buffer = RA.buffers[index];
-                 if (this.muted) volume = 0;
-                 if (volume === 1) {
-                    bufferSource.connect(RA.context.destination);
-                 } else {
-                     var gain = RA.context.createGain();
-                     bufferSource.connect(gain);
-                     gain.connect(RA.context.destination);
-                     gain.gain.setValueAtTime(volume, RA.context.currentTime, 0);
-                 }
-                 
-                 bufferSource.start(startTime);
-
-                 RA.bufIndex++;
-                 RA.bufOffset = 0;
-            }
         }
         this.setVolume(this.volume);
         
