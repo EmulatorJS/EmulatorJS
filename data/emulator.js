@@ -844,6 +844,7 @@ class EmulatorJS {
     }
     startGame() {
         try {
+            
             const args = [];
             if (this.debug) args.push('-v');
             args.push('/'+this.fileName);
@@ -859,7 +860,7 @@ class EmulatorJS {
             this.loadSettings();
             this.updateCheatUI();
             this.updateGamepadLabels();
-            this.setVolume(this.volume);
+            if (!this.muted) this.setVolume(this.volume);
             this.elements.parent.focus();
             this.textElem.remove();
             this.textElem = null;
@@ -1335,13 +1336,15 @@ class EmulatorJS {
             volumeSlider.setAttribute("aria-valuenow", volume*100);
             volumeSlider.setAttribute("aria-valuetext", (volume*100).toFixed(1) + "%");
             volumeSlider.setAttribute("style", "--value: "+volume*100+"%;margin-left: 5px;position: relative;z-index: 2;");
-            if (this.gameManager) {
-                //this.gameManager.setVolume(volume);//broken
+            if (window.AL && AL.currentCtx && AL.currentCtx.sources) {
+                AL.currentCtx.sources.forEach(e => {
+                    e.gain.gain.setValueAtTime(volume, 0, 0);
+                })
             }
             unmuteButton.style.display = (volume === 0) ? "" : "none";
             muteButton.style.display = (volume === 0) ? "none" : "";
         }
-        this.setVolume(this.volume);
+        if (!this.muted) this.setVolume(this.volume);
         
         this.addEventListener(volumeSlider, "change mousemove touchmove mousedown touchstart mouseup", (e) => {
             setTimeout(() => {
