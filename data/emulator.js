@@ -882,6 +882,7 @@ class EmulatorJS {
         this.createBottomMenuBar();
         this.createControlSettingMenu();
         this.createCheatsMenu()
+        this.createNetplayMenu();
         this.setVirtualGamepad();
         this.addEventListener(this.elements.parent, "keydown keyup", this.keyChange.bind(this));
         this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
@@ -1082,7 +1083,7 @@ class EmulatorJS {
         })
     }
     isPopupOpen() {
-        return this.cheatMenu.style.display !== "none" || this.controlMenu.style.display !== "none" || this.currentPopup !== null;
+        return this.cheatMenu.style.display !== "none" || this.netplayMenu.style.display !== "none" || this.controlMenu.style.display !== "none" || this.currentPopup !== null;
     }
     isChild(first, second) {
         if (!first || !second) return false;
@@ -1294,6 +1295,9 @@ class EmulatorJS {
             if (FS.analyzePath(path).exists) FS.unlink(path);
             FS.writeFile(path, sav);
             this.gameManager.loadSaveFiles();
+        });
+        const netplay = addButton("Netplay", '<svg viewBox="0 0 512 512"><path fill="currentColor" d="M364.215 192h131.43c5.439 20.419 8.354 41.868 8.354 64s-2.915 43.581-8.354 64h-131.43c5.154-43.049 4.939-86.746 0-128zM185.214 352c10.678 53.68 33.173 112.514 70.125 151.992.221.001.44.008.661.008s.44-.008.661-.008c37.012-39.543 59.467-98.414 70.125-151.992H185.214zm174.13-192h125.385C452.802 84.024 384.128 27.305 300.95 12.075c30.238 43.12 48.821 96.332 58.394 147.925zm-27.35 32H180.006c-5.339 41.914-5.345 86.037 0 128h151.989c5.339-41.915 5.345-86.037-.001-128zM152.656 352H27.271c31.926 75.976 100.6 132.695 183.778 147.925-30.246-43.136-48.823-96.35-58.393-147.925zm206.688 0c-9.575 51.605-28.163 104.814-58.394 147.925 83.178-15.23 151.852-71.949 183.778-147.925H359.344zm-32.558-192c-10.678-53.68-33.174-112.514-70.125-151.992-.221 0-.44-.008-.661-.008s-.44.008-.661.008C218.327 47.551 195.872 106.422 185.214 160h141.572zM16.355 192C10.915 212.419 8 233.868 8 256s2.915 43.581 8.355 64h131.43c-4.939-41.254-5.154-84.951 0-128H16.355zm136.301-32c9.575-51.602 28.161-104.81 58.394-147.925C127.872 27.305 59.198 84.024 27.271 160h125.385z"/></svg>', async () => {
+            this.openNetplayMenu();
         });
         
         const spacer = this.createElement("span");
@@ -2795,6 +2799,140 @@ class EmulatorJS {
         if (hidden) popup.setAttribute("hidden", "");
         popup.appendChild(popupMsg);
         return [popup, popupMsg];
+    }
+    createNetplayMenu() {
+        const body = this.createPopup("Netplay", {
+            "Create a Room": () => {
+                console.log("aaaaaaaaaaaa");
+            },
+            "Close": () => {
+                this.netplayMenu.style.display = "none";
+                this.netplay.updateList.stop();
+            }
+        }, true);
+        this.netplayMenu = body.parentElement;
+        const rooms = this.createElement("div");
+        const title = this.createElement("strong");
+        title.innerText = "Rooms";
+        const table = this.createElement("table");
+        table.classList.add("ejs_netplay_table");
+        table.style.width = "100%";
+        table.setAttribute("cellspacing", "0");
+        const thead = this.createElement("thead");
+        const row = this.createElement("tr");
+        const addToHeader = (text) => {
+            const item = this.createElement("td");
+            item.innerText = text;
+            item.style["text-align"] = "center";
+            row.appendChild(item);
+            return item;
+        }
+        thead.appendChild(row);
+        addToHeader("Room Name").style["text-align"] = "left";
+        addToHeader("Players").style.width = "80px";
+        addToHeader("").style.width = "80px"; //"join" button
+        table.appendChild(thead);
+        const tbody = this.createElement("tbody");
+        
+        table.appendChild(tbody);
+        rooms.appendChild(title);
+        rooms.appendChild(table);
+        body.appendChild(rooms);
+        
+        this.openNetplayMenu = () => {
+            this.netplayMenu.style.display = "";
+            if (!this.netplay) {
+                this.netplay = {};
+                this.netplay.table = tbody;
+                this.defineNetplayFunctions();
+                const popups = this.createSubPopup();
+                this.netplayMenu.appendChild(popups[0]);
+                popups[1].classList.add("ejs_cheat_parent"); //Hehe
+                const popup = popups[1];
+                
+                const header = this.createElement("div");
+                const title = this.createElement("h2");
+                title.innerText = this.localization("Set Player Name");
+                title.classList.add("ejs_netplay_name_heading");
+                header.appendChild(title);
+                popup.appendChild(header);
+                
+                const main = this.createElement("div");
+                main.classList.add("ejs_netplay_name_input");
+                const head = this.createElement("strong");
+                head.innerText = "Player Name";
+                const input = this.createElement("input");
+                input.type = "text";
+                input.setAttribute("maxlength", 20);
+                
+                main.appendChild(head);
+                main.appendChild(this.createElement("br"));
+                main.appendChild(input);
+                popup.appendChild(main);
+                
+                popup.appendChild(this.createElement("br"));
+                const submit = this.createElement("button");
+                submit.classList.add("ejs_button_button");
+                submit.classList.add("ejs_popup_submit");
+                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+                submit.innerText = "Submit";
+                popup.appendChild(submit);
+                this.addEventListener(submit, "click", (e) => {
+                    if (!input.value.trim()) return;
+                    this.netplay.name = input.value.trim();
+                    popups[0].remove();
+                })
+            }
+            this.netplay.updateList.start();
+        }
+    }
+    defineNetplayFunctions() {
+        this.netplay.getOpenRooms = async () => {
+            //async because it will need to pull from server. This is for testing
+            return [{name:"Room 1", players:1, max:2},{name:"Room 2", players:2, max:2}];
+        }
+        this.netplay.updateTableList = async () => {
+            const addToTable = (name, current, max) => {
+                const row = this.createElement("tr");
+                row.classList.add("ejs_netplay_table_row");
+                const addToHeader = (text) => {
+                    const item = this.createElement("td");
+                    item.innerText = text;
+                    item.style.padding = "10px 0";
+                    item.style["text-align"] = "center";
+                    row.appendChild(item);
+                    return item;
+                }
+                addToHeader(name).style["text-align"] = "left";
+                addToHeader(current + "/" + max).style.width = "80px";
+                
+                const parent = addToHeader("");
+                parent.style.width = "80px";
+                if (current < max) {
+                    const join = this.createElement("button");
+                    join.classList.add("ejs_netplay_join_button");
+                    join.classList.add("ejs_button_button");
+                    join.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+                    join.innerText = "Join";
+                    parent.appendChild(join);
+                }
+                this.netplay.table.appendChild(row);
+            }
+            this.netplay.table.innerHTML = "";
+            const open = await this.netplay.getOpenRooms();
+            for (let i=0; i<open.length; i++) {
+                addToTable(open[i].name, open[i].players, open[i].max);
+            }
+        }
+        
+        this.netplay.updateList = {
+            start: () => {
+                this.netplay.updateList.interval = setInterval(this.netplay.updateTableList.bind(this), 1000);
+            },
+            stop: () => {
+                clearInterval(this.netplay.updateList.interval);
+            }
+        }
     }
     createCheatsMenu() {
         const body = this.createPopup("Cheats", {

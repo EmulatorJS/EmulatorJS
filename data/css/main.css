@@ -1229,3 +1229,49 @@
 .ejs_virtualGamepad_open svg {
     fill: currentColor;
 }
+
+.ejs_netplay_name_input {
+    margin-top: .5rem;
+    margin-bottom: .5rem;
+    line-height: 1.5;
+    color: rgba(0,0,0,.8);
+    text-align: left;
+}
+.ejs_netplay_name_input input {
+    font-size: 1rem;
+    padding: .4rem;
+    max-width: 100%;
+    color: #000!important;
+    background-color: #fff!important;
+    margin: 0;
+    height: 2rem;
+    display: block;
+    font-family: Arial;
+}
+.ejs_netplay_name_heading {
+    margin-top: 0!important;
+    margin-bottom: 0!important;
+    font-weight: 600!important;
+    font-size: 1.25rem;
+    line-height: 1.25!important;
+    color: rgba(var(--ejs-primary-color),1)!important;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.ejs_netplay_table {
+    font-family: Avenir,"Avenir Next","Helvetica Neue","Segoe UI",Helvetica,Arial,sans-serif;
+    font-size: 0.8rem;
+    padding: 0 10px;
+}
+.ejs_netplay_join_button {
+    float: none;
+    padding: .1rem .5rem;
+    background-color: rgba(var(--ejs-primary-color),1);
+    color: #fff!important;
+    border-radius: .25rem;
+    cursor: pointer;
+}
+.ejs_netplay_table_row:hover {
+    background-color: #2d2d2d;
+}
