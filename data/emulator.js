@@ -1338,7 +1338,7 @@ class EmulatorJS {
             volumeSlider.setAttribute("style", "--value: "+volume*100+"%;margin-left: 5px;position: relative;z-index: 2;");
             if (window.AL && AL.currentCtx && AL.currentCtx.sources) {
                 AL.currentCtx.sources.forEach(e => {
-                    e.gain.gain.setValueAtTime(volume, 0, 0);
+                    e.gain.gain.value = volume;
                 })
             }
             unmuteButton.style.display = (volume === 0) ? "" : "none";
@@ -1356,10 +1356,6 @@ class EmulatorJS {
         })
         
         volumeSettings.appendChild(volumeSlider);
-        
-        
-        
-        //this.volume this.muted
         
         this.elements.menu.appendChild(volumeSettings);
         
