@@ -198,6 +198,9 @@
     box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color),0.5);
     outline: 0;
 }
+.ejs_context_menu li:hover a {
+    color: #fff;
+}
 
 
 
@@ -1247,6 +1250,7 @@
     height: 2rem;
     display: block;
     font-family: Arial;
+    border: 0px;
 }
 .ejs_netplay_name_heading {
     margin-top: 0!important;

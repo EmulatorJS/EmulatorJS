@@ -2803,7 +2803,7 @@ class EmulatorJS {
     createNetplayMenu() {
         const body = this.createPopup("Netplay", {
             "Create a Room": () => {
-                console.log("aaaaaaaaaaaa");
+                this.netplay.openRoom();
             },
             "Close": () => {
                 this.netplayMenu.style.display = "none";
@@ -2887,9 +2887,9 @@ class EmulatorJS {
         }
     }
     defineNetplayFunctions() {
+        this.netplay.url = this.config.netplayUrl;
         this.netplay.getOpenRooms = async () => {
-            //async because it will need to pull from server. This is for testing
-            return [{name:"Room 1", players:1, max:2},{name:"Room 2", players:2, max:2}];
+            return JSON.parse(await (await fetch(this.netplay.url+"/list?domain="+window.location.host+"&game_id=1")).text());
         }
         this.netplay.updateTableList = async () => {
             const addToTable = (name, current, max) => {
@@ -2920,9 +2920,14 @@ class EmulatorJS {
             }
             this.netplay.table.innerHTML = "";
             const open = await this.netplay.getOpenRooms();
+            console.log(open);
             for (let i=0; i<open.length; i++) {
                 addToTable(open[i].name, open[i].players, open[i].max);
             }
+        }
+        this.netplay.openRoom = () => {
+            
+            
         }
         
         this.netplay.updateList = {

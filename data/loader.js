@@ -63,6 +63,7 @@
     config.defaultOptions = window.EJS_defaultOptions;
     config.gamePatchUrl = window.EJS_gamePatchUrl;
     config.gameParentUrl = window.EJS_gameParentUrl;
+    config.netplayUrl = window.EJS_netplayServer;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
