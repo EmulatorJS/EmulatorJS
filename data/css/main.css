@@ -1233,14 +1233,14 @@
     fill: currentColor;
 }
 
-.ejs_netplay_name_input {
+.ejs_netplay_header {
     margin-top: .5rem;
     margin-bottom: .5rem;
     line-height: 1.5;
     color: rgba(0,0,0,.8);
     text-align: left;
 }
-.ejs_netplay_name_input input {
+.ejs_netplay_header input, .ejs_netplay_header select {
     font-size: 1rem;
     padding: .4rem;
     max-width: 100%;

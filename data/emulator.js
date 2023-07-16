@@ -2803,7 +2803,7 @@ class EmulatorJS {
     createNetplayMenu() {
         const body = this.createPopup("Netplay", {
             "Create a Room": () => {
-                this.netplay.openRoom();
+                this.netplay.showOpenRoomDialog();
             },
             "Close": () => {
                 this.netplayMenu.style.display = "none";
@@ -2837,6 +2837,9 @@ class EmulatorJS {
         table.appendChild(tbody);
         rooms.appendChild(title);
         rooms.appendChild(table);
+        
+        //also have room joined element
+        
         body.appendChild(rooms);
         
         this.openNetplayMenu = () => {
@@ -2858,7 +2861,7 @@ class EmulatorJS {
                 popup.appendChild(header);
                 
                 const main = this.createElement("div");
-                main.classList.add("ejs_netplay_name_input");
+                main.classList.add("ejs_netplay_header");
                 const head = this.createElement("strong");
                 head.innerText = "Player Name";
                 const input = this.createElement("input");
@@ -2925,8 +2928,96 @@ class EmulatorJS {
                 addToTable(open[i].name, open[i].players, open[i].max);
             }
         }
-        this.netplay.openRoom = () => {
+        this.netplay.showOpenRoomDialog = () => {
+            const popups = this.createSubPopup();
+            this.netplayMenu.appendChild(popups[0]);
+            popups[1].classList.add("ejs_cheat_parent"); //Hehe
+            const popup = popups[1];
             
+            const header = this.createElement("div");
+            const title = this.createElement("h2");
+            title.innerText = this.localization("Create a room");
+            title.classList.add("ejs_netplay_name_heading");
+            header.appendChild(title);
+            popup.appendChild(header);
+            
+            const main = this.createElement("div");
+            
+            main.classList.add("ejs_netplay_header");
+            const rnhead = this.createElement("strong");
+            rnhead.innerText = "Room Name";
+            const rninput = this.createElement("input");
+            rninput.type = "text";
+            rninput.setAttribute("maxlength", 20);
+            
+            const maxhead = this.createElement("strong");
+            maxhead.innerText = "Max Players";
+            const maxinput = this.createElement("select");
+            maxinput.setAttribute("disabled", "disabled");
+            const val2 = this.createElement("option");
+            val2.value = 2;
+            val2.innerText = "2";
+            const val3 = this.createElement("option");
+            val3.value = 3;
+            val3.innerText = "3";
+            const val4 = this.createElement("option");
+            val4.value = 4;
+            val4.innerText = "4";
+            maxinput.appendChild(val2);
+            maxinput.appendChild(val3);
+            maxinput.appendChild(val4);
+            
+            
+            const pwhead = this.createElement("strong");
+            pwhead.innerText = "Password (optional)";
+            const pwinput = this.createElement("input");
+            pwinput.type = "text";
+            pwinput.setAttribute("maxlength", 20);
+            
+            main.appendChild(rnhead);
+            main.appendChild(this.createElement("br"));
+            main.appendChild(rninput);
+            
+            main.appendChild(maxhead);
+            main.appendChild(this.createElement("br"));
+            main.appendChild(maxinput);
+            
+            main.appendChild(pwhead);
+            main.appendChild(this.createElement("br"));
+            main.appendChild(pwinput);
+            
+            popup.appendChild(main);
+            
+            popup.appendChild(this.createElement("br"));
+            const submit = this.createElement("button");
+            submit.classList.add("ejs_button_button");
+            submit.classList.add("ejs_popup_submit");
+            submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+            submit.style.margin = "0 10px";
+            submit.innerText = "Submit";
+            popup.appendChild(submit);
+            this.addEventListener(submit, "click", (e) => {
+                if (!rninput.value.trim()) return;
+                this.netplay.openRoom(rninput.value.trim(), maxinput.value, pwinput.value.trim());
+            })
+            const close = this.createElement("button");
+            close.classList.add("ejs_button_button");
+            close.classList.add("ejs_popup_submit");
+            close.style.margin = "0 10px";
+            close.innerText = "Close";
+            popup.appendChild(close);
+            this.addEventListener(close, "click", (e) => {
+                popups[0].remove();
+            })
+        }
+        this.netplay.openRoom = (roomName, maxPlayers, password) => {
+            console.log(roomName, maxPlayers, password);
+            this.netplay.roomJoined(true);
+        }
+        this.netplay.joinRoom = () => {
+            this.netplay.roomJoined(false);
+        }
+        this.netplay.roomJoined = (isOwner, roomName, password) => {
             
         }
         
