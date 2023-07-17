@@ -1507,24 +1507,25 @@ class EmulatorJS {
         
         
         if (this.config.buttonOpts) {
-            if (!this.config.buttonOpts.playPause) {
+            console.log(this.config.buttonOpts);
+            if (this.config.buttonOpts.playPause === false) {
                 pauseButton.style.display = "none";
                 playButton.style.display = "none";
             }
-            if (!this.config.buttonOpts.restart) restartButton.style.display = "none"
-            if (!this.config.buttonOpts.settings) settingButton[0].style.display = "none"
-            if (!this.config.buttonOpts.fullscreen) {
+            if (this.config.buttonOpts.restart === false) restartButton.style.display = "none"
+            if (this.config.buttonOpts.settings === false) settingButton[0].style.display = "none"
+            if (this.config.buttonOpts.fullscreen === false) {
                 enter.style.display = "none";
                 exit.style.display = "none";
             }
-            if (!this.config.buttonOpts.saveState) saveState.style.display = "none"
-            if (!this.config.buttonOpts.loadState) loadState.style.display = "none"
-            if (!this.config.buttonOpts.saveSavFiles) saveSavFiles.style.display = "none"
-            if (!this.config.buttonOpts.loadSavFiles) loadSavFiles.style.display = "none"
-            if (!this.config.buttonOpts.gamepad) controlMenu.style.display = "none"
-            if (!this.config.buttonOpts.cheat) cheatMenu.style.display = "none"
-            if (!this.config.buttonOpts.cacheManager) cache.style.display = "none"
-            if (!this.config.buttonOpts.netplay) netplay.style.display = "none"
+            if (this.config.buttonOpts.saveState === false) saveState.style.display = "none"
+            if (this.config.buttonOpts.loadState === false) loadState.style.display = "none"
+            if (this.config.buttonOpts.saveSavFiles === false) saveSavFiles.style.display = "none"
+            if (this.config.buttonOpts.loadSavFiles === false) loadSavFiles.style.display = "none"
+            if (this.config.buttonOpts.gamepad === false) controlMenu.style.display = "none"
+            if (this.config.buttonOpts.cheat === false) cheatMenu.style.display = "none"
+            if (this.config.buttonOpts.cacheManager === false) cache.style.display = "none"
+            if (this.config.buttonOpts.netplay === false) netplay.style.display = "none"
         }
     }
     openCacheMenu() {
@@ -2624,12 +2625,19 @@ class EmulatorJS {
         home.style.overflow = "auto";
         const menus = [];
         this.handleSettingsResize = () => {
+            const x = this.settingsMenu.parentElement.getBoundingClientRect().x;
             let height = this.elements.parent.getBoundingClientRect().height;
+            let width = this.elements.parent.getBoundingClientRect().width;
             if (height > 375) height = 375;
             home.style['max-height'] = (height - 95) + "px";
             nested.style['max-height'] = (height - 95) + "px";
             for (let i=0; i<menus.length; i++) {
                 menus[i].style['max-height'] = (height - 95) + "px";
+            }
+            if (width < 575) {
+                this.settingsMenu.classList.toggle("ejs_settings_leftside", !((window.innerWidth/2) > x));
+            } else {
+                this.settingsMenu.classList.remove("ejs_settings_leftside");
             }
         }
         
