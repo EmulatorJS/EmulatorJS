@@ -173,6 +173,7 @@ class EmulatorJS {
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
         this.bindListeners();
+        this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
         this.isMobile = (function() {
             let check = false;
@@ -904,8 +905,14 @@ class EmulatorJS {
     }
     checkSupportedOpts() {
         if (!this.gameManager.supportsStates()) {
-            this.elements.bottomBar.saveState.setAttribute("hidden", "");
-            this.elements.bottomBar.loadState.setAttribute("hidden", "");
+            this.elements.bottomBar.saveState.style.display = "none";
+            this.elements.bottomBar.loadState.style.display = "none";
+            this.elements.bottomBar.netplay.style.display = "none";
+            this.elements.contextMenu.save.style.display = "none";
+            this.elements.contextMenu.load.style.display = "none";
+        }
+        if (typeof this.config.gameId !== "number" || !this.config.netplayUrl) {
+            this.elements.bottomBar.netplay.style.display = "none";
         }
     }
     updateGamepadLabels() {
@@ -979,6 +986,11 @@ class EmulatorJS {
             this.displayMessage(this.localization("LOADED STATE FROM SLOT")+" "+slot);
             hideMenu();
         });
+        this.elements.contextMenu = {
+            screenshot: screenshot,
+            save: qSave,
+            load: qLoad
+        }
         addButton("EmulatorJS v"+this.ejs_version, false, () => {
             hideMenu();
             const body = this.createPopup("EmulatorJS", {
@@ -1489,7 +1501,8 @@ class EmulatorJS {
             cheat: [cheatMenu],
             cacheManager: [cache],
             saveSavFiles: [saveSavFiles],
-            loadSavFiles: [loadSavFiles]
+            loadSavFiles: [loadSavFiles],
+            netplay: [netplay]
         }
         
         
@@ -1506,9 +1519,12 @@ class EmulatorJS {
             }
             if (!this.config.buttonOpts.saveState) saveState.style.display = "none"
             if (!this.config.buttonOpts.loadState) loadState.style.display = "none"
+            if (!this.config.buttonOpts.saveSavFiles) saveSavFiles.style.display = "none"
+            if (!this.config.buttonOpts.loadSavFiles) loadSavFiles.style.display = "none"
             if (!this.config.buttonOpts.gamepad) controlMenu.style.display = "none"
             if (!this.config.buttonOpts.cheat) cheatMenu.style.display = "none"
             if (!this.config.buttonOpts.cacheManager) cache.style.display = "none"
+            if (!this.config.buttonOpts.netplay) netplay.style.display = "none"
         }
     }
     openCacheMenu() {
@@ -2770,7 +2786,7 @@ class EmulatorJS {
             addToMenu(this.localization('Virtual Gamepad'), 'virtual-gamepad', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
-            }, this.touch ? 'enabled' : 'disabled');
+            }, this.isMobile ? 'enabled' : 'disabled');
             addToMenu(this.localization('Left Handed Mode'), 'virtual-gamepad-left-handed-mode', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
@@ -3192,7 +3208,9 @@ class EmulatorJS {
                     this.elements.bottomBar.loadState[0].style.display,
                     this.elements.bottomBar.saveState[0].style.display,
                     this.elements.bottomBar.saveSavFiles[0].style.display,
-                    this.elements.bottomBar.loadSavFiles[0].style.display
+                    this.elements.bottomBar.loadSavFiles[0].style.display,
+                    this.elements.contextMenu.save.style.display,
+                    this.elements.contextMenu.load.style.display
                 ]
                 this.elements.bottomBar.cheat[0].style.display = "none";
                 this.elements.bottomBar.playPause[0].style.display = "none";
@@ -3202,6 +3220,8 @@ class EmulatorJS {
                 this.elements.bottomBar.saveState[0].style.display = "none";
                 this.elements.bottomBar.saveSavFiles[0].style.display = "none";
                 this.elements.bottomBar.loadSavFiles[0].style.display = "none";
+                this.elements.contextMenu.save.style.display = "none";
+                this.elements.contextMenu.load.style.display = "none";
                 this.gameManager.resetCheat();
             } else {
                 this.netplay.oldStyles = [
@@ -3249,6 +3269,8 @@ class EmulatorJS {
                 this.elements.bottomBar.saveState[0].style.display = this.netplay.oldStyles[5];
                 this.elements.bottomBar.saveSavFiles[0].style.display = this.netplay.oldStyles[6];
                 this.elements.bottomBar.loadSavFiles[0].style.display = this.netplay.oldStyles[7];
+                this.elements.contextMenu.save.style.display = this.netplay.oldStyles[8];
+                this.elements.contextMenu.load.style.display = this.netplay.oldStyles[9];
             }
             this.updateCheatUI();
         }
@@ -3364,7 +3386,7 @@ class EmulatorJS {
                         continue;
                     }
                     const diff = this.netplay.current_frame - this.netplay.users[k];
-                    if (Math.abs(diff) > 50) {
+                    if (Math.abs(diff) > 50 || diff < -5) {
                         this.netplay.sync();
                         return;
                     }
@@ -3376,7 +3398,7 @@ class EmulatorJS {
                         })
                     } else if (diff > 10) {
                         this.pause(true);
-                        setTimeout(() => this.play(true), 10);
+                        setTimeout(() => this.play(true), 5);
                     }
                 }
             } else {
