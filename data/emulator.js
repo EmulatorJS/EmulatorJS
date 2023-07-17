@@ -905,14 +905,14 @@ class EmulatorJS {
     }
     checkSupportedOpts() {
         if (!this.gameManager.supportsStates()) {
-            this.elements.bottomBar.saveState.style.display = "none";
-            this.elements.bottomBar.loadState.style.display = "none";
-            this.elements.bottomBar.netplay.style.display = "none";
+            this.elements.bottomBar.saveState[0].style.display = "none";
+            this.elements.bottomBar.loadState[0].style.display = "none";
+            this.elements.bottomBar.netplay[0].style.display = "none";
             this.elements.contextMenu.save.style.display = "none";
             this.elements.contextMenu.load.style.display = "none";
         }
         if (typeof this.config.gameId !== "number" || !this.config.netplayUrl) {
-            this.elements.bottomBar.netplay.style.display = "none";
+            this.elements.bottomBar.netplay[0].style.display = "none";
         }
     }
     updateGamepadLabels() {

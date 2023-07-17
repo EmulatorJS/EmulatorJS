@@ -29,6 +29,9 @@ class EJS_GameManager {
         this.mkdir("/home/web_user");
         this.mkdir("/home/web_user/retroarch");
         this.mkdir("/home/web_user/retroarch/userdata");
+        this.mkdir("/home/web_user/retroarch/userdata/config");
+        this.mkdir("/home/web_user/retroarch/userdata/Beetle PSX HW");
+        this.FS.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
         
         this.mkdir("/data");
         this.mkdir("/data/saves");
