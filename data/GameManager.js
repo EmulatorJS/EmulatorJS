@@ -130,6 +130,10 @@ class EJS_GameManager {
         })();
     }
     simulateInput(player, index, value) {
+        if (this.EJS.isNetplay) {
+            this.EJS.netplay.simulateInput(player, index, value);
+            return;
+        }
         if ([24, 25, 26].includes(index)) {
             if (index === 24 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
