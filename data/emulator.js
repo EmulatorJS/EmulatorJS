@@ -2804,7 +2804,7 @@ class EmulatorJS {
         const body = this.createPopup("Netplay", {
             "Create a Room": () => {
                 if (this.isNetplay) {
-                    console.log("close room...");
+                    this.netplay.leaveRoom();
                 } else {
                     this.netplay.showOpenRoomDialog();
                 }
@@ -2938,11 +2938,10 @@ class EmulatorJS {
         }
         this.netplay.url = this.config.netplayUrl;
         this.netplay.getOpenRooms = async () => {
-            return {};
             return JSON.parse(await (await fetch(this.netplay.url+"/list?domain="+window.location.host+"&game_id="+this.config.gameId)).text());
         }
         this.netplay.updateTableList = async () => {
-            const addToTable = (name, current, max) => {
+            const addToTable = (id, name, current, max) => {
                 const row = this.createElement("tr");
                 row.classList.add("ejs_netplay_table_row");
                 const addToHeader = (text) => {
@@ -2966,6 +2965,9 @@ class EmulatorJS {
                     join.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
                     join.innerText = "Join";
                     parent.appendChild(join);
+                    this.addEventListener(join, "click", (e) => {
+                        this.netplay.joinRoom(id, name);
+                    })
                     return join;
                 }
             }
@@ -2973,7 +2975,7 @@ class EmulatorJS {
             const open = await this.netplay.getOpenRooms();
             //console.log(open);
             for (const k in open) {
-                addToTable(open[k].room_name, open[k].current, open[k].max);//todo: password
+                addToTable(k, open[k].room_name, open[k].current, open[k].max);//todo: password
             }
         }
         this.netplay.showOpenRoomDialog = () => {
@@ -3046,7 +3048,7 @@ class EmulatorJS {
             popup.appendChild(submit);
             this.addEventListener(submit, "click", (e) => {
                 if (!rninput.value.trim()) return;
-                this.netplay.openRoom(rninput.value.trim(), maxinput.value, pwinput.value.trim());
+                this.netplay.openRoom(rninput.value.trim(), parseInt(maxinput.value), pwinput.value.trim());
                 popups[0].remove();
             })
             const close = this.createElement("button");
@@ -3059,8 +3061,21 @@ class EmulatorJS {
                 popups[0].remove();
             })
         }
+        this.netplay.startSocketIO = (callback) => {
+            this.netplay.socket = io(this.netplay.url);
+            this.netplay.socket.on("connect", () => callback());
+            this.netplay.socket.on("users-updated", (users) => {
+                console.log(users);
+                this.netplay.players = users;
+                this.netplay.updatePlayersTable();
+            })
+            this.netplay.socket.on("disconnect", () => this.netplay.roomLeft());
+            this.netplay.socket.on("data-message", (data) => {
+                this.netplay.dataMessage(data);
+            })
+        }
         this.netplay.openRoom = (roomName, maxPlayers, password) => {
-            const roomId = guidGenerator();//Server will do this
+            const sessionid = guidGenerator();
             this.netplay.playerID = guidGenerator();
             this.netplay.players = {};
             this.netplay.extra = {
@@ -3068,16 +3083,57 @@ class EmulatorJS {
                 game_id: this.config.gameId,
                 room_name: roomName,
                 player_name: this.netplay.name,
-                playerId: this.netplay.playerID,
-                roomId: roomId
+                userid: this.netplay.playerID,
+                sessionid: sessionid
             }
             this.netplay.players[this.netplay.playerID] = this.netplay.extra;
-            this.netplay.roomJoined(true, roomName, maxPlayers, password, roomId);
+            
+            this.netplay.startSocketIO((error) => {
+                this.netplay.socket.emit("open-room", {
+                    extra: this.netplay.extra,
+                    maxPlayers: maxPlayers,
+                    password: password
+                }, (error) => {
+                    if (error) {
+                        console.log("error: ", error);
+                        return;
+                    }
+                    this.netplay.roomJoined(true, roomName, password, sessionid);
+                })
+            });
         }
-        this.netplay.joinRoom = (sessionId) => {
-            //this.netplay.roomJoined(false);
+        this.netplay.leaveRoom = () => {
+            this.netplay.roomLeft();
         }
-        this.netplay.roomJoined = (isOwner, roomName, maxPlayers, password, roomId) => {
+        this.netplay.joinRoom = (sessionid, roomName) => {
+            this.netplay.playerID = guidGenerator();
+            this.netplay.players = {};
+            this.netplay.extra = {
+                domain: window.location.host,
+                game_id: this.config.gameId,
+                room_name: roomName,
+                player_name: this.netplay.name,
+                userid: this.netplay.playerID,
+                sessionid: sessionid
+            }
+            this.netplay.players[this.netplay.playerID] = this.netplay.extra;
+            
+            this.netplay.startSocketIO((error) => {
+                this.netplay.socket.emit("join-room", {
+                    extra: this.netplay.extra//,
+                    //password: password
+                }, (error, users) => {
+                    if (error) {
+                        console.log("error: ", error);
+                        return;
+                    }
+                    this.netplay.players = users;
+                    //this.netplay.roomJoined(false, roomName, password, sessionid);
+                    this.netplay.roomJoined(false, roomName, "", sessionid);
+                })
+            });
+        }
+        this.netplay.roomJoined = (isOwner, roomName, password, roomId) => {
             //Will already assume this.netplay.players has been refreshed
             this.isNetplay = true;
             console.log(this.netplay.extra);
@@ -3122,7 +3178,10 @@ class EmulatorJS {
             this.netplay.extra = null;
             this.netplay.playerID = null;
             this.netplay.createButton.innerText = "Create a Room";
-            
+            this.netplay.socket.disconnect();
+        }
+        this.netplay.dataMessage = (data) => {
+            console.log(data);
         }
         
         this.netplay.updateList = {

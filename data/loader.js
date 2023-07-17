@@ -40,6 +40,7 @@
         await loadScript('storage.js');
         await loadScript('gamepad.js');
         await loadScript('GameManager.js');
+        await loadScript('socket.io.min.js');
         await loadStyle('css/main.css');
     }
     const config = {};
