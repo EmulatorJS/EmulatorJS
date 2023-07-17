@@ -673,7 +673,7 @@
     position: absolute;
     text-align: left;
     white-space: nowrap;
-    z-index: 3;
+    z-index: 9999;
 }
 .ejs_settings_parent::after {
     border: 4px solid transparent;
