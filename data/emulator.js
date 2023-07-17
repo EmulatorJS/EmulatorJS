@@ -1192,24 +1192,42 @@ class EmulatorJS {
         //todo. Center text on not restart button
         
         const restartButton = addButton("Restart", '<svg viewBox="0 0 512 512"><path d="M496 48V192c0 17.69-14.31 32-32 32H320c-17.69 0-32-14.31-32-32s14.31-32 32-32h63.39c-29.97-39.7-77.25-63.78-127.6-63.78C167.7 96.22 96 167.9 96 256s71.69 159.8 159.8 159.8c34.88 0 68.03-11.03 95.88-31.94c14.22-10.53 34.22-7.75 44.81 6.375c10.59 14.16 7.75 34.22-6.375 44.81c-39.03 29.28-85.36 44.86-134.2 44.86C132.5 479.9 32 379.4 32 256s100.5-223.9 223.9-223.9c69.15 0 134 32.47 176.1 86.12V48c0-17.69 14.31-32 32-32S496 30.31 496 48z"/></svg>', () => {
-            this.gameManager.saveSaveFiles();
-            this.gameManager.restart();
+            if (this.isNetplay && this.netplay.owner) {
+                this.gameManager.saveSaveFiles();
+                this.gameManager.restart();
+                this.netplay.sendMessage({restart:true});
+            } else if (!this.isNetplay) {
+                this.gameManager.saveSaveFiles();
+                this.gameManager.restart();
+            }
         });
         const pauseButton = addButton("Pause", '<svg viewBox="0 0 320 512"><path d="M272 63.1l-32 0c-26.51 0-48 21.49-48 47.1v288c0 26.51 21.49 48 48 48L272 448c26.51 0 48-21.49 48-48v-288C320 85.49 298.5 63.1 272 63.1zM80 63.1l-32 0c-26.51 0-48 21.49-48 48v288C0 426.5 21.49 448 48 448l32 0c26.51 0 48-21.49 48-48v-288C128 85.49 106.5 63.1 80 63.1z"/></svg>', () => {
-            this.togglePlaying();
+            if (this.isNetplay && this.netplay.owner) {
+                this.pause();
+                this.netplay.sendMessage({pause:true});
+            } else if (!this.isNetplay) {
+                this.pause();
+            }
         });
         const playButton = addButton("Play", '<svg viewBox="0 0 320 512"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z"/></svg>', () => {
-            this.togglePlaying();
+            if (this.isNetplay && this.netplay.owner) {
+                this.play();
+                this.netplay.sendMessage({play:true});
+            } else if (!this.isNetplay) {
+                this.play();
+            }
         });
         playButton.style.display = "none";
-        this.togglePlaying = () => {
+        this.togglePlaying = (dontUpdate) => {
             this.paused = !this.paused;
-            if (this.paused) {
-                pauseButton.style.display = "none";
-                playButton.style.display = "";
-            } else {
-                pauseButton.style.display = "";
-                playButton.style.display = "none";
+            if (!dontUpdate) {
+                if (this.paused) {
+                    pauseButton.style.display = "none";
+                    playButton.style.display = "";
+                } else {
+                    pauseButton.style.display = "";
+                    playButton.style.display = "none";
+                }
             }
             this.gameManager.toggleMainLoop(this.paused ? 0 : 1);
             
@@ -1222,11 +1240,11 @@ class EmulatorJS {
                 }
             }
         }
-        this.play = () => {
-            if (this.paused) this.togglePlaying();
+        this.play = (dontUpdate) => {
+            if (this.paused) this.togglePlaying(dontUpdate);
         }
-        this.pause = () => {
-            if (!this.paused) this.togglePlaying();
+        this.pause = (dontUpdate) => {
+            if (!this.paused) this.togglePlaying(dontUpdate);
         }
         
         
@@ -1469,7 +1487,9 @@ class EmulatorJS {
             loadState: [loadState],
             gamepad: [controlMenu],
             cheat: [cheatMenu],
-            cacheManager: [cache]
+            cacheManager: [cache],
+            saveSavFiles: [saveSavFiles],
+            loadSavFiles: [loadSavFiles]
         }
         
         
@@ -1478,17 +1498,17 @@ class EmulatorJS {
                 pauseButton.style.display = "none";
                 playButton.style.display = "none";
             }
-            if (!this.config.buttonOpts.restart) restartButton.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.settings) settingButton[0].setAttribute("hidden", "");
+            if (!this.config.buttonOpts.restart) restartButton.style.display = "none"
+            if (!this.config.buttonOpts.settings) settingButton[0].style.display = "none"
             if (!this.config.buttonOpts.fullscreen) {
                 enter.style.display = "none";
                 exit.style.display = "none";
             }
-            if (!this.config.buttonOpts.saveState) saveState.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.loadState) loadState.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.gamepad) controlMenu.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.cheat) cheatMenu.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.cacheManager) cache.setAttribute("hidden", "");
+            if (!this.config.buttonOpts.saveState) saveState.style.display = "none"
+            if (!this.config.buttonOpts.loadState) loadState.style.display = "none"
+            if (!this.config.buttonOpts.gamepad) controlMenu.style.display = "none"
+            if (!this.config.buttonOpts.cheat) cheatMenu.style.display = "none"
+            if (!this.config.buttonOpts.cacheManager) cache.style.display = "none"
         }
     }
     openCacheMenu() {
@@ -3163,9 +3183,32 @@ class EmulatorJS {
             }
             this.netplay.createButton.innerText = "Leave Room";
             this.netplay.updatePlayersTable();
-            if (this.netplay.owner) {
-                
+            if (!this.netplay.owner) {
+                this.netplay.oldStyles = [
+                    this.elements.bottomBar.cheat[0].style.display,
+                    this.elements.bottomBar.playPause[0].style.display,
+                    this.elements.bottomBar.playPause[1].style.display,
+                    this.elements.bottomBar.restart[0].style.display,
+                    this.elements.bottomBar.loadState[0].style.display,
+                    this.elements.bottomBar.saveState[0].style.display,
+                    this.elements.bottomBar.saveSavFiles[0].style.display,
+                    this.elements.bottomBar.loadSavFiles[0].style.display
+                ]
+                this.elements.bottomBar.cheat[0].style.display = "none";
+                this.elements.bottomBar.playPause[0].style.display = "none";
+                this.elements.bottomBar.playPause[1].style.display = "none";
+                this.elements.bottomBar.restart[0].style.display = "none";
+                this.elements.bottomBar.loadState[0].style.display = "none";
+                this.elements.bottomBar.saveState[0].style.display = "none";
+                this.elements.bottomBar.saveSavFiles[0].style.display = "none";
+                this.elements.bottomBar.loadSavFiles[0].style.display = "none";
+                this.gameManager.resetCheat();
+            } else {
+                this.netplay.oldStyles = [
+                    this.elements.bottomBar.cheat[0].style.display
+                ]
             }
+            this.elements.bottomBar.cheat[0].style.display = "none";
         }
         this.netplay.updatePlayersTable = () => {
             const table = this.netplay.playerTable;
@@ -3197,6 +3240,17 @@ class EmulatorJS {
             this.netplay.playerID = null;
             this.netplay.createButton.innerText = "Create a Room";
             this.netplay.socket.disconnect();
+            this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0];
+            if (!this.netplay.owner) {
+                this.elements.bottomBar.playPause[0].style.display = this.netplay.oldStyles[1];
+                this.elements.bottomBar.playPause[1].style.display = this.netplay.oldStyles[2];
+                this.elements.bottomBar.restart[0].style.display = this.netplay.oldStyles[3];
+                this.elements.bottomBar.loadState[0].style.display = this.netplay.oldStyles[4];
+                this.elements.bottomBar.saveState[0].style.display = this.netplay.oldStyles[5];
+                this.elements.bottomBar.saveSavFiles[0].style.display = this.netplay.oldStyles[6];
+                this.elements.bottomBar.loadSavFiles[0].style.display = this.netplay.oldStyles[7];
+            }
+            this.updateCheatUI();
         }
         this.netplay.sync = async () => {
             this.netplay.ready = 0;
@@ -3204,9 +3258,12 @@ class EmulatorJS {
             this.netplay.sendMessage({
                 state: state
             });
-            this.pause();
+            this.pause(true);
             this.netplay.ready++;
             this.netplay.current_frame = 0;
+            if (this.netplay.ready === this.netplay.getUserCount()) {
+                this.play(true);
+            }
         }
         this.netplay.getUserIndex = (user) => {
             let i=0;
@@ -3224,23 +3281,26 @@ class EmulatorJS {
         this.netplay.dataMessage = (data) => {
             //console.log(data);
             if (data.state) {
+                this.pause(true);
                 this.gameManager.loadState(new Uint8Array(data.state));
                 this.netplay.sendMessage({ready:true});
-                this.pause();
             }
             if (data.play && !this.owner) {
-                this.play();
+                this.play(true);
+            }
+            if (data.pause && !this.owner) {
+                this.pause(true);
             }
             if (data.ready && this.netplay.owner) {
                 this.netplay.ready++;
                 if (this.netplay.ready === this.netplay.getUserCount()) {
                     this.netplay.sendMessage({play:true, resetCurrentFrame: true});
-                    this.play();
+                    setTimeout(() => this.play(true), 100);
                     this.netplay.current_frame = 0;
                 }
             }
             if (data.resetCurrentFrame) {
-                this.play();
+                this.play(true);
                 this.netplay.current_frame = 0;
                 this.netplay.inputs = {};
             }
@@ -3249,8 +3309,8 @@ class EmulatorJS {
                 //console.log(data.user_frame.frame, this.netplay.current_frame);
             }
             if (data.shortPause === this.netplay.playerID) {
-                this.pause();
-                setTimeout(this.play.bind(this), 5);
+                this.pause(true);
+                setTimeout(() => this.play(true), 5);
             }
             if (data.input && this.netplay.owner) {
                 this.netplay.simulateInput(this.netplay.getUserIndex(data.user), data.input[0], data.input[1], true);
@@ -3260,6 +3320,12 @@ class EmulatorJS {
                     this.netplay.inputs[data.frame] = [];
                 }
                 this.netplay.inputs[data.frame].push([data.connected_input[0], data.connected_input[1], data.connected_input[2]]);
+            }
+            if (data.restart) {
+                this.gameManager.restart();
+                this.netplay.current_frame = 0;
+                this.netplay.inputs = {};
+                this.play(true);
             }
         }
         this.netplay.simulateInput = (player, index, value, resp) => {
@@ -3309,8 +3375,8 @@ class EmulatorJS {
                             shortPause: k
                         })
                     } else if (diff > 10) {
-                        this.pause();
-                        setTimeout(this.play.bind(this), 10);
+                        this.pause(true);
+                        setTimeout(() => this.play(true), 10);
                     }
                 }
             } else {
