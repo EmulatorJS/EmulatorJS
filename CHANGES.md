@@ -1,7 +1,14 @@
 # Changes
 
 # 4.0.1
-- Complete application re-write. Everything changed.
+Complete application re-write. Everything changed. Although some changes to note are:
+- Optimization for smaller screens.
+- No more dead code.
+- Fix Gamepad for firefox.
+- Store srm in browser.
+- Ability to import/export srm files.
+- No more old cores
+And much much more was changed...
 
 # 3.1.5 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f7fa5d41487a424233b40e903020455606d68fee)
 - Fixed iOS bug for iPads
