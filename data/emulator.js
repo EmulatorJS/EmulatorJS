@@ -155,6 +155,7 @@ class EmulatorJS {
     }
     constructor(element, config) {
         this.ejs_version = "4.0";
+        //this.netplay = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
         this.config = config;
         window.EJS_TESTING = this;
         this.currentPopup = null;
@@ -911,7 +912,7 @@ class EmulatorJS {
             this.elements.contextMenu.save.style.display = "none";
             this.elements.contextMenu.load.style.display = "none";
         }
-        if (typeof this.config.gameId !== "number" || !this.config.netplayUrl) {
+        if (typeof this.config.gameId !== "number" || !this.config.netplayUrl || this.netplay === false) {
             this.elements.bottomBar.netplay[0].style.display = "none";
         }
     }
@@ -1208,6 +1209,8 @@ class EmulatorJS {
                 this.gameManager.saveSaveFiles();
                 this.gameManager.restart();
                 this.netplay.sendMessage({restart:true});
+                this.netplay.current_frame = 0;
+                this.play();
             } else if (!this.isNetplay) {
                 this.gameManager.saveSaveFiles();
                 this.gameManager.restart();
@@ -3025,9 +3028,9 @@ class EmulatorJS {
                     return join;
                 }
             }
-            this.netplay.table.innerHTML = "";
             const open = await this.netplay.getOpenRooms();
             //console.log(open);
+            this.netplay.table.innerHTML = "";
             for (const k in open) {
                 addToTable(k, open[k].room_name, open[k].current, open[k].max);//todo: password
             }
@@ -3282,18 +3285,27 @@ class EmulatorJS {
             }
             this.updateCheatUI();
         }
+        this.netplay.setLoading = (loading) => {
+            console.log("loading:", loading);
+        }
+        let syncing = false;
         this.netplay.sync = async () => {
+            if (syncing) return;
+            syncing = true;
+            console.log("sync")
             this.netplay.ready = 0;
             const state = await this.gameManager.getState();
             this.netplay.sendMessage({
                 state: state
             });
+            this.netplay.setLoading(true);
             this.pause(true);
             this.netplay.ready++;
             this.netplay.current_frame = 0;
             if (this.netplay.ready === this.netplay.getUserCount()) {
                 this.play(true);
             }
+            syncing = false;
         }
         this.netplay.getUserIndex = (user) => {
             let i=0;
@@ -3308,9 +3320,11 @@ class EmulatorJS {
             for (const k in this.netplay.players) i++;
             return i;
         }
+        let justReset = false;
         this.netplay.dataMessage = (data) => {
             //console.log(data);
             if (data.state) {
+                this.netplay.setLoading(true);
                 this.pause(true);
                 this.gameManager.loadState(new Uint8Array(data.state));
                 this.netplay.sendMessage({ready:true});
@@ -3324,10 +3338,17 @@ class EmulatorJS {
             if (data.ready && this.netplay.owner) {
                 this.netplay.ready++;
                 if (this.netplay.ready === this.netplay.getUserCount()) {
-                    this.netplay.sendMessage({play:true, resetCurrentFrame: true});
+                    this.netplay.sendMessage({readyready:true, resetCurrentFrame: true});
                     setTimeout(() => this.play(true), 100);
+                    this.netplay.setLoading(false);
                     this.netplay.current_frame = 0;
+                    justReset = true;
                 }
+            }
+            if (data.readyready) {
+                this.netplay.setLoading(false);
+                this.netplay.current_frame = 0;
+                this.play(true)
             }
             if (data.resetCurrentFrame) {
                 this.play(true);
@@ -3335,12 +3356,20 @@ class EmulatorJS {
                 this.netplay.inputs = {};
             }
             if (data.user_frame && this.netplay.owner) {
+                if (justReset) {
+                    justReset = false;
+                    this.netplay.current_frame = 0;
+                    this.netplay.inputs = {};
+                }
                 this.netplay.users[data.user_frame.user] = data.user_frame.frame;
                 //console.log(data.user_frame.frame, this.netplay.current_frame);
             }
             if (data.shortPause === this.netplay.playerID) {
                 this.pause(true);
                 setTimeout(() => this.play(true), 5);
+            } else if (data.lessShortPause === this.netplay.playerID) {
+                this.pause(true);
+                setTimeout(() => this.play(true), 10);
             }
             if (data.input && this.netplay.owner) {
                 this.netplay.simulateInput(this.netplay.getUserIndex(data.user), data.input[0], data.input[1], true);
@@ -3394,16 +3423,24 @@ class EmulatorJS {
                         continue;
                     }
                     const diff = this.netplay.current_frame - this.netplay.users[k];
-                    if (Math.abs(diff) > 50 || diff < -5) {
+                    //console.log(diff);
+                    if (Math.abs(diff) > 75) {
                         this.netplay.sync();
                         return;
                     }
-                    //console.log(diff);
                     //this'll be adjusted if needed
+                    if (diff < 0) {
+                        this.netplay.sendMessage({
+                            lessShortPause: k
+                        })
+                    }
                     if (diff < 5) {
                         this.netplay.sendMessage({
                             shortPause: k
                         })
+                    } else if (diff > 30) {
+                        this.pause(true);
+                        setTimeout(() => this.play(true), 10);
                     } else if (diff > 10) {
                         this.pause(true);
                         setTimeout(() => this.play(true), 5);
