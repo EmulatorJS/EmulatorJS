@@ -32,6 +32,8 @@ Join our Discord server:
 
 **README BEFORE YOU UPDATE:** EmulatorJS Version 4.0 is a complete re-write of the application. At least some bugs are expected. If you did any communicating with the emulator, there is a 100% chance you will need to re-write your project, and to people with active branches of this project, I wish you luck with merge conflicts (I'm very sorry). The emulator object can be accessed through the `window.EJS_emulator` object.
 
+It is **HIGHLY** suggested that you update to 4.0 ASAP.
+
 <br>
 
 ### Ads
