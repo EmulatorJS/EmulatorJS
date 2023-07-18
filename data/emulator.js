@@ -189,6 +189,18 @@ class EmulatorJS {
         }
         
         this.game.classList.add("ejs_game");
+        if (typeof this.config.backgroundImg === "string") {
+            this.game.style["background-image"] = "url('"+this.config.backgroundImg+"')";
+            this.game.style["background-size"] = "contain";
+            this.game.style["background-position"] = "center";
+            this.game.style["background-repeat"] = "no-repeat";
+            this.on("start", () => {
+                this.game.style["background-image"] = "";
+                this.game.style["background-size"] = "";
+                this.game.style["background-position"] = "";
+                this.game.style["background-repeat"] = "";
+            })
+        }
         
         if (Array.isArray(this.config.cheats)) {
             for (let i=0; i<this.config.cheats.length; i++) {
