@@ -113,6 +113,10 @@ class EmulatorJS {
             xhr.onload = function() {
                 if (xhr.readyState === xhr.DONE) {
                     let data = xhr.response;
+                    if (xhr.status.toString().startsWith("4") || xhr.status.toString().startsWith("5")) {
+                        cb(-1);
+                        return;
+                    }
                     try {data=JSON.parse(data)}catch(e){}
                     cb({
                         data: data,
@@ -155,7 +159,7 @@ class EmulatorJS {
     }
     constructor(element, config) {
         this.ejs_version = "4.0";
-        //this.netplay = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
+        this.netplay = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
         this.config = config;
         window.EJS_TESTING = this;
         this.currentPopup = null;
@@ -364,7 +368,7 @@ class EmulatorJS {
             return new Promise((resolve, reject) => {
                 this.downloadFile(path, (res) => {
                     if (res === -1) {
-                        this.textElem.innerText = "Error";
+                        this.textElem.innerText = this.localization('Network Error');
                         this.textElem.style.color = "red";
                         return;
                     }
@@ -428,7 +432,7 @@ class EmulatorJS {
                 this.downloadFile("compression/libunrar.js", (res) => {
                     this.downloadFile("compression/libunrar.js.mem", (res2) => {
                         if (res === -1 || res2 === -1) {
-                            this.textElem.innerText = "Error";
+                            this.textElem.innerText = this.localization('Network Error');
                             this.textElem.style.color = "red";
                             return;
                         }
@@ -511,7 +515,7 @@ class EmulatorJS {
             }
             this.downloadFile('cores/'+this.getCore()+'-wasm.data', (res) => {
                 if (res === -1) {
-                    this.textElem.innerText = "Error";
+                    this.textElem.innerText = this.localization('Network Error');
                     this.textElem.style.color = "red";
                     return;
                 }
@@ -568,7 +572,7 @@ class EmulatorJS {
             
             this.downloadFile(this.config.loadState, (res) => {
                 if (res === -1) {
-                    this.textElem.innerText = "Error";
+                    this.textElem.innerText = this.localization('Network Error');
                     this.textElem.style.color = "red";
                     return;
                 }
@@ -612,7 +616,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.gamePatchUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = "Error";
+                            this.textElem.innerText = this.localization('Network Error');
                             this.textElem.style.color = "red";
                             return;
                         }
@@ -660,7 +664,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.gameParentUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = "Error";
+                            this.textElem.innerText = this.localization('Network Error');
                             this.textElem.style.color = "red";
                             return;
                         }
@@ -701,6 +705,11 @@ class EmulatorJS {
             }
             
             this.downloadFile(this.config.biosUrl, (res) => {
+                if (res === -1) {
+                    this.textElem.innerText = this.localization('Network Error');
+                    this.textElem.style.color = "red";
+                    return;
+                }
                 this.storage.bios.get(this.config.biosUrl.split("/").pop()).then((result) => {
                     if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
                         gotBios(result.data);
@@ -708,7 +717,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.biosUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = "Error";
+                            this.textElem.innerText = this.localization('Network Error');
                             this.textElem.style.color = "red";
                             return;
                         }
@@ -791,6 +800,11 @@ class EmulatorJS {
                 });
             }
             this.downloadFile(this.config.gameUrl, (res) => {
+                if (res === -1) {
+                    this.textElem.innerText = this.localization('Network Error');
+                    this.textElem.style.color = "red";
+                    return;
+                }
                 this.storage.rom.get(this.config.gameUrl.split("/").pop()).then((result) => {
                     if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
                         gotGameData(result.data);
@@ -798,7 +812,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.gameUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = "Error";
+                            this.textElem.innerText = this.localization('Network Error');
                             this.textElem.style.color = "red";
                             return;
                         }
@@ -885,7 +899,7 @@ class EmulatorJS {
             this.paused = false;
         } catch(e) {
             console.warn("failed to start game", e);
-            this.textElem.innerText = "Failed to start game";
+            this.textElem.innerText = this.localization("Failed to start game");
             this.textElem.style.color = "red";
             return;
         }
@@ -1017,13 +1031,13 @@ class EmulatorJS {
             const gh = this.createElement("a");
             gh.href = "https://github.com/EmulatorJS/EmulatorJS";
             gh.target = "_blank";
-            gh.innerText = "View on GitHub";
+            gh.innerText = this.localization("View on GitHub");
             body.appendChild(gh);
             body.appendChild(this.createElement("br"));
             const dc = this.createElement("a");
             dc.href = "https://discord.gg/6akryGkETU";
             dc.target = "_blank";
-            dc.innerText = "Join the discord";
+            dc.innerText = this.localization("Join the discord");
             body.appendChild(dc);
             body.appendChild(this.createElement("br"));
             
@@ -1034,7 +1048,7 @@ class EmulatorJS {
                 license.style.display = (license.style.display === "none") ? "" : "none";
                 lc.innerText = (lc.innerText === "Close License") ? "View the license" : "Close License";
             })
-            lc.innerText = "View the license";
+            lc.innerText = this.localization("View the license");
             lc.style.cursor = "pointer";
             body.appendChild(lc);
             body.appendChild(this.createElement("br"));
@@ -1773,7 +1787,7 @@ class EmulatorJS {
             
             const gamepadTitle = this.createElement("div");
             gamepadTitle.style = "font-size:12px;";
-            gamepadTitle.innerText = "Connected Gamepad: ";
+            gamepadTitle.innerText = this.localization("Connected Gamepad")+": ";
             
             const gamepadName = this.createElement("span");
             this.gamepadLabels.push(gamepadName);
@@ -1788,11 +1802,11 @@ class EmulatorJS {
             aboutParent.style = "font-size:12px;width:50%;float:left;";
             const gamepad = this.createElement("div");
             gamepad.style = "text-align:center;width:50%;float:left;";
-            gamepad.innerText = "Gamepad";
+            gamepad.innerText = this.localization("Gamepad");
             aboutParent.appendChild(gamepad);
             const keyboard = this.createElement("div");
             keyboard.style = "text-align:center;width:50%;float:left;";
-            keyboard.innerText = "Keyboard";
+            keyboard.innerText = this.localization("Keyboard");
             aboutParent.appendChild(keyboard);
             
             const headingPadding = this.createElement("div");
@@ -1887,7 +1901,7 @@ class EmulatorJS {
                 this.addEventListener(buttonText, "mousedown", (e) => {
                     e.preventDefault();
                     this.controlPopup.parentElement.parentElement.removeAttribute("hidden");
-                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\nPress Keyboard";
+                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\n"+this.localization("Press Keyboard");
                     this.controlPopup.setAttribute("button-num", k);
                     this.controlPopup.setAttribute("player-num", i);
                 })
@@ -2885,7 +2899,7 @@ class EmulatorJS {
         const createButton = this.netplayMenu.getElementsByTagName("a")[0];
         const rooms = this.createElement("div");
         const title = this.createElement("strong");
-        title.innerText = "Rooms";
+        title.innerText = this.localization("Rooms");
         const table = this.createElement("table");
         table.classList.add("ejs_netplay_table");
         table.style.width = "100%";
@@ -2970,7 +2984,7 @@ class EmulatorJS {
                 const main = this.createElement("div");
                 main.classList.add("ejs_netplay_header");
                 const head = this.createElement("strong");
-                head.innerText = "Player Name";
+                head.innerText = this.localization("Player Name");
                 const input = this.createElement("input");
                 input.type = "text";
                 input.setAttribute("maxlength", 20);
@@ -2985,7 +2999,7 @@ class EmulatorJS {
                 submit.classList.add("ejs_button_button");
                 submit.classList.add("ejs_popup_submit");
                 submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-                submit.innerText = "Submit";
+                submit.innerText = this.localization("Submit");
                 popup.appendChild(submit);
                 this.addEventListener(submit, "click", (e) => {
                     if (!input.value.trim()) return;
@@ -3034,7 +3048,7 @@ class EmulatorJS {
                     join.classList.add("ejs_netplay_join_button");
                     join.classList.add("ejs_button_button");
                     join.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-                    join.innerText = "Join";
+                    join.innerText = this.localization("Join");
                     parent.appendChild(join);
                     this.addEventListener(join, "click", (e) => {
                         this.netplay.joinRoom(id, name);
@@ -3066,13 +3080,13 @@ class EmulatorJS {
             
             main.classList.add("ejs_netplay_header");
             const rnhead = this.createElement("strong");
-            rnhead.innerText = "Room Name";
+            rnhead.innerText = this.localization("Room Name");
             const rninput = this.createElement("input");
             rninput.type = "text";
             rninput.setAttribute("maxlength", 20);
             
             const maxhead = this.createElement("strong");
-            maxhead.innerText = "Max Players";
+            maxhead.innerText = this.localization("Max Players");
             const maxinput = this.createElement("select");
             maxinput.setAttribute("disabled", "disabled");
             const val2 = this.createElement("option");
@@ -3090,7 +3104,7 @@ class EmulatorJS {
             
             
             const pwhead = this.createElement("strong");
-            pwhead.innerText = "Password (optional)";
+            pwhead.innerText = this.localization("Password (optional)");
             const pwinput = this.createElement("input");
             pwinput.type = "text";
             pwinput.setAttribute("maxlength", 20);
@@ -3115,7 +3129,7 @@ class EmulatorJS {
             submit.classList.add("ejs_popup_submit");
             submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
             submit.style.margin = "0 10px";
-            submit.innerText = "Submit";
+            submit.innerText = this.localization("Submit");
             popup.appendChild(submit);
             this.addEventListener(submit, "click", (e) => {
                 if (!rninput.value.trim()) return;
@@ -3126,7 +3140,7 @@ class EmulatorJS {
             close.classList.add("ejs_button_button");
             close.classList.add("ejs_popup_submit");
             close.style.margin = "0 10px";
-            close.innerText = "Close";
+            close.innerText = this.localization("Close");
             popup.appendChild(close);
             this.addEventListener(close, "click", (e) => {
                 popups[0].remove();
@@ -3218,11 +3232,11 @@ class EmulatorJS {
             this.netplay.tabs[1].style.display = "";
             if (password) {
                 this.netplay.passwordElem.style.display = "";
-                this.netplay.passwordElem.innerText = "Password: "+password
+                this.netplay.passwordElem.innerText = this.localization("Password")+": "+password
             } else {
                 this.netplay.passwordElem.style.display = "none";
             }
-            this.netplay.createButton.innerText = "Leave Room";
+            this.netplay.createButton.innerText = this.localization("Leave Room");
             this.netplay.updatePlayersTable();
             if (!this.netplay.owner) {
                 this.netplay.oldStyles = [
@@ -3283,7 +3297,7 @@ class EmulatorJS {
             this.netplay.tabs[1].style.display = "none";
             this.netplay.extra = null;
             this.netplay.playerID = null;
-            this.netplay.createButton.innerText = "Create a Room";
+            this.netplay.createButton.innerText = this.localization("Create a Room");
             this.netplay.socket.disconnect();
             this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0];
             if (!this.netplay.owner) {
