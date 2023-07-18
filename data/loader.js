@@ -41,7 +41,7 @@
         await loadScript('gamepad.js');
         await loadScript('GameManager.js');
         await loadScript('socket.io.min.js');
-        await loadStyle('css/main.css');
+        await loadStyle('emulator.css');
     }
     const config = {};
     config.gameUrl = window.EJS_gameUrl;
@@ -51,7 +51,7 @@
     config.gameName = window.EJS_gameName;
     config.color = window.EJS_color;
     config.adUrl = window.EJS_AdUrl;
-    config.adTimer = window.EJS_AdTimer
+    config.adTimer = window.EJS_AdTimer;
     config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
     config.buttonOpts = window.EJS_Buttons;
     config.volume = window.EJS_volume;
@@ -83,6 +83,15 @@
         }
     }
     
-    new EmulatorJS(EJS_player, config);
+    window.EJS_emulator = new EmulatorJS(EJS_player, config);
+    if (typeof window.EJS_onGameStart === "function") {
+        window.EJS_emulator.on("start", window.EJS_onGameStart);
+    }
+    if (typeof window.EJS_onLoadState === "function") {
+        window.EJS_emulator.on("load", window.EJS_onLoadState);
+    }
+    if (typeof window.EJS_onSaveState === "function") {
+        window.EJS_emulator.on("save", window.EJS_onSaveState);
+    }
     
 })();

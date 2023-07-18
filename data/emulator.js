@@ -20,7 +20,6 @@ class EmulatorJS {
                 'mame2003': 'mame2003',
                 'fbalpha2012_cps1': 'arcade',
                 'fbalpha2012_cps2': 'arcade',
-                'mednafen_psx': 'psx',
                 'mednafen_psx_hw': 'psx',
                 'melonds': 'nds',
                 'nestopia': 'nes',
@@ -157,14 +156,27 @@ class EmulatorJS {
             })();
         }
     }
+    checkForUpdates() {
+        fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
+            if (response.ok) {
+                response.text().then(body => {
+                    let version = JSON.parse(body);
+                    if (this.ejs_num_version < version.current_version) {
+                        console.log('Using emulatorjs version ' + this.ejs_num_version + ' but the newest version is ' + version.current_version + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
+                    }
+                })
+            }
+        })
+    }
     constructor(element, config) {
-        this.ejs_version = "4.0";
+        this.ejs_version = "4.0.1";
+        this.ejs_num_version = 40.1;
+        this.debug = (window.EJS_DEBUG_XX === true);
+        if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplay = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
         this.config = config;
-        window.EJS_TESTING = this;
         this.currentPopup = null;
         this.touch = false;
-        this.debug = (window.EJS_DEBUG_XX === true);
         this.cheats = [];
         this.started = false;
         this.volume = (typeof this.config.volume === "number") ? this.config.volume : 0.5;
