@@ -1,12 +1,11 @@
 # Changes
 
-# 4.0 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f7fa5d41487a424233b40e903020455606d68fee)
-- Fixed iOS bug for iPads
-- Added netplay! (only working on new cores)
+# 4.0.1
+- Complete application re-write. Everything changed.
 
 # 3.1.5 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f7fa5d41487a424233b40e903020455606d68fee)
 - Fixed iOS bug for iPads
-- Added netplay! (only working on new cores)
+- Added netplay! (only working on old cores)
 
 # 3.1.0 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/614f5cb55e2768199ba05b756b47d0ab7ab283fd)
 - Added ability to drag and drop save states.

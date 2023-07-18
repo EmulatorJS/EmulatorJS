@@ -232,8 +232,6 @@ class EmulatorJS {
         }
         
         this.createStartButton();
-        
-        console.log(this)
     }
     setColor(color) {
         if (typeof color !== "string") color = "";
@@ -874,7 +872,7 @@ class EmulatorJS {
             'totalDependencies': 0,
             'monitorRunDependencies': () => {},
             'locateFile': function(fileName) {
-                console.log(fileName);
+                if (this.debug) console.log(fileName);
                 if (fileName.endsWith(".wasm")) {
                     return URL.createObjectURL(new Blob([wasmData], {type: "application/wasm"}));
                 }
@@ -888,7 +886,7 @@ class EmulatorJS {
             const args = [];
             if (this.debug) args.push('-v');
             args.push('/'+this.fileName);
-            console.log(args);
+            if (this.debug) console.log(args);
             this.Module.callMain(args);
             this.Module.resumeMainLoop();
             if (this.touch) {
@@ -1548,7 +1546,7 @@ class EmulatorJS {
         
         
         if (this.config.buttonOpts) {
-            console.log(this.config.buttonOpts);
+            if (this.debug) console.log(this.config.buttonOpts);
             if (this.config.buttonOpts.playPause === false) {
                 pauseButton.style.display = "none";
                 playButton.style.display = "none";
@@ -2635,7 +2633,7 @@ class EmulatorJS {
     }
     menuOptionChanged(option, value) {
         this.saveSettings();
-        console.log(option, value);
+        if (this.debug) console.log(option, value);
         if (option === "shader") {
             try {
                 this.Module.FS.unlink("/shader/shader.glslp");
@@ -3162,7 +3160,7 @@ class EmulatorJS {
             this.netplay.socket = io(this.netplay.url);
             this.netplay.socket.on("connect", () => callback());
             this.netplay.socket.on("users-updated", (users) => {
-                console.log(users);
+                if (this.debug) console.log(users);
                 this.netplay.players = users;
                 this.netplay.updatePlayersTable();
                 if (this.netplay.owner) this.netplay.sync();
@@ -3194,7 +3192,7 @@ class EmulatorJS {
                     password: password
                 }, (error) => {
                     if (error) {
-                        console.log("error: ", error);
+                        if (this.debug) console.log("error: ", error);
                         return;
                     }
                     this.netplay.roomJoined(true, roomName, password, sessionid);
@@ -3202,7 +3200,7 @@ class EmulatorJS {
             });
         }
         this.netplay.leaveRoom = () => {
-            console.log("asd");
+            if (this.debug) console.log("asd");
             this.netplay.roomLeft();
         }
         this.netplay.joinRoom = (sessionid, roomName) => {
@@ -3224,7 +3222,7 @@ class EmulatorJS {
                     //password: password
                 }, (error, users) => {
                     if (error) {
-                        console.log("error: ", error);
+                        if (this.debug) console.log("error: ", error);
                         return;
                     }
                     this.netplay.players = users;
@@ -3238,7 +3236,7 @@ class EmulatorJS {
             this.isNetplay = true;
             this.netplay.inputs = {};
             this.netplay.owner = isOwner;
-            console.log(this.netplay.extra);
+            if (this.debug) console.log(this.netplay.extra);
             this.netplay.roomNameElem.innerText = roomName;
             this.netplay.tabs[0].style.display = "none";
             this.netplay.tabs[1].style.display = "";
@@ -3326,13 +3324,13 @@ class EmulatorJS {
             this.updateCheatUI();
         }
         this.netplay.setLoading = (loading) => {
-            console.log("loading:", loading);
+            if (this.debug) console.log("loading:", loading);
         }
         let syncing = false;
         this.netplay.sync = async () => {
             if (syncing) return;
             syncing = true;
-            console.log("sync")
+            if (this.debug) console.log("sync")
             this.netplay.ready = 0;
             const state = await this.gameManager.getState();
             this.netplay.sendMessage({
