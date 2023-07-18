@@ -753,7 +753,7 @@ class EmulatorJS {
                             FS.mkdir(k);
                             continue;
                         }
-                        if (!this.fileName || (this.extensions[this.getCore()].includes(k.split(".").pop()) &&
+                        if (!this.fileName || ((this.extensions[this.getCore()] || []).includes(k.split(".").pop()) &&
                             //always prefer m3u files for psx cores
                             !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
                             this.fileName = k;
@@ -1034,9 +1034,9 @@ class EmulatorJS {
         });
         
         if (this.config.buttonOpts) {
-            if (!this.config.buttonOpts.screenshot) screenshot.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.quickSave) qSave.setAttribute("hidden", "");
-            if (!this.config.buttonOpts.quickLoad) qLoad.setAttribute("hidden", "");
+            if (this.config.buttonOpts.screenshot === false) screenshot.setAttribute("hidden", "");
+            if (this.config.buttonOpts.quickSave === false) qSave.setAttribute("hidden", "");
+            if (this.config.buttonOpts.quickLoad === false) qLoad.setAttribute("hidden", "");
         }
         
         this.elements.contextmenu.appendChild(parent);
@@ -2146,16 +2146,18 @@ class EmulatorJS {
             return true;
         }(this.config.VirtualGamepadSettings)) {
             info = this.config.VirtualGamepadSettings;
-        } else if (['gba', 'gb', 'vb', 'nes'].includes(this.getCore(true))) {
+        } else if ("gba" === this.getCore(true)) {
+            info = [{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
+        } else if ("gb" === this.getCore(true)) {
+            info = [{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+        } else if (['vb', 'nes'].includes(this.getCore(true))) {
             info = [{"type":"button","text":"B","id":"b","location":"right","right":-10,"top":70,"bold":true,"input_value":0},{"type":"button","text":"A","id":"a","location":"right","right":60,"top":70,"bold":true,"input_value":8},{"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
-            if (this.getCore(true) === 'gba') {
-                info.push({"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10});
-                info.push({"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11});
-            }
         } else if (this.getCore(true) === 'n64') {
             info = [{"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":150,"input_value":0,"bold":true},{"type":"zone","location":"left","left":"50%","top":"100%","joystickInput":true,"inputValues":[16, 17, 18, 19]},{"type":"zone","location":"left","left":"50%","top":"0%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":30,"top":-10,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10},{"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11},{"type":"button","text":"Z","id":"z","block":true,"location":"top","left":10,"bold":true,"input_value":12},{"fontSize":20,"type":"button","text":"CU","id":"cu","location":"right","left":25,"top":-65,"input_value":23},{"fontSize":20,"type":"button","text":"CD","id":"cd","location":"right","left":25,"top":15,"input_value":22},{"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},{"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}];
-        } else if (['snes', 'nds'].includes(this.getCore(true))) {
-            info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+        } else if (this.getCore(true) === "nds") {
+            info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
+        } else if (this.getCore(true) === "snes") {
+            info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
         } else {
             info = [{"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
         }
