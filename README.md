@@ -14,10 +14,6 @@ Self-hosted **Javascript** emulation for various system.
 
 <br>
 
-Try out netplay [here](https://demo.emulatorjs.org/demos/netplay.html)!
-
-<br>
-
 [![Button Website]][Website] 
 [![Button Usage]][Usage]<br>
 [![Button Configurator]][Configurator]<br>
@@ -34,6 +30,10 @@ Join our Discord server:
 
 <br>
 
+**README BEFORE YOU UPDATE:** EmulatorJS Version 4.0 is a complete re-write of the application. At least some bugs are expected. If you did any communicating with the emulator, there is a 100% chance you will need to re-write your project, and to people with active branches of this project, I wish you luck with merge conflicts (I'm very sorry). The emulator object can be accessed through the `window.EJS_emulator` object.
+
+<br>
+
 ### Ads
 
 *This project has no ads.* <br>
@@ -44,7 +44,6 @@ Join our Discord server:
 *You can help fund this project on* ***[patreon]***
 
 <br>
-
 
 
 ### Issues
