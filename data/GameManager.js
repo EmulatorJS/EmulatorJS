@@ -58,8 +58,10 @@ class EJS_GameManager {
                "screenshot_directory = /\n" +
                "block_sram_overwrite = false\n" +
                "video_gpu_screenshot = false\n" +
-               "audio_latency = 96\n" +
+               "audio_latency = 64\n" +
+               "video_top_portrait_viewport = true\n" +
                "video_vsync = true\n" +
+               "video_smooth = false\n" +
                "savefile_directory = \"/data/saves\"\n";
     }
     initShaders() {

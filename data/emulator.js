@@ -1,5 +1,5 @@
 class EmulatorJS {
-    version = 1; //All versions for the core
+    version = 2; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
         //todo: sega32x, TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
@@ -169,8 +169,8 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.2";
-        this.ejs_num_version = 40.2;
+        this.ejs_version = "4.0.3";
+        this.ejs_num_version = 40.3;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplay = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING

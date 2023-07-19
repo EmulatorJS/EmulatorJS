@@ -886,6 +886,7 @@
     width: 100%;
 }
 .ejs_button_style {
+    margin: 0px;
     background: transparent;
     border: 0;
     border-radius: 3px;
