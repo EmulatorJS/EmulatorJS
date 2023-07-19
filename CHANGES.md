@@ -1,6 +1,14 @@
 # Changes
 
-# 4.0.1
+# 4.0.3
+- Remove RetroArch messages
+- Center video at top
+
+# 4.0.2 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/06fe386e780bb55ef6baa4fbc6addd486bee747a)
+- Add link to RetroArch License on about page
+- Fix gamepad support for legacy browsers
+
+# 4.0.1 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/efbb9dd462ee0e4f2120a6947af312e02fcf657c)
 Complete application re-write. Everything changed. Although some changes to note are:
 - Optimization for smaller screens.
 - No more dead code.
@@ -8,6 +16,7 @@ Complete application re-write. Everything changed. Although some changes to note
 - Store srm in browser.
 - Ability to import/export srm files.
 - No more old cores
+
 And much much more was changed...
 
 # 3.1.5 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f7fa5d41487a424233b40e903020455606d68fee)
