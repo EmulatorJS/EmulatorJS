@@ -19,7 +19,16 @@ class GamepadHandler {
         this.timeout = setTimeout(this.loop.bind(this), 10);
     }
     updateGamepadState() {
-        const gamepads = this.getGamepads();
+        let gamepads = this.getGamepads();
+        if (!gamepads) return;
+        if (!Array.isArray(gamepads) && gamepads.length) {
+            let gp = [];
+            for (let i=0; i<gamepads.length; i++) {
+                gp.push(gamepads[i]);
+            }
+            gamepads = gp;
+        } else if (!Array.isArray(gamepads)) return;
+        
         gamepads.forEach((gamepad, index) => {
             if (!gamepad) return;
             let hasGamepad = false;
