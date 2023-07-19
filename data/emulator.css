@@ -202,7 +202,51 @@
     color: #fff;
 }
 
+.ejs_list_selector {
+    background: rgba(0,0,0,0.5);
+    border-radius: 3px;
+    font-size: 13px;
+    min-width: 140px;
+    padding: 8px;
+    box-sizing: inherit;
+    float: left;
+    position: absolute;
+    width: 10%;
+    max-width: 15%;
+    top: 10%;
+    left: 0px;
+    height: 80%;
+    overflow: auto;
+}
 
+.ejs_list_selector li {
+    padding: 4px 11px;
+    text-align: center;
+}
+
+.ejs_list_selector li a {
+    color: #999 !important;
+    display: block;
+    font-size: 13px;
+}
+.ejs_list_selector ul {
+    color: #999 !important;
+    display: block;
+    font-size: 13px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.ejs_list_selector li:hover {
+    background: rgba(var(--ejs-primary-color),1);
+    border-radius: 4px;
+    box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color),0.5);
+    outline: 0;
+}
+.ejs_list_selector li:hover a {
+    color: #fff !important;
+}
 
 .ejs_svg_rotate {
     transform: rotate(90deg);
