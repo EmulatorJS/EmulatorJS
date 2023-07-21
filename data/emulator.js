@@ -169,11 +169,12 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.3";
-        this.ejs_num_version = 40.3;
+        this.ejs_version = "4.0.4";
+        this.ejs_num_version = 40.4;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
-        this.netplay = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
+        this.netplayEnabled = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
+        if (!this.debug) this.netplayEnabled = false;
         this.config = config;
         this.currentPopup = null;
         this.touch = false;
@@ -986,7 +987,7 @@ class EmulatorJS {
             this.elements.contextMenu.save.style.display = "none";
             this.elements.contextMenu.load.style.display = "none";
         }
-        if (typeof this.config.gameId !== "number" || !this.config.netplayUrl || this.netplay === false) {
+        if (typeof this.config.gameId !== "number" || !this.config.netplayUrl || this.netplayEnabled === false) {
             this.elements.bottomBar.netplay[0].style.display = "none";
         }
     }
