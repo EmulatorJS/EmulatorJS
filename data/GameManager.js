@@ -55,7 +55,7 @@ class EJS_GameManager {
     }
     getRetroArchCfg() {
         return "autosave_interval = 60\n" +
-               "screenshot_directory = /\n" +
+               "screenshot_directory = \"/\"\n" +
                "block_sram_overwrite = false\n" +
                "video_gpu_screenshot = false\n" +
                "audio_latency = 64\n" +
@@ -169,7 +169,7 @@ class EJS_GameManager {
         try {
             if (fileNames.length > 1) {
                 fileNames = fileNames.filter((item) => {
-                    return ["toc", "ccd", "exe", "pbp", "chd", "img", "bin"].includes(item.split(".").pop().toLowerCase());
+                    return ["toc", "ccd", "exe", "pbp", "chd", "img", "bin", "iso"].includes(item.split(".").pop().toLowerCase());
                 })
                 fileNames = fileNames.sort((a, b) => {
                     if (isNaN(a.charAt()) || isNaN(b.charAt())) throw new Error("Incorrect file name format");
