@@ -3693,6 +3693,11 @@ class EmulatorJS {
     }
     updateCheatUI() {
         this.elements.cheatRows.innerHTML = "";
+        const getIndex = (desc, code) => {
+            for (let i=0; i<this.cheats.length; i++) {
+                if (this.cheats[i].desc === desc && this.cheats[i].code === code) return i;
+            }
+        }
         
         const addToMenu = (desc, checked, code, i) => {
             const row = this.createElement("div");
@@ -3709,14 +3714,19 @@ class EmulatorJS {
             row.appendChild(label);
             label.addEventListener("click", (e) => {
                 input.checked = !input.checked;
-                this.cheats[i].checked = input.checked;
-                this.cheatChanged(input.checked, code, i);
+                this.cheats[getIndex(desc, code)].checked = input.checked;
+                this.cheatChanged(input.checked, code, getIndex(desc, code));
                 this.saveSettings();
             })
             const close = this.createElement("a");
             close.classList.add("ejs_cheat_row_button");
             close.innerText = "×";
             row.appendChild(close);
+            close.addEventListener("click", (e) => {
+                this.cheatChanged(false, code, getIndex(desc, code));
+                this.cheats.splice(getIndex(desc, code), 1);
+                row.remove();
+            })
             
             this.elements.cheatRows.appendChild(row);
             this.cheatChanged(checked, code, i);
