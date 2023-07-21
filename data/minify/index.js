@@ -2,11 +2,6 @@ const UglifyJS = require("uglify-js");
 const fs = require('fs');
 const uglifycss = require('uglifycss');
 
-if (!String.prototype.replaceAll) {
-    String.prototype.replaceAll = function(a, b) {
-        return this.split(a).join(b);
-    }
-}
 let files = [
     'nipplejs.js',
     'shaders.js',
@@ -27,7 +22,5 @@ function minify(source){
 }
 console.log('minifying');
 fs.writeFileSync('../emulator.min.css', uglifycss.processString(fs.readFileSync('../emulator.css', 'utf8')));
-const min = minify(code);
+fs.writeFileSync('../emulator.min.js', minify(code));
 console.log('done!');
-
-fs.writeFileSync('../emulator.min.js', min);
