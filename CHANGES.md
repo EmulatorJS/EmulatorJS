@@ -1,6 +1,10 @@
 # Changes
 
-# 4.0.3
+# 4.0.4
+- Fix cheats "x" button
+- Optimize memory usage
+
+# 4.0.3 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/5219ab51227bc0fb60cbc7b60e476b0145c932c9)
 - Remove RetroArch messages
 - Center video at top
 
