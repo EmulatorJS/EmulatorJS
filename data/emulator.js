@@ -359,7 +359,7 @@ class EmulatorJS {
         }
         return text;
     }
-    checkCompression(data, msg) {
+    checkCompression(data, msg, fileCbFunc) {
         if (msg) {
             this.textElem.innerText = msg;
         }
@@ -404,7 +404,12 @@ class EmulatorJS {
                         this.textElem.innerText = msg + progress;
                     }
                     if (data.data.t === 2) {
-                        files[data.data.file] = data.data.data;
+                        if (typeof fileCbFunc === "function") {
+                            fileCbFunc(data.data.file, data.data.data);
+                            files[data.data.file] = true;
+                        } else {
+                            files[data.data.file] = data.data.data;
+                        }
                     }
                     if (data.data.t === 1) {
                         resolve(files);
@@ -432,7 +437,12 @@ class EmulatorJS {
                         this.textElem.innerText = msg + progress;
                     }
                     if (data.data.t === 2) {
-                        files[data.data.file] = data.data.data;
+                        if (typeof fileCbFunc === "function") {
+                            fileCbFunc(data.data.file, data.data.data);
+                            files[data.data.file] = true;
+                        } else {
+                            files[data.data.file] = data.data.data;
+                        }
                     }
                     if (data.data.t === 1) {
                         resolve(files);
@@ -475,7 +485,12 @@ class EmulatorJS {
                         this.textElem.innerText = msg + progress;
                     }
                     if (data.data.t === 2) {
-                        files[data.data.file] = data.data.data;
+                        if (typeof fileCbFunc === "function") {
+                            fileCbFunc(data.data.file, data.data.data);
+                            files[data.data.file] = true;
+                        } else {
+                            files[data.data.file] = data.data.data;
+                        }
                     }
                     if (data.data.t === 1) {
                         resolve(files);
@@ -499,7 +514,12 @@ class EmulatorJS {
                 return decompressRar(data);
             }
         } else {
-            return new Promise(resolve => resolve({"!!notCompressedData": data}));
+            if (typeof fileCbFunc === "function") {
+                fileCbFunc("!!notCompressedData", data);
+                return new Promise(resolve => resolve({"!!notCompressedData": true}));
+            } else {
+                return new Promise(resolve => resolve({"!!notCompressedData": data}));
+            }
         }
         
     }
@@ -757,11 +777,41 @@ class EmulatorJS {
                     resolve();
                     return;
                 }
-                this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data")).then((data) => {
-                    const altName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                
+                let resData = {};
+                const altName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
+                    console.log(fileName);
+                    if (fileName.includes("/")) {
+                        const paths = fileName.split("/");
+                        let cp = "";
+                        for (let i=0; i<paths.length-1; i++) {
+                            if (paths[i] === "") continue;
+                            cp += "/"+paths[i];
+                            if (!FS.analyzePath(cp).exists) {
+                                FS.mkdir(cp);
+                            }
+                        }
+                    }
+                    if (fileName.endsWith('/')) {
+                        FS.mkdir(fileName);
+                        return;
+                    }
+                    if (this.getCore(true) === "psx" && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
+                        resData[fileName] = fileData;
+                    } else if (this.getCore(true) === "psx" && fileName !== "!!notCompressedData") {
+                        resData[fileName] = true;
+                    }
+                    if (fileName === "!!notCompressedData") {
+                        FS.writeFile(altName, fileData);
+                        resData[altName] = true;
+                    } else {
+                        FS.writeFile("/"+fileName, fileData);
+                    }
+                }).then(() => {
                     const fileNames = (() => {
                         let rv = [];
-                        for (const k in data) rv.push(k);
+                        for (const k in resData) rv.push(k);
                         return rv;
                     })();
                     if (fileNames.length === 1) fileNames[0] = altName;
@@ -769,39 +819,25 @@ class EmulatorJS {
                     if (this.getCore(true) === "psx") {
                         execFile = this.gameManager.createCueFile(fileNames);
                     }
-                    for (const k in data) {
+                    
+                    for (const k in resData) {
                         if (k === "!!notCompressedData") {
-                            
                             if (this.getCore(true) === "psx" && execFile !== null) {
                                 this.fileName = execFile;
                             } else {
                                 this.fileName = altName;
                             }
-                            FS.writeFile(altName, data[k]);
                             break;
-                        }
-                        if (k.endsWith('/')) {
-                            FS.mkdir(k);
-                            continue;
                         }
                         if (!this.fileName || ((this.extensions[this.getCore()] || []).includes(k.split(".").pop()) &&
                             //always prefer m3u files for psx cores
                             !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
                             this.fileName = k;
                         }
-                        if (k.includes("/")) {
-                            const paths = k.split("/");
-                            let cp = "";
-                            for (let i=0; i<paths.length-1; i++) {
-                                if (paths[i] === "") continue;
-                                cp += "/"+paths[i];
-                                if (!FS.analyzePath(cp).exists) {
-                                    FS.mkdir(cp);
-                                }
-                            }
+                        if (this.getCore(true) === "psx" && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
+                            console.log(k, resData[k]);
+                            FS.writeFile("/"+k, resData[k]);
                         }
-                        if (this.getCore(true) === "psx" && execFile !== null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) continue;
-                        FS.writeFile("/"+k, data[k]);
                     }
                     if (this.getCore(true) === "psx" && execFile !== null) {
                         this.fileName = execFile;
@@ -809,6 +845,8 @@ class EmulatorJS {
                     resolve();
                 });
             }
+            
+            
             this.downloadFile(this.config.gameUrl, (res) => {
                 if (res === -1) {
                     this.textElem.innerText = this.localization('Network Error');
