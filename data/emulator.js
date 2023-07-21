@@ -173,8 +173,7 @@ class EmulatorJS {
         this.ejs_num_version = 40.4;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
-        this.netplayEnabled = false; //DO NOT ENABLE UNLESS YOU KNOW WHAT YOU'RE DOING
-        if (!this.debug) this.netplayEnabled = false;
+        this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
         this.config = config;
         this.currentPopup = null;
         this.touch = false;
@@ -782,7 +781,6 @@ class EmulatorJS {
                 let resData = {};
                 const altName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
-                    console.log(fileName);
                     if (fileName.includes("/")) {
                         const paths = fileName.split("/");
                         let cp = "";
@@ -800,7 +798,7 @@ class EmulatorJS {
                     }
                     if (this.getCore(true) === "psx" && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
                         resData[fileName] = fileData;
-                    } else if (this.getCore(true) === "psx" && fileName !== "!!notCompressedData") {
+                    } else if (fileName !== "!!notCompressedData") {
                         resData[fileName] = true;
                     }
                     if (fileName === "!!notCompressedData") {
@@ -836,7 +834,6 @@ class EmulatorJS {
                             this.fileName = k;
                         }
                         if (this.getCore(true) === "psx" && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
-                            console.log(k, resData[k]);
                             FS.writeFile("/"+k, resData[k]);
                         }
                     }
@@ -928,9 +925,6 @@ class EmulatorJS {
             if (this.debug) console.log(args);
             this.Module.callMain(args);
             this.Module.resumeMainLoop();
-            if (this.touch) {
-                this.virtualGamepad.style.display = "";
-            }
             
             this.checkSupportedOpts();
             this.setupSettingsMenu();
@@ -946,6 +940,9 @@ class EmulatorJS {
             this.handleResize();
             this.started = true;
             this.paused = false;
+            if (this.touch) {
+                this.virtualGamepad.style.display = "";
+            }
         } catch(e) {
             console.warn("failed to start game", e);
             this.textElem.innerText = this.localization("Failed to start game");
