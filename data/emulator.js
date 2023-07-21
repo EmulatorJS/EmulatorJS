@@ -2634,21 +2634,24 @@ class EmulatorJS {
         this.virtualGamepad.style.display = "none";
     }
     handleResize() {
+        if (this.virtualGamepad) {
+            if (this.virtualGamepad.style.display === "none") {
+                this.virtualGamepad.style.opacity = 0;
+                this.virtualGamepad.style.display = "";
+                setTimeout(() => {
+                    this.virtualGamepad.style.display = "none";
+                    this.virtualGamepad.style.opacity = "";
+                }, 250)
+            }
+        }
         if (!this.Module) return;
         const dpr = window.devicePixelRatio || 1;
         const positionInfo = this.elements.parent.getBoundingClientRect();
         const width = positionInfo.width * dpr;
         const height = (positionInfo.height * dpr);
         this.Module.setCanvasSize(width, height);
+        if (!this.handleSettingsResize) return;
         this.handleSettingsResize();
-        if (this.virtualGamepad.style.display === "none") {
-            this.virtualGamepad.style.opacity = 0;
-            this.virtualGamepad.style.display = "";
-            setTimeout(() => {
-                this.virtualGamepad.style.display = "none";
-                this.virtualGamepad.style.opacity = "";
-            }, 250)
-        }
     }
     getElementSize(element) {
         let elem = element.cloneNode(true);
