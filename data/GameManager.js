@@ -177,7 +177,6 @@ class EJS_GameManager {
                 })
             }
         } catch(e) {
-            console.log(e, fileNames);
             if (fileNames.length > 1) {
                 console.warn("Could not auto-create cue file(s).");
                 return null;
@@ -193,11 +192,9 @@ class EJS_GameManager {
             console.warn("Could not auto-create cue file(s).");
             return null;
         }
-        console.log(fileNames);
         let baseFileName = fileNames[0].split("/").pop();
         if (baseFileName.includes(".")) {
             baseFileName = baseFileName.substring(0, baseFileName.length - baseFileName.split(".").pop().length - 1);
-            console.log(baseFileName);
         }
         for (let i=0; i<fileNames.length; i++) {
             const contents = " FILE \""+fileNames[i]+"\" BINARY\n  TRACK 01 MODE1/2352\n   INDEX 01 00:00:00";
