@@ -10,7 +10,7 @@
 <script type='text/javascript'>
     EJS_player = '#game';
     
-    // Can also be fbalpha2012_cps1 or fbalpha2012_cps2
+    // Can also be fbneo, fbalpha2012_cps1, or fbalpha2012_cps2
     EJS_core = 'arcade';
     
     // URL to Game rom
@@ -22,16 +22,12 @@
 <script src='data/loader.js'></script>
 ```
 
-## ROM Type
-
-Your **ROM** can have the following extensions:
-- `zip`
-
 ### CORES
 
-The *arcade* system supports 2 cores
+The *arcade* system supports 3 cores
+- `fbneo`
 - `fbalpha2012_cps1`
 - `fbalpha2012_cps2`
 
-If set to `arcade`, emulator will use the `fbalpha2012_cps1` core.
+If set to `arcade`, emulator will use the `fbneo` core.
 

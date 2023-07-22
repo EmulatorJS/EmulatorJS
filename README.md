@@ -100,6 +100,7 @@ It is **HIGHLY** suggested that you update to 4.0 ASAP.
 **[Game Gear][Sega Game Gear]**
     
 **[Saturn][Sega Saturn]**   | 
+**[32X][Sega 32X]**   | 
 **[CD][Sega CD]**
     
 <br>

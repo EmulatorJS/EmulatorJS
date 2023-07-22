@@ -1,10 +1,5 @@
 # Atari Jaguar
 
-
-I do not know the file extension limits for this system. <br>
-There is no bios for this system.
-
-
 ## Code example
 
 ```html
@@ -13,8 +8,9 @@ There is no bios for this system.
 </div>
 
 <script type='text/javascript'>
-
     EJS_player = '#game';
+    
+    // Can also be virtualjaguar
     EJS_core = 'jaguar';
     
     // URL to Game rom
@@ -33,5 +29,9 @@ There is no bios for this system.
 <script src='data/loader.js'></script>
 ```
 
+### CORES
 
+The *jaguar* system supports 1 core
+- `virtualjaguar`
 
+If set to `jaguar`, emulator will use the `virtualjaguar` core.

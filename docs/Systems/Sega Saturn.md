@@ -12,6 +12,8 @@ I do not know the file extension limits for this system.
 <script type='text/javascript'>
 
     EJS_player = '#game';
+    
+    // Can also be yabause
     EJS_core = 'segaSaturn';
 
     // URL to Bios file
@@ -34,11 +36,15 @@ I do not know the file extension limits for this system.
 <script src='data/loader.js'></script>
 ```
 
-## BIOS
+### BIOS
 
-|  File Name  |    md5sum   |
-| ----------- | ----------- |
-| saturn_bios.bin  | af5828fdff51384f99b3c4926be27762 |
-| mpr-17933.bin | 3240872c70984b6cbfda1586cab68dbe |
-| sega_101.bin | 85ec9ca47d8f6807718151cbcca8b964 |
+|  File Name  |  Description  |    md5sum   |
+| ----------- | ------------- | ----------- |
+| saturn_bios.bin | Saturn BIOS | `af5828fdff51384f99b3c4926be27762`
 
+### CORES
+
+The *segaSaturn* system supports 1 core
+- `yabause`
+
+If set to `segaSaturn`, emulator will use the `yabause` core.

@@ -1,7 +1,5 @@
 # Sega Game Gear
 
-I do not know the file extension limits for this system.
-
 ## Code example
 
 ```html
@@ -12,6 +10,8 @@ I do not know the file extension limits for this system.
 <script type='text/javascript'>
 
     EJS_player = '#game';
+    
+    // Can also be genesis_plus_gx
     EJS_core = 'segaGG';
 
     // URL to Game rom
@@ -30,6 +30,15 @@ I do not know the file extension limits for this system.
 <script src='data/loader.js'></script>
 ```
 
-## BIOS
+### BIOS
 
-GameGear BIOS (bootrom) - Optional	`672e104c3be3a238301aceffc3b23fd6`
+|  File Name  |  Description  |    md5sum   |
+| ----------- | ------------- | ----------- |
+| bios.gg | GameGear BIOS (bootrom) - Optional | `672e104c3be3a238301aceffc3b23fd6`
+
+### CORES
+
+The *segaGG* system supports 1 core
+- `genesis_plus_gx`
+
+If set to `segaGG`, emulator will use the `genesis_plus_gx` core.
