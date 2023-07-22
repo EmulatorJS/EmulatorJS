@@ -1,6 +1,14 @@
 # Changes
 
-# 4.0.4
+# 4.0.5
+- Added pcsx_rearmed core
+- Made pcsx_rearmed core the default psx core (better compatibility)
+- Added fbneo core
+- Made fbneo core the default arcade core (better compatibility)
+- Added picodrive core (sega32x)
+- Cleaned up documentation
+
+# 4.0.4 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/41491a738cf92ef9cee7d53f323aa2ab9732c053)
 - Fix cheats "x" button
 - Optimize memory usage
 - Added ability to set urls to blob/arraybuffer/uint8array if needed
