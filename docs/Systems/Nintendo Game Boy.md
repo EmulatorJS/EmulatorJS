@@ -25,19 +25,12 @@
 <script src='data/loader.js'></script>
 ```
 
-## ROM Type
-
-Your **ROM** can have the following extensions:
-- `gb`
-- `gbc`
-- `dmg`
-
 ### BIOS
 
 |  File Name  |  Description  |    md5sum   |
 | ----------- | ------------- | ----------- |
-| gb_bios.bin | Game Boy BIOS - Optional  | 32fbbd84168d3482956eb3c5051637f5 |
-| gbc_bios.bin | Game Boy Color BIOS - Optional | dbfce9db9deaa2567f6a84fde55f9680 |
+| gb_bios.bin | Game Boy BIOS - Optional  | `32fbbd84168d3482956eb3c5051637f5` |
+| gbc_bios.bin | Game Boy Color BIOS - Optional | `dbfce9db9deaa2567f6a84fde55f9680` |
 
 ### CORES
 
@@ -46,4 +39,3 @@ The *gb* system supports 2 cores
 - `mgba`
 
 If set to `gb`, emulator will use the `gambatte` core.
-

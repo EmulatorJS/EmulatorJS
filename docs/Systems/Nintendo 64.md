@@ -22,21 +22,9 @@
 <script src='data/loader.js'></script>
 ```
 
-## ROM Type
-
-Your **ROM** can have the following extensions:
-- `n64`
-- `v64`
-- `z64`
-- `bin`
-- `u1`
-- `ndd`
-- `gb`
-
 ### CORES
 
 The *n64* system supports 1 core
 - `mupen64plus_next`
 
 If set to `n64`, emulator will use the `mupen64plus_next` core.
-

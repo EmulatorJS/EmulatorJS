@@ -12,6 +12,8 @@ I do not know the file extension limits for this system.
 <script type='text/javascript'>
 
     EJS_player = '#game';
+    
+    // Can also be picodrive or genesis_plus_gx
     EJS_core = 'segaCD';
 
     // URL to Game rom
@@ -30,14 +32,18 @@ I do not know the file extension limits for this system.
 <script src='data/loader.js'></script>
 ```
 
-## BIOS
+### BIOS
 
-You can search for the BIOS you need by utilizing the **MD5** checksum.
+|  File Name  |  Description  |    md5sum   |
+| ----------- | ------------- | ----------- |
+| bios_CD_E.bin | MegaCD EU BIOS - Required | `e66fa1dc5820d254611fdcdba0662372` |
+| bios_CD_U.bin | SegaCD US BIOS - Required | `2efd74e3232ff260e371b99f84024f7f` |
+| bios_CD_J.bin | MegaCD JP BIOS - Required | `278a9397d192149e84e820ac621a8edd` |
 
-| Type | MD5 Checksum |
-|------|--------------|
-| MegaCD EU | `e66fa1dc5820d254611fdcdba0662372`
-| SegaCD US | `854b9150240a198070150e4566ae1290`
-| MegaCD EU | `278a9397d192149e84e820ac621a8edd`
+### CORES
 
-<!-- Are those names correct / intended? -->
+The *segaCD* system supports 2 cores
+- `genesis_plus_gx`
+- `picodrive`
+
+If set to `segaCD`, emulator will use the `genesis_plus_gx` core.
