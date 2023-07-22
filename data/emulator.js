@@ -1,31 +1,47 @@
 class EmulatorJS {
-    version = 2; //Increase by 1 when cores are updated
+    version = 3; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
-        //todo: sega32x, TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
+        /*todo:
+        Systems: TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
+        
+        Cores:
+        - Beetle NeoPop
+        - Beetle WonderSwan
+        - FreeChaF
+        - FreeIntv
+        - Gearcoleco
+        - NeoCD
+        - O2EM
+        - ParaLLEl N64
+        - Vecx
+        */
         if (generic) {
             const options = {
-                'virtualjaguar': 'jaguar',
-                'handy': 'lynx',
-                'yabause': 'segaSaturn',
-                'genesis_plus_gx': 'sega',//MS, MD, GG, CD... which do we return?
-                'fceumm': 'nes',
-                'snes9x': 'snes',
                 'a5200': 'atari5200',
-                'gambatte': 'gb',
-                'mgba': 'gba',
-                'beetle_vb': 'vb',
-                'mupen64plus_next': 'n64',
                 'desmume2015': 'nds',
-                'mame2003': 'mame2003',
                 'fbalpha2012_cps1': 'arcade',
                 'fbalpha2012_cps2': 'arcade',
+                'fbneo': 'arcade',
+                'fceumm': 'nes',
+                'gambatte': 'gb',
+                'genesis_plus_gx': 'sega',
+                'handy': 'lynx',
+                'mame2003': 'mame2003',
                 'mednafen_psx_hw': 'psx',
+                'beetle_vb': 'vb',
                 'melonds': 'nds',
+                'mgba': 'gba',
+                'mupen64plus_next': 'n64',
                 'nestopia': 'nes',
                 'opera': '3do',
+                'pcsx_rearmed': 'psx',
+                'picodrive': 'sega',
                 'prosystem': 'atari7800',
-                'stella2014': 'atari2600'
+                'snes9x': 'snes',
+                'stella2014': 'atari2600',
+                'virtualjaguar': 'jaguar',
+                'yabause': 'segaSaturn'
             }
             return options[core] || core;
         }
@@ -37,6 +53,7 @@ class EmulatorJS {
             'segaMD': 'genesis_plus_gx',
             'segaGG': 'genesis_plus_gx',
             'segaCD': 'genesis_plus_gx',
+            'sega32x': 'picodrive',
             'atari2600': 'stella2014',
             'atari7800': 'prosystem',
             'nes': 'fceumm',
@@ -48,29 +65,38 @@ class EmulatorJS {
             'n64': 'mupen64plus_next',
             'nds': 'melonds',
             'mame2003': 'mame2003',
-            'arcade': 'fbalpha2012_cps1', // I need to find a more  compatible arcade core
-            'psx': 'mednafen_psx_hw',
+            'arcade': 'fbneo',
+            'psx': 'pcsx_rearmed',
             '3do': 'opera'
         }
         return options[core] || core;
     }
     extensions = {
-        'fceumm': ['fds', 'nes', 'unif', 'unf'],
-        'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
         'a5200': ['a52', 'bin'],
-        'gambatte': ['gb', 'gbc', 'dmg'],
-        'mgba': ['gb', 'gbc', 'gba'],
-        'beetle_vb': ['vb', 'vboy', 'bin'],
-        'mupen64plus_next': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
+        'desmume2015': ['nds', 'bin'],
         'fbalpha2012_cps1': ['zip'],
         'fbalpha2012_cps2': ['zip'],
+        'fbneo': ['zip', '7z'],
+        'fceumm': ['fds', 'nes', 'unif', 'unf'],
+        'gambatte': ['gb', 'gbc', 'dmg'],
+        'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
+        'handy': ['lnx'],
         'mame2003': ['zip'],
-        'desmume2015': ['nds', 'bin'],
-        'melonds': ['nds'],
         'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
+        'beetle_vb': ['vb', 'vboy', 'bin'],
+        'melonds': ['nds'],
+        'mgba': ['gb', 'gbc', 'gba'],
+        'mupen64plus_next': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
         'nestopia': ['fds', 'nes', 'unif', 'unf'],
-        'opera': ['iso', 'bin', 'chd', 'cue']
+        'opera': ['iso', 'bin', 'chd', 'cue'],
+        'pcsx_rearmed': ['bin', 'cue', 'img', 'mdf', 'pbp', 'toc', 'cbn', 'm3u', 'ccd'],
+        'picodrive': ['bin', 'gen', 'smd', 'md', '32x', 'cue', 'iso', 'sms', '68k', 'chd'],
+        'prosystem': ['a78', 'bin'],
+        'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
+        'stella2014': ['a26', 'bin', 'zip'],
+        'virtualjaguar': ['j64', 'jag', 'rom', 'abs', 'cof', 'bin', 'prg'],
+        'yabause': ['cue', 'iso', 'ccd', 'mds', 'chd', 'zip', 'm3u']
     }
     createElement(type) {
         return document.createElement(type);
@@ -196,8 +222,8 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.4";
-        this.ejs_num_version = 40.4;
+        this.ejs_version = "4.0.5";
+        this.ejs_num_version = 40.5;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
@@ -815,6 +841,7 @@ class EmulatorJS {
                 }
                 
                 let resData = {};
+                const isPsx = (this.getCore(true) === "psx" && this.getCore() !== "pcsx_rearmed");
                 const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
@@ -832,7 +859,7 @@ class EmulatorJS {
                         FS.mkdir(fileName);
                         return;
                     }
-                    if (this.getCore(true) === "psx" && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
+                    if (isPsx && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
                         resData[fileName] = fileData;
                     } else if (fileName !== "!!notCompressedData") {
                         resData[fileName] = true;
@@ -851,13 +878,14 @@ class EmulatorJS {
                     })();
                     if (fileNames.length === 1) fileNames[0] = altName;
                     let execFile = null;
-                    if (this.getCore(true) === "psx") {
+                    if (isPsx) {
+                        //Not needed for pcsx_rearmed core
                         execFile = this.gameManager.createCueFile(fileNames);
                     }
                     
                     for (const k in resData) {
                         if (k === "!!notCompressedData") {
-                            if (this.getCore(true) === "psx" && execFile !== null) {
+                            if (isPsx && execFile !== null) {
                                 this.fileName = execFile;
                             } else {
                                 this.fileName = altName;
@@ -869,11 +897,11 @@ class EmulatorJS {
                             !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
                             this.fileName = k;
                         }
-                        if (this.getCore(true) === "psx" && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
+                        if (isPsx && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
                             FS.writeFile("/"+k, resData[k]);
                         }
                     }
-                    if (this.getCore(true) === "psx" && execFile !== null) {
+                    if (isPsx && execFile !== null) {
                         this.fileName = execFile;
                     }
                     resolve();
@@ -2973,9 +3001,12 @@ class EmulatorJS {
                 'disabled': this.localization("Disabled")
             }, 'disabled');
         }
-        
-        if (this.gameManager.getCoreOptions()) {
-            this.gameManager.getCoreOptions().split('\n').forEach((line, index) => {
+        let coreOpts;
+        try {
+            coreOpts = this.gameManager.getCoreOptions();
+        } catch(e){}
+        if (coreOpts) {
+            coreOpts.split('\n').forEach((line, index) => {
                 let option = line.split('; ');
                 let name = option[0];
                 let options = option[1].split('|'),
