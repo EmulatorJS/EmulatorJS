@@ -36,4 +36,9 @@ I do not know the file extension limits for this system.
 
 ## BIOS
 
-Saturn BIOS - Optional	`af5828fdff51384f99b3c4926be27762`
+|  File Name  |    md5sum   |
+| ----------- | ----------- |
+| saturn_bios.bin  | af5828fdff51384f99b3c4926be27762 |
+| mpr-17933.bin | 3240872c70984b6cbfda1586cab68dbe |
+| sega_101.bin | 85ec9ca47d8f6807718151cbcca8b964 |
+
