@@ -3,6 +3,7 @@
 # 4.0.4
 - Fix cheats "x" button
 - Optimize memory usage
+- Added ability to set urls to blob/arraybuffer/uint8array if needed
 
 # 4.0.3 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/5219ab51227bc0fb60cbc7b60e476b0145c932c9)
 - Remove RetroArch messages
