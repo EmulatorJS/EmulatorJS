@@ -3102,7 +3102,7 @@ class EmulatorJS {
         
         this.openNetplayMenu = () => {
             this.netplayMenu.style.display = "";
-            if (!this.netplay) {
+            if (!this.netplay || (this.netplay && !this.netplay.name)) {
                 this.netplay = {};
                 this.netplay.table = tbody;
                 this.netplay.playerTable = tbody2;
