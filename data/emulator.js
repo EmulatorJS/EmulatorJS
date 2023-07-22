@@ -92,6 +92,19 @@ class EmulatorJS {
         }
     }
     downloadFile(path, cb, progressCB, notWithPath, opts) {
+        const data = this.toData(path);//check other data types
+        if (data) {
+            data.then((game) => {
+                if (opts.method === 'HEAD') {
+                    cb({headers:{}});
+                    return;
+                } else {
+                    cb({headers:{}, data:game});
+                    return;
+                }
+            })
+            return;
+        }
         const basePath = notWithPath ? '' : this.config.dataPath;
         path = basePath + path;
         if (!notWithPath && this.config.filePaths) {
@@ -155,6 +168,20 @@ class EmulatorJS {
                 });
             })();
         }
+    }
+    toData(data, rv) {
+        if (!(data instanceof ArrayBuffer) && !(data instanceof Uint8Array) && !(data instanceof Blob)) return null;
+        if (rv) return true;
+        return new Promise(async (resolve) => {
+            if (data instanceof ArrayBuffer) {
+                resolve(new Uint8Array(data));
+            } else if (data instanceof Uint8Array) {
+                resolve(data);
+            } else if (data instanceof Blob) {
+                resolve(new Uint8Array(await data.arrayBuffer()));
+            }
+            resolve();
+        })
     }
     checkForUpdates() {
         fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
@@ -594,7 +621,7 @@ class EmulatorJS {
     }
     downloadStartState() {
         return new Promise((resolve, reject) => {
-            if (typeof this.config.loadState !== "string") {
+            if (typeof this.config.loadState !== "string" && !this.toData(this.config.loadState, true)) {
                 resolve();
                 return;
             }
@@ -619,7 +646,7 @@ class EmulatorJS {
     }
     downloadGamePatch() {
         return new Promise((resolve, reject) => {
-            if (typeof this.config.gamePatchUrl !== "string" || !this.config.gamePatchUrl.trim()) {
+            if ((typeof this.config.gamePatchUrl !== "string" || !this.config.gamePatchUrl.trim()) && !this.toData(this.config.gamePatchUrl, true)) {
                 resolve();
                 return;
             }
@@ -650,9 +677,12 @@ class EmulatorJS {
                             this.textElem.style.color = "red";
                             return;
                         }
+                        if (this.toData(this.config.gamePatchUrl, true)) {
+                            this.config.gamePatchUrl = "game";
+                        }
                         gotData(res.data);
                         const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported()) {
+                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gamePatchUrl !== "game") {
                             this.storage.rom.put(this.config.gamePatchUrl.split("/").pop(), {
                                 "content-length": res.headers['content-length'],
                                 data: res.data
@@ -667,7 +697,7 @@ class EmulatorJS {
     }
     downloadGameParent() {
         return new Promise((resolve, reject) => {
-            if (typeof this.config.gameParentUrl !== "string" || !this.config.gameParentUrl.trim()) {
+            if ((typeof this.config.gameParentUrl !== "string" || !this.config.gameParentUrl.trim()) && !this.toData(this.config.gameParentUrl, true)) {
                 resolve();
                 return;
             }
@@ -698,9 +728,12 @@ class EmulatorJS {
                             this.textElem.style.color = "red";
                             return;
                         }
+                        if (this.toData(this.config.gameParentUrl, true)) {
+                            this.config.gameParentUrl = "game";
+                        }
                         gotData(res.data);
                         const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported()) {
+                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameParentUrl !== "game") {
                             this.storage.rom.put(this.config.gameParentUrl.split("/").pop(), {
                                 "content-length": res.headers['content-length'],
                                 data: res.data
@@ -715,7 +748,7 @@ class EmulatorJS {
     }
     downloadBios() {
         return new Promise((resolve, reject) => {
-            if (typeof this.config.biosUrl !== "string" || !this.config.biosUrl.trim()) {
+            if ((typeof this.config.biosUrl !== "string" || !this.config.biosUrl.trim()) && !this.toData(this.config.biosUrl, true)) {
                 resolve();
                 return;
             }
@@ -751,8 +784,11 @@ class EmulatorJS {
                             this.textElem.style.color = "red";
                             return;
                         }
+                        if (this.toData(this.config.biosUrl, true)) {
+                            this.config.biosUrl = "game";
+                        }
                         gotBios(res.data);
-                        if (this.saveInBrowserSupported()) {
+                        if (this.saveInBrowserSupported() && this.config.biosUrl !== "game") {
                             this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
                                 "content-length": res.headers['content-length'],
                                 data: res.data
@@ -779,7 +815,7 @@ class EmulatorJS {
                 }
                 
                 let resData = {};
-                const altName = this.config.gameUrl.startsWith("blob:") ? this.config.gameName || "game" : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
                         const paths = fileName.split("/");
@@ -844,15 +880,15 @@ class EmulatorJS {
                 });
             }
             
-            
             this.downloadFile(this.config.gameUrl, (res) => {
                 if (res === -1) {
                     this.textElem.innerText = this.localization('Network Error');
                     this.textElem.style.color = "red";
                     return;
                 }
-                this.storage.rom.get(this.config.gameUrl.split("/").pop()).then((result) => {
-                    if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
+                const name = (typeof this.config.gameUrl === "string") ? this.config.gameUrl.split('/').pop() : "game";
+                this.storage.rom.get(name).then((result) => {
+                    if (result && result['content-length'] === res.headers['content-length'] && !this.debug && name !== "game") {
                         gotGameData(result.data);
                         return;
                     }
@@ -862,9 +898,12 @@ class EmulatorJS {
                             this.textElem.style.color = "red";
                             return;
                         }
+                        if (this.toData(this.config.gameUrl, true)) {
+                            this.config.gameUrl = "game";
+                        }
                         gotGameData(res.data);
                         const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported()) {
+                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameUrl !== "game") {
                             this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
                                 "content-length": res.headers['content-length'],
                                 data: res.data
