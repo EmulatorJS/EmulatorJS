@@ -443,31 +443,33 @@ class EmulatorJS {
                 }, null, false, {responseType: "arraybuffer", method: "GET"});
             })
         }
+        const files = {};
+        let res;
+        const onMessage = (data) => {
+            if (!data.data) return;
+            //data.data.t/ 4=progress, 2 is file, 1 is zip done
+            if (data.data.t === 4 && msg) {
+                const pg = data.data;
+                const num = Math.floor(pg.current / pg.total * 100);
+                if (isNaN(num)) return;
+                const progress = ' '+num.toString()+'%';
+                this.textElem.innerText = msg + progress;
+            }
+            if (data.data.t === 2) {
+                if (typeof fileCbFunc === "function") {
+                    fileCbFunc(data.data.file, data.data.data);
+                    files[data.data.file] = true;
+                } else {
+                    files[data.data.file] = data.data.data;
+                }
+            }
+            if (data.data.t === 1) {
+                res(files);
+            }
+        }
         const decompress7z = (file) => {
             return new Promise((resolve, reject) => {
-                const files = {};
-                const onMessage = (data) => {
-                    if (!data.data) return;
-                    //data.data.t/ 4=progress, 2 is file, 1 is zip done
-                    if (data.data.t === 4 && msg) {
-                        const pg = data.data;
-                        const num = Math.floor(pg.current / pg.total * 100);
-                        if (isNaN(num)) return;
-                        const progress = ' '+num.toString()+'%';
-                        this.textElem.innerText = msg + progress;
-                    }
-                    if (data.data.t === 2) {
-                        if (typeof fileCbFunc === "function") {
-                            fileCbFunc(data.data.file, data.data.data);
-                            files[data.data.file] = true;
-                        } else {
-                            files[data.data.file] = data.data.data;
-                        }
-                    }
-                    if (data.data.t === 1) {
-                        resolve(files);
-                    }
-                }
+                res = resolve;
                 
                 createWorker('compression/extract7z.js').then((worker) => {
                     worker.onmessage = onMessage;
@@ -478,39 +480,17 @@ class EmulatorJS {
         }
         const decompressRar = (file) => {
             return new Promise((resolve, reject) => {
-                const files = {};
-                const onMessage = (data) => {
-                    if (!data.data) return;
-                    //data.data.t/ 4=progress, 2 is file, 1 is zip done
-                    if (data.data.t === 4 && msg) {
-                        const pg = data.data;
-                        const num = Math.floor(pg.current / pg.total * 100);
-                        if (isNaN(num)) return;
-                        const progress = ' '+num.toString()+'%';
-                        this.textElem.innerText = msg + progress;
-                    }
-                    if (data.data.t === 2) {
-                        if (typeof fileCbFunc === "function") {
-                            fileCbFunc(data.data.file, data.data.data);
-                            files[data.data.file] = true;
-                        } else {
-                            files[data.data.file] = data.data.data;
-                        }
-                    }
-                    if (data.data.t === 1) {
-                        resolve(files);
-                    }
-                }
+                res = resolve;
                 
                 this.downloadFile("compression/libunrar.js", (res) => {
-                    this.downloadFile("compression/libunrar.js.mem", (res2) => {
+                    this.downloadFile("compression/libunrar.wasm", (res2) => {
                         if (res === -1 || res2 === -1) {
                             this.textElem.innerText = this.localization('Network Error');
                             this.textElem.style.color = "red";
                             return;
                         }
-                        const path = URL.createObjectURL(new Blob([res2]));
-                        let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+path+'\';\n    }\n};\n'+res.data+'\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
+                        const path = URL.createObjectURL(new Blob([res2.data], {type: "application/wasm"}));
+                        let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+path+'\';\n    }\n};\n'+res.data+'\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (!entry) return;\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
                         const blob = new Blob([data], {
                             'type': 'application/javascript'
                         })
@@ -518,37 +498,14 @@ class EmulatorJS {
                         const worker = new Worker(url);
                         worker.onmessage = onMessage;
                         worker.postMessage(file);
-                    }, null, false, {responseType: "text", method: "GET"})
+                    }, null, false, {responseType: "arraybuffer", method: "GET"})
                 }, null, false, {responseType: "text", method: "GET"});
                 
             })
         }
         const decompressZip = (file) => {
             return new Promise((resolve, reject) => {
-                const files = {};
-                const onMessage = (data) => {
-                    //console.log(data);
-                    if (!data.data) return;
-                    //data.data.t/ 4=progress, 2 is file, 1 is zip done
-                    if (data.data.t === 4 && msg) {
-                        const pg = data.data;
-                        const num = Math.floor(pg.current / pg.total * 100);
-                        if (isNaN(num)) return;
-                        const progress = ' '+num.toString()+'%';
-                        this.textElem.innerText = msg + progress;
-                    }
-                    if (data.data.t === 2) {
-                        if (typeof fileCbFunc === "function") {
-                            fileCbFunc(data.data.file, data.data.data);
-                            files[data.data.file] = true;
-                        } else {
-                            files[data.data.file] = data.data.data;
-                        }
-                    }
-                    if (data.data.t === 1) {
-                        resolve(files);
-                    }
-                }
+                res = resolve;
                 
                 createWorker('compression/extractzip.js').then((worker) => {
                     worker.onmessage = onMessage;

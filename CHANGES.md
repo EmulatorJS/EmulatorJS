@@ -7,6 +7,7 @@
 - Made fbneo core the default arcade core (better compatibility)
 - Added picodrive core (sega32x)
 - Cleaned up documentation
+- Fix/update rar de-compression
 
 # 4.0.4 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/41491a738cf92ef9cee7d53f323aa2ab9732c053)
 - Fix cheats "x" button
