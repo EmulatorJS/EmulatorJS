@@ -209,6 +209,36 @@ class EJS_GameManager {
         }
         return (fileNames.length === 1) ? baseFileName+"-0.cue" : baseFileName+".m3u";
     }
+    loadPpssppAssets() {
+        return new Promise(resolve => {
+            this.EJS.downloadFile('cores/ppsspp-assets.zip', (res) => {
+                this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
+                    if (pspassets === -1) {
+                        this.EJS.textElem.innerText = this.localization('Network Error');
+                        this.EJS.textElem.style.color = "red";
+                        return;
+                    }
+                    this.mkdir("/PPSSPP");
+                    
+                    for (const file in pspassets) {
+                        const data = pspassets[file];
+                        const path = "/PPSSPP/"+file;
+                        const paths = path.split("/");
+                        let cp = "";
+                        for (let i=0; i<paths.length-1; i++) {
+                            if (paths[i] === "") continue;
+                            cp += "/"+paths[i];
+                            if (!FS.analyzePath(cp).exists) {
+                                FS.mkdir(cp);
+                            }
+                        }
+                        this.FS.writeFile(path, data);
+                    }
+                    resolve();
+                })
+            }, null, false, {responseType: "arraybuffer", method: "GET"});
+        })
+    }
     toggleMainLoop(playing) {
         this.functions.toggleMainLoop(playing);
     }
