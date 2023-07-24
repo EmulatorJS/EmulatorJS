@@ -537,15 +537,17 @@ class EmulatorJS {
         this.textElem.innerText = this.localization("Download Game Core");
         const gotCore = (data) => {
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
-                let js, wasm;
+                let js, thread, wasm;
                 for (let k in data) {
                     if (k.endsWith(".wasm")) {
                         wasm = data[k];
+                    } else if (k.endsWith(".worker.js")) {
+                        thread = data[k];
                     } else if (k.endsWith(".js")) {
                         js = data[k];
                     }
                 }
-                this.initGameCore(js, wasm);
+                this.initGameCore(js, wasm, thread);
             });
         }
         this.storage.core.get(this.getCore()+'-wasm.data').then((result) => {
@@ -569,8 +571,14 @@ class EmulatorJS {
             }, false, {responseType: "arraybuffer", method: "GET"});
         })
     }
-    initGameCore(js, wasm) {
-        this.initModule(wasm);
+    initGameCore(js, wasm, thread) {
+        if (thread && ((typeof window.SharedArrayBuffer) !== "function")) {
+            this.textElem.innerText = this.localization('Error for site owner')+"\n"+this.localization("Check console");
+            this.textElem.style.color = "red";
+            console.warn("The "+this.getCore()+" core requires threads, but threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+            return;
+        }
+        this.initModule(wasm, thread);
         let script = this.createElement("script");
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
         document.body.appendChild(script);
@@ -786,7 +794,6 @@ class EmulatorJS {
     }
     downloadRom() {
         return new Promise((resolve, reject) => {
-            this.gameManager = new window.EJS_GameManager(this.Module, this);
             
             this.textElem.innerText = this.localization("Download Game Data");
             const gotGameData = (data) => {
@@ -903,6 +910,10 @@ class EmulatorJS {
     }
     downloadFiles() {
         (async () => {
+            this.gameManager = new window.EJS_GameManager(this.Module, this);
+            if (this.getCore() === "ppsspp") {
+                await this.gameManager.loadPpssppAssets();
+            }
             await this.downloadRom();
             await this.downloadBios();
             await this.downloadStartState();
@@ -911,7 +922,7 @@ class EmulatorJS {
             this.startGame();
         })();
     }
-    initModule(wasmData) {
+    initModule(wasmData, threadData) {
         window.Module = {
             'noInitialRun': true,
             'onRuntimeInitialized': this.downloadFiles.bind(this),
@@ -935,6 +946,8 @@ class EmulatorJS {
                 if (this.debug) console.log(fileName);
                 if (fileName.endsWith(".wasm")) {
                     return URL.createObjectURL(new Blob([wasmData], {type: "application/wasm"}));
+                } else if (fileName.endsWith(".worker.js")) {
+                    return URL.createObjectURL(new Blob([threadData], {type: "application/javascript"}));
                 }
             }
         };
@@ -942,7 +955,6 @@ class EmulatorJS {
     }
     startGame() {
         try {
-            
             const args = [];
             if (this.debug) args.push('-v');
             args.push('/'+this.fileName);
