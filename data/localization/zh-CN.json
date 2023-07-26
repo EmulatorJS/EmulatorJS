@@ -3,7 +3,7 @@
         "restart": "重新开始",
         "play": "播放",
         "pause": "暂停",
-        "played": "玩过",
+        "played": "已玩",
         "volume": "音量",
         "mute": "静音 (F9)",
         "unmute": "取消静音 (F9)",
@@ -16,11 +16,11 @@
         "netplay": "网络游戏",
         "gamepad": "控制设置",
         "cheat": "秘籍",
-        "menuBack": "返回上一级菜单",
+        "menuBack": "返回上级菜单",
         "normal": "正常",
         "all": "全部",
         "reset": "重置",
-        "disabled": "残障人士",
+        "disabled": "禁用",
         "enabled": "启用",
         "playNow": "开始游戏"
     },
@@ -28,10 +28,10 @@
         "shader": {
             "label": "着色器",
             "options": {
-                "disabled": "残疾人士",
+                "disabled": "禁用",
                 "2xScaleHQ.glslp": "2xScaleHQ",
                 "4xScaleHQ.glslp": "4xScaleHQ",
-                "crt-easymode.glslp": "CRT 简易模式",
+                "crt-easymode.glslp": "CRT简易模式",
                 "crt-aperture.glslp": "CRT孔径",
                 "crt-geom.glslp": "CRT几何",
                 "crt-mattias.glslp": "CRT mattias"
@@ -41,17 +41,17 @@
         "virtual-gamepad": {
             "label": "虚拟游戏手柄",
             "options": {
-                "disabled": "残疾人士",
+                "disabled": "禁用",
                 "enabled": "启用"
             },
             "default": "enabled"
         }
     },
-    "Control Settings": "控制设置",
+    "Control Settings": "控制器设置",
     "Player 1": "玩家1",
     "Player 2": "玩家2",
-    "Player 3": "玩家 3",
-    "Player 4": "玩家 4",
+    "Player 3": "玩家3",
+    "Player 4": "玩家4",
     "Update": "更新",
     "Reset": "重置",
     "Clear": "清除",
@@ -103,7 +103,7 @@
     "Color Palette": "调色板",
     "No Sprite Limit": "无精灵图限制",
     "Enabled": "启用",
-    "Disabled": "残障人士",
+    "Disabled": "禁用",
     "enabled": "启用",
     "disabled": "已禁用",
     "Low": "低",

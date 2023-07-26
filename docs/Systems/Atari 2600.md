@@ -13,6 +13,8 @@ There is no bios for this system.
 <script type='text/javascript'>
 
     EJS_player = '#game';
+    
+    // Can also be stella2014
     EJS_core = 'atari2600';
     
     // URL to Game rom
@@ -31,5 +33,9 @@ There is no bios for this system.
 <script src='data/loader.js'></script>
 ```
 
+### CORES
 
+The *atari2600* system supports 1 core
+- `stella2014`
 
+If set to `atari2600`, emulator will use the `stella2014` core.

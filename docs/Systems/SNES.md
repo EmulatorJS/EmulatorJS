@@ -31,22 +31,12 @@
 <script src='data/loader.js'></script>
 ```
 
-## ROM Type
-
-Your **ROM** can have the following extensions:
-- `smc`
-- `sfc`
-- `swc`
-- `fig`
-- `bs`
-- `st`
-
 ### BIOS
 
 |  File Name  |  Description  |    md5sum   |
 | ----------- | ------------- | ----------- |
-| BS-X.bin | BS-X - Sore wa Namae o Nusumareta Machi no<br> Monogatari (Japan) (Rev 1) - Optional  | fed4d8242cfbed61343d53d48432aced |
-| STBIOS.bin | Sufami Turbo (Japan) - Optional | d3a44ba7d42a74d3ac58cb9c14c6a5ca |
+| BS-X.bin | BS-X - Sore wa Namae o Nusumareta Machi no<br> Monogatari (Japan) (Rev 1) - Optional  | `fed4d8242cfbed61343d53d48432aced` |
+| STBIOS.bin | Sufami Turbo (Japan) - Optional | `d3a44ba7d42a74d3ac58cb9c14c6a5ca` |
 
 ### CORES
 

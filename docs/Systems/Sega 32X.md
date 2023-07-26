@@ -13,6 +13,8 @@ There is no bios for this system.
 <script type='text/javascript'>
 
     EJS_player = '#game';
+    
+    // Can also be picodrive
     EJS_core = 'sega32x';
     
     // URL to Game rom
@@ -31,5 +33,9 @@ There is no bios for this system.
 <script src='data/loader.js'></script>
 ```
 
+### CORES
 
+The *sega32x* system supports 1 core
+- `picodrive`
 
+If set to `sega32x`, emulator will use the `picodrive` core.
