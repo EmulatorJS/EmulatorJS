@@ -1,0 +1,14 @@
+{
+  "name": "EmulatorJS",
+  "version": "3.1.0",
+  "main": "index.js",
+  "repository": "https://github.com/EmulatorJS/EmulatorJS.git",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite --host",
+    "start": "yarn dev"
+  },
+  "devDependencies": {
+    "vite": "^4.2.0"
+  }
+}
