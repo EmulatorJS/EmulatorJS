@@ -1846,6 +1846,19 @@ class EmulatorJS {
                 25: this.localization('QUICK LOAD STATE'),
                 26: this.localization('CHANGE STATE SLOT')
             };
+        } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getCore(true))) {
+            buttons = {
+                0: 'B',
+                1: 'A',
+                3: 'START',
+                8: 'C',
+                9: 'Y',
+                10: 'X',
+                11: 'Z',
+                24: this.localization('QUICK SAVE STATE'),
+                25: this.localization('QUICK LOAD STATE'),
+                26: this.localization('CHANGE STATE SLOT')
+            };
         } else {
             buttons = {
                 0: 'B',
@@ -2320,6 +2333,8 @@ class EmulatorJS {
             info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
         } else if (this.getCore(true) === "snes") {
             info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
+        } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getCore(true))) {
+            info = [{"type":"button","text":"A","id":"a","location":"right","right":130,"top":70,"bold":true,"input_value":9}, {"type":"button","text":"B","id":"b","location":"right","right":60,"top":70,"bold":true,"input_value":0}, {"type":"button","text":"C","id":"c","location":"right","right":-10,"top":70,"bold":true,"input_value":8}, {"type":"button","text":"X","id":"x","location":"right","right":130,"top":0,"bold":true,"input_value":10}, {"type":"button","text":"Y","id":"y","location":"right","right":60,"top":0,"bold":true,"input_value":9}, {"type":"button","text":"Z","id":"z","location":"right","right":-10,"top":0,"bold":true,"input_value":11}, {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}, {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}];
         } else {
             info = [{"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
         }
