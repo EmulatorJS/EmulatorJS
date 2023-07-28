@@ -42,13 +42,16 @@ class GamepadHandler {
                 hasGamepad = true;
                 
                 oldGamepad.axes.forEach((axis, axisIndex) => {
-                    if (gamepad.axes[axisIndex] !== axis) {
+                    const val = (axis < 0.01 && axis > -0.01) ? 0 : axis;
+                    const newVal = (gamepad.axes[axisIndex] < 0.01 && gamepad.axes[axisIndex] > -0.01) ? 0 : gamepad.axes[axisIndex];
+                    if (newVal !== val) {
                         const axis = ['LEFT_STICK_X', 'LEFT_STICK_Y', 'RIGHT_STICK_X', 'RIGHT_STICK_Y'][axisIndex];
                         if (!axis) return;
-                        this.dispatchEvent('axischanged', {axis: axis, value: gamepad.axes[axisIndex], index: gamepad.index, gamepadIndex: gamepad.index});
+                        this.dispatchEvent('axischanged', {axis: axis, value: newVal, index: gamepad.index, gamepadIndex: gamepad.index});
                     }
-                    gamepadToSave.axes[axisIndex] = axis;
+                    gamepadToSave.axes[axisIndex] = newVal;
                 })
+                
                 gamepad.buttons.forEach((button, buttonIndex) => {
                     let pressed = oldGamepad.buttons[buttonIndex] === 1.0;
                     if (typeof oldGamepad.buttons[buttonIndex] === "object") {

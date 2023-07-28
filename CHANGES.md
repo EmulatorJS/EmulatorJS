@@ -8,6 +8,11 @@
 - Added picodrive core (sega32x)
 - Cleaned up documentation
 - Fixed/updated rar de-compression
+- Added segaMD, segaCD, sega32x button labels and virtual gamepad (Thanks to [@n-at](https://github.com/n-at))
+- Added ability to use threads (pre compiled cores not yet available)
+- Fixed reversed gamepad button events (down was up, up was down)
+- Fixed Gamepad axis release not triggering
+- Add ***highly beta*** psp core - see readme
 
 # 4.0.4 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/41491a738cf92ef9cee7d53f323aa2ab9732c053)
 - Fix cheats "x" button
