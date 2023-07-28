@@ -36,6 +36,19 @@
 <br>
 <br>
 
+![BinBashBanana Avatar]
+
+### Back-End Developer
+
+***RetroArch Core Development***
+
+**[![Badge BinBashBanana GitHub]][BinBashBanana GitHub]** 
+
+**[![Badge BinBashBanana Website]][BinBashBanana Website]** 
+
+<br>
+<br>
+<br>
 
 ![Archiver Avatar]
 
@@ -115,3 +128,13 @@
 [Allan Avatar]: https://avatars.githubusercontent.com/u/74841470?s=90 'Allancoding - Allan Niles'
 [Allan GitHub]: https://github.com/allancoding
 [Allan Website]: https://allancoding.ga/
+
+
+<!----------------------------------{ BinBashBanana }---------------------------------->
+
+[Badge BinBashBanana GitHub]: https://img.shields.io/badge/BinBashBanana-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white
+[Badge BinBashBanana Website]: https://img.shields.io/badge/binbashbanana.github.io-lightgray.svg?style=for-the-badge&logo=GitHub&logoColor=white
+
+[BinBashBanana Avatar]: https://avatars.githubusercontent.com/u/51469593?s=90 'BinBashBanana'
+[BinBashBanana GitHub]: https://github.com/BinBashBanana
+[BinBashBanana Website]: https://binbashbanana.github.io/
