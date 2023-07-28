@@ -56,6 +56,8 @@
 [![Avatar Protektor]][GitHub Protektor]
 [![Avatar ericKuang]][GitHub ericKuang]
 [![Avatar seedgou]][GitHub seedgou]
+[![Avatar incredibleIdea]][GitHub incredibleIdea]
+[![Avatar Alexey Nurgaliev]][GitHub Alexey Nurgaliev]
 
 </div>
 
@@ -79,6 +81,12 @@
 
 [Avatar seedgou]: https://github.com/rwv.png?size=100
 [GitHub seedgou]: https://github.com/rwv 'rwv - seedgou'
+
+[Avatar incredibleIdea]: https://github.com/incredibleIdea.png?size=100
+[GitHub incredibleIdea]: https://github.com/incredibleIdea 'incredibleIdea'
+
+[Avatar Alexey Nurgaliev]: https://github.com/n-at.png?size=100
+[GitHub Alexey Nurgaliev]: https://github.com/n-at 'n-at - Alexey Nurgaliev'
 
 
 <!----------------------------------{ Ethan }----------------------------------->
