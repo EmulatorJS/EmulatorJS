@@ -26,7 +26,7 @@ jobs:
   deploy:
     environment:
       name: github-pages
-      url: "demo.emulatorjs.org"
+      url: "https://demo.emulatorjs.org"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
