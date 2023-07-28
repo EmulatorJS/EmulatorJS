@@ -19,6 +19,7 @@ class EmulatorJS {
         if (generic) {
             const options = {
                 'a5200': 'atari5200',
+                'beetle_vb': 'vb',
                 'desmume2015': 'nds',
                 'fbalpha2012_cps1': 'arcade',
                 'fbalpha2012_cps2': 'arcade',
@@ -29,7 +30,6 @@ class EmulatorJS {
                 'handy': 'lynx',
                 'mame2003': 'mame2003',
                 'mednafen_psx_hw': 'psx',
-                'beetle_vb': 'vb',
                 'melonds': 'nds',
                 'mgba': 'gba',
                 'mupen64plus_next': 'n64',
@@ -37,6 +37,7 @@ class EmulatorJS {
                 'opera': '3do',
                 'pcsx_rearmed': 'psx',
                 'picodrive': 'sega',
+                'ppsspp': 'psp',
                 'prosystem': 'atari7800',
                 'snes9x': 'snes',
                 'stella2014': 'atari2600',
@@ -67,7 +68,8 @@ class EmulatorJS {
             'mame2003': 'mame2003',
             'arcade': 'fbneo',
             'psx': 'pcsx_rearmed',
-            '3do': 'opera'
+            '3do': 'opera',
+            'psp': 'ppsspp'
         }
         return options[core] || core;
     }
@@ -92,6 +94,7 @@ class EmulatorJS {
         'opera': ['iso', 'bin', 'chd', 'cue'],
         'pcsx_rearmed': ['bin', 'cue', 'img', 'mdf', 'pbp', 'toc', 'cbn', 'm3u', 'ccd'],
         'picodrive': ['bin', 'gen', 'smd', 'md', '32x', 'cue', 'iso', 'sms', '68k', 'chd'],
+        'ppsspp': ['elf', 'iso', 'cso', 'prx', 'pbp'],
         'prosystem': ['a78', 'bin'],
         'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
         'stella2014': ['a26', 'bin', 'zip'],
