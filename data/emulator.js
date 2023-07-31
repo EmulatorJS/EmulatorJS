@@ -1858,6 +1858,10 @@ class EmulatorJS {
                 9: 'Y',
                 10: 'X',
                 11: 'Z',
+                4: 'UP',
+                5: 'DOWN',
+                6: 'LEFT',
+                7: 'RIGHT',
                 24: this.localization('QUICK SAVE STATE'),
                 25: this.localization('QUICK LOAD STATE'),
                 26: this.localization('CHANGE STATE SLOT')
