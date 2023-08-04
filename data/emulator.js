@@ -808,7 +808,7 @@ class EmulatorJS {
                 }
                 
                 let resData = {};
-                const isPsx = (this.getCore(true) === "psx" && this.getCore() !== "pcsx_rearmed");
+                const needsCue = (["mednafen_psx", "mednafen_psx_hw", "picodrive"].includes(this.getCore()));
                 const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
@@ -826,7 +826,7 @@ class EmulatorJS {
                         FS.mkdir(fileName);
                         return;
                     }
-                    if (isPsx && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
+                    if (needsCue && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
                         resData[fileName] = fileData;
                     } else if (fileName !== "!!notCompressedData") {
                         resData[fileName] = true;
@@ -845,14 +845,13 @@ class EmulatorJS {
                     })();
                     if (fileNames.length === 1) fileNames[0] = altName;
                     let execFile = null;
-                    if (isPsx) {
-                        //Not needed for pcsx_rearmed core
+                    if (needsCue) {
                         execFile = this.gameManager.createCueFile(fileNames);
                     }
                     
                     for (const k in resData) {
                         if (k === "!!notCompressedData") {
-                            if (isPsx && execFile !== null) {
+                            if (needsCue && execFile !== null) {
                                 this.fileName = execFile;
                             } else {
                                 this.fileName = altName;
@@ -864,11 +863,11 @@ class EmulatorJS {
                             !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
                             this.fileName = k;
                         }
-                        if (isPsx && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
+                        if (needsCue && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
                             FS.writeFile("/"+k, resData[k]);
                         }
                     }
-                    if (isPsx && execFile !== null) {
+                    if (needsCue && execFile !== null) {
                         this.fileName = execFile;
                     }
                     resolve();
