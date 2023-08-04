@@ -1774,7 +1774,7 @@ class EmulatorJS {
         body.classList.add("ejs_control_body");
         
         let buttons;
-        if ('nes' === this.getCore(true)) {
+        if (['nes', 'gb'] === this.getCore(true)) {
             buttons = [
                 {id: 8, label: 'A'},
                 {id: 0, label: 'B'},
@@ -1859,6 +1859,50 @@ class EmulatorJS {
                 {id: 11, label: 'Z'},
                 {id: 3, label: 'START'},
                 {id: 2, label: 'MODE'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
+        } else if ('segaMS' === this.getCore(true)) {
+            buttons = [
+                {id: 0, label: 'BUTTON 1 / START'},
+                {id: 8, label: 'BUTTON 2'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
+        } else if ('segaGG' === this.getCore(true)) {
+            buttons = [
+                {id: 0, label: 'BUTTON 1'},
+                {id: 8, label: 'BUTTON 2'},
+                {id: 3, label: 'START'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
+        } else if ('segaSaturn' === this.getCore(true)) {
+            buttons = [
+                {id: 1, label: 'A'},
+                {id: 0, label: 'B'},
+                {id: 8, label: 'C'},
+                {id: 9, label: 'X'},
+                {id: 10, label: 'Y'},
+                {id: 11, label: 'Z'},
+                {id: 12, label: 'L'},
+                {id: 13, label: 'R'},
+                {id: 3, label: 'START'},
                 {id: 4, label: 'UP'},
                 {id: 5, label: 'DOWN'},
                 {id: 6, label: 'LEFT'},
@@ -2349,9 +2393,53 @@ class EmulatorJS {
         } else if (this.getCore(true) === "snes") {
             info = [{"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},{"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},{"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}];
         } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getCore(true))) {
-            info = [{"type":"button","text":"A","id":"a","location":"right","right":130,"top":70,"bold":true,"input_value":9}, {"type":"button","text":"B","id":"b","location":"right","right":60,"top":70,"bold":true,"input_value":0}, {"type":"button","text":"C","id":"c","location":"right","right":-10,"top":70,"bold":true,"input_value":8}, {"type":"button","text":"X","id":"x","location":"right","right":130,"top":0,"bold":true,"input_value":10}, {"type":"button","text":"Y","id":"y","location":"right","right":60,"top":0,"bold":true,"input_value":9}, {"type":"button","text":"Z","id":"z","location":"right","right":-10,"top":0,"bold":true,"input_value":11}, {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}, {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}];
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":9},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"X","id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"Y","id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":9},
+                {"type":"button","text":"Z","id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Mode","id":"mode","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
+            ];
+        } else if ("segaMS" === this.getCore(true)) {
+            info = [
+                {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":40,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}
+            ];
+        } else if ("segaGG" === this.getCore(true)) {
+            info = [
+                {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+            ];
+        } else if ("segaSaturn" === this.getCore(true)) {
+            info = [
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"X","id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"Z","id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"L","id":"l","location":"center","left":-60,"top":-10,"bold":true,"input_value":12},
+                {"type":"button","text":"R","id":"r","location":"center","left":120,"top":-10,"bold":true,"input_value":13},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+            ];
         } else {
-            info = [{"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},{"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},{"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},{"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},{"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},{"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},{"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}];
+            info = [
+                {"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+            ];
         }
         info = JSON.parse(JSON.stringify(info));
         
