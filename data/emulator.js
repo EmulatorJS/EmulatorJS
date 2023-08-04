@@ -1775,130 +1775,135 @@ class EmulatorJS {
         
         let buttons;
         if ('nes' === this.getCore(true)) {
-            buttons = {
-                8: 'A',
-                0: 'B',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            }
+            buttons = [
+                {id: 8, label: 'A'},
+                {id: 0, label: 'B'},
+                {id: 2, label: 'SELECT'},
+                {id: 3, label: 'START'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
         } else if ('snes' === this.getCore(true)) {
-            buttons = {
-                0: 'B',
-                1: 'Y',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                8: 'A',
-                9: 'X',
-                10: 'L',
-                11: 'R',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+            buttons = [
+                {id: 8, label: 'A'},
+                {id: 0, label: 'B'},
+                {id: 9, label: 'X'},
+                {id: 1, label: 'Y'},
+                {id: 2, label: 'SELECT'},
+                {id: 3, label: 'START'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 10, label: 'L'},
+                {id: 11, label: 'R'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
         } else if ('n64' === this.getCore(true)) {
-            buttons = {
-                0: 'A',
-                1: 'B',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                10: 'L',
-                11: 'R',
-                12: 'Z',
-                19: 'L STICK UP',
-                18: 'L STICK DOWN',
-                17: 'L STICK LEFT',
-                16: 'L STICK RIGHT',
-                23: 'R STICK UP',
-                22: 'R STICK DOWN',
-                21: 'R STICK LEFT',
-                20: 'R STICK RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+            buttons = [
+                {id: 0, label: 'A'},
+                {id: 1, label: 'B'},
+                {id: 3, label: 'START'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 10, label: 'L'},
+                {id: 11, label: 'R'},
+                {id: 12, label: 'Z'},
+                {id: 19, label: 'L STICK UP'},
+                {id: 18, label: 'L STICK DOWN'},
+                {id: 17, label: 'L STICK LEFT'},
+                {id: 16, label: 'L STICK RIGHT'},
+                {id: 23, label: 'R STICK UP'},
+                {id: 22, label: 'R STICK DOWN'},
+                {id: 21, label: 'R STICK LEFT'},
+                {id: 20, label: 'R STICK RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
         } else if ('nds' === this.getCore(true)) {
-            buttons = {
-                0: 'B',
-                1: 'Y',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                8: 'A',
-                9: 'X',
-                10: 'L',
-                11: 'R',
-                14: 'Microphone',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+            buttons = [
+                {id: 8, label: 'A'},
+                {id: 0, label: 'B'},
+                {id: 9, label: 'X'},
+                {id: 1, label: 'Y'},
+                {id: 2, label: 'SELECT'},
+                {id: 3, label: 'START'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 10, label: 'L'},
+                {id: 11, label: 'R'},
+                {id: 14, label: 'Microphone'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
         } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getCore(true))) {
-            buttons = {
-                0: 'B',
-                1: 'A',
-                3: 'START',
-                8: 'C',
-                9: 'Y',
-                10: 'X',
-                11: 'Z',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+            buttons = [
+                {id: 1, label: 'A'},
+                {id: 0, label: 'B'},
+                {id: 8, label: 'C'},
+                {id: 10, label: 'X'},
+                {id: 9, label: 'Y'},
+                {id: 11, label: 'Z'},
+                {id: 3, label: 'START'},
+                {id: 2, label: 'MODE'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
         } else {
-            buttons = {
-                0: 'B',
-                1: 'Y',
-                2: 'SELECT',
-                3: 'START',
-                4: 'UP',
-                5: 'DOWN',
-                6: 'LEFT',
-                7: 'RIGHT',
-                8: 'A',
-                9: 'X',
-                10: 'L',
-                11: 'R',
-                12: 'L2',
-                13: 'R2',
-                14: 'L3',
-                15: 'R3',
-                19: 'L STICK UP',
-                18: 'L STICK DOWN',
-                17: 'L STICK LEFT',
-                16: 'L STICK RIGHT',
-                23: 'R STICK UP',
-                22: 'R STICK DOWN',
-                21: 'R STICK LEFT',
-                20: 'R STICK RIGHT',
-                24: this.localization('QUICK SAVE STATE'),
-                25: this.localization('QUICK LOAD STATE'),
-                26: this.localization('CHANGE STATE SLOT')
-            };
+            buttons = [
+                {id: 0, label: 'B'},
+                {id: 1, label: 'Y'},
+                {id: 2, label: 'SELECT'},
+                {id: 3, label: 'START'},
+                {id: 4, label: 'UP'},
+                {id: 5, label: 'DOWN'},
+                {id: 6, label: 'LEFT'},
+                {id: 7, label: 'RIGHT'},
+                {id: 8, label: 'A'},
+                {id: 9, label: 'X'},
+                {id: 10, label: 'L'},
+                {id: 11, label: 'R'},
+                {id: 12, label: 'L2'},
+                {id: 13, label: 'R2'},
+                {id: 14, label: 'L3'},
+                {id: 15, label: 'R3'},
+                {id: 19, label: 'L STICK UP'},
+                {id: 18, label: 'L STICK DOWN'},
+                {id: 17, label: 'L STICK LEFT'},
+                {id: 16, label: 'L STICK RIGHT'},
+                {id: 23, label: 'R STICK UP'},
+                {id: 22, label: 'R STICK DOWN'},
+                {id: 21, label: 'R STICK LEFT'},
+                {id: 20, label: 'R STICK RIGHT'},
+                {id: 24, label: this.localization('QUICK SAVE STATE')},
+                {id: 25, label: this.localization('QUICK LOAD STATE')},
+                {id: 26, label: this.localization('CHANGE STATE SLOT')},
+            ];
         }
         if (['arcade', 'mame'].includes(this.getCore(true))) {
-            buttons[2] = this.localization('INSERT COIN');
+            for (const buttonIdx in buttons) {
+                if (buttons[buttonIdx].id === 2) {
+                    buttons[buttonIdx].label = this.localization('INSERT COIN');
+                }
+            }
         }
         //if (_this.statesSupported === false) {
         //    delete buttons[24];
@@ -1976,11 +1981,14 @@ class EmulatorJS {
             
             player.appendChild(playerTitle);
             
-            for (const k in buttons) {
+            for (const buttonIdx in buttons) {
+                const k = buttons[buttonIdx].id;
+                const controlLabel = buttons[buttonIdx].label;
+
                 const buttonText = this.createElement("div");
                 buttonText.setAttribute("data-id", k);
                 buttonText.setAttribute("data-index", i);
-                buttonText.setAttribute("data-label", buttons[k]);
+                buttonText.setAttribute("data-label", controlLabel);
                 buttonText.style = "margin-bottom:10px;";
                 buttonText.classList.add("ejs_control_bar");
                 
@@ -1988,7 +1996,7 @@ class EmulatorJS {
                 const title = this.createElement("div");
                 title.style = "width:25%;float:left;font-size:12px;";
                 const label = this.createElement("label");
-                label.innerText = buttons[k]+":";
+                label.innerText = controlLabel+":";
                 title.appendChild(label);
                 
                 const textBoxes = this.createElement("div");
@@ -2057,7 +2065,7 @@ class EmulatorJS {
                 this.addEventListener(buttonText, "mousedown", (e) => {
                     e.preventDefault();
                     this.controlPopup.parentElement.parentElement.removeAttribute("hidden");
-                    this.controlPopup.innerText = "[ " + buttons[k] + " ]\n"+this.localization("Press Keyboard");
+                    this.controlPopup.innerText = "[ " + controlLabel + " ]\n"+this.localization("Press Keyboard");
                     this.controlPopup.setAttribute("button-num", k);
                     this.controlPopup.setAttribute("player-num", i);
                 })
