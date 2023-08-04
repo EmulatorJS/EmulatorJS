@@ -165,11 +165,18 @@ class EJS_GameManager {
         }
         this.functions.simulateInput(player, index, value);
     }
+    getFileNames() {
+        if (this.EJS.getCore() === "picodrive") {
+            return ["bin", "gen", "smd", "md", "32x", "cue", "iso", "sms", "68k", "chd"];
+        } else {
+            return ["toc", "ccd", "exe", "pbp", "chd", "img", "bin", "iso"];
+        }
+    }
     createCueFile(fileNames) {
         try {
             if (fileNames.length > 1) {
                 fileNames = fileNames.filter((item) => {
-                    return ["toc", "ccd", "exe", "pbp", "chd", "img", "bin", "iso"].includes(item.split(".").pop().toLowerCase());
+                    return this.getFileNames().includes(item.split(".").pop().toLowerCase());
                 })
                 fileNames = fileNames.sort((a, b) => {
                     if (isNaN(a.charAt()) || isNaN(b.charAt())) throw new Error("Incorrect file name format");
