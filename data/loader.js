@@ -71,6 +71,7 @@
     config.netplayUrl = window.EJS_netplayServer;
     config.gameId = window.EJS_gameID;
     config.backgroundImg = window.EJS_backgroundImage;
+    config.controlScheme = window.EJS_controlScheme;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
