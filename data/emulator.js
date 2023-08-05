@@ -1750,7 +1750,7 @@ class EmulatorJS {
         })();
     }
     getControlScheme() {
-        if (this.config.controlScheme) {
+        if (this.config.controlScheme && typeof this.config.controlScheme === 'string') {
             return this.config.controlScheme;
         } else {
             return this.getCore(true);
