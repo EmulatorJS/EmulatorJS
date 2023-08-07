@@ -2017,6 +2017,8 @@ class EmulatorJS {
                 {id: 5, label: 'DOWN'},
                 {id: 6, label: 'LEFT'},
                 {id: 7, label: 'RIGHT'},
+                {id: 10, label: 'LEFT DIFFICULTY'},
+                {id: 11, label: 'RIGHT DIFFICULTY'},
                 {id: 24, label: this.localization('QUICK SAVE STATE')},
                 {id: 25, label: this.localization('QUICK LOAD STATE')},
                 {id: 26, label: this.localization('CHANGE STATE SLOT')},
