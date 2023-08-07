@@ -1989,10 +1989,18 @@ class EmulatorJS {
         } else if ('atari2600' === this.getControlScheme()) {
             buttons = [
                 {id: 0, label: 'FIRE'},
+                {id: 2, label: 'SELECT'},
+                {id: 3, label: 'RESET'},
                 {id: 4, label: 'UP'},
                 {id: 5, label: 'DOWN'},
                 {id: 6, label: 'LEFT'},
                 {id: 7, label: 'RIGHT'},
+                {id: 10, label: 'LEFT DIFFICULTY A'},
+                {id: 12, label: 'LEFT DIFFICULTY B'},
+                {id: 11, label: 'RIGHT DIFFICULTY A'},
+                {id: 13, label: 'RIGHT DIFFICULTY B'},
+                {id: 14, label: 'COLOR'},
+                {id: 15, label: 'B/W'},
                 {id: 24, label: this.localization('QUICK SAVE STATE')},
                 {id: 25, label: this.localization('QUICK LOAD STATE')},
                 {id: 26, label: this.localization('CHANGE STATE SLOT')},
@@ -2002,10 +2010,15 @@ class EmulatorJS {
             buttons = [
                 {id: 0, label: 'BUTTON 1'},
                 {id: 8, label: 'BUTTON 2'},
+                {id: 2, label: 'SELECT'},
+                {id: 3, label: 'PAUSE'},
+                {id: 9, label: 'RESET'},
                 {id: 4, label: 'UP'},
                 {id: 5, label: 'DOWN'},
                 {id: 6, label: 'LEFT'},
                 {id: 7, label: 'RIGHT'},
+                {id: 10, label: 'LEFT DIFFICULTY'},
+                {id: 11, label: 'RIGHT DIFFICULTY'},
                 {id: 24, label: this.localization('QUICK SAVE STATE')},
                 {id: 25, label: this.localization('QUICK LOAD STATE')},
                 {id: 26, label: this.localization('CHANGE STATE SLOT')},
@@ -2620,12 +2633,17 @@ class EmulatorJS {
             info = [
                 {"type":"button","text":"","id":"button1","location":"right","right":10,"top":70,"bold":true,"input_value":0},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
         } else if ("atari7800" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
                 {"type":"button","text":"2","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":-30,"fontSize":15,"block":true,"input_value":9},
+                {"type":"button","text":"Pause","id":"pause","location":"center","left":90,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":30,"fontSize":15,"block":true,"input_value":2},
             ];
         } else if ("lynx" === this.getControlScheme()) {
             info = [
