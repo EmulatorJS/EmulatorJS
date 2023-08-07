@@ -23,7 +23,9 @@ class EJS_GameManager {
             saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
             supportsStates: this.Module.cwrap('supports_states', 'number', []),
             loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', []),
-            setVolume: this.Module.cwrap('set_volume', 'null', ['number'])
+            setVolume: this.Module.cwrap('set_volume', 'null', ['number']),
+            toggleFastForward: this.Module.cwrap('toggle_fastforward', 'null', ['number']),
+            setFastForwardRatio: this.Module.cwrap('set_ff_ratio', 'null', ['number'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -62,6 +64,7 @@ class EJS_GameManager {
                "video_top_portrait_viewport = true\n" +
                "video_vsync = true\n" +
                "video_smooth = false\n" +
+               "fastforward_ratio = 3.0\n" +
                "savefile_directory = \"/data/saves\"\n";
     }
     initShaders() {
@@ -139,7 +142,7 @@ class EJS_GameManager {
             this.EJS.netplay.simulateInput(player, index, value);
             return;
         }
-        if ([24, 25, 26].includes(index)) {
+        if ([24, 25, 26, 27].includes(index)) {
             if (index === 24 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
                 this.quickSave(slot);
@@ -160,6 +163,9 @@ class EJS_GameManager {
                 if (newSlot > 9) newSlot = 1;
                 this.EJS.displayMessage(this.EJS.localization("SET SAVE STATE SLOT TO")+" "+newSlot);
                 this.EJS.changeSettingOption('save-state-slot', newSlot.toString());
+            }
+            if (index === 27) {
+                this.functions.toggleFastForward(value);
             }
             return;
         }
@@ -294,6 +300,12 @@ class EJS_GameManager {
     }
     loadSaveFiles() {
         this.functions.loadSaveFiles();
+    }
+    setFastForwardRatio(ratio) {
+        this.functions.setFastForwardRatio(ratio);
+    }
+    toggleFastForward(active) {
+        this.functions.toggleFastForward(active);
     }
 }
 

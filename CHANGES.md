@@ -1,6 +1,13 @@
 # Changes
 
-# 4.0.5
+# 4.0.6
+- Fixed n64 on iOS safari
+- virtual gamepads for atari2600, atari7800, lynx, jaguar, vb, 3do (Thanks to [@n-at](https://github.com/n-at))
+- control buttons for gba, vb, 3do, atari2600, atari7800, lynx, jaguar (Thanks to [@n-at](https://github.com/n-at))
+- Added `EJS_controlScheme` (Thanks to [@n-at](https://github.com/n-at))
+- Added Fast Forward
+
+# 4.0.5 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/5307e6294ed9df5daabd6958b2b307bae01f59f1)
 - Added `pcsx_rearmed` core
 - Made `pcsx_rearmed` core the default `psx` core (better compatibility)
 - Added `fbneo` core
