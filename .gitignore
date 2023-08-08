@@ -2,3 +2,5 @@
 data/minify/package-lock.json
 *.db
 roms/
+yarn.lock
+package-lock.json
