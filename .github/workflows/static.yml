@@ -24,6 +24,7 @@ concurrency:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
+    if: github.repository == 'EmulatorJS/EmulatorJS'
     environment:
       name: github-pages
       url: "https://demo.emulatorjs.org"
