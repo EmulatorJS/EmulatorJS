@@ -24,7 +24,7 @@ Self-hosted **Javascript** emulation for various system.
  
 Join our Discord server:
 
-[![Join our Discord server!](https://invite.caspertheghost.me/?inviteCode=6akryGkETU&format=svg)](https://discord.gg/6akryGkETU)
+[![Join our Discord server!](https://invite.casperiv.dev/?inviteCode=6akryGkETU&format=svg)](https://discord.gg/6akryGkETU)
 
 </div>
 
@@ -64,6 +64,16 @@ It is **HIGHLY** suggested that you update to 4.0 ASAP.
  **[GameLibrary]**
 
    *A library overview for your **ROM** folder.*
+
+<br>
+
+### Development:
+
+*Run a local server with:* 
+```
+npm i
+npm start
+```
 
 <br>
 
