@@ -252,15 +252,20 @@
     transform: rotate(90deg);
 }
 @media (max-width: 575px) {
+    .ejs_settings_parent::after {
+        right: 15px;
+    }
     .ejs_settings_leftside {
         right: 50%
     }
     .ejs_settings_leftside::after {
-        left: 0px;
         right: 15px;
     }
-    .ejs_settings_parent::after {
-        left: 15px;
+    .ejs_settings_center {
+        right: 0px;
+    }
+    .ejs_settings_center::after {
+        right: 25%;
     }
     .ejs_menu_bar {
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;

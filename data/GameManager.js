@@ -165,7 +165,7 @@ class EJS_GameManager {
                 this.EJS.changeSettingOption('save-state-slot', newSlot.toString());
             }
             if (index === 27) {
-                this.functions.toggleFastForward(value);
+                this.functions.toggleFastForward(this.EJS.isFastForward ? !value : value);
             }
             return;
         }

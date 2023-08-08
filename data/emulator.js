@@ -236,6 +236,7 @@ class EmulatorJS {
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
         this.config = config;
         this.currentPopup = null;
+        this.isFastForward = false;
         this.touch = false;
         this.cheats = [];
         this.started = false;
@@ -3160,6 +3161,14 @@ class EmulatorJS {
             } else if (!isNaN(value)) {
                 this.gameManager.setFastForwardRatio(parseFloat(value));
             }
+        } else if (option === "fastForward") {
+            if (value === "enabled") {
+                this.isFastForward = true;
+                this.gameManager.toggleFastForward(1);
+            } else if (value === "disabled") {
+                this.isFastForward = false;
+                this.gameManager.toggleFastForward(0);
+            }
         }
         this.gameManager.setVariable(option, value);
     }
@@ -3184,9 +3193,18 @@ class EmulatorJS {
                 menus[i].style['max-height'] = (height - 95) + "px";
             }
             if (width < 575) {
-                this.settingsMenu.classList.toggle("ejs_settings_leftside", !((window.innerWidth/2) > x));
+                const rect = this.settingsMenu.getBoundingClientRect();
+                if (rect.x < 0 ||
+                   (this.settingsMenu.classList.contains("ejs_settings_center") && rect.x-(rect.width/2) < 0)) {
+                    this.settingsMenu.classList.toggle("ejs_settings_center", true);
+                    this.settingsMenu.classList.toggle("ejs_settings_leftside", false);
+                } else {
+                    this.settingsMenu.classList.toggle("ejs_settings_leftside", !((window.innerWidth/2) > x));
+                    this.settingsMenu.classList.toggle("ejs_settings_center", false);
+                }
             } else {
                 this.settingsMenu.classList.remove("ejs_settings_leftside");
+                this.settingsMenu.classList.remove("ejs_settings_center");
             }
         }
         
@@ -3334,6 +3352,11 @@ class EmulatorJS {
         addToMenu(this.localization('Fast Forward Ratio'), 'ff-ratio', [
             "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
         ], "3.0");
+        
+        addToMenu(this.localization('Fast Forward'), 'fastForward', {
+                'enabled': this.localization("Enabled"),
+                'disabled': this.localization("Disabled")
+        }, "disabled");
         
         if (this.saveInBrowserSupported()) {
             addToMenu(this.localization('Save State Slot'), 'save-state-slot', ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1");
