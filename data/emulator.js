@@ -3156,11 +3156,15 @@ class EmulatorJS {
         } else if (option === "virtual-gamepad-left-handed-mode") {
             this.toggleVirtualGamepadLeftHanded(value !== "disabled");
         } else if (option === "ff-ratio") {
+            if (this.isFastForward) this.gameManager.toggleFastForward(0);
             if (value === "unlimited") {
                 this.gameManager.setFastForwardRatio(0);
             } else if (!isNaN(value)) {
                 this.gameManager.setFastForwardRatio(parseFloat(value));
             }
+            setTimeout(() => {
+                if (this.isFastForward) this.gameManager.toggleFastForward(1);
+            }, 10)
         } else if (option === "fastForward") {
             if (value === "enabled") {
                 this.isFastForward = true;
