@@ -2036,9 +2036,11 @@ class EmulatorJS {
             {id: 24, label: this.localization('QUICK SAVE STATE')},
             {id: 25, label: this.localization('QUICK LOAD STATE')},
             {id: 26, label: this.localization('CHANGE STATE SLOT')},
-            {id: 27, label: this.localization('FAST FORWARD')},
-            {id: 28, label: this.localization('REWIND')}
+            {id: 27, label: this.localization('FAST FORWARD')}
         );
+        if (window.EJS_rewindEnabled) {
+            buttons.push({id: 28, label: this.localization('REWIND')});
+        }
         //if (_this.statesSupported === false) {
         //    delete buttons[24];
         //    delete buttons[25];
