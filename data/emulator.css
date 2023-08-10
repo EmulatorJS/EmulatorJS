@@ -251,7 +251,7 @@
 .ejs_svg_rotate {
     transform: rotate(90deg);
 }
-@media (max-width: 575px) {
+@media (max-width: 574px) {
     .ejs_settings_parent::after {
         right: 15px;
     }
@@ -260,9 +260,6 @@
     }
     .ejs_settings_leftside::after {
         right: 15px;
-    }
-    .ejs_settings_center {
-        right: 0px;
     }
     .ejs_settings_center::after {
         right: 25%;
@@ -1100,7 +1097,7 @@
     border: 0;
 }
 
-@media (max-width: 575px) {
+@media (max-width: 574px) {
     .ejs_volume_parent input[type='range'] {
         width: 100%;
     }
@@ -1117,7 +1114,7 @@
     position: relative;
 }
 /*
-@media (max-width: 575px) {
+@media (max-width: 574px) {
     .ejs_volume_parent {
         padding-right: 0px;
     }

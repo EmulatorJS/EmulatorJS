@@ -253,11 +253,7 @@ class EJS_GameManager {
         })
     }
     toggleMainLoop(playing) {
-        if (playing) {
-            this.Module.resumeMainLoop();
-        } else {
-            this.Module.pauseMainLoop();
-        }
+        this.functions.toggleMainLoop(playing);
     }
     getCoreOptions() {
         return this.functions.getCoreOptions();

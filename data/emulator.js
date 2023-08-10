@@ -1,5 +1,5 @@
 class EmulatorJS {
-    version = 5; //Increase by 1 when cores are updated
+    version = 6; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
         /*todo:
