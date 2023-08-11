@@ -237,6 +237,7 @@ class EmulatorJS {
         this.config = config;
         this.currentPopup = null;
         this.isFastForward = false;
+        this.isSlowMotion = false;
         this.rewindEnabled = this.loadRewindEnabled();
         this.touch = false;
         this.cheats = [];
@@ -2038,6 +2039,7 @@ class EmulatorJS {
             {id: 25, label: this.localization('QUICK LOAD STATE')},
             {id: 26, label: this.localization('CHANGE STATE SLOT')},
             {id: 27, label: this.localization('FAST FORWARD')},
+            {id: 29, label: this.localization('SLOW MOTION')},
             {id: 28, label: this.localization('REWIND')}
         );
         //if (_this.statesSupported === false) {
@@ -2318,6 +2320,7 @@ class EmulatorJS {
             26: {},
             27: {},
             28: {},
+            29: {},
         },
         1: {},
         2: {},
@@ -2343,7 +2346,7 @@ class EmulatorJS {
         e.preventDefault();
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            for (let j=0; j<29; j++) {
+            for (let j=0; j<30; j++) {
                 if (this.controls[i][j] && this.controls[i][j].value === e.key.toLowerCase()) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 }
@@ -2375,7 +2378,7 @@ class EmulatorJS {
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            for (let j=0; j<29; j++) {
+            for (let j=0; j<30; j++) {
                 if (['buttonup', 'buttondown'].includes(e.type) && (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
                     this.gameManager.simulateInput(i, j, (e.type === 'buttonup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 } else if (e.type === "axischanged") {
@@ -3133,6 +3136,20 @@ class EmulatorJS {
                 this.isFastForward = false;
                 this.gameManager.toggleFastForward(0);
             }
+        } else if (option === 'sm-ratio') {
+            if (this.isSlowMotion) this.gameManager.toggleSlowMotion(0);
+            this.gameManager.setSlowMotionRatio(parseFloat(value));
+            setTimeout(() => {
+                if (this.isSlowMotion) this.gameManager.toggleSlowMotion(1);
+            }, 10);
+        } else if (option === 'slowMotion') {
+            if (value === "enabled") {
+                this.isSlowMotion = true;
+                this.gameManager.toggleSlowMotion(1);
+            } else if (value === "disabled") {
+                this.isSlowMotion = false;
+                this.gameManager.toggleSlowMotion(0);
+            }
         } else if (option === "rewind-granularity") {
             if (this.rewindEnabled) {
                 this.gameManager.setRewindGranularity(parseInt(value));
@@ -3332,9 +3349,18 @@ class EmulatorJS {
             "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
         ], "3.0");
 
+        addToMenu(this.localization('Slow Motion Ratio'), 'sm-ratio', [
+            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0"
+        ], "3.0");
+
         addToMenu(this.localization('Fast Forward'), 'fastForward', {
-                'enabled': this.localization("Enabled"),
-                'disabled': this.localization("Disabled")
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, "disabled");
+
+        addToMenu(this.localization('Slow Motion'), 'slowMotion', {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
         }, "disabled");
 
         addToMenu(this.localization('Rewind Enabled (requires restart)'), 'rewindEnabled', {
