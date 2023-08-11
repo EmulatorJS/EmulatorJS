@@ -3133,12 +3133,6 @@ class EmulatorJS {
                 this.isFastForward = false;
                 this.gameManager.toggleFastForward(0);
             }
-        } else if (option === "rewindEnabled") {
-            if (value === "enabled") {
-                this.rewindEnabled = true;
-            } else if (value === "disabled") {
-                this.rewindEnabled = false;
-            }
         } else if (option === "rewind-granularity") {
             if (this.rewindEnabled) {
                 this.gameManager.setRewindGranularity(parseInt(value));
