@@ -172,7 +172,7 @@ class EJS_GameManager {
                 this.functions.toggleFastForward(this.EJS.isFastForward ? !value : value);
             }
             if (index === 28) {
-                if (window.EJS_rewindEnabled) {
+                if (this.EJS.rewindEnabled) {
                     this.functions.toggleRewind(value);
                 }
             }
