@@ -237,6 +237,7 @@ class EmulatorJS {
         this.config = config;
         this.currentPopup = null;
         this.isFastForward = false;
+        this.rewindEnabled = this.loadRewindEnabled();
         this.touch = false;
         this.cheats = [];
         this.started = false;
@@ -2036,11 +2037,9 @@ class EmulatorJS {
             {id: 24, label: this.localization('QUICK SAVE STATE')},
             {id: 25, label: this.localization('QUICK LOAD STATE')},
             {id: 26, label: this.localization('CHANGE STATE SLOT')},
-            {id: 27, label: this.localization('FAST FORWARD')}
+            {id: 27, label: this.localization('FAST FORWARD')},
+            {id: 28, label: this.localization('REWIND')}
         );
-        if (window.EJS_rewindEnabled) {
-            buttons.push({id: 28, label: this.localization('REWIND')});
-        }
         //if (_this.statesSupported === false) {
         //    delete buttons[24];
         //    delete buttons[25];
@@ -3037,6 +3036,20 @@ class EmulatorJS {
         localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
     }
+    loadRewindEnabled() {
+        if (!window.localStorage) return;
+        let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+        try {
+           coreSpecific = JSON.parse(coreSpecific);
+           if (!coreSpecific || !coreSpecific.settings) {
+               return false;
+           }
+           return coreSpecific.settings.rewindEnabled === 'enabled';
+        } catch (e) {
+            console.warn("Could not load previous settings", e);
+            return false;
+        }
+    }
     loadSettings() {
         if (!window.localStorage) return;
         this.settingsLoaded = true;
@@ -3120,10 +3133,19 @@ class EmulatorJS {
                 this.isFastForward = false;
                 this.gameManager.toggleFastForward(0);
             }
+        } else if (option === "rewindEnabled") {
+            if (value === "enabled") {
+                this.rewindEnabled = true;
+            } else if (value === "disabled") {
+                this.rewindEnabled = false;
+            }
         } else if (option === "rewind-granularity") {
-            this.gameManager.setRewindGranularity(parseInt(value));
+            if (this.rewindEnabled) {
+                this.gameManager.setRewindGranularity(parseInt(value));
+            }
         }
         this.gameManager.setVariable(option, value);
+        this.saveSettings();
     }
     setupSettingsMenu() {
         this.settingsMenu = this.createElement("div");
@@ -3316,17 +3338,20 @@ class EmulatorJS {
             "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
         ], "3.0");
 
-        if (window.EJS_rewindEnabled) {
-            addToMenu(this.localization('Rewind Granularity'), 'rewind-granularity', [
-                '1', '3', '6', '12', '25', '50', '100'
-            ], '6');
-        }
-
         addToMenu(this.localization('Fast Forward'), 'fastForward', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
         }, "disabled");
-        
+
+        addToMenu(this.localization('Rewind Enabled (requires restart)'), 'rewindEnabled', {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, 'disabled');
+
+        addToMenu(this.localization('Rewind Granularity'), 'rewind-granularity', [
+            '1', '3', '6', '12', '25', '50', '100'
+        ], '6');
+
         if (this.saveInBrowserSupported()) {
             addToMenu(this.localization('Save State Slot'), 'save-state-slot', ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1");
             addToMenu(this.localization('Save State Location'), 'save-state-location', {
