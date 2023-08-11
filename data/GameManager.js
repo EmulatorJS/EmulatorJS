@@ -25,7 +25,9 @@ class EJS_GameManager {
             loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', []),
             setVolume: this.Module.cwrap('set_volume', 'null', ['number']),
             toggleFastForward: this.Module.cwrap('toggle_fastforward', 'null', ['number']),
-            setFastForwardRatio: this.Module.cwrap('set_ff_ratio', 'null', ['number'])
+            setFastForwardRatio: this.Module.cwrap('set_ff_ratio', 'null', ['number']),
+            toggleRewind: this.Module.cwrap('toggle_rewind', 'null', ['number']),
+            setRewindGranularity: this.Module.cwrap('set_rewind_granularity', 'null', ['number'])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -65,6 +67,8 @@ class EJS_GameManager {
                "video_vsync = true\n" +
                "video_smooth = false\n" +
                "fastforward_ratio = 3.0\n" +
+                (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
+                (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
                "savefile_directory = \"/data/saves\"\n";
     }
     initShaders() {
@@ -142,7 +146,7 @@ class EJS_GameManager {
             this.EJS.netplay.simulateInput(player, index, value);
             return;
         }
-        if ([24, 25, 26, 27].includes(index)) {
+        if ([24, 25, 26, 27, 28].includes(index)) {
             if (index === 24 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
                 this.quickSave(slot);
@@ -166,6 +170,11 @@ class EJS_GameManager {
             }
             if (index === 27) {
                 this.functions.toggleFastForward(this.EJS.isFastForward ? !value : value);
+            }
+            if (index === 28) {
+                if (this.EJS.rewindEnabled) {
+                    this.functions.toggleRewind(value);
+                }
             }
             return;
         }
@@ -302,6 +311,9 @@ class EJS_GameManager {
     }
     toggleFastForward(active) {
         this.functions.toggleFastForward(active);
+    }
+    setRewindGranularity(value) {
+        this.functions.setRewindGranularity(value);
     }
 }
 
