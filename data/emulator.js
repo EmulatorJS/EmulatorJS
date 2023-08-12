@@ -3242,20 +3242,8 @@ class EmulatorJS {
             for (let i=0; i<menus.length; i++) {
                 menus[i].style['max-height'] = (height - 95) + "px";
             }
-            if (width < 575) {
-                const rect = this.settingsMenu.getBoundingClientRect();
-                if (rect.x < 0 ||
-                   (this.settingsMenu.classList.contains("ejs_settings_center") && rect.x-(rect.width/2) < 0)) {
-                    this.settingsMenu.classList.toggle("ejs_settings_center", true);
-                    this.settingsMenu.classList.toggle("ejs_settings_leftside", false);
-                } else {
-                    this.settingsMenu.classList.toggle("ejs_settings_leftside", !((window.innerWidth/2) > x));
-                    this.settingsMenu.classList.toggle("ejs_settings_center", false);
-                }
-            } else {
-                this.settingsMenu.classList.remove("ejs_settings_leftside");
-                this.settingsMenu.classList.remove("ejs_settings_center");
-            }
+            this.settingsMenu.classList.toggle("ejs_settings_center_left", (x < width/2) && (width < 575));
+            this.settingsMenu.classList.toggle("ejs_settings_center_right", (x >= width/2) && (width < 575));
             if (needChange) {
                 this.settingsMenu.style.display = "none";
                 this.settingsMenu.style.opacity = "";
