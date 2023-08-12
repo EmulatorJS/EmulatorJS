@@ -367,9 +367,13 @@ class EmulatorJS {
         })
         
     }
-    adBlocked(url){
-        document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
-        this.config.adUrl = url;
+    adBlocked(url, del){
+        if (del){
+            document.querySelector('div[class="ejs_ad_iframe"]').remove();
+        } else{
+            document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
+            this.config.adUrl = url;
+        }
     }
     functions = {};
     on(event, func) {

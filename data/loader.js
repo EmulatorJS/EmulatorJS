@@ -103,5 +103,5 @@
     if (typeof window.EJS_onSaveState === "function") {
         window.EJS_emulator.on("save", window.EJS_onSaveState);
     }
-    window.EJS_adBlocked = (url) => window.EJS_emulator.adBlocked(url);
+    window.EJS_adBlocked = (url, del) => window.EJS_emulator.adBlocked(url, del);
 })();
