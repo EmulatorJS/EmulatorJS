@@ -2437,10 +2437,19 @@ class EmulatorJS {
         }
         this.virtualGamepad.classList.add("ejs_virtualGamepad_parent");
         this.elements.parent.appendChild(this.virtualGamepad);
+
+        const speedControlButtons = [
+            {"type":"button","text":"Fast","id":"speed-fast","location":"center","left":-35,"top":50,"fontSize":15,"block":true,"input_value":27},
+            {"type":"button","text":"Slow","id":"speed-slow","location":"center","left":95,"top":50,"fontSize":15,"block":true,"input_value":29},
+        ];
+        if (this.rewindEnabled) {
+            speedControlButtons.push({"type":"button","text":"Rewind","id":"speed-rewind","location":"center","left":30,"top":50,"fontSize":15,"block":true,"input_value":28});
+        }
+
         let info;
         if (this.config.VirtualGamepadSettings && function(set) {
             if (!Array.isArray(set)) {
-                console.warn("Vritual gamepad settings is not array! Using default gamepad settings");
+                console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
                 return false;
             }
             if (!set.length) {
@@ -2491,6 +2500,7 @@ class EmulatorJS {
                 {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11}
             ];
+            info.push(...speedControlButtons);
         } else if ("gb" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
@@ -2499,6 +2509,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ('nes' === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
@@ -2507,6 +2518,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ('n64' === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},
@@ -2522,6 +2534,7 @@ class EmulatorJS {
                 {"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},
                 {"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}
             ];
+            info.push(...speedControlButtons);
         } else if ("nds" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
@@ -2534,6 +2547,7 @@ class EmulatorJS {
                 {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
             ];
+            info.push(...speedControlButtons);
         } else if ("snes" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
@@ -2546,6 +2560,7 @@ class EmulatorJS {
                 {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
             ];
+            info.push(...speedControlButtons);
         } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getControlScheme())) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":9},
@@ -2558,12 +2573,14 @@ class EmulatorJS {
                 {"type":"button","text":"Mode","id":"mode","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("segaMS" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":40,"bold":true,"input_value":0},
                 {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}
             ];
+            info.push(...speedControlButtons);
         } else if ("segaGG" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":70,"bold":true,"input_value":0},
@@ -2571,6 +2588,7 @@ class EmulatorJS {
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
                 {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("segaSaturn" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
@@ -2584,6 +2602,7 @@ class EmulatorJS {
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":13},
                 {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("atari2600" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"","id":"button1","location":"right","right":10,"top":70,"bold":true,"input_value":0},
@@ -2591,24 +2610,27 @@ class EmulatorJS {
                 {"type":"button","text":"Reset","id":"reset","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ("atari7800" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
                 {"type":"button","text":"2","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":"Reset","id":"reset","location":"center","left":-30,"fontSize":15,"block":true,"input_value":9},
-                {"type":"button","text":"Pause","id":"pause","location":"center","left":90,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":-35,"fontSize":15,"block":true,"input_value":9},
+                {"type":"button","text":"Pause","id":"pause","location":"center","left":95,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":30,"fontSize":15,"block":true,"input_value":2},
             ];
+            info.push(...speedControlButtons);
         } else if ("lynx" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
                 {"type":"button","text":"A","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":"Opt 1","id":"option1","location":"center","left":-30,"fontSize":15,"block":true,"input_value":10},
-                {"type":"button","text":"Opt 2","id":"option2","location":"center","left":90,"fontSize":15,"block":true,"input_value":11},
+                {"type":"button","text":"Opt 1","id":"option1","location":"center","left":-35,"fontSize":15,"block":true,"input_value":10},
+                {"type":"button","text":"Opt 2","id":"option2","location":"center","left":95,"fontSize":15,"block":true,"input_value":11},
                 {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("jaguar" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":8},
@@ -2618,6 +2640,7 @@ class EmulatorJS {
                 {"type":"button","text":"Option","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Pause","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ("vb" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"b","location":"right","right":75,"top":150,"bold":true,"input_value":0},
@@ -2629,6 +2652,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ("3do" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
@@ -2640,6 +2664,7 @@ class EmulatorJS {
                 {"type":"button","text":"X","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"bold":true,"input_value":2},
                 {"type":"button","text":"P","id":"start","location":"center","left":60,"fontSize":15,"block":true,"bold":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else {
             info = [
                 {"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},
@@ -2650,6 +2675,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         }
         info = JSON.parse(JSON.stringify(info));
         
