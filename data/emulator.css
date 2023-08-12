@@ -254,14 +254,17 @@
     .ejs_settings_parent::after {
         right: 15px;
     }
-    .ejs_settings_leftside {
-        right: 50%
+    .ejs_settings_center_right {
+        right: -35%
     }
-    .ejs_settings_leftside::after {
-        right: 15px;
+    .ejs_settings_center_left {
+        right: -135%
     }
-    .ejs_settings_center::after {
+    .ejs_settings_center_right::after {
         right: 25%;
+    }
+    .ejs_settings_center_left::after {
+        left: 25%;
     }
     .ejs_menu_bar {
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;
@@ -274,7 +277,7 @@
         align-items: flex-start;
         background: rgba(0,0,0,.9);
         padding: 10px;
-        z-index: 999;
+        z-index: 9999;
         left: 50%;
         bottom: 0;
     }
@@ -422,7 +425,7 @@
         position: absolute;
         right: 0;
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;
-        z-index: 3;
+        z-index: 9999;
         align-items: center;
         display: flex;
         justify-content: flex-start;

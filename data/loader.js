@@ -61,6 +61,7 @@
     config.volume = window.EJS_volume;
     config.defaultControllers = window.EJS_defaultControls;
     config.startOnLoad = window.EJS_startOnLoaded;
+    config.fullscreenOnLoad = window.EJS_fullscreenOnLoaded;
     config.filePaths = window.EJS_paths;
     config.loadState = window.EJS_loadStateURL;
     config.cacheLimit = window.EJS_CacheLimit;
