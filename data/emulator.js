@@ -2118,6 +2118,33 @@ class EmulatorJS {
             playerTitle.appendChild(gamepadTitle);
             playerTitle.appendChild(leftPadding);
             playerTitle.appendChild(aboutParent);
+            
+            if ((this.touch || navigator.maxTouchPoints > 0) && i === 0) {
+                const vgp = this.createElement("div");
+                vgp.style = "width:25%;float:right;clear:none;padding:0;font-size: 11px;padding-left: 2.25rem;";
+                vgp.classList.add("ejs_cheat_row");
+                const input = this.createElement("input");
+                input.type = "checkbox";
+                input.checked = true;
+                input.value = "o";
+                input.id = "ejs_vp";
+                vgp.appendChild(input);
+                const label = this.createElement("label");
+                label.for = "ejs_vp";
+                label.innerText = "Virtual Gamepad";
+                vgp.appendChild(label);
+                label.addEventListener("click", (e) => {
+                    input.checked = !input.checked;
+                    this.changeSettingOption('virtual-gamepad', input.checked ? 'enabled' : "disabled");
+                })
+                this.on("start", (e) => {
+                    if (this.settings["virtual-gamepad"] === "disabled") {
+                        input.checked = false;
+                    }
+                })
+                playerTitle.appendChild(vgp);
+            }
+            
             playerTitle.appendChild(headingPadding);
             
             
