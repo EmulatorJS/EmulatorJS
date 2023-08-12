@@ -413,10 +413,13 @@ class EmulatorJS {
         this.textElem.innerText = this.localization("Loading...");
         this.elements.parent.appendChild(this.textElem);
     }
-    localization(text) {
+    localization(text, log) {
         if (!isNaN(text)) return text;
+        if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
-            if (!this.config.langJson[text]) {
+            if (!this.config.langJson[text] && log) {
+                if(!window.EJS_missingLang) window.EJS_missingLang = [];
+                window.EJS_missingLang.push(text);
                 console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
             }
             return this.config.langJson[text] || text;
@@ -1075,7 +1078,7 @@ class EmulatorJS {
             }
             a.href = "#";
             a.onclick = "return false";
-            a.innerText = title;
+            a.innerText = this.localization(title);
             li.appendChild(a);
             parent.appendChild(li);
             hideMenu();
@@ -1134,7 +1137,7 @@ class EmulatorJS {
                 }
                 a.href = "#";
                 a.onclick = "return false";
-                a.innerText = title;
+                a.innerText = this.localization(title);
                 li.appendChild(a);
                 parent.appendChild(li);
                 hideMenu();
@@ -3404,9 +3407,9 @@ class EmulatorJS {
                 if (options.length === 1) return;
                 let availableOptions = {};
                 for (let i=0; i<options.length; i++) {
-                    availableOptions[options[i]] = this.localization(options[i]);
+                    availableOptions[options[i]] = this.localization(options[i], this.config.settingsLanguage);
                 }
-                addToMenu(this.localization(optionName),
+                addToMenu(this.localization(optionName, this.config.settingsLanguage),
                           name.split("|")[0], availableOptions,
                           (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
             })

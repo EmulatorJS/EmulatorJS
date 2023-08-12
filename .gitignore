@@ -4,3 +4,4 @@ data/minify/package-lock.json
 roms/
 yarn.lock
 package-lock.json
+.vscode/settings.json
