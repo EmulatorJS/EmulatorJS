@@ -234,6 +234,7 @@ class EmulatorJS {
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
+        this.settingsLanguage = window.EJS_settingsLanguage || false;
         this.config = config;
         this.currentPopup = null;
         this.isFastForward = false;
@@ -413,10 +414,14 @@ class EmulatorJS {
         this.textElem.innerText = this.localization("Loading...");
         this.elements.parent.appendChild(this.textElem);
     }
-    localization(text) {
+    localization(text, log) {
         if (!isNaN(text)) return text;
+        if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
-            if (!this.config.langJson[text]) {
+            if (typeof log === "undefined") log = true;
+            if (!this.config.langJson[text] && log) {
+                if(!window.EJS_missingLang) window.EJS_missingLang = [];
+                window.EJS_missingLang.push(text);
                 console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
             }
             return this.config.langJson[text] || text;
@@ -1075,7 +1080,7 @@ class EmulatorJS {
             }
             a.href = "#";
             a.onclick = "return false";
-            a.innerText = title;
+            a.innerText = this.localization(title);
             li.appendChild(a);
             parent.appendChild(li);
             hideMenu();
@@ -1134,7 +1139,7 @@ class EmulatorJS {
                 }
                 a.href = "#";
                 a.onclick = "return false";
-                a.innerText = title;
+                a.innerText = this.localization(title);
                 li.appendChild(a);
                 parent.appendChild(li);
                 hideMenu();
@@ -3404,9 +3409,9 @@ class EmulatorJS {
                 if (options.length === 1) return;
                 let availableOptions = {};
                 for (let i=0; i<options.length; i++) {
-                    availableOptions[options[i]] = this.localization(options[i]);
+                    availableOptions[options[i]] = this.localization(options[i], this.settingsLanguage);
                 }
-                addToMenu(this.localization(optionName),
+                addToMenu(this.localization(optionName, this.settingsLanguage),
                           name.split("|")[0], availableOptions,
                           (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
             })
