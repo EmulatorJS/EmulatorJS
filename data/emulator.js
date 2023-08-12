@@ -2443,7 +2443,7 @@ class EmulatorJS {
             {"type":"button","text":"Slow","id":"speed-slow","location":"center","left":95,"top":50,"fontSize":15,"block":true,"input_value":29},
         ];
         if (this.rewindEnabled) {
-            speedControlButtons.push({"type":"button","text":"Rewind","id":"speed-slow","location":"center","left":30,"top":50,"fontSize":15,"block":true,"input_value":28});
+            speedControlButtons.push({"type":"button","text":"Rewind","id":"speed-rewind","location":"center","left":30,"top":50,"fontSize":15,"block":true,"input_value":28});
         }
 
         let info;
