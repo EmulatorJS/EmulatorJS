@@ -55,7 +55,9 @@
     config.gameName = window.EJS_gameName;
     config.color = window.EJS_color;
     config.adUrl = window.EJS_AdUrl;
+    config.adMode = window.EJS_AdMode;
     config.adTimer = window.EJS_AdTimer;
+    config.adSize = window.EJS_AdSize;
     config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
     config.buttonOpts = window.EJS_Buttons;
     config.volume = window.EJS_volume;
@@ -72,6 +74,8 @@
     config.netplayUrl = window.EJS_netplayServer;
     config.gameId = window.EJS_gameID;
     config.backgroundImg = window.EJS_backgroundImage;
+    config.backgroundBlur = window.EJS_backgroundBlur;
+    config.backgroundColor = window.EJS_backgroundColor || "rgb(51, 51, 51)";
     config.controlScheme = window.EJS_controlScheme;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
@@ -99,5 +103,5 @@
     if (typeof window.EJS_onSaveState === "function") {
         window.EJS_emulator.on("save", window.EJS_onSaveState);
     }
-    
+    window.EJS_adBlocked = (url) => window.EJS_emulator.adBlocked(url);
 })();
