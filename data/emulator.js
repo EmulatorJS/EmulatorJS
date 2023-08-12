@@ -369,6 +369,7 @@ class EmulatorJS {
     }
     adBlocked(url){
         document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
+        this.config.adUrl = url;
     }
     functions = {};
     on(event, func) {
