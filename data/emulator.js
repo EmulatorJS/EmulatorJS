@@ -4201,3 +4201,4 @@ class EmulatorJS {
         this.gameManager.setCheat(index, checked, code);
     }
 }
+window.EmulatorJS = EmulatorJS;

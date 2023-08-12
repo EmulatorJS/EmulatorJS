@@ -11,10 +11,11 @@ let files = [
     'socket.io.min.js',
     'emulator.js'
 ]
-let code = "";
+let code = "(function() {\n";
 for (let i=0; i<files.length; i++) {
     code += fs.readFileSync('../'+files[i], 'utf8') + "\n";
 }
+code += "\n})();"
 
 function minify(source){
     const ast = UglifyJS.parse(source);
