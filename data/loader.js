@@ -72,7 +72,6 @@
     config.gameId = window.EJS_gameID;
     config.backgroundImg = window.EJS_backgroundImage;
     config.controlScheme = window.EJS_controlScheme;
-    config.settingsLanguage = window.EJS_settingsLanguage || false;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
