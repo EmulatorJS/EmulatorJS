@@ -234,6 +234,7 @@ class EmulatorJS {
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
+        this.settingsLanguage = window.EJS_settingsLanguage || false;
         this.config = config;
         this.currentPopup = null;
         this.isFastForward = false;
@@ -417,6 +418,7 @@ class EmulatorJS {
         if (!isNaN(text)) return text;
         if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
+            if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
                 if(!window.EJS_missingLang) window.EJS_missingLang = [];
                 window.EJS_missingLang.push(text);
@@ -3407,9 +3409,9 @@ class EmulatorJS {
                 if (options.length === 1) return;
                 let availableOptions = {};
                 for (let i=0; i<options.length; i++) {
-                    availableOptions[options[i]] = this.localization(options[i], this.config.settingsLanguage);
+                    availableOptions[options[i]] = this.localization(options[i], this.settingsLanguage);
                 }
-                addToMenu(this.localization(optionName, this.config.settingsLanguage),
+                addToMenu(this.localization(optionName, this.settingsLanguage),
                           name.split("|")[0], availableOptions,
                           (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
             })
