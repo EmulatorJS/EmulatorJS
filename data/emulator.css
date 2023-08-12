@@ -121,7 +121,6 @@
     transform: translateX(-50%);
     cursor: pointer;
     box-sizing: inherit;
-    
     display: flex;
     justify-content: center;
     text-shadow: 0 1px 1px rgba(0,0,0,0.5);
