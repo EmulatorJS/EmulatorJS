@@ -275,7 +275,7 @@
         align-items: flex-start;
         background: rgba(0,0,0,.9);
         padding: 10px;
-        z-index: 999;
+        z-index: 9999;
         left: 50%;
         bottom: 0;
     }
@@ -423,7 +423,7 @@
         position: absolute;
         right: 0;
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;
-        z-index: 3;
+        z-index: 9999;
         align-items: center;
         display: flex;
         justify-content: flex-start;
