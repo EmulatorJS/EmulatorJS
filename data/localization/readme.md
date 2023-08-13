@@ -31,10 +31,10 @@ If the language file is not found or there was an error fetching the file, the e
 
 ## Credits
 
-Translated for `pt-BR` by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) <br>
 Translated for `es-ES` by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) <br>
 Translated for `el-GR` by [@imneckro](https://github.com/imneckro) <br>
 Translated for `ja-JA`, `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO`, `af-FR` by [@allancoding](https://github.com/allancoding) <br>
+Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline)<br>
 Translated for `zh-CN` originally by [@allancoding](https://github.com/allancoding) and updated by [@eric183](https://github.com/eric183)<br>
 
 ## Contributing

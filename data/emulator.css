@@ -108,8 +108,8 @@
 }
 
 .ejs_game {
-    width: 100vw;
-    height: 100vh;
+    width: inherit;
+    height: inherit;
     background-color: var(--ejs-background-color);
     cursor: default;
     position: relative;
@@ -1056,6 +1056,7 @@
     border-width: 0;
     cursor: pointer;
     -webkit-appearance: button;
+    appearance: button;
     text-transform: none;
     overflow: visible;
     margin: 0;
@@ -1191,6 +1192,7 @@
 }
 .ejs_volume_parent input[type='range']{
     -webkit-appearance:none;
+    appearance: none;
     border:0;
     border-radius:28px;
     color:rgba(var(--ejs-primary-color), 1);

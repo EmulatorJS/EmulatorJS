@@ -250,6 +250,7 @@ class EmulatorJS {
         this.listeners = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
+        this.config.backgroundColor = (typeof this.config.backgroundColor === "string") ? this.config.backgroundColor : "rgb(51, 51, 51)";
         if (this.config.adUrl) {
             this.config.adSize = (Array.isArray(this.config.adSize)) ? this.config.adSize : ["300px", "250px"];
             this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
@@ -281,6 +282,8 @@ class EmulatorJS {
                 this.game.classList.remove("ejs_game_background");
                 if (this.config.backgroundBlur) this.game.classList.remove("ejs_game_background_blur");
             })
+        }else{
+            this.game.setAttribute("style", "--ejs-background-color: "+this.config.backgroundColor+";");
         }
         
         if (Array.isArray(this.config.cheats)) {
@@ -341,7 +344,7 @@ class EmulatorJS {
         closeParent.setAttribute("hidden", "");
         div.appendChild(closeParent);
         div.appendChild(frame);
-        if (this.config.adMode != 1) {
+        if (this.config.adMode !== 1) {
             this.elements.parent.appendChild(div);
         }
         this.addEventListener(closeButton, "click", () => {
@@ -349,8 +352,8 @@ class EmulatorJS {
         })
         
         this.on("start-clicked", () => {
-            if (this.config.adMode == 0) div.remove();
-            if (this.config.adMode == 1){
+            if (this.config.adMode === 0) div.remove();
+            if (this.config.adMode === 1){
                 this.elements.parent.appendChild(div);
             }
         })
@@ -358,7 +361,7 @@ class EmulatorJS {
         this.on("start", () => {
             closeParent.removeAttribute("hidden");
             const time = (typeof this.config.adTimer === "number" && this.config.adTimer > 0) ? this.config.adTimer : 10000;
-            if (this.config.adTimer == -1) div.remove();
+            if (this.config.adTimer === -1) div.remove();
             if (this.config.adTimer === 0) return;
             setTimeout(() => {
                 div.remove();
@@ -369,7 +372,7 @@ class EmulatorJS {
     adBlocked(url, del){
         if (del){
             document.querySelector('div[class="ejs_ad_iframe"]').remove();
-        } else{
+        }else{
             document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
             this.config.adUrl = url;
         }
@@ -412,6 +415,9 @@ class EmulatorJS {
         if (this.config.startOnLoad === true) {
             this.startButtonClicked(button);
         }
+        setTimeout(() => {
+            this.callEvent("ready");
+        }, 20);
     }
     startButtonClicked(e) {
         this.callEvent("start-clicked");

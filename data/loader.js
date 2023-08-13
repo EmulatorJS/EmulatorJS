@@ -75,7 +75,7 @@
     config.gameId = window.EJS_gameID;
     config.backgroundImg = window.EJS_backgroundImage;
     config.backgroundBlur = window.EJS_backgroundBlur;
-    config.backgroundColor = window.EJS_backgroundColor || "rgb(51, 51, 51)";
+    config.backgroundColor = window.EJS_backgroundColor;
     config.controlScheme = window.EJS_controlScheme;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
@@ -94,6 +94,10 @@
     }
     
     window.EJS_emulator = new EmulatorJS(EJS_player, config);
+    window.EJS_adBlocked = (url, del) => window.EJS_emulator.adBlocked(url, del);
+    if (typeof window.EJS_ready === "function") {
+        window.EJS_emulator.on("ready", window.EJS_ready);
+    }
     if (typeof window.EJS_onGameStart === "function") {
         window.EJS_emulator.on("start", window.EJS_onGameStart);
     }
@@ -103,5 +107,4 @@
     if (typeof window.EJS_onSaveState === "function") {
         window.EJS_emulator.on("save", window.EJS_onSaveState);
     }
-    window.EJS_adBlocked = (url, del) => window.EJS_emulator.adBlocked(url, del);
 })();
