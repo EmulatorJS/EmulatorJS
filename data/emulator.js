@@ -250,7 +250,11 @@ class EmulatorJS {
         this.listeners = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
-        if (this.config.adUrl) this.setupAds(this.config.adUrl);
+        this.config.backgroundColor = (typeof this.config.backgroundColor === "string") ? this.config.backgroundColor : "rgb(51, 51, 51)";
+        if (this.config.adUrl) {
+            this.config.adSize = (Array.isArray(this.config.adSize)) ? this.config.adSize : ["300px", "250px"];
+            this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
+        }
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
         this.bindListeners();
@@ -271,16 +275,15 @@ class EmulatorJS {
         
         this.game.classList.add("ejs_game");
         if (typeof this.config.backgroundImg === "string") {
-            this.game.style["background-image"] = "url('"+this.config.backgroundImg+"')";
-            this.game.style["background-size"] = "contain";
-            this.game.style["background-position"] = "center";
-            this.game.style["background-repeat"] = "no-repeat";
+            this.game.classList.add("ejs_game_background");
+            if (this.config.backgroundBlur) this.game.classList.add("ejs_game_background_blur");
+            this.game.setAttribute("style", "--ejs-background-image: url("+this.config.backgroundImg+"); --ejs-background-color: "+this.config.backgroundColor+";");
             this.on("start", () => {
-                this.game.style["background-image"] = "";
-                this.game.style["background-size"] = "";
-                this.game.style["background-position"] = "";
-                this.game.style["background-repeat"] = "";
+                this.game.classList.remove("ejs_game_background");
+                if (this.config.backgroundBlur) this.game.classList.remove("ejs_game_background_blur");
             })
+        }else{
+            this.game.setAttribute("style", "--ejs-background-color: "+this.config.backgroundColor+";");
         }
         
         if (Array.isArray(this.config.cheats)) {
@@ -324,16 +327,16 @@ class EmulatorJS {
         }
         this.elements.parent.setAttribute("style", "--ejs-primary-color:" + getColor(color) + ";");
     }
-    setupAds(ads) {
+    setupAds(ads, width, height) {
         const div = this.createElement("div");
+        const time = (typeof this.config.adMode === "number" && this.config.adMode > -1 && this.config.adMode < 3) ? this.config.adMode : 2;
         div.classList.add("ejs_ad_iframe");
         const frame = this.createElement("iframe");
         frame.src = ads;
         frame.setAttribute("scrolling", "no");
         frame.setAttribute("frameborder", "no");
-        frame.style.width = "300px";
-        frame.style.height = "250px";
-        
+        frame.style.width = width;
+        frame.style.height = height;
         const closeParent = this.createElement("div");
         closeParent.classList.add("ejs_ad_close");
         const closeButton = this.createElement("a");
@@ -341,20 +344,38 @@ class EmulatorJS {
         closeParent.setAttribute("hidden", "");
         div.appendChild(closeParent);
         div.appendChild(frame);
-        this.elements.parent.appendChild(div);
+        if (this.config.adMode !== 1) {
+            this.elements.parent.appendChild(div);
+        }
         this.addEventListener(closeButton, "click", () => {
             div.remove();
+        })
+        
+        this.on("start-clicked", () => {
+            if (this.config.adMode === 0) div.remove();
+            if (this.config.adMode === 1){
+                this.elements.parent.appendChild(div);
+            }
         })
         
         this.on("start", () => {
             closeParent.removeAttribute("hidden");
             const time = (typeof this.config.adTimer === "number" && this.config.adTimer > 0) ? this.config.adTimer : 10000;
+            if (this.config.adTimer === -1) div.remove();
             if (this.config.adTimer === 0) return;
             setTimeout(() => {
                 div.remove();
             }, time);
         })
         
+    }
+    adBlocked(url, del){
+        if (del){
+            document.querySelector('div[class="ejs_ad_iframe"]').remove();
+        }else{
+            document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
+            this.config.adUrl = url;
+        }
     }
     functions = {};
     on(event, func) {
@@ -384,6 +405,7 @@ class EmulatorJS {
     createStartButton() {
         const button = this.createElement("div");
         button.classList.add("ejs_start_button");
+        if (typeof this.config.backgroundImg === "string") button.classList.add("ejs_start_button_border");
         button.innerText = this.localization("Start Game");
         this.elements.parent.appendChild(button);
         this.addEventListener(button, "touchstart", () => {
@@ -393,8 +415,12 @@ class EmulatorJS {
         if (this.config.startOnLoad === true) {
             this.startButtonClicked(button);
         }
+        setTimeout(() => {
+            this.callEvent("ready");
+        }, 20);
     }
     startButtonClicked(e) {
+        this.callEvent("start-clicked");
         if (e.pointerType === "touch") {
             this.touch = true;
         }
@@ -411,6 +437,7 @@ class EmulatorJS {
     createText() {
         this.textElem = this.createElement("div");
         this.textElem.classList.add("ejs_loading_text");
+        if (typeof this.config.backgroundImg === "string") this.textElem.classList.add("ejs_loading_text_glow");
         this.textElem.innerText = this.localization("Loading...");
         this.elements.parent.appendChild(this.textElem);
     }
@@ -976,7 +1003,6 @@ class EmulatorJS {
             if (this.debug) console.log(args);
             this.Module.callMain(args);
             this.Module.resumeMainLoop();
-            
             this.checkSupportedOpts();
             this.setupSettingsMenu();
             this.loadSettings();
