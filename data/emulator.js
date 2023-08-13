@@ -250,7 +250,6 @@ class EmulatorJS {
         this.listeners = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
-        this.startButtonClickedEvent = new EventTarget();
         if (this.config.adUrl) {
             this.config.adSize = (Array.isArray(this.config.adSize)) ? this.config.adSize : ["300px", "250px"];
             this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
@@ -349,13 +348,13 @@ class EmulatorJS {
             div.remove();
         })
         
-        this.startButtonClickedEvent.addEventListener("clicked", () => {
+        this.on("start-clicked", () => {
             if (this.config.adMode == 0) div.remove();
             if (this.config.adMode == 1){
                 this.elements.parent.appendChild(div);
             }
         })
-
+        
         this.on("start", () => {
             closeParent.removeAttribute("hidden");
             const time = (typeof this.config.adTimer === "number" && this.config.adTimer > 0) ? this.config.adTimer : 10000;
@@ -415,7 +414,7 @@ class EmulatorJS {
         }
     }
     startButtonClicked(e) {
-        this.startButtonClickedEvent.dispatchEvent(new Event("clicked"));
+        this.callEvent("start-clicked");
         if (e.pointerType === "touch") {
             this.touch = true;
         }
