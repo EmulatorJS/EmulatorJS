@@ -250,6 +250,7 @@ class EmulatorJS {
         this.listeners = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
+        this.config.alignStartButton = (typeof this.config.alignStartButton === "string") ? this.config.alignStartButton : "bottom";
         this.config.backgroundColor = (typeof this.config.backgroundColor === "string") ? this.config.backgroundColor : "rgb(51, 51, 51)";
         if (this.config.adUrl) {
             this.config.adSize = (Array.isArray(this.config.adSize)) ? this.config.adSize : ["300px", "250px"];
@@ -405,8 +406,17 @@ class EmulatorJS {
     createStartButton() {
         const button = this.createElement("div");
         button.classList.add("ejs_start_button");
-        if (typeof this.config.backgroundImg === "string") button.classList.add("ejs_start_button_border");
+        let border = 0;
+        if (typeof this.config.backgroundImg === "string"){
+            button.classList.add("ejs_start_button_border");
+            border = 1;
+        }
         button.innerText = this.localization("Start Game");
+        if (this.config.alignStartButton == "top"){
+            button.style.bottom = "calc(100% - 20px)";
+        }else if (this.config.alignStartButton == "center"){
+            button.style.bottom = "calc(50% + 22.5px + "+border+"px)";
+        }
         this.elements.parent.appendChild(button);
         this.addEventListener(button, "touchstart", () => {
             this.touch = true;
