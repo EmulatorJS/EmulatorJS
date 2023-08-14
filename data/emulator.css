@@ -173,7 +173,6 @@
 
 .ejs_start_button:active, .ejs_start_button:hover {
     animation: ejs_start_button_pulse 2s infinite;
-    bottom: 65px;
 }
 
 @keyframes ejs_start_button_pulse {
