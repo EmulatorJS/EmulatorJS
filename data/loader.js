@@ -58,6 +58,7 @@
     config.adMode = window.EJS_AdMode;
     config.adTimer = window.EJS_AdTimer;
     config.adSize = window.EJS_AdSize;
+    config.alignStartButton = window.EJS_alignStartButton;
     config.VirtualGamepadSettings = window.EJS_VirtualGamepadSettings;
     config.buttonOpts = window.EJS_Buttons;
     config.volume = window.EJS_volume;
