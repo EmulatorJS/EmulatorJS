@@ -3,7 +3,7 @@ class EmulatorJS {
     getCore(generic) {
         const core = this.config.system;
         /*todo:
-        Systems: TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
+        Systems: TurboGrafx-16 (pce), Wonderswan (ws), Neo Geo Pocket,  msx
         
         Cores:
         - Beetle NeoPop
