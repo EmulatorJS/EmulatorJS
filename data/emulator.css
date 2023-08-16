@@ -121,6 +121,7 @@
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
+    text-align: -webkit-auto;
 }
 
 .ejs_game_background_blur:before,
