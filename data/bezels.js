@@ -35,18 +35,21 @@ Very important for the operation of bezels, preconfigured background.
         function bazelsLoader() {
                 //A busca da classe para implementar o bezels.
                 //The search for the class to implement bezels.  
-                let bazelsElement = document.querySelector('.ejs_canvas');
-                let ejsCoreValue = window.EJS_core;
-                let ejsgameName = window.EJS_gameName;
+                var bazelsElement = document.querySelector('.ejs_canvas');
+                var ejsCoreValue = window.EJS_core;
+                var ejsgameName = window.EJS_gameName;
                 //é normal dar erro toLocaleUpperCase() ate carregar o classe ejs_canvas em breve será corrigido
                 if(bazelsElement !== null){
                     var stringCore = window.EJS_core.toLocaleUpperCase();
                 }
-                
+
                 //aqui buscar a capa do github bezelproject https://github.com/thebezelproject samos grados pela disponilidade dos bezels no github.
                 //here get the bezelproject github cover https://github.com/thebezelproject We are grateful for the availability of bezels on github.
-                let imageUrl = "https://raw.githubusercontent.com/thebezelproject/bezelproject-" + stringCore + "/master/retroarch/overlay/GameBezels/" + stringCore + "/" + encodeURIComponent(ejsgameName) + ".png";
 
+
+                    var imageUrl = "https://raw.githubusercontent.com/thebezelproject/bezelproject-" + stringCore + "/master/retroarch/overlay/GameBezels/" + stringCore + "/" + encodeURIComponent(ejsgameName) + ".png";
+
+                             
                     if (bazelsElement) {
                         //O Bezels para funcionar, mas o jogo fica na frente do Bezels no caso do N64, precisa corrigir ainda, nos demais quais eu teste estão tudo ok.
                         //The Bezels to work, but the game is in front of the Bezels in the case of the N64, it still needs to be corrected, in the others that I test everything is ok.
@@ -339,14 +342,17 @@ Very important for the operation of bezels, preconfigured background.
 
 
                         } else if (ejsCoreValue === 'arcade' || ejsCoreValue === 'mame2003') { 
-                            let stringCore = "MAME";
+                            
+                            var stringCore = "MAME";
+                            var imageUrl = "https://raw.githubusercontent.com/thebezelproject/bezelproject-" + stringCore + "/master/retroarch/overlay/ArcadeBezels/" + encodeURIComponent(ejsgameName) + ".png";
+
                             verificarURL(imageUrl)
                             .then(resultado => {
                                 if (resultado === 0) {
                                     bazelsElement.style.backgroundImage = "url('" + imageUrl + "')";
                                     clearInterval(verificarInterval); 
                                 } else if (resultado === 1) {
-                                    bazelsElement.style.backgroundImage = "url('https://raw.githubusercontent.com/thebezelproject/bezelproject-Atari2600/master/retroarch/overlay/Atari-2600.png')";
+                                    bazelsElement.style.backgroundImage = "url('https://raw.githubusercontent.com/thebezelproject/bezelproject-MAME/master/retroarch/overlay/MAME-Horizontal.png')";
                                     clearInterval(verificarInterval);
                                 } else if (resultado === 2) {
                                     console.log('Erro na requisição.');
