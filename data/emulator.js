@@ -2462,6 +2462,7 @@ class EmulatorJS {
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
+            if (e.gamepadIndex !== i) continue;
             for (let j=0; j<30; j++) {
                 if (['buttonup', 'buttondown'].includes(e.type) && (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
                     this.gameManager.simulateInput(i, j, (e.type === 'buttonup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
@@ -2470,35 +2471,35 @@ class EmulatorJS {
                         if (special.includes(j)) {
                             if (e.axis === 'LEFT_STICK_X') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 16, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 17, 0);
+                                    this.gameManager.simulateInput(i, 16, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 17, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 17, -0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 16, 0);
+                                    this.gameManager.simulateInput(i, 17, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 16, 0);
                                 }
                             } else if (e.axis === 'LEFT_STICK_Y') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 18, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 19, 0);
+                                    this.gameManager.simulateInput(i, 18, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 19, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 19, -0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 18, 0);
+                                    this.gameManager.simulateInput(i, 19, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 18, 0);
                                 }
                             } else if (e.axis === 'RIGHT_STICK_X') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 20, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 21, 0);
+                                    this.gameManager.simulateInput(i, 20, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 21, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 21, -0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 20, 0);
+                                    this.gameManager.simulateInput(i, 21, -0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 20, 0);
                                 }
                             } else if (e.axis === 'RIGHT_STICK_Y') {
                                 if (e.value > 0) {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 22, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 23, 0);
+                                    this.gameManager.simulateInput(i, 22, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 23, 0);
                                 } else {
-                                    this.gameManager.simulateInput(e.gamepadIndex, 23, 0x7fff * e.value);
-                                    this.gameManager.simulateInput(e.gamepadIndex, 22, 0);
+                                    this.gameManager.simulateInput(i, 23, 0x7fff * e.value);
+                                    this.gameManager.simulateInput(i, 22, 0);
                                 }
                             }
                         } else if (this.controls[i][j].value2 === e.axis+":"+value || value === 0) {
