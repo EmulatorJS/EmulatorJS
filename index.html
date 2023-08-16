@@ -168,12 +168,12 @@
                 div.appendChild(sub)
                 document.body.appendChild(div)
 
-                window.EJS_player = "#game"
-                window.EJS_gameName = parts.shift()
-                window.EJS_biosUrl = ""
-                window.EJS_gameUrl = url
-                window.EJS_core = core
-                window.EJS_pathtodata = "data/"
+                window.EJS_player = "#game";
+                window.EJS_gameName = parts.shift();
+                window.EJS_biosUrl = "";
+                window.EJS_gameUrl = url;
+                window.EJS_core = core;
+                window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
                 window.EJS_backgroundImage = "";
                 window.EJS_fullscreenOnLoaded = true;
@@ -181,14 +181,33 @@
 
                 if (window.location.hostname === "demo.emulatorjs.org") {
                     window.EJS_AdUrl = "https://ads.emulatorjs.org/";
+                    window.EJS_ready = function() {
+                        detectAdBlock("https://ads.emulatorjs.org/?blocked");
+                    }
                 }
                 
+
                 script.src = "data/loader.js"
                 document.body.appendChild(script)
-            }
 
-            box.ondragover = () => box.setAttribute("drag", true)
-            box.ondragleave = () => box.removeAttribute("drag")
+            }
+            async function detectAdBlock(url) {
+                let adBlockEnabled = false
+                const googleAdUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+                try {
+                    await fetch(new Request(googleAdUrl)).catch(_ => adBlockEnabled = true)
+                } catch (e) {
+                    adBlockEnabled = true
+                } finally {
+                    window.EJS_ready = function() {
+                        if (adBlockEnabled) {
+                            window.EJS_adBlocked("https://emulatorjs.org/?blocked");
+                        }
+                    }
+                }
+            }
+            box.ondragover = () => box.setAttribute("drag", true);
+            box.ondragleave = () => box.removeAttribute("drag");
         </script>
         <!-- import -->
         <script src="data/bezels.js"></script>

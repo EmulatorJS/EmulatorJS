@@ -3,7 +3,7 @@ class EmulatorJS {
     getCore(generic) {
         const core = this.config.system;
         /*todo:
-        Systems: TurboGrafs-16 (pce), Wanderswan (ws), ngp, msx
+        Systems: TurboGrafx-16 (pce), Wonderswan (ws), Neo Geo Pocket,  msx
         
         Cores:
         - Beetle NeoPop
@@ -234,6 +234,7 @@ class EmulatorJS {
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
+        this.settingsLanguage = window.EJS_settingsLanguage || false;
         this.config = config;
         this.currentPopup = null;
         this.isFastForward = false;
@@ -249,7 +250,12 @@ class EmulatorJS {
         this.listeners = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
-        if (this.config.adUrl) this.setupAds(this.config.adUrl);
+        this.config.alignStartButton = (typeof this.config.alignStartButton === "string") ? this.config.alignStartButton : "bottom";
+        this.config.backgroundColor = (typeof this.config.backgroundColor === "string") ? this.config.backgroundColor : "rgb(51, 51, 51)";
+        if (this.config.adUrl) {
+            this.config.adSize = (Array.isArray(this.config.adSize)) ? this.config.adSize : ["300px", "250px"];
+            this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
+        }
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
         this.bindListeners();
@@ -270,16 +276,15 @@ class EmulatorJS {
         
         this.game.classList.add("ejs_game");
         if (typeof this.config.backgroundImg === "string") {
-            this.game.style["background-image"] = "url('"+this.config.backgroundImg+"')";
-            this.game.style["background-size"] = "contain";
-            this.game.style["background-position"] = "center";
-            this.game.style["background-repeat"] = "no-repeat";
+            this.game.classList.add("ejs_game_background");
+            if (this.config.backgroundBlur) this.game.classList.add("ejs_game_background_blur");
+            this.game.setAttribute("style", "--ejs-background-image: url("+this.config.backgroundImg+"); --ejs-background-color: "+this.config.backgroundColor+";");
             this.on("start", () => {
-                this.game.style["background-image"] = "";
-                this.game.style["background-size"] = "";
-                this.game.style["background-position"] = "";
-                this.game.style["background-repeat"] = "";
+                this.game.classList.remove("ejs_game_background");
+                if (this.config.backgroundBlur) this.game.classList.remove("ejs_game_background_blur");
             })
+        }else{
+            this.game.setAttribute("style", "--ejs-background-color: "+this.config.backgroundColor+";");
         }
         
         if (Array.isArray(this.config.cheats)) {
@@ -323,16 +328,16 @@ class EmulatorJS {
         }
         this.elements.parent.setAttribute("style", "--ejs-primary-color:" + getColor(color) + ";");
     }
-    setupAds(ads) {
+    setupAds(ads, width, height) {
         const div = this.createElement("div");
+        const time = (typeof this.config.adMode === "number" && this.config.adMode > -1 && this.config.adMode < 3) ? this.config.adMode : 2;
         div.classList.add("ejs_ad_iframe");
         const frame = this.createElement("iframe");
         frame.src = ads;
         frame.setAttribute("scrolling", "no");
         frame.setAttribute("frameborder", "no");
-        frame.style.width = "300px";
-        frame.style.height = "250px";
-        
+        frame.style.width = width;
+        frame.style.height = height;
         const closeParent = this.createElement("div");
         closeParent.classList.add("ejs_ad_close");
         const closeButton = this.createElement("a");
@@ -340,20 +345,38 @@ class EmulatorJS {
         closeParent.setAttribute("hidden", "");
         div.appendChild(closeParent);
         div.appendChild(frame);
-        this.elements.parent.appendChild(div);
+        if (this.config.adMode !== 1) {
+            this.elements.parent.appendChild(div);
+        }
         this.addEventListener(closeButton, "click", () => {
             div.remove();
+        })
+        
+        this.on("start-clicked", () => {
+            if (this.config.adMode === 0) div.remove();
+            if (this.config.adMode === 1){
+                this.elements.parent.appendChild(div);
+            }
         })
         
         this.on("start", () => {
             closeParent.removeAttribute("hidden");
             const time = (typeof this.config.adTimer === "number" && this.config.adTimer > 0) ? this.config.adTimer : 10000;
+            if (this.config.adTimer === -1) div.remove();
             if (this.config.adTimer === 0) return;
             setTimeout(() => {
                 div.remove();
             }, time);
         })
         
+    }
+    adBlocked(url, del){
+        if (del){
+            document.querySelector('div[class="ejs_ad_iframe"]').remove();
+        }else{
+            document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
+            this.config.adUrl = url;
+        }
     }
     functions = {};
     on(event, func) {
@@ -383,7 +406,17 @@ class EmulatorJS {
     createStartButton() {
         const button = this.createElement("div");
         button.classList.add("ejs_start_button");
+        let border = 0;
+        if (typeof this.config.backgroundImg === "string"){
+            button.classList.add("ejs_start_button_border");
+            border = 1;
+        }
         button.innerText = this.localization("Start Game");
+        if (this.config.alignStartButton == "top"){
+            button.style.bottom = "calc(100% - 20px)";
+        }else if (this.config.alignStartButton == "center"){
+            button.style.bottom = "calc(50% + 22.5px + "+border+"px)";
+        }
         this.elements.parent.appendChild(button);
         this.addEventListener(button, "touchstart", () => {
             this.touch = true;
@@ -392,8 +425,12 @@ class EmulatorJS {
         if (this.config.startOnLoad === true) {
             this.startButtonClicked(button);
         }
+        setTimeout(() => {
+            this.callEvent("ready");
+        }, 20);
     }
     startButtonClicked(e) {
+        this.callEvent("start-clicked");
         if (e.pointerType === "touch") {
             this.touch = true;
         }
@@ -410,13 +447,18 @@ class EmulatorJS {
     createText() {
         this.textElem = this.createElement("div");
         this.textElem.classList.add("ejs_loading_text");
+        if (typeof this.config.backgroundImg === "string") this.textElem.classList.add("ejs_loading_text_glow");
         this.textElem.innerText = this.localization("Loading...");
         this.elements.parent.appendChild(this.textElem);
     }
-    localization(text) {
+    localization(text, log) {
         if (!isNaN(text)) return text;
+        if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
-            if (!this.config.langJson[text]) {
+            if (typeof log === "undefined") log = true;
+            if (!this.config.langJson[text] && log) {
+                if(!window.EJS_missingLang) window.EJS_missingLang = [];
+                window.EJS_missingLang.push(text);
                 console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
             }
             return this.config.langJson[text] || text;
@@ -971,7 +1013,6 @@ class EmulatorJS {
             if (this.debug) console.log(args);
             this.Module.callMain(args);
             this.Module.resumeMainLoop();
-            
             this.checkSupportedOpts();
             this.setupSettingsMenu();
             this.loadSettings();
@@ -990,6 +1031,13 @@ class EmulatorJS {
                 this.virtualGamepad.style.display = "";
             }
             this.handleResize();
+            if (this.config.fullscreenOnLoad) {
+                try {
+                    this.toggleFullscreen(true);
+                } catch(e) {
+                    if (this.debug) console.warn("Could not fullscreen on load");
+                }
+            }
         } catch(e) {
             console.warn("failed to start game", e);
             this.textElem.innerText = this.localization("Failed to start game");
@@ -1075,7 +1123,7 @@ class EmulatorJS {
             }
             a.href = "#";
             a.onclick = "return false";
-            a.innerText = title;
+            a.innerText = this.localization(title);
             li.appendChild(a);
             parent.appendChild(li);
             hideMenu();
@@ -1134,7 +1182,7 @@ class EmulatorJS {
                 }
                 a.href = "#";
                 a.onclick = "return false";
-                a.innerText = title;
+                a.innerText = this.localization(title);
                 li.appendChild(a);
                 parent.appendChild(li);
                 hideMenu();
@@ -1609,42 +1657,51 @@ class EmulatorJS {
         })
         
         const enter = addButton("Enter Fullscreen", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M208 281.4c-12.5-12.5-32.76-12.5-45.26-.002l-78.06 78.07l-30.06-30.06c-6.125-6.125-14.31-9.367-22.63-9.367c-4.125 0-8.279 .7891-12.25 2.43c-11.97 4.953-19.75 16.62-19.75 29.56v135.1C.0013 501.3 10.75 512 24 512h136c12.94 0 24.63-7.797 29.56-19.75c4.969-11.97 2.219-25.72-6.938-34.87l-30.06-30.06l78.06-78.07c12.5-12.49 12.5-32.75 .002-45.25L208 281.4zM487.1 0h-136c-12.94 0-24.63 7.797-29.56 19.75c-4.969 11.97-2.219 25.72 6.938 34.87l30.06 30.06l-78.06 78.07c-12.5 12.5-12.5 32.76 0 45.26l22.62 22.62c12.5 12.5 32.76 12.5 45.26 0l78.06-78.07l30.06 30.06c9.156 9.141 22.87 11.84 34.87 6.937C504.2 184.6 512 172.9 512 159.1V23.1C512 10.74 501.3 0 487.1 0z"/></svg>', () => {
-            if (this.elements.parent.requestFullscreen) {
-                this.elements.parent.requestFullscreen();
-            } else if (this.elements.parent.mozRequestFullScreen) {
-                this.elements.parent.mozRequestFullScreen();
-            } else if (this.elements.parent.webkitRequestFullscreen) {
-                this.elements.parent.webkitRequestFullscreen();
-            } else if (this.elements.parent.msRequestFullscreen) {
-                this.elements.parent.msRequestFullscreen();
-            }
-            exit.style.display = "";
-            enter.style.display = "none";
-            if (this.isMobile) {
-                try {
-                    screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});;
-                } catch(e) {}
-            }
+            this.toggleFullscreen(true);
         });
         const exit = addButton("Exit Fullscreen", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M215.1 272h-136c-12.94 0-24.63 7.797-29.56 19.75C45.47 303.7 48.22 317.5 57.37 326.6l30.06 30.06l-78.06 78.07c-12.5 12.5-12.5 32.75-.0012 45.25l22.62 22.62c12.5 12.5 32.76 12.5 45.26 .0013l78.06-78.07l30.06 30.06c6.125 6.125 14.31 9.367 22.63 9.367c4.125 0 8.279-.7891 12.25-2.43c11.97-4.953 19.75-16.62 19.75-29.56V296C239.1 282.7 229.3 272 215.1 272zM296 240h136c12.94 0 24.63-7.797 29.56-19.75c4.969-11.97 2.219-25.72-6.938-34.87l-30.06-30.06l78.06-78.07c12.5-12.5 12.5-32.76 .0002-45.26l-22.62-22.62c-12.5-12.5-32.76-12.5-45.26-.0003l-78.06 78.07l-30.06-30.06c-9.156-9.141-22.87-11.84-34.87-6.937c-11.97 4.953-19.75 16.62-19.75 29.56v135.1C272 229.3 282.7 240 296 240z"/></svg>', () => {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            } else if (document.webkitExitFullscreen) {
-                document.webkitExitFullscreen();
-            } else if (document.mozCancelFullScreen) {
-                document.mozCancelFullScreen();
-            } else if (document.msExitFullscreen) {
-                document.msExitFullscreen();
-            }
-            exit.style.display = "none";
-            enter.style.display = "";
-            if (this.isMobile) {
-                try {
-                    screen.orientation.unlock();
-                } catch(e) {}
-            }
+            this.toggleFullscreen(false);
         });
         exit.style.display = "none";
+        
+        this.toggleFullscreen = (fullscreen) => {
+            if (fullscreen) {
+                if (this.elements.parent.requestFullscreen) {
+                    this.elements.parent.requestFullscreen();
+                } else if (this.elements.parent.mozRequestFullScreen) {
+                    this.elements.parent.mozRequestFullScreen();
+                } else if (this.elements.parent.webkitRequestFullscreen) {
+                    this.elements.parent.webkitRequestFullscreen();
+                } else if (this.elements.parent.msRequestFullscreen) {
+                    this.elements.parent.msRequestFullscreen();
+                }
+                exit.style.display = "";
+                enter.style.display = "none";
+                if (this.isMobile) {
+                    try {
+                        screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});;
+                    } catch(e) {}
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                exit.style.display = "none";
+                enter.style.display = "";
+                if (this.isMobile) {
+                    try {
+                        screen.orientation.unlock();
+                    } catch(e) {}
+                }
+            }
+        }
+        
         
         this.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {
             if (e.target !== this.elements.parent) return;
@@ -2113,6 +2170,33 @@ class EmulatorJS {
             playerTitle.appendChild(gamepadTitle);
             playerTitle.appendChild(leftPadding);
             playerTitle.appendChild(aboutParent);
+            
+            if ((this.touch || navigator.maxTouchPoints > 0) && i === 0) {
+                const vgp = this.createElement("div");
+                vgp.style = "width:25%;float:right;clear:none;padding:0;font-size: 11px;padding-left: 2.25rem;";
+                vgp.classList.add("ejs_cheat_row");
+                const input = this.createElement("input");
+                input.type = "checkbox";
+                input.checked = true;
+                input.value = "o";
+                input.id = "ejs_vp";
+                vgp.appendChild(input);
+                const label = this.createElement("label");
+                label.for = "ejs_vp";
+                label.innerText = "Virtual Gamepad";
+                vgp.appendChild(label);
+                label.addEventListener("click", (e) => {
+                    input.checked = !input.checked;
+                    this.changeSettingOption('virtual-gamepad', input.checked ? 'enabled' : "disabled");
+                })
+                this.on("start", (e) => {
+                    if (this.settings["virtual-gamepad"] === "disabled") {
+                        input.checked = false;
+                    }
+                })
+                playerTitle.appendChild(vgp);
+            }
+            
             playerTitle.appendChild(headingPadding);
             
             
@@ -2432,10 +2516,19 @@ class EmulatorJS {
         }
         this.virtualGamepad.classList.add("ejs_virtualGamepad_parent");
         this.elements.parent.appendChild(this.virtualGamepad);
+
+        const speedControlButtons = [
+            {"type":"button","text":"Fast","id":"speed-fast","location":"center","left":-35,"top":50,"fontSize":15,"block":true,"input_value":27},
+            {"type":"button","text":"Slow","id":"speed-slow","location":"center","left":95,"top":50,"fontSize":15,"block":true,"input_value":29},
+        ];
+        if (this.rewindEnabled) {
+            speedControlButtons.push({"type":"button","text":"Rewind","id":"speed-rewind","location":"center","left":30,"top":50,"fontSize":15,"block":true,"input_value":28});
+        }
+
         let info;
         if (this.config.VirtualGamepadSettings && function(set) {
             if (!Array.isArray(set)) {
-                console.warn("Vritual gamepad settings is not array! Using default gamepad settings");
+                console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
                 return false;
             }
             if (!set.length) {
@@ -2486,6 +2579,7 @@ class EmulatorJS {
                 {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11}
             ];
+            info.push(...speedControlButtons);
         } else if ("gb" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
@@ -2494,6 +2588,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ('nes' === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
@@ -2502,6 +2597,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ('n64' === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},
@@ -2517,6 +2613,7 @@ class EmulatorJS {
                 {"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},
                 {"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}
             ];
+            info.push(...speedControlButtons);
         } else if ("nds" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
@@ -2529,6 +2626,7 @@ class EmulatorJS {
                 {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
             ];
+            info.push(...speedControlButtons);
         } else if ("snes" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
@@ -2541,6 +2639,7 @@ class EmulatorJS {
                 {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
             ];
+            info.push(...speedControlButtons);
         } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getControlScheme())) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":9},
@@ -2553,12 +2652,14 @@ class EmulatorJS {
                 {"type":"button","text":"Mode","id":"mode","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("segaMS" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":40,"bold":true,"input_value":0},
                 {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}
             ];
+            info.push(...speedControlButtons);
         } else if ("segaGG" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":70,"bold":true,"input_value":0},
@@ -2566,6 +2667,7 @@ class EmulatorJS {
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
                 {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("segaSaturn" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
@@ -2579,6 +2681,7 @@ class EmulatorJS {
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":13},
                 {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("atari2600" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"","id":"button1","location":"right","right":10,"top":70,"bold":true,"input_value":0},
@@ -2586,24 +2689,27 @@ class EmulatorJS {
                 {"type":"button","text":"Reset","id":"reset","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ("atari7800" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"1","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
                 {"type":"button","text":"2","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":"Reset","id":"reset","location":"center","left":-30,"fontSize":15,"block":true,"input_value":9},
-                {"type":"button","text":"Pause","id":"pause","location":"center","left":90,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":-35,"fontSize":15,"block":true,"input_value":9},
+                {"type":"button","text":"Pause","id":"pause","location":"center","left":95,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":30,"fontSize":15,"block":true,"input_value":2},
             ];
+            info.push(...speedControlButtons);
         } else if ("lynx" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
                 {"type":"button","text":"A","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":"Opt 1","id":"option1","location":"center","left":-30,"fontSize":15,"block":true,"input_value":10},
-                {"type":"button","text":"Opt 2","id":"option2","location":"center","left":90,"fontSize":15,"block":true,"input_value":11},
+                {"type":"button","text":"Opt 1","id":"option1","location":"center","left":-35,"fontSize":15,"block":true,"input_value":10},
+                {"type":"button","text":"Opt 2","id":"option2","location":"center","left":95,"fontSize":15,"block":true,"input_value":11},
                 {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else if ("jaguar" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":8},
@@ -2613,6 +2719,7 @@ class EmulatorJS {
                 {"type":"button","text":"Option","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Pause","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ("vb" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"B","id":"b","location":"right","right":75,"top":150,"bold":true,"input_value":0},
@@ -2624,6 +2731,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         } else if ("3do" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
@@ -2635,6 +2743,7 @@ class EmulatorJS {
                 {"type":"button","text":"X","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"bold":true,"input_value":2},
                 {"type":"button","text":"P","id":"start","location":"center","left":60,"fontSize":15,"block":true,"bold":true,"input_value":3}
             ];
+            info.push(...speedControlButtons);
         } else {
             info = [
                 {"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},
@@ -2645,6 +2754,7 @@ class EmulatorJS {
                 {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
+            info.push(...speedControlButtons);
         }
         info = JSON.parse(JSON.stringify(info));
         
@@ -3184,20 +3294,8 @@ class EmulatorJS {
             for (let i=0; i<menus.length; i++) {
                 menus[i].style['max-height'] = (height - 95) + "px";
             }
-            if (width < 575) {
-                const rect = this.settingsMenu.getBoundingClientRect();
-                if (rect.x < 0 ||
-                   (this.settingsMenu.classList.contains("ejs_settings_center") && rect.x-(rect.width/2) < 0)) {
-                    this.settingsMenu.classList.toggle("ejs_settings_center", true);
-                    this.settingsMenu.classList.toggle("ejs_settings_leftside", false);
-                } else {
-                    this.settingsMenu.classList.toggle("ejs_settings_leftside", !((window.innerWidth/2) > x));
-                    this.settingsMenu.classList.toggle("ejs_settings_center", false);
-                }
-            } else {
-                this.settingsMenu.classList.remove("ejs_settings_leftside");
-                this.settingsMenu.classList.remove("ejs_settings_center");
-            }
+            this.settingsMenu.classList.toggle("ejs_settings_center_left", (x < width/2) && (width < 575));
+            this.settingsMenu.classList.toggle("ejs_settings_center_right", (x >= width/2) && (width < 575));
             if (needChange) {
                 this.settingsMenu.style.display = "none";
                 this.settingsMenu.style.opacity = "";
@@ -3404,9 +3502,9 @@ class EmulatorJS {
                 if (options.length === 1) return;
                 let availableOptions = {};
                 for (let i=0; i<options.length; i++) {
-                    availableOptions[options[i]] = this.localization(options[i]);
+                    availableOptions[options[i]] = this.localization(options[i], this.settingsLanguage);
                 }
-                addToMenu(this.localization(optionName),
+                addToMenu(this.localization(optionName, this.settingsLanguage),
                           name.split("|")[0], availableOptions,
                           (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
             })
@@ -4201,3 +4299,4 @@ class EmulatorJS {
         this.gameManager.setCheat(index, checked, code);
     }
 }
+window.EmulatorJS = EmulatorJS;

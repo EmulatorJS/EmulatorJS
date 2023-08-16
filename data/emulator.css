@@ -107,11 +107,39 @@
     transform: rotate(-45deg) translateY(-50%) translateX(0);
 }
 
-.ejs_game {/* todo. User selectable background loading image */
-    width: 100%;
-    height: 100%;
-    background-color: rgb(51, 51, 51);
+.ejs_game {
+    width: inherit;
+    height: inherit;
+    background-color: var(--ejs-background-color);
     cursor: default;
+    position: relative;
+    overflow: hidden;
+}
+
+.ejs_game_background {
+    background-image: var(--ejs-background-image);
+    background-size: contain;
+    background-position: center center;
+    background-repeat: no-repeat;
+    text-align: -webkit-auto;
+}
+
+.ejs_game_background_blur:before,
+.ejs_game_background_blur:after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--ejs-background-image);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+
+.ejs_game_background_blur:before {
+  background-size: cover;
+  filter: blur(10px);
+  transform: scale(1.1);
 }
 
 .ejs_start_button {
@@ -121,7 +149,6 @@
     transform: translateX(-50%);
     cursor: pointer;
     box-sizing: inherit;
-    
     display: flex;
     justify-content: center;
     text-shadow: 0 1px 1px rgba(0,0,0,0.5);
@@ -138,12 +165,25 @@
     border-radius: 35px;
     text-align: center;
     background-color: rgba(var(--ejs-primary-color),1);
+    box-shadow: 0 0 0 0 #222, 0 0px 0px 0 #111, inset 0 0px 0px 0 rgba(250,250,250,0.2), inset 0 0px 0px 0px rgba(0,0,0,0.5);
 }
 
-.ejs_start_button:active {
-    box-shadow: 0 0 0 0 #222, 0 3px 7px 0 #111, inset 0 1px 1px 0 rgba(250,250,250,0.2), inset 0 -10px 35px 5px rgba(0,0,0,0.5);
-    bottom: 64px;
+.ejs_start_button_border {
+    border: 0.5px solid #333;
 }
+
+.ejs_start_button:active, .ejs_start_button:hover {
+    animation: ejs_start_button_pulse 2s infinite;
+}
+
+@keyframes ejs_start_button_pulse {
+    50% {
+      box-shadow: 0 0 0 0 #222, 0 3px 7px 0 #111, inset 0 1px 1px 0 rgba(250,250,250,0.2), inset 0 0px 15px 1px rgba(0,0,0,0.5);
+    }
+    0%, 100% {
+      box-shadow: 0 0 0 0 #222, 0 0px 0px 0 #111, inset 0 0px 0px 0 rgba(250,250,250,0.2), inset 0 0px 0px 0px rgba(0,0,0,0.5);
+    }
+  }
 
 .ejs_loading_text {
     position: absolute;
@@ -154,6 +194,13 @@
     box-sizing: inherit;
     font-size: 12px;
     color: #bcbcbc;
+}
+
+.ejs_loading_text_glow {
+    background-color: rgba(0, 0, 0, 0.9);
+    border-radius: 10px;
+    padding: 1px 5px 1px 5px;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
 }
 
 .ejs_canvas {
@@ -255,14 +302,17 @@
     .ejs_settings_parent::after {
         right: 15px;
     }
-    .ejs_settings_leftside {
-        right: 50%
+    .ejs_settings_center_right {
+        right: -35%
     }
-    .ejs_settings_leftside::after {
-        right: 15px;
+    .ejs_settings_center_left {
+        right: -135%
     }
-    .ejs_settings_center::after {
+    .ejs_settings_center_right::after {
         right: 25%;
+    }
+    .ejs_settings_center_left::after {
+        left: 25%;
     }
     .ejs_menu_bar {
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;
@@ -275,7 +325,7 @@
         align-items: flex-start;
         background: rgba(0,0,0,.9);
         padding: 10px;
-        z-index: 999;
+        z-index: 9999;
         left: 50%;
         bottom: 0;
     }
@@ -423,7 +473,7 @@
         position: absolute;
         right: 0;
         transition: opacity .4s ease-in-out,transform .4s ease-in-out;
-        z-index: 3;
+        z-index: 9999;
         align-items: center;
         display: flex;
         justify-content: flex-start;
@@ -1006,6 +1056,7 @@
     border-width: 0;
     cursor: pointer;
     -webkit-appearance: button;
+    appearance: button;
     text-transform: none;
     overflow: visible;
     margin: 0;
@@ -1141,6 +1192,7 @@
 }
 .ejs_volume_parent input[type='range']{
     -webkit-appearance:none;
+    appearance: none;
     border:0;
     border-radius:28px;
     color:rgba(var(--ejs-primary-color), 1);
@@ -1151,10 +1203,10 @@
 }
 
 .ejs_volume_parent input[type='range']::-webkit-slider-runnable-track{
-    background-color:rgba(255,255,255,0.25)
-    box-shadow:0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
-    outline:0
-    background:transparent;
+    background-color:rgba(255,255,255,0.25);
+    box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
+    outline:0;
+    background: transparent;
     border:0;
     border-radius:3px;
     height:6px;
@@ -1175,9 +1227,9 @@
     margin-top:-4px
 }
 .ejs_volume_parent input[type='range']::-moz-range-track{
-    background-color:rgba(255,255,255,0.25)
+    background-color:rgba(255,255,255,0.25);
     box-shadow:0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
-    outline:0
+    outline:0;
     background:transparent;
     border:0;
     border-radius:3px;
@@ -1201,9 +1253,9 @@
     height:6px
 }
 .ejs_volume_parent input[type='range']::-ms-track{
-    background-color:rgba(255,255,255,0.25)
+    background-color:rgba(255,255,255,0.25);
     box-shadow:0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
-    outline:0
+    outline:0;
     background:transparent;
     border:0;
     border-radius:3px;
