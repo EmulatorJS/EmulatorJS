@@ -28,7 +28,8 @@ class GamepadHandler {
                 const gamepadToSave = {
                     axes: [],
                     buttons: {},
-                    index: oldGamepad.index
+                    index: oldGamepad.index,
+                    id: oldGamepad.id
                 }
                 hasGamepad = true;
                 
