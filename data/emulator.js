@@ -2449,7 +2449,8 @@ class EmulatorJS {
         if (this.controlPopup.parentElement.parentElement.getAttribute("hidden") === null) {
             if ('buttonup' === e.type || (e.type === "axischanged" && value === 0)) return;
             const num = this.controlPopup.getAttribute("button-num");
-            const player = this.controlPopup.getAttribute("player-num");
+            const player = parseInt(this.controlPopup.getAttribute("player-num"));
+            if (e.gamepadIndex !== player) return;
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
