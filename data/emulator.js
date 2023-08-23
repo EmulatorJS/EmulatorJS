@@ -2581,190 +2581,195 @@ class EmulatorJS {
             info = this.config.VirtualGamepadSettings;
         } else if ("gba" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
-                {"type":"button","text":this.localization("L"),"id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
-                {"type":"button","text":this.localization("R"),"id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11}
-            ];            
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11}
+            ];
             info.push(...speedControlButtons);
         } else if ("gb" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":10,"top":70,"bold":true,"input_value":0},
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
         } else if ('nes' === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
         } else if ('n64' === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","left":40,"top":150,"input_value":0,"bold":true},
+                {"type":"button","text":"B","id":"b","location":"right","left":-10,"top":95,"input_value":1,"bold":true},
+                {"type":"button","text":"A","id":"a","location":"right","left":40,"top":150,"input_value":0,"bold":true},
                 {"type":"zone","location":"left","left":"50%","top":"100%","joystickInput":true,"inputValues":[16, 17, 18, 19]},
                 {"type":"zone","location":"left","left":"50%","top":"0%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":30,"top":-10,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("L"),"id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10},
-                {"type":"button","text":this.localization("R"),"id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11},
-                {"type":"button","text":this.localization("Z"),"id":"z","block":true,"location":"top","left":10,"bold":true,"input_value":12},
-                {"fontSize":20,"type":"button","text":this.localization("CU"),"id":"cu","location":"right","left":25,"top":-65,"input_value":23},
-                {"fontSize":20,"type":"button","text":this.localization("CD"),"id":"cd","location":"right","left":25,"top":15,"input_value":22},
-                {"fontSize":20,"type":"button","text":this.localization("CL"),"id":"cl","location":"right","left":-15,"top":-25,"input_value":21},
-                {"fontSize":20,"type":"button","text":this.localization("CR"),"id":"cr","location":"right","left":65,"top":-25,"input_value":20}
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"top":-10,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"L","id":"l","block":true,"location":"top","left":10,"top":-40,"bold":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","block":true,"location":"top","right":10,"top":-40,"bold":true,"input_value":11},
+                {"type":"button","text":"Z","id":"z","block":true,"location":"top","left":10,"bold":true,"input_value":12},
+                {"fontSize":20,"type":"button","text":"CU","id":"cu","location":"right","left":25,"top":-65,"input_value":23},
+                {"fontSize":20,"type":"button","text":"CD","id":"cd","location":"right","left":25,"top":15,"input_value":22},
+                {"fontSize":20,"type":"button","text":"CL","id":"cl","location":"right","left":-15,"top":-25,"input_value":21},
+                {"fontSize":20,"type":"button","text":"CR","id":"cr","location":"right","left":65,"top":-25,"input_value":20}
             ];
             info.push(...speedControlButtons);
         } else if ("nds" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("X"),"id":"x","location":"right","left":40,"bold":true,"input_value":9},
-                {"type":"button","text":this.localization("Y"),"id":"y","location":"right","top":40,"bold":true,"input_value":1},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
-                {"type":"button","text":this.localization("L"),"id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
-                {"type":"button","text":this.localization("R"),"id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
             ];
             info.push(...speedControlButtons);
         } else if ("snes" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("X"),"id":"x","location":"right","left":40,"bold":true,"input_value":9},
-                {"type":"button","text":this.localization("Y"),"id":"y","location":"right","top":40,"bold":true,"input_value":1},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"button","text":"X","id":"x","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"A","id":"a","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","left":40,"top":80,"bold":true,"input_value":0},
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
-                {"type":"button","text":this.localization("L"),"id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
-                {"type":"button","text":this.localization("R"),"id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-100,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-100,"bold":true,"block":true,"input_value":11}
             ];
             info.push(...speedControlButtons);
         } else if (['segaMD', 'segaCD', 'sega32x'].includes(this.getControlScheme())) {
             info = [
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":9},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("C"),"id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("X"),"id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":10},
-                {"type":"button","text":this.localization("Y"),"id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":9},
-                {"type":"button","text":this.localization("Z"),"id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":9},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"X","id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"Y","id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":9},
+                {"type":"button","text":"Z","id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Mode"),"id":"mode","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
+                {"type":"button","text":"Mode","id":"mode","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3}
             ];
             info.push(...speedControlButtons);
         } else if ("segaMS" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("1"),"id":"button1","location":"right","left":10,"top":40,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("2"),"id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":40,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]}
             ];
             info.push(...speedControlButtons);
         } else if ("segaGG" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("1"),"id":"button1","location":"right","left":10,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("2"),"id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"1","id":"button1","location":"right","left":10,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","left":81,"top":40,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
             info.push(...speedControlButtons);
         } else if ("segaSaturn" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("C"),"id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("X"),"id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":9},
-                {"type":"button","text":this.localization("Y"),"id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":10},
-                {"type":"button","text":this.localization("Z"),"id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"X","id":"x","location":"right","right":145,"top":0,"bold":true,"input_value":9},
+                {"type":"button","text":"Y","id":"y","location":"right","right":75,"top":0,"bold":true,"input_value":10},
+                {"type":"button","text":"Z","id":"z","location":"right","right":5,"top":0,"bold":true,"input_value":11},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("L"),"id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":12},
-                {"type":"button","text":this.localization("R"),"id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":13},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":12},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":13},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
             info.push(...speedControlButtons);
         } else if ("atari2600" === this.getControlScheme()) {
             info = [
                 {"type":"button","text":"","id":"button1","location":"right","right":10,"top":70,"bold":true,"input_value":0},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Reset"),"id":"reset","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
         } else if ("atari7800" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("1"),"id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("2"),"id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"1","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"2","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Reset"),"id":"reset","location":"center","left":-35,"fontSize":15,"block":true,"input_value":9},
-                {"type":"button","text":this.localization("Pause"),"id":"pause","location":"center","left":95,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":30,"fontSize":15,"block":true,"input_value":2},
+                {"type":"button","text":"Reset","id":"reset","location":"center","left":-35,"fontSize":15,"block":true,"input_value":9},
+                {"type":"button","text":"Pause","id":"pause","location":"center","left":95,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":30,"fontSize":15,"block":true,"input_value":2},
             ];
             info.push(...speedControlButtons);
         } else if ("lynx" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("B"),"id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("A"),"id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"button1","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"button2","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Opt 1"),"id":"option1","location":"center","left":-35,"fontSize":15,"block":true,"input_value":10},
-                {"type":"button","text":this.localization("Opt 2"),"id":"option2","location":"center","left":95,"fontSize":15,"block":true,"input_value":11},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+                {"type":"button","text":"Opt 1","id":"option1","location":"center","left":-35,"fontSize":15,"block":true,"input_value":10},
+                {"type":"button","text":"Opt 2","id":"option2","location":"center","left":95,"fontSize":15,"block":true,"input_value":11},
+                {"type":"button","text":"Start","id":"start","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
             ];
             info.push(...speedControlButtons);
         } else if ("jaguar" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("C"),"id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":1},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Option"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Pause"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+                {"type":"button","text":"Option","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Pause","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
         } else if ("vb" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","right":75,"top":150,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","right":5,"top":150,"bold":true,"input_value":8},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":150,"bold":true,"input_value":0},
+                {"type":"button","text":"A","id":"a","location":"right","right":5,"top":150,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
                 {"type":"dpad","location":"right","left":"50%","right":"50%","joystickInput":false,"inputValues":[19,18,17,16]},
-                {"type":"button","text":this.localization("L"),"id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
-                {"type":"button","text":this.localization("R"),"id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
         } else if ("3do" === this.getControlScheme()) {
             info = [
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
-                {"type":"button","text":this.localization("C"),"id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"button","text":"A","id":"a","location":"right","right":145,"top":70,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"C","id":"c","location":"right","right":5,"top":70,"bold":true,"input_value":8},
                 {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("L"),"id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
-                {"type":"button","text":this.localization("R"),"id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
-                {"type":"button","text":this.localization("X"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"bold":true,"input_value":2},
-                {"type":"button","text":this.localization("P"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"bold":true,"input_value":3}
+                {"type":"button","text":"L","id":"l","location":"left","left":3,"top":-90,"bold":true,"block":true,"input_value":10},
+                {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
+                {"type":"button","text":"X","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"bold":true,"input_value":2},
+                {"type":"button","text":"P","id":"start","location":"center","left":60,"fontSize":15,"block":true,"bold":true,"input_value":3}
             ];
             info.push(...speedControlButtons);
         } else {
             info = [
-                {"type":"button","text":this.localization("Y"),"id":"y","location":"right","left":40,"bold":true,"input_value":9},
-                {"type":"button","text":this.localization("X"),"id":"X","location":"right","top":40,"bold":true,"input_value":1},
-                {"type":"button","text":this.localization("B"),"id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},
-                {"type":"button","text":this.localization("A"),"id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},
+                {"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},
+                {"type":"button","text":"X","id":"X","location":"right","top":40,"bold":true,"input_value":1},
+                {"type":"button","text":"B","id":"b","location":"right","left":81,"top":40,"bold":true,"input_value":8},
+                {"type":"button","text":"A","id":"a","location":"right","left":40,"top":80,"bold":true,"input_value":0},
                 {"type":"zone","location":"left","left":"50%","top":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
-                {"type":"button","text":this.localization("Start"),"id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
-                {"type":"button","text":this.localization("Select"),"id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
+                {"type":"button","text":"Start","id":"start","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
+        }
+        for (let i=0; i<info.length; i++) {
+            if (info[i].text) {
+                info[i].text = this.localization(info[i].text);
+            }
         }
         info = JSON.parse(JSON.stringify(info));
         
