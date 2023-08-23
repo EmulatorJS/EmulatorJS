@@ -144,7 +144,6 @@
     "STICK DOWN": "चिपकाना",
     "STICK LEFT": "बाईं ओर चिपकाएँ",
     "STICK RIGHT": "दाएँ चिपकाएँ",
-<<<<<<< HEAD
     "C-PAD UP": "सी-पैड यूपी",
     "C-PAD DOWN": "सी-पैड नीचे",
     "C-PAD LEFT": "सी-पैड बचा",
@@ -160,23 +159,6 @@
     "RIGHT D-PAD DOWN": "दायां डी-पैड नीचे",
     "RIGHT D-PAD LEFT": "दायां डी-पैड बायां",
     "RIGHT D-PAD RIGHT": "दाएँ डी-पैड दाएँ",
-=======
-    "C-PAD UP": "सीपीएडी यूपी",
-    "C-PAD DOWN": "सीपीएडी नीचे",
-    "C-PAD LEFT": "सीपीएडी बाएँ",
-    "C-PAD RIGHT": "सीपीएडी अधिकार",
-    "MICROPHONE": "माइक्रोफोन",
-    "BUTTON 1 / START": "बटन 1 / प्रारंभ करें",
-    "BUTTON 2": "बटन 2",
-    "LEFT D-PAD UP": "डीपीएडी को ऊपर छोड़ दिया",
-    "LEFT D-PAD DOWN": "डीपीएडी नीचे छोड़ दिया",
-    "LEFT D-PAD LEFT": "बायां डीपैड बायां",
-    "LEFT D-PAD RIGHT": "बाएँ डीपैड दाएँ",
-    "RIGHT D-PAD UP": "दायां डीपीएडी ऊपर",
-    "RIGHT D-PAD DOWN": "दायां डीपैड नीचे",
-    "RIGHT D-PAD LEFT": "दायां डीपैड बायां",
-    "RIGHT D-PAD RIGHT": "दाएँ डीपैड दाएँ",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "सी",
     "MODE": "तरीका",
     "FIRE": "आग",
@@ -202,7 +184,6 @@
     "R STICK UP": "आर चिपको",
     "R STICK DOWN": "आर नीचे रहो",
     "R STICK LEFT": "आर बाईं ओर चिपकाएँ",
-<<<<<<< HEAD
     "R STICK RIGHT": "आर दाईं ओर चिपकाएँ",
     "Start": "शुरू",
     "Select": "चुनना",
@@ -316,7 +297,4 @@
     "DPAD_DOWN": "डीपीएडी_डाउन",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "डीपीएडी_दाएँ"
-=======
-    "R STICK RIGHT": "आर दाईं ओर चिपकाएँ"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

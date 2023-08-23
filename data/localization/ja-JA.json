@@ -144,20 +144,13 @@
     "STICK DOWN": "スティックダウン",
     "STICK LEFT": "左スティック",
     "STICK RIGHT": "右スティック",
-<<<<<<< HEAD
     "C-PAD UP": "Cパッドアップ",
     "C-PAD DOWN": "C-パッドを下へ",
     "C-PAD LEFT": "C-パッド左",
-=======
-    "C-PAD UP": "CPADアップ",
-    "C-PAD DOWN": "Cパッドダウン",
-    "C-PAD LEFT": "Cパッド左",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C-PAD RIGHT": "Cパッド右",
     "MICROPHONE": "マイクロフォン",
     "BUTTON 1 / START": "ボタン 1 / スタート",
     "BUTTON 2": "ボタン2",
-<<<<<<< HEAD
     "LEFT D-PAD UP": "左方向パッドを上に",
     "LEFT D-PAD DOWN": "左方向パッド下",
     "LEFT D-PAD LEFT": "左十字キー左",
@@ -166,16 +159,6 @@
     "RIGHT D-PAD DOWN": "右方向パッド下",
     "RIGHT D-PAD LEFT": "右十字キー左",
     "RIGHT D-PAD RIGHT": "右十字キー右",
-=======
-    "LEFT D-PAD UP": "左パッドを上に",
-    "LEFT D-PAD DOWN": "左 DPAD 下",
-    "LEFT D-PAD LEFT": "左 DPAD 左",
-    "LEFT D-PAD RIGHT": "左 DPAD 右",
-    "RIGHT D-PAD UP": "右Dパッドを上に",
-    "RIGHT D-PAD DOWN": "右Dパッド下",
-    "RIGHT D-PAD LEFT": "右 DPAD 左",
-    "RIGHT D-PAD RIGHT": "右 DPAD 右",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "C",
     "MODE": "モード",
     "FIRE": "火",
@@ -201,7 +184,6 @@
     "R STICK UP": "Rスティックアップ",
     "R STICK DOWN": "Rスティックダウン",
     "R STICK LEFT": "Rスティック左",
-<<<<<<< HEAD
     "R STICK RIGHT": "R右スティック",
     "Start": "始める",
     "Select": "選択する",
@@ -315,7 +297,4 @@
     "DPAD_DOWN": "DPAD_DOWN",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R右スティック"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

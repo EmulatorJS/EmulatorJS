@@ -144,7 +144,6 @@
     "STICK DOWN": "스틱 다운",
     "STICK LEFT": "스틱 왼쪽",
     "STICK RIGHT": "스틱 오른쪽",
-<<<<<<< HEAD
     "C-PAD UP": "C 패드 위로",
     "C-PAD DOWN": "C패드 다운",
     "C-PAD LEFT": "C 패드 왼쪽",
@@ -160,23 +159,6 @@
     "RIGHT D-PAD DOWN": "오른쪽 방향 패드 아래로",
     "RIGHT D-PAD LEFT": "오른쪽 방향 패드 왼쪽",
     "RIGHT D-PAD RIGHT": "오른쪽 방향 패드 오른쪽",
-=======
-    "C-PAD UP": "CPAD UP",
-    "C-PAD DOWN": "CPAD 다운",
-    "C-PAD LEFT": "CPAD 왼쪽",
-    "C-PAD RIGHT": "CPAD 오른쪽",
-    "MICROPHONE": "마이크로폰",
-    "BUTTON 1 / START": "버튼 1 / 시작",
-    "BUTTON 2": "버튼 2",
-    "LEFT D-PAD UP": "왼쪽 DPAD UP",
-    "LEFT D-PAD DOWN": "왼쪽 DPAD 아래로",
-    "LEFT D-PAD LEFT": "왼쪽 DPAD 왼쪽",
-    "LEFT D-PAD RIGHT": "왼쪽 DPAD 오른쪽",
-    "RIGHT D-PAD UP": "오른쪽 DPAD UP",
-    "RIGHT D-PAD DOWN": "오른쪽 DPAD 아래로",
-    "RIGHT D-PAD LEFT": "오른쪽 DPAD 왼쪽",
-    "RIGHT D-PAD RIGHT": "오른쪽 DPAD 오른쪽",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "씨",
     "MODE": "방법",
     "FIRE": "불",
@@ -202,7 +184,6 @@
     "R STICK UP": "R 스틱 업",
     "R STICK DOWN": "R 스틱 다운",
     "R STICK LEFT": "R 스틱 왼쪽",
-<<<<<<< HEAD
     "R STICK RIGHT": "R 오른쪽 스틱",
     "Start": "시작",
     "Select": "선택하다",
@@ -316,7 +297,4 @@
     "DPAD_DOWN": "DPAD_DOWN",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R 오른쪽 스틱"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

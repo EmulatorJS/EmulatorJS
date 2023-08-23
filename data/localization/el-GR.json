@@ -144,7 +144,6 @@
     "STICK DOWN": "ΚΟΛΛΗΤΕ ΚΑΤΩ",
     "STICK LEFT": "ΚΟΛΛΑ ΑΡΙΣΤΕΡΑ",
     "STICK RIGHT": "ΚΟΛΛΗ ΣΩΣΤΟ",
-<<<<<<< HEAD
     "C-PAD UP": "C-PAD UP",
     "C-PAD DOWN": "C-PAD DOWN",
     "C-PAD LEFT": "C-PAD ΑΡΙΣΤΕΡΑ",
@@ -160,23 +159,6 @@
     "RIGHT D-PAD DOWN": "ΔΕΞΙΟ D-PAD ΚΑΤΩ",
     "RIGHT D-PAD LEFT": "ΔΕΞΙ D-PAD ΑΡΙΣΤΕΡΑ",
     "RIGHT D-PAD RIGHT": "ΔΕΞΙΟ D-PAD ΔΕΞΙΑ",
-=======
-    "C-PAD UP": "CPAD UP",
-    "C-PAD DOWN": "ΚΑΤΩ ΚΑΤΩ",
-    "C-PAD LEFT": "CPAD ΑΡΙΣΤΕΡΑ",
-    "C-PAD RIGHT": "ΔΙΚΑΙΩΜΑ CPAD",
-    "MICROPHONE": "ΜΙΚΡΟΦΩΝΟ",
-    "BUTTON 1 / START": "ΚΟΥΜΠΙ 1 / ΕΝΑΡΞΗ",
-    "BUTTON 2": "ΚΟΥΜΠΙ 2",
-    "LEFT D-PAD UP": "ΑΡΙΣΤΕΡΑ ΠΑΝΩ",
-    "LEFT D-PAD DOWN": "ΑΡΙΣΤΕΡΑ ΚΑΤΩ ΑΝΑΠΤΥΞΗ",
-    "LEFT D-PAD LEFT": "ΑΡΙΣΤΕΡΑ ΔΑΠΔ ΕΦΥΓΕ",
-    "LEFT D-PAD RIGHT": "ΑΡΙΣΤΕΡΟΣ ΠΑΠΔ ΔΕΞΙΑ",
-    "RIGHT D-PAD UP": "ΔΕΞΙ ΠΑΠΑ ΕΠΑΝΩ",
-    "RIGHT D-PAD DOWN": "ΔΕΞΙ ΑΝΑΠΤΥΞΗ ΚΑΤΩ",
-    "RIGHT D-PAD LEFT": "ΔΕΞΙ ΠΑΠΑ ΑΡΙΣΤΕΡΑ",
-    "RIGHT D-PAD RIGHT": "ΣΩΣΤΟ ΠΑΠΑ ΔΕΞΙΟ",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "ντο",
     "MODE": "ΤΡΟΠΟΣ",
     "FIRE": "ΦΩΤΙΑ",
@@ -202,7 +184,6 @@
     "R STICK UP": "R ΚΟΛΛΗΣΗ",
     "R STICK DOWN": "R ΚΟΛΛΗΤΕ ΚΑΤΩ",
     "R STICK LEFT": "R STICK ΑΡΙΣΤΕΡΑ",
-<<<<<<< HEAD
     "R STICK RIGHT": "R ΚΟΛΛΑ ΔΕΞΙΑ",
     "Start": "Αρχή",
     "Select": "Επιλέγω",
@@ -316,7 +297,4 @@
     "DPAD_DOWN": "DPAD_DOWN",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R ΚΟΛΛΑ ΔΕΞΙΑ"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

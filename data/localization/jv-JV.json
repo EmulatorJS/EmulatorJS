@@ -144,7 +144,6 @@
     "STICK DOWN": "TETEP",
     "STICK LEFT": "STIK KIRI",
     "STICK RIGHT": "TETEP KANAN",
-<<<<<<< HEAD
     "C-PAD UP": "C-PAD UP",
     "C-PAD DOWN": "C-PAD TURUN",
     "C-PAD LEFT": "C-PAD ngiwa",
@@ -160,23 +159,6 @@
     "RIGHT D-PAD DOWN": "TEngen D-PAD mudhun",
     "RIGHT D-PAD LEFT": "TEngen D-PAD ngiwa",
     "RIGHT D-PAD RIGHT": "TEngen D-PAD TEngen",
-=======
-    "C-PAD UP": "CPAD UP",
-    "C-PAD DOWN": "CPAD mudhun",
-    "C-PAD LEFT": "CPAD ngiwa",
-    "C-PAD RIGHT": "CPAD tengen",
-    "MICROPHONE": "MIKROFON",
-    "BUTTON 1 / START": "TOMBOL 1 / MULAI",
-    "BUTTON 2": "TOMBOL 2",
-    "LEFT D-PAD UP": "Ngiwa DPAD UP",
-    "LEFT D-PAD DOWN": "Ngiwa DPAD mudhun",
-    "LEFT D-PAD LEFT": "KIRI DPAD KIRI",
-    "LEFT D-PAD RIGHT": "KIRI DPAD NENG",
-    "RIGHT D-PAD UP": "TEngen DPAD UP",
-    "RIGHT D-PAD DOWN": "DPAD TEngen mudhun",
-    "RIGHT D-PAD LEFT": "TEngen DPAD ngiwa",
-    "RIGHT D-PAD RIGHT": "KANAN DPAD KANAN",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "C",
     "MODE": "MODE",
     "FIRE": "KEBURU",
@@ -202,7 +184,6 @@
     "R STICK UP": "R TETEP",
     "R STICK DOWN": "R TETEP",
     "R STICK LEFT": "R STICK ngiwa",
-<<<<<<< HEAD
     "R STICK RIGHT": "R STIKES TEngen",
     "Start": "Miwiti",
     "Select": "Pilih",
@@ -316,7 +297,4 @@
     "DPAD_DOWN": "DPAD_DOWN",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R STIKES TEngen"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

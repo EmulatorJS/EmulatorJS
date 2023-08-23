@@ -452,19 +452,18 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text, log) {
-        if (!text) return text;
-        text = text.toString();
-        if (text === " ") text = "space";
-        if (text === "") return text;
-        if (text.includes("EmulatorJS v")) return text;
-        if (this.config.langJson) {
-            if (typeof log === "undefined") log = true;
-            if (!this.config.langJson[text] && log) {
-                if(!window.EJS_missingLang) window.EJS_missingLang = [];
-                window.EJS_missingLang.push(text);
-                console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
+        if (typeof text !== "undefined"){
+            text = text.toString();
+            if (text.includes("EmulatorJS v")) return text;
+            if (this.config.langJson) {
+                if (typeof log === "undefined") log = true;
+                if (!this.config.langJson[text] && log) {
+                    if(!window.EJS_missingLang) window.EJS_missingLang = [];
+                    window.EJS_missingLang.push(text);
+                    console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
+                }
+                return this.config.langJson[text] || text;
             }
-            return this.config.langJson[text] || text;
         }
         return text;
     }
@@ -2248,19 +2247,23 @@ class EmulatorJS {
                     textBox2.value = "";
                     textBox1.value = "";
                     if (this.controls[i][k] && this.controls[i][k].value !== undefined) {
-                        textBox2.value = this.localization(String(this.controls[i][k].value));
+                        let value = this.controls[i][k].value.toString();
+                        if (value === " ") value = "space";
+                        textBox2.value = value;
                     }
                     if (this.controls[i][k] && this.controls[i][k].value2 !== undefined && this.controls[i][k].value2 !== "") {
-                        let value2 = String(this.controls[i][k].value2).split(":");
+                        let value2 = this.controls[i][k].value2.toString().split(":");
                         textBox1.value = this.localization(value2[0]) + ":" + this.localization(value2[1]);
                     }
                 })
                 
                 if (this.controls[i][k] && this.controls[i][k].value) {
-                    textBox2.value = this.localization(String(this.controls[i][k].value));
+                    let value = this.controls[i][k].value.toString();
+                        if (value === " ") value = "space";
+                    textBox2.value = value;
                 }
                 if (this.controls[i][k] && this.controls[i][k].value2) {
-                    let value2 = String(this.controls[i][k].value2).split(":");
+                    let value2 = this.controls[i][k].value2.toString().split(":");
                     textBox1.value = this.localization("button") + " " + this.localization(value2[0]) + ":" + this.localization(value2[1]);
                 }
                 

@@ -138,17 +138,12 @@
     "X": "X",
     "Y": "ص",
     "L": "إل",
-<<<<<<< HEAD
     "R": "ص",
-=======
-    "R": "ر",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "Z": "ض",
     "STICK UP": "التصق",
     "STICK DOWN": "التصق اسفل",
     "STICK LEFT": "العصا اليسرى",
     "STICK RIGHT": "العصا لليمين",
-<<<<<<< HEAD
     "C-PAD UP": "C-PAD UP",
     "C-PAD DOWN": "C-PAD لأسفل",
     "C-PAD LEFT": "يسار C-PAD",
@@ -164,23 +159,6 @@
     "RIGHT D-PAD DOWN": "لليمين D-PAD لأسفل",
     "RIGHT D-PAD LEFT": "اليمين D-PAD اليسار",
     "RIGHT D-PAD RIGHT": "حق D-PAD لليمين",
-=======
-    "C-PAD UP": "CPAD UP",
-    "C-PAD DOWN": "CPAD أسفل",
-    "C-PAD LEFT": "CPAD اليسار",
-    "C-PAD RIGHT": "CPAD الحق",
-    "MICROPHONE": "ميكروفون",
-    "BUTTON 1 / START": "زر 1 / بدء",
-    "BUTTON 2": "الزر 2",
-    "LEFT D-PAD UP": "اليسار DPAD UP",
-    "LEFT D-PAD DOWN": "اليسار DPAD لأسفل",
-    "LEFT D-PAD LEFT": "اليسار DPAD اليسار",
-    "LEFT D-PAD RIGHT": "اليسار DPAD لليمين",
-    "RIGHT D-PAD UP": "حق DPAD UP",
-    "RIGHT D-PAD DOWN": "لليمين DPAD لأسفل",
-    "RIGHT D-PAD LEFT": "حق DPAD اليسار",
-    "RIGHT D-PAD RIGHT": "حق DPAD الحق",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "ج",
     "MODE": "وضع",
     "FIRE": "نار",
@@ -206,7 +184,6 @@
     "R STICK UP": "R التصق",
     "R STICK DOWN": "R العصا لأسفل",
     "R STICK LEFT": "R العصا اليسار",
-<<<<<<< HEAD
     "R STICK RIGHT": "R العصا لليمين",
     "Start": "يبدأ",
     "Select": "يختار",
@@ -320,7 +297,4 @@
     "DPAD_DOWN": "DPAD_DOWN",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R العصا لليمين"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

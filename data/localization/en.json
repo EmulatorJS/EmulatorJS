@@ -184,7 +184,6 @@
     "R STICK UP": "-R STICK UP",
     "R STICK DOWN": "-R STICK DOWN",
     "R STICK LEFT": "-R STICK LEFT",
-<<<<<<< HEAD
     "R STICK RIGHT": "-R STICK RIGHT",
     "Start": "-Start",
     "Select": "-Select",
@@ -299,7 +298,3 @@
     "DPAD_LEFT": "-DPAD_LEFT",
     "DPAD_RIGHT": "-DPAD_RIGHT"
 }
-=======
-    "R STICK RIGHT": "-R STICK RIGHT"
-}
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c

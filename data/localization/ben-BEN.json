@@ -144,7 +144,6 @@
     "STICK DOWN": "নিচে লাঠি",
     "STICK LEFT": "স্টিক বাম",
     "STICK RIGHT": "ডানে থাকুন",
-<<<<<<< HEAD
     "C-PAD UP": "সি-প্যাড ইউপি",
     "C-PAD DOWN": "সি-প্যাড ডাউন",
     "C-PAD LEFT": "সি-প্যাড বাম",
@@ -160,23 +159,6 @@
     "RIGHT D-PAD DOWN": "ডানদিকে ডি-প্যাড ডাউন",
     "RIGHT D-PAD LEFT": "ডান ডি-প্যাড বাম",
     "RIGHT D-PAD RIGHT": "ডান ডি-প্যাড ডান",
-=======
-    "C-PAD UP": "সিপিএডি ইউপি",
-    "C-PAD DOWN": "CPAD ডাউন",
-    "C-PAD LEFT": "CPAD বাম",
-    "C-PAD RIGHT": "CPAD ডান",
-    "MICROPHONE": "মাইক্রোফোন",
-    "BUTTON 1 / START": "বোতাম 1 / শুরু করুন",
-    "BUTTON 2": "বোতাম 2",
-    "LEFT D-PAD UP": "বাম DPAD আপ",
-    "LEFT D-PAD DOWN": "বাম DPAD নিচে",
-    "LEFT D-PAD LEFT": "বাম DPAD বাম",
-    "LEFT D-PAD RIGHT": "বাম DPAD ডান",
-    "RIGHT D-PAD UP": "ডান DPAD আপ",
-    "RIGHT D-PAD DOWN": "ডান DPAD নিচে",
-    "RIGHT D-PAD LEFT": "ডান DPAD বাম",
-    "RIGHT D-PAD RIGHT": "ডান DPAD ডান",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "গ",
     "MODE": "মোড",
     "FIRE": "আগুন",
@@ -202,7 +184,6 @@
     "R STICK UP": "আর স্টিক আপ",
     "R STICK DOWN": "আর স্টিক ডাউন",
     "R STICK LEFT": "R স্টিক বাম",
-<<<<<<< HEAD
     "R STICK RIGHT": "R স্টিক ডান",
     "Start": "শুরু করুন",
     "Select": "নির্বাচন করুন",
@@ -316,7 +297,4 @@
     "DPAD_DOWN": "DPAD_DOWN",
     "DPAD_LEFT": "DPAD_LEFT",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R স্টিক ডান"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }

@@ -144,7 +144,6 @@
     "STICK DOWN": "坚持下来",
     "STICK LEFT": "向左摇杆",
     "STICK RIGHT": "向右摇杆",
-<<<<<<< HEAD
     "C-PAD UP": "C-PAD 向上",
     "C-PAD DOWN": "C-PAD 向下",
     "C-PAD LEFT": "C-PAD 左",
@@ -160,23 +159,6 @@
     "RIGHT D-PAD DOWN": "右方向键向下",
     "RIGHT D-PAD LEFT": "右方向键 左",
     "RIGHT D-PAD RIGHT": "右方向键右",
-=======
-    "C-PAD UP": "CPAD 向上",
-    "C-PAD DOWN": "CPAD下降",
-    "C-PAD LEFT": "左CPAD",
-    "C-PAD RIGHT": "右CPAD",
-    "MICROPHONE": "麦克风",
-    "BUTTON 1 / START": "按钮 1 / 开始",
-    "BUTTON 2": "按钮2",
-    "LEFT D-PAD UP": "向左 DPAD 向上",
-    "LEFT D-PAD DOWN": "左 DPAD 向下",
-    "LEFT D-PAD LEFT": "左 十字键 左",
-    "LEFT D-PAD RIGHT": "左 十字键 右",
-    "RIGHT D-PAD UP": "向右 DPAD 向上",
-    "RIGHT D-PAD DOWN": "右 DPAD 向下",
-    "RIGHT D-PAD LEFT": "右 十字键 左",
-    "RIGHT D-PAD RIGHT": "右 方向键 右",
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
     "C": "C",
     "MODE": "模式",
     "FIRE": "火",
@@ -202,7 +184,6 @@
     "R STICK UP": "R 粘起来",
     "R STICK DOWN": "R 向下摇杆",
     "R STICK LEFT": "R 向左摇杆",
-<<<<<<< HEAD
     "R STICK RIGHT": "R 右摇杆",
     "Start": "开始",
     "Select": "选择",
@@ -316,7 +297,4 @@
     "DPAD_DOWN": "DPAD_向下",
     "DPAD_LEFT": "DPAD_左",
     "DPAD_RIGHT": "DPAD_RIGHT"
-=======
-    "R STICK RIGHT": "R 右摇杆"
->>>>>>> 7a4dbc2fd190870addfb52811136e659e78d832c
 }
