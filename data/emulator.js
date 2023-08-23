@@ -248,6 +248,7 @@ class EmulatorJS {
         this.muted = false;
         this.paused = true;
         this.listeners = [];
+        this.missingLang = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
         this.config.alignStartButton = (typeof this.config.alignStartButton === "string") ? this.config.alignStartButton : "bottom";
@@ -452,13 +453,13 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text, log) {
-        if (!isNaN(text)) return text;
+        if (typeof text === "undefined") return;
+        text = text.toString();
         if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
             if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
-                if(!window.EJS_missingLang) window.EJS_missingLang = [];
-                window.EJS_missingLang.push(text);
+                if (!this.missingLang.includes(text)) this.missingLang.push(text);
                 console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
             }
             return this.config.langJson[text] || text;
@@ -2246,18 +2247,24 @@ class EmulatorJS {
                     textBox2.value = "";
                     textBox1.value = "";
                     if (this.controls[i][k] && this.controls[i][k].value !== undefined) {
-                        textBox2.value = this.controls[i][k].value;
+                        let value = this.controls[i][k].value.toString();
+                        if (value === " ") value = "space";
+                        textBox2.value = value;
                     }
-                    if (this.controls[i][k] && this.controls[i][k].value2 !== undefined) {
-                        textBox1.value = this.controls[i][k].value2;
+                    if (this.controls[i][k] && this.controls[i][k].value2 !== undefined && this.controls[i][k].value2 !== "") {
+                        let value2 = this.controls[i][k].value2.toString().split(":");
+                        textBox1.value = this.localization(value2[0]) + ":" + this.localization(value2[1]);
                     }
                 })
                 
                 if (this.controls[i][k] && this.controls[i][k].value) {
-                    textBox2.value = this.controls[i][k].value;
+                    let value = this.controls[i][k].value.toString();
+                    if (value === " ") value = "space";
+                    textBox2.value = value;
                 }
                 if (this.controls[i][k] && this.controls[i][k].value2) {
-                    textBox1.value = "button " + this.controls[i][k].value2;
+                    let value2 = this.controls[i][k].value2.toString().split(":");
+                    textBox1.value = this.localization("button") + " " + this.localization(value2[0]) + ":" + this.localization(value2[1]);
                 }
                 
                 textBoxes.appendChild(textBox1Parent);
@@ -2758,6 +2765,11 @@ class EmulatorJS {
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
+        }
+        for (let i=0; i<info.length; i++) {
+            if (info[i].text) {
+                info[i].text = this.localization(info[i].text);
+            }
         }
         info = JSON.parse(JSON.stringify(info));
         
