@@ -2527,9 +2527,9 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.virtualGamepad);
 
         const speedControlButtons = [
-            {"type":"button","text":this.localization("Fast"),"id":"speed-fast","location":"center","left":-35,"top":50,"fontSize":15,"block":true,"input_value":27},
-            {"type":"button","text":this.localization("Slow"),"id":"speed-slow","location":"center","left":95,"top":50,"fontSize":15,"block":true,"input_value":29},
-        ];        
+            {"type":"button","text":"Fast","id":"speed-fast","location":"center","left":-35,"top":50,"fontSize":15,"block":true,"input_value":27},
+            {"type":"button","text":"Slow","id":"speed-slow","location":"center","left":95,"top":50,"fontSize":15,"block":true,"input_value":29},
+        ];
         if (this.rewindEnabled) {
             speedControlButtons.push({"type":"button","text":"Rewind","id":"speed-rewind","location":"center","left":30,"top":50,"fontSize":15,"block":true,"input_value":28});
         }
