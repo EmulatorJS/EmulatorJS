@@ -248,6 +248,7 @@ class EmulatorJS {
         this.muted = false;
         this.paused = true;
         this.listeners = [];
+        this.missingLang = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
         this.config.alignStartButton = (typeof this.config.alignStartButton === "string") ? this.config.alignStartButton : "bottom";
@@ -458,7 +459,7 @@ class EmulatorJS {
         if (this.config.langJson) {
             if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
-                if (!EJS_missingLang.includes(text)) EJS_missingLang.push(text);
+                if (!this.missingLang.includes(text)) this.missingLang.push(text);
                 console.log("Translation not found for '"+text+"'. Language set to '"+this.config.language+"'");
             }
             return this.config.langJson[text] || text;
