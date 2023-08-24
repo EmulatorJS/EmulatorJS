@@ -121,6 +121,7 @@
     background-size: contain;
     background-position: center center;
     background-repeat: no-repeat;
+    text-align: -webkit-auto;
 }
 
 .ejs_game_background_blur:before,
@@ -173,7 +174,6 @@
 
 .ejs_start_button:active, .ejs_start_button:hover {
     animation: ejs_start_button_pulse 2s infinite;
-    bottom: 65px;
 }
 
 @keyframes ejs_start_button_pulse {
