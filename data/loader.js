@@ -77,6 +77,7 @@
     config.backgroundBlur = window.EJS_backgroundBlur;
     config.backgroundColor = window.EJS_backgroundColor;
     config.controlScheme = window.EJS_controlScheme;
+    config.threads = window.EJS_threads;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
