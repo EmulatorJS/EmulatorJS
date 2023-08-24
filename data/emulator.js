@@ -598,7 +598,8 @@ class EmulatorJS {
                 gotCore(result.data);
                 return;
             }
-            this.downloadFile('cores/'+this.getCore()+'-wasm.data', (res) => {
+            let corePath = 'cores/'+this.getCore()+(this.config.threads ? "-thread" : "")+'-wasm.data';
+            this.downloadFile(corePath, (res) => {
                 if (res === -1) {
                     this.textElem.innerText = this.localization('Network Error');
                     this.textElem.style.color = "red";
