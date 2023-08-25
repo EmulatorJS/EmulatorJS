@@ -2257,6 +2257,8 @@ class EmulatorJS {
                         if (value2.indexOf(":") !== -1) {
                             value2 = value2.split(":");
                             value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                        }else{
+                            value2 = this.localization(value2);
                         }
                         textBox1.value = value2;
                     }
@@ -2273,6 +2275,8 @@ class EmulatorJS {
                     if (value2.indexOf(":") !== -1) {
                         value2 = value2.split(":");
                         value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                    }else{
+                        value2 = this.localization(value2);
                     }
                     textBox1.value = value2;
                 }
