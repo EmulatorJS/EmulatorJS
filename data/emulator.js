@@ -2249,22 +2249,32 @@ class EmulatorJS {
                     if (this.controls[i][k] && this.controls[i][k].value !== undefined) {
                         let value = this.controls[i][k].value.toString();
                         if (value === " ") value = "space";
+                        value = this.localization(value);
                         textBox2.value = value;
                     }
                     if (this.controls[i][k] && this.controls[i][k].value2 !== undefined && this.controls[i][k].value2 !== "") {
-                        let value2 = this.controls[i][k].value2.toString().split(":");
-                        textBox1.value = this.localization(value2[0]) + ":" + this.localization(value2[1]);
+                        let value2 = this.controls[i][k].value2.toString();
+                        if (value2.indexOf(":") !== -1) {
+                            value2 = value2.split(":");
+                            value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                        }
+                        textBox1.value = value2;
                     }
                 })
                 
                 if (this.controls[i][k] && this.controls[i][k].value) {
                     let value = this.controls[i][k].value.toString();
                     if (value === " ") value = "space";
+                    value = this.localization(value);
                     textBox2.value = value;
                 }
                 if (this.controls[i][k] && this.controls[i][k].value2) {
-                    let value2 = this.controls[i][k].value2.toString().split(":");
-                    textBox1.value = this.localization("button") + " " + this.localization(value2[0]) + ":" + this.localization(value2[1]);
+                    let value2 = this.controls[i][k].value2.toString();
+                    if (value2.indexOf(":") !== -1) {
+                        value2 = value2.split(":");
+                        value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                    }
+                    textBox1.value = value2;
                 }
                 
                 textBoxes.appendChild(textBox1Parent);
