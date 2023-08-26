@@ -1,5 +1,5 @@
 class EmulatorJS {
-    version = 8; //Increase by 1 when cores are updated
+    version = 9; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
         /*todo:
@@ -589,6 +589,12 @@ class EmulatorJS {
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
+        if (this.config.threads && ((typeof window.SharedArrayBuffer) !== "function")) {
+            this.textElem.innerText = this.localization('Error for site owner')+"\n"+this.localization("Check console");
+            this.textElem.style.color = "red";
+            console.warn("Threads is set to true, but the SharedArrayBuffer function is not exposed. Threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+            return;
+        }
         const gotCore = (data) => {
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
                 let js, thread, wasm;
@@ -627,12 +633,6 @@ class EmulatorJS {
         })
     }
     initGameCore(js, wasm, thread) {
-        if (thread && ((typeof window.SharedArrayBuffer) !== "function")) {
-            this.textElem.innerText = this.localization('Error for site owner')+"\n"+this.localization("Check console");
-            this.textElem.style.color = "red";
-            console.warn("The "+this.getCore()+" core requires threads, but threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
-            return;
-        }
         this.initModule(wasm, thread);
         let script = this.createElement("script");
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
