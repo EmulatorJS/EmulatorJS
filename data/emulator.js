@@ -2257,6 +2257,8 @@ class EmulatorJS {
                         if (value2.includes(":")) {
                             value2 = value2.split(":");
                             value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                        } else if (!isNaN(value2)){
+                            value2 = this.localization("BUTTON")+" "+this.localization(value2);
                         } else {
                             value2 = this.localization(value2);
                         }
@@ -2275,6 +2277,8 @@ class EmulatorJS {
                     if (value2.includes(":")) {
                         value2 = value2.split(":");
                         value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
+                    } else if (!isNaN(value2)){
+                        value2 = this.localization("BUTTON")+" "+this.localization(value2);
                     } else {
                         value2 = this.localization(value2);
                     }
