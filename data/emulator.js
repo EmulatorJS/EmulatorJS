@@ -1409,6 +1409,7 @@ class EmulatorJS {
             svg.innerHTML = image;
             const text = this.createElement("span");
             text.innerText = this.localization(title);
+            if (title == "Enter Fullscreen" || title == "Exit Fullscreen") text.classList.add("ejs_menu_text_right");
             text.classList.add("ejs_menu_text");
             
             button.classList.add("ejs_menu_button");
