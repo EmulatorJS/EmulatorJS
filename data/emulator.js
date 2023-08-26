@@ -2177,6 +2177,7 @@ class EmulatorJS {
             if ((this.touch || navigator.maxTouchPoints > 0) && i === 0) {
                 const vgp = this.createElement("div");
                 vgp.style = "width:25%;float:right;clear:none;padding:0;font-size: 11px;padding-left: 2.25rem;";
+                vgp.classList.add("ejs_control_row");
                 vgp.classList.add("ejs_cheat_row");
                 const input = this.createElement("input");
                 input.type = "checkbox";
