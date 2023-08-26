@@ -2254,10 +2254,10 @@ class EmulatorJS {
                     }
                     if (this.controls[i][k] && this.controls[i][k].value2 !== undefined && this.controls[i][k].value2 !== "") {
                         let value2 = this.controls[i][k].value2.toString();
-                        if (value2.indexOf(":") !== -1) {
+                        if (value2.includes(":")) {
                             value2 = value2.split(":");
                             value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
-                        }else{
+                        } else {
                             value2 = this.localization(value2);
                         }
                         textBox1.value = value2;
@@ -2272,10 +2272,10 @@ class EmulatorJS {
                 }
                 if (this.controls[i][k] && this.controls[i][k].value2) {
                     let value2 = this.controls[i][k].value2.toString();
-                    if (value2.indexOf(":") !== -1) {
+                    if (value2.includes(":")) {
                         value2 = value2.split(":");
                         value2 = this.localization(value2[0]) + ":" + this.localization(value2[1])
-                    }else{
+                    } else {
                         value2 = this.localization(value2);
                     }
                     textBox1.value = value2;
