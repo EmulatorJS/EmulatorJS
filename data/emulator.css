@@ -427,6 +427,11 @@
         opacity: 1;
     }
 
+    .ejs_menu_text_right {
+        right: 0;
+        left: auto !important;
+    }
+
     .ejs_menu_text {
         left: 0;
         background: rgba(255,255,255,0.9);
@@ -461,6 +466,11 @@
         transform: translateX(-50%);
         width: 0;
         z-index: 2;
+    }
+    .ejs_menu_text_right::before {
+        left: auto !important;
+        right: 16px;
+        transform: translateX(50%) !important;
     }
     .ejs_menu_bar {
         padding: 15px 10px 10px;
