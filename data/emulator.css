@@ -599,6 +599,14 @@
     font-size: 14px;
 }
 
+.ejs_control_row label::before {
+    top: -0.15rem !important;
+}
+
+.ejs_control_row label::after {
+    top: calc(-0.15rem + 2px) !important;
+}
+
 .ejs_popup_box {
     position: absolute;
     width: 300px;
@@ -1109,7 +1117,7 @@
 
 .ejs_cheat_row label::before {
     position: absolute;
-    top: .325rem;
+    top: 0rem;
     display: block;
     height: 1rem;
     content: "";
@@ -1133,7 +1141,7 @@
     content: "";
     background-repeat: no-repeat;
     background-position: center center;
-    top: calc(.325rem + 2px);
+    top: calc(0rem + 2px);
     left: calc(-2.25rem + 2px);
     width: calc(1rem - 4px);
     height: calc(1rem - 4px);
