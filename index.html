@@ -105,6 +105,9 @@
                     if (["z64", "n64"].includes(ext))
                         return "n64"
 
+                    if (["pce"].includes(ext))
+                        return "pce"
+
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
 
@@ -127,7 +130,8 @@
                             "Sega Game Gear": "segaGG",
                             "Sega Saturn": "segaSaturn",
                             "Atari 7800": "atari7800",
-                            "Atari 2600": "atari2600"
+                            "Atari 2600": "atari2600",
+                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce"
                         }
 
                         const button = document.createElement("button")

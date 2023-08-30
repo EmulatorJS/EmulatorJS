@@ -3,7 +3,7 @@ class EmulatorJS {
     getCore(generic) {
         const core = this.config.system;
         /*todo:
-        Systems: TurboGrafx-16 (pce), Wonderswan (ws), Neo Geo Pocket,  msx
+        Systems: Wonderswan (ws), Neo Geo Pocket,  msx
         
         Cores:
         - Beetle NeoPop
@@ -28,6 +28,7 @@ class EmulatorJS {
                 'genesis_plus_gx': 'sega',
                 'handy': 'lynx',
                 'mame2003': 'mame2003',
+                'mednafen_pce': 'pce',
                 'mednafen_psx_hw': 'psx',
                 'melonds': 'nds',
                 'mgba': 'gba',
@@ -69,7 +70,8 @@ class EmulatorJS {
             'arcade': 'fbneo',
             'psx': 'pcsx_rearmed',
             '3do': 'opera',
-            'psp': 'ppsspp'
+            'psp': 'ppsspp',
+            'pce': 'mednafen_pce'
         }
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
             return "parallel_n64";
@@ -87,6 +89,7 @@ class EmulatorJS {
         'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
         'handy': ['lnx'],
         'mame2003': ['zip'],
+        'mednafen_pce': ['pce'],
         'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'beetle_vb': ['vb', 'vboy', 'bin'],
@@ -2059,6 +2062,17 @@ class EmulatorJS {
                 {id: 6, label: this.localization('LEFT')},
                 {id: 7, label: this.localization('RIGHT')},
             ];
+        } else if ('pce' === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('I')},
+                {id: 0, label: this.localization('II')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('RUN')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
         } else {
             buttons = [
                 {id: 0, label: this.localization('B')},
@@ -2772,6 +2786,15 @@ class EmulatorJS {
                 {"type":"button","text":"R","id":"r","location":"right","right":3,"top":-90,"bold":true,"block":true,"input_value":11},
                 {"type":"button","text":"X","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"bold":true,"input_value":2},
                 {"type":"button","text":"P","id":"start","location":"center","left":60,"fontSize":15,"block":true,"bold":true,"input_value":3}
+            ];
+            info.push(...speedControlButtons);
+        } else if ("pce" === this.getControlScheme()) {
+            info = [
+                {"type":"button","text":"II","id":"ii","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                {"type":"button","text":"I","id":"i","location":"right","right":5,"top":70,"bold":true,"input_value":8},
+                {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                {"type":"button","text":"Run","id":"run","location":"center","left":60,"fontSize":15,"block":true,"input_value":3},
+                {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
         } else {
