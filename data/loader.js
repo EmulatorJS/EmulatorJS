@@ -79,6 +79,7 @@
     config.backgroundColor = window.EJS_backgroundColor;
     config.controlScheme = window.EJS_controlScheme;
     config.threads = window.EJS_threads;
+    config.disableCue = window.EJS_disableCue;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
