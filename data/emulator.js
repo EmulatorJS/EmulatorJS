@@ -863,7 +863,7 @@ class EmulatorJS {
                 }
                 
                 let resData = {};
-                const needsCue = (["mednafen_psx", "mednafen_psx_hw", "mednafen_pce"].includes(this.getCore()));
+                const needsCue = (["mednafen_psx", "mednafen_psx_hw", "mednafen_pce"].includes(this.getCore())) && !this.config.disableCue;
                 const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
