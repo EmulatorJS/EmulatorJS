@@ -89,7 +89,7 @@ class EmulatorJS {
         'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
         'handy': ['lnx'],
         'mame2003': ['zip'],
-        'mednafen_pce': ['pce'],
+        'mednafen_pce': ['pce', 'cue', 'ccd', 'iso', 'img', 'bin', 'chd'],
         'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'beetle_vb': ['vb', 'vboy', 'bin'],
@@ -863,7 +863,7 @@ class EmulatorJS {
                 }
                 
                 let resData = {};
-                const needsCue = (["mednafen_psx", "mednafen_psx_hw"].includes(this.getCore()));
+                const needsCue = (["mednafen_psx", "mednafen_psx_hw", "mednafen_pce"].includes(this.getCore()));
                 const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
