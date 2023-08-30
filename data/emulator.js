@@ -28,6 +28,7 @@ class EmulatorJS {
                 'genesis_plus_gx': 'sega',
                 'handy': 'lynx',
                 'mame2003': 'mame2003',
+                'mednafen_ngp': 'ngp',
                 'mednafen_pce': 'pce',
                 'mednafen_psx_hw': 'psx',
                 'melonds': 'nds',
@@ -71,7 +72,8 @@ class EmulatorJS {
             'psx': 'pcsx_rearmed',
             '3do': 'opera',
             'psp': 'ppsspp',
-            'pce': 'mednafen_pce'
+            'pce': 'mednafen_pce',
+            'ngp': 'mednafen_ngp'
         }
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
             return "parallel_n64";
@@ -89,6 +91,7 @@ class EmulatorJS {
         'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
         'handy': ['lnx'],
         'mame2003': ['zip'],
+        'mednafen_ngp': ['ngp', 'ngc'],
         'mednafen_pce': ['pce', 'cue', 'ccd', 'iso', 'img', 'bin', 'chd'],
         'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
         'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
@@ -2073,6 +2076,16 @@ class EmulatorJS {
                 {id: 6, label: this.localization('LEFT')},
                 {id: 7, label: this.localization('RIGHT')},
             ];
+        } else if ('ngp' === this.getControlScheme()) {
+            buttons = [
+                {id: 0, label: this.localization('A')},
+                {id: 8, label: this.localization('B')},
+                {id: 3, label: this.localization('OPTION')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+            ];
         } else {
             buttons = [
                 {id: 0, label: this.localization('B')},
@@ -2797,6 +2810,14 @@ class EmulatorJS {
                 {"type":"button","text":"Select","id":"select","location":"center","left":-5,"fontSize":15,"block":true,"input_value":2}
             ];
             info.push(...speedControlButtons);
+        } else if ('ngp' === this.getControlScheme()) {
+                info = [
+                    {"type":"button","text":"A","id":"a","location":"right","right":75,"top":70,"bold":true,"input_value":0},
+                    {"type":"button","text":"B","id":"b","location":"right","right":5,"top":50,"bold":true,"input_value":8},
+                    {"type":"dpad","location":"left","left":"50%","right":"50%","joystickInput":false,"inputValues":[4,5,6,7]},
+                    {"type":"button","text":"Option","id":"option","location":"center","left":30,"fontSize":15,"block":true,"input_value":3}
+                ];
+                info.push(...speedControlButtons);
         } else {
             info = [
                 {"type":"button","text":"Y","id":"y","location":"right","left":40,"bold":true,"input_value":9},
