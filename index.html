@@ -111,6 +111,12 @@
                     if (["ngp", "ngc"].includes(ext))
                         return "ngp"
 
+                    if (["ws", "wsc"].includes(ext))
+                        return "ws"
+
+                    if (["col", "cv"].includes(ext))
+                        return "coleco"
+
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
 
@@ -135,7 +141,9 @@
                             "Atari 7800": "atari7800",
                             "Atari 2600": "atari2600",
                             "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
-                            "SNK NeoGeo Pocket": "ngp"
+                            "SNK NeoGeo Pocket (Color)": "ngp",
+                            "Bandai WonderSwan (Color)": "ws",
+                            "ColecoVision": "coleco"
                         }
 
                         const button = document.createElement("button")
@@ -176,7 +184,6 @@
                 window.EJS_core = core;
                 window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
-                // window.EJS_disableCue = true;
 
                 if (window.location.hostname === "demo.emulatorjs.org") {
                     window.EJS_AdUrl = "https://ads.emulatorjs.org/";
