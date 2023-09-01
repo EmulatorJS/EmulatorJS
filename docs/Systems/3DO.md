@@ -11,7 +11,7 @@
     EJS_player = '#game';
     
     // Can also be opera
-    EJS_core = '3do';
+    EJS_core = 'nes';
     
     // URL to BIOS file
     EJS_biosUrl = '';
@@ -24,6 +24,14 @@
 </script>
 <script src='data/loader.js'></script>
 ```
+
+## ROM Type
+
+Your **ROM** can have the following types:
+- `iso`
+- `bin`
+- `chd`
+- `cue`
 
 ### BIOS
 
@@ -42,7 +50,7 @@
 
 ### CORES
 
-The *3do* system supports 1 core
+The *nes* system supports 1 core
 - `opera`
 
 If set to `3do`, emulator will use the `opera` core.

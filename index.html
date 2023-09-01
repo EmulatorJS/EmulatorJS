@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8832864985153925" crossorigin="anonymous"></script>
         <title>EmulatorJS</title>
 
         <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
@@ -92,7 +93,7 @@
 
         <script>
             input.onchange = async () => {
-                const url = new Blob([input.files[0]])
+                const url = URL.createObjectURL(new Blob([input.files[0]]))
                 const parts = input.files[0].name.split(".")
 
                 const core = await (async (ext) => {
@@ -104,18 +105,6 @@
 
                     if (["z64", "n64"].includes(ext))
                         return "n64"
-
-                    if (["pce"].includes(ext))
-                        return "pce"
-
-                    if (["ngp", "ngc"].includes(ext))
-                        return "ngp"
-
-                    if (["ws", "wsc"].includes(ext))
-                        return "ws"
-
-                    if (["col", "cv"].includes(ext))
-                        return "coleco"
 
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
@@ -139,12 +128,7 @@
                             "Sega Game Gear": "segaGG",
                             "Sega Saturn": "segaSaturn",
                             "Atari 7800": "atari7800",
-                            "Atari 2600": "atari2600",
-                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
-                            "NEC PC-FX": "pcfx",
-                            "SNK NeoGeo Pocket (Color)": "ngp",
-                            "Bandai WonderSwan (Color)": "ws",
-                            "ColecoVision": "coleco"
+                            "Atari 2600": "atari2600"
                         }
 
                         const button = document.createElement("button")
@@ -177,43 +161,28 @@
                 box.remove()
                 div.appendChild(sub)
                 document.body.appendChild(div)
-
-                window.EJS_player = "#game";
-                window.EJS_gameName = parts.shift();
-                window.EJS_biosUrl = "";
-                window.EJS_gameUrl = url;
-                window.EJS_core = core;
-                window.EJS_pathtodata = "data/";
+				window.EJS_gameID = 1;
+                window.EJS_player = "#game"
+                window.EJS_gameName = parts.shift()
+                window.EJS_biosUrl = ""
+                window.EJS_gameUrl = url
+                window.EJS_core = core
+                window.EJS_pathtodata = "data/"
                 window.EJS_startOnLoaded = true;
-
+                window.EJS_netplayUrl = "http://192.168.1.29:3000/";
+	            window.EJS_TURN_URLS= "http://192.168.1.29:3000/";
+                window.EJS_oldCores = true;
                 if (window.location.hostname === "demo.emulatorjs.org") {
                     window.EJS_AdUrl = "https://ads.emulatorjs.org/";
-                    window.EJS_ready = function() {
-                        detectAdBlock("https://ads.emulatorjs.org/?blocked");
-                    }
                 }
                 
 
-                script.src = "data/loader.js";
-                document.body.appendChild(script);
+                script.src = "data/loader.js"
+                document.body.appendChild(script)
             }
-            async function detectAdBlock(url) {
-                let adBlockEnabled = false
-                const googleAdUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
-                try {
-                    await fetch(new Request(googleAdUrl)).catch(_ => adBlockEnabled = true)
-                } catch (e) {
-                    adBlockEnabled = true
-                } finally {
-                    window.EJS_ready = function() {
-                        if (adBlockEnabled) {
-                            window.EJS_adBlocked("https://emulatorjs.org/?blocked");
-                        }
-                    }
-                }
-            }
-            box.ondragover = () => box.setAttribute("drag", true);
-            box.ondragleave = () => box.removeAttribute("drag");
+
+            box.ondragover = () => box.setAttribute("drag", true)
+            box.ondragleave = () => box.removeAttribute("drag")
         </script>
     </body>
 </html>

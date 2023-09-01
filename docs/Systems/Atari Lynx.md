@@ -11,9 +11,8 @@ There is no bios for this system.
 </div>
 
 <script type='text/javascript'>
+
     EJS_player = '#game';
-    
-    // Can also be handy
     EJS_core = 'lynx';
     
     // URL to Game rom
@@ -31,16 +30,3 @@ There is no bios for this system.
 
 <script src='data/loader.js'></script>
 ```
-
-### BIOS
-
-|  File Name  |  Description  |    md5sum   |
-| ----------- | ------------- | ----------- |
-| lynxboot.img | Lynx Boot Image - Required | `fcd403db69f54290b51035d82f835e7b`
-
-### CORES
-
-The *lynx* system supports 1 core
-- `handy`
-
-If set to `lynx`, emulator will use the `handy` core.

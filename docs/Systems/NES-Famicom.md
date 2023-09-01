@@ -27,12 +27,20 @@
 <script src='data/loader.js'></script>
 ```
 
+## ROM Type
+
+Your **ROM** can have the following extensions:
+- `fds`
+- `nes`
+- `unif`
+- `unf`
+
 ### BIOS
 
 |  File Name  |  Description  |    md5sum   |
 | ----------- | ------------- | ----------- |
-| disksys.rom | Family Computer Disk System BIOS -<br> Required for Famicom Disk System emulation  | `ca30b50f880eb660a320674ed365ef7a` |
-| gamegenie.nes | Game Genie add-on cartridge -<br> Required for Game Genei Add-on emulation<br> (Only supported on the fceumm core) | `7f98d77d7a094ad7d069b74bd553ec98` |
+| disksys.rom | Family Computer Disk System BIOS -<br> Required for Famicom Disk System emulation  | ca30b50f880eb660a320674ed365ef7a |
+| gamegenie.nes | Game Genie add-on cartridge -<br> Required for Game Genei Add-on emulation<br> (Only supported on the fceumm core) | 7f98d77d7a094ad7d069b74bd553ec98 |
 
 ### CORES
 
@@ -41,3 +49,4 @@ The *nes* system supports 2 cores
 - `nestopia`
 
 If set to `nes`, emulator will use the `fceumm` core.
+

@@ -22,6 +22,13 @@
 <script src='data/loader.js'></script>
 ```
 
+## ROM Type
+
+Your **ROM** can have the following extensions:
+- `vb`
+- `vboy`
+- `bin`
+
 ### CORES
 
 The *vb* system supports 1 core

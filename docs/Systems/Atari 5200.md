@@ -22,6 +22,12 @@
 <script src='data/loader.js'></script>
 ```
 
+## ROM Type
+
+Your **ROM** can have the following extensions:
+- `a52`
+- `bin`
+
 ### CORES
 
 The *atari5200* system supports 1 core

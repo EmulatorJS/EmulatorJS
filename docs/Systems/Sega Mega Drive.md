@@ -1,5 +1,8 @@
 # Sega Mega Drive
 
+I do not know the file extension limits for this system. <br>
+There is no bios for this system.
+
 ## Code example
 
 ```html
@@ -10,8 +13,6 @@
 <script type='text/javascript'>
 
     EJS_player = '#game';
-    
-    // Can also be genesis_plus_gx or picodrive
     EJS_core = 'segaMD';
 
     // URL to Game rom
@@ -29,18 +30,3 @@
 
 <script src='data/loader.js'></script>
 ```
-
-### BIOS
-
-|  File Name  |  Description  |    md5sum   |
-| ----------- | ------------- | ----------- |
-| bios_MD.bin | MegaDrive TMSS startup ROM | `45e298905a08f9cfb38fd504cd6dbc84`
-
-### CORES
-
-The *segaMD* system supports 2 cores
-- `genesis_plus_gx`
-- `picodrive`
-
-If set to `segaMD`, emulator will use the `genesis_plus_gx` core.
-
