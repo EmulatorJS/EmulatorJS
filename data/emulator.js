@@ -884,7 +884,7 @@ class EmulatorJS {
                 const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : extractFileNameFromUrl(this.config.gameUrl);
 
                 let disableCue = false;
-                if (this.getCore() === 'pcsx_rearmed' && this.config.disableCue === undefined) {
+                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce'].includes(this.getCore()) && this.config.disableCue === undefined) {
                     disableCue = true;
                 } else {
                     disableCue = this.config.disableCue;
@@ -947,18 +947,19 @@ class EmulatorJS {
                             }
                         }
                     });
-                    if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
-                        this.fileName = isoFile;
-                    } else if (!disableCue && (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u'))) {
-                        if (cueFile !== null) {
-                            this.fileName = cueFile;
-                        } else {
-                            this.fileName = this.gameManager.createCueFile(fileNames);
-                        }
-                    } else if (supportedFile !== null) {
+                    if (supportedFile !== null) {
                         this.fileName = supportedFile;
                     } else {
                         this.fileName = fileNames[0];
+                    }
+                    if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
+                        this.fileName = isoFile;
+                    } else if (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u')) {
+                        if (cueFile !== null) {
+                            this.fileName = cueFile;
+                        } else if (!disableCue) {
+                            this.fileName = this.gameManager.createCueFile(fileNames);
+                        }
                     }
                     resolve();
                 });
