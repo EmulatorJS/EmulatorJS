@@ -883,6 +883,13 @@ class EmulatorJS {
 
                 const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : extractFileNameFromUrl(this.config.gameUrl);
 
+                let disableCue = false;
+                if (this.getCore() === 'pcsx_rearmed' && this.config.disableCue === undefined) {
+                    disableCue = true;
+                } else {
+                    disableCue = this.config.disableCue;
+                }
+
                 let fileNames = [];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
@@ -914,17 +921,17 @@ class EmulatorJS {
                     let selectedCueExt = null;
                     fileNames.forEach(fileName => {
                         const ext = fileName.split('.').pop().toLowerCase();
-                        if (supportsExt(ext)) {
+                        if (supportedFile === null && supportsExt(ext)) {
                             supportedFile = fileName;
                         }
-                        if (['iso', 'cso', 'chd', 'elf'].includes(ext)) {
+                        if (isoFile === null && ['iso', 'cso', 'chd', 'elf'].includes(ext)) {
                             isoFile = fileName;
                         }
                         if (['cue', 'ccd', 'toc', 'm3u'].includes(ext)) {
                             if (this.getCore(true) === 'psx') {
                                 //always prefer m3u files for psx cores
                                 if (selectedCueExt !== 'm3u') {
-                                    if (ext === 'm3u' || cueFile === null) {
+                                    if (cueFile === null || ext === 'm3u') {
                                         cueFile = fileName;
                                         selectedCueExt = ext;
                                     }
@@ -932,7 +939,7 @@ class EmulatorJS {
                             } else {
                                 //prefer cue or ccd files over toc or m3u
                                 if (!['cue', 'ccd'].includes(selectedCueExt)) {
-                                    if (['cue', 'ccd'].includes(ext) || cueFile === null) {
+                                    if (cueFile === null || ['cue', 'ccd'].includes(ext)) {
                                         cueFile = fileName;
                                         selectedCueExt = ext;
                                     }
@@ -942,7 +949,7 @@ class EmulatorJS {
                     });
                     if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
                         this.fileName = isoFile;
-                    } else if (!this.config.disableCue && (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u'))) {
+                    } else if (!disableCue && (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u'))) {
                         if (cueFile !== null) {
                             this.fileName = cueFile;
                         } else {
