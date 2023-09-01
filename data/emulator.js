@@ -860,27 +860,44 @@ class EmulatorJS {
         })
     }
     downloadRom() {
-        return new Promise((resolve, reject) => {
-            
+        const extractFileNameFromUrl = url => {
+            if (!url) return null;
+            return url.split('/').pop().split("#")[0].split("?")[0];
+        };
+        const supportsExt = (ext) => {
+            const core = this.getCore();
+            if (!this.extensions[core]) return false;
+            return this.extensions[core].includes(ext);
+        };
+
+        return new Promise(resolve => {
             this.textElem.innerText = this.localization("Download Game Data");
+
             const gotGameData = (data) => {
                 if (['arcade', 'mame2003'].includes(this.getCore(true))) {
-                    this.fileName = this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+                    this.fileName = extractFileNameFromUrl(this.config.gameUrl);
                     FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
                     return;
                 }
-                
-                let resData = {};
-                const needsCue = (["mednafen_psx", "mednafen_psx_hw", "mednafen_pce", "mednafen_pcfx"].includes(this.getCore())) && !this.config.disableCue;
-                const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+
+                const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : extractFileNameFromUrl(this.config.gameUrl);
+
+                let disableCue = false;
+                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce'].includes(this.getCore()) && this.config.disableCue === undefined) {
+                    disableCue = true;
+                } else {
+                    disableCue = this.config.disableCue;
+                }
+
+                let fileNames = [];
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
                         const paths = fileName.split("/");
                         let cp = "";
                         for (let i=0; i<paths.length-1; i++) {
                             if (paths[i] === "") continue;
-                            cp += "/"+paths[i];
+                            cp += `/${paths[i]}`;
                             if (!FS.analyzePath(cp).exists) {
                                 FS.mkdir(cp);
                             }
@@ -890,49 +907,59 @@ class EmulatorJS {
                         FS.mkdir(fileName);
                         return;
                     }
-                    if (needsCue && ["m3u", "cue"].includes(fileName.split(".").pop().toLowerCase())) {
-                        resData[fileName] = fileData;
-                    } else if (fileName !== "!!notCompressedData") {
-                        resData[fileName] = true;
-                    }
                     if (fileName === "!!notCompressedData") {
                         FS.writeFile(altName, fileData);
-                        resData[altName] = true;
+                        fileNames.push(altName);
                     } else {
-                        FS.writeFile("/"+fileName, fileData);
+                        FS.writeFile(`/${fileName}`, fileData);
+                        fileNames.push(fileName);
                     }
                 }).then(() => {
-                    const fileNames = (() => {
-                        let rv = [];
-                        for (const k in resData) rv.push(k);
-                        return rv;
-                    })();
-                    if (fileNames.length === 1) fileNames[0] = altName;
-                    let execFile = null;
-                    if (needsCue) {
-                        execFile = this.gameManager.createCueFile(fileNames);
-                    }
-                    
-                    for (const k in resData) {
-                        if (k === "!!notCompressedData") {
-                            if (needsCue && execFile !== null) {
-                                this.fileName = execFile;
+                    let isoFile = null;
+                    let supportedFile = null;
+                    let cueFile = null;
+                    let selectedCueExt = null;
+                    fileNames.forEach(fileName => {
+                        const ext = fileName.split('.').pop().toLowerCase();
+                        if (supportedFile === null && supportsExt(ext)) {
+                            supportedFile = fileName;
+                        }
+                        if (isoFile === null && ['iso', 'cso', 'chd', 'elf'].includes(ext)) {
+                            isoFile = fileName;
+                        }
+                        if (['cue', 'ccd', 'toc', 'm3u'].includes(ext)) {
+                            if (this.getCore(true) === 'psx') {
+                                //always prefer m3u files for psx cores
+                                if (selectedCueExt !== 'm3u') {
+                                    if (cueFile === null || ext === 'm3u') {
+                                        cueFile = fileName;
+                                        selectedCueExt = ext;
+                                    }
+                                }
                             } else {
-                                this.fileName = altName;
+                                //prefer cue or ccd files over toc or m3u
+                                if (!['cue', 'ccd'].includes(selectedCueExt)) {
+                                    if (cueFile === null || ['cue', 'ccd'].includes(ext)) {
+                                        cueFile = fileName;
+                                        selectedCueExt = ext;
+                                    }
+                                }
                             }
-                            break;
                         }
-                        if (!this.fileName || ((this.extensions[this.getCore()] || []).includes(k.split(".").pop()) &&
-                            //always prefer m3u files for psx cores
-                            !(this.getCore(true) === "psx" && ["m3u", "ccd"].includes(this.fileName.split(".").pop())))) {
-                            this.fileName = k;
-                        }
-                        if (needsCue && execFile === null && ["m3u", "cue"].includes(k.split(".").pop().toLowerCase())) {
-                            FS.writeFile("/"+k, resData[k]);
-                        }
+                    });
+                    if (supportedFile !== null) {
+                        this.fileName = supportedFile;
+                    } else {
+                        this.fileName = fileNames[0];
                     }
-                    if (needsCue && execFile !== null) {
-                        this.fileName = execFile;
+                    if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
+                        this.fileName = isoFile;
+                    } else if (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u')) {
+                        if (cueFile !== null) {
+                            this.fileName = cueFile;
+                        } else if (!disableCue) {
+                            this.fileName = this.gameManager.createCueFile(fileNames);
+                        }
                     }
                     resolve();
                 });
