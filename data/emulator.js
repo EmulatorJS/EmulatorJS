@@ -2478,65 +2478,99 @@ class EmulatorJS {
     defaultControllers = {
         0: {
             0: {
-                'value': 'x'
+                'value': 'x',
+                'value2': 'BUTTON_2',
             },
             1: {
-                'value': 's'
+                'value': 's',
+                'value2': 'BUTTON_4',
             },
             2: {
-                'value': 'v'
+                'value': 'v',
+                'value2': 'SELECT',
             },
             3: {
-                'value': 'enter'
+                'value': 'enter',
+                'value2': 'START',
             },
             4: {
-                'value': 'arrowup'
+                'value': 'arrowup',
+                'value2': 'DPAD_UP',
             },
             5: {
-                'value': 'arrowdown'
+                'value': 'arrowdown',
+                'value2': 'DPAD_DOWN',
             },
             6: {
-                'value': 'arrowleft'
+                'value': 'arrowleft',
+                'value2': 'DPAD_LEFT',
             },
             7: {
-                'value': 'arrowright'
+                'value': 'arrowright',
+                'value2': 'DPAD_RIGHT',
             },
             8: {
-                'value': 'z'
+                'value': 'z',
+                'value2': 'BUTTON_1',
             },
             9: {
-                'value': 'a'
+                'value': 'a',
+                'value2': 'BUTTON_3',
             },
             10: {
-                'value': 'q'
+                'value': 'q',
+                'value2': 'LEFT_TOP_SHOULDER',
             },
             11: {
-                'value': 'e'
+                'value': 'e',
+                'value2': 'RIGHT_TOP_SHOULDER',
             },
             12: {
-                'value': 'e'
+                'value': 'e',
+                'value2': 'LEFT_BOTTOM_SHOULDER',
             },
             13: {
-                'value': 'w'
+                'value': 'w',
+                'value2': 'RIGHT_BOTTOM_SHOULDER',
             },
-            14: {},
-            15: {},
+            14: {
+                'value2': 'LEFT_STICK',
+            },
+            15: {
+                'value2': 'RIGHT_STICK',
+            },
             16: {
-                'value': 'h'
+                'value': 'h',
+                'value2': 'LEFT_STICK_X:+1',
             },
             17: {
-                'value': 'f'
+                'value': 'f',
+                'value2': 'LEFT_STICK_X:-1',
             },
             18: {
-                'value': 'g'
+                'value': 'g',
+                'value2': 'LEFT_STICK_Y:+1',
             },
             19: {
-                'value': 't'
+                'value': 't',
+                'value2': 'LEFT_STICK_Y:-1',
             },
-            20: {'value': 'l'},
-            21: {'value': 'j'},
-            22: {'value': 'k'},
-            23: {'value': 'i'},
+            20: {
+                'value': 'l',
+                'value2': 'RIGHT_STICK_X:+1',
+            },
+            21: {
+                'value': 'j',
+                'value2': 'RIGHT_STICK_X:-1',
+            },
+            22: {
+                'value': 'k',
+                'value2': 'RIGHT_STICK_Y:+1',
+            },
+            23: {
+                'value': 'i',
+                'value2': 'RIGHT_STICK_Y:-1',
+            },
             24: {},
             25: {},
             26: {},
@@ -2592,7 +2626,7 @@ class EmulatorJS {
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
-            this.controls[player][num].value2 = (e.type === "axischanged" ? e.axis+":"+value : e.index);
+            this.controls[player][num].value2 = e.label;
             this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
@@ -2603,10 +2637,15 @@ class EmulatorJS {
         for (let i=0; i<4; i++) {
             if (e.gamepadIndex !== i) continue;
             for (let j=0; j<30; j++) {
-                if (['buttonup', 'buttondown'].includes(e.type) && (this.controls[i][j] && this.controls[i][j].value2 === e.index)) {
+                if (!this.controls[i][j] || this.controls[i][j].value2 === undefined) {
+                    continue;
+                }
+                const controlValue = this.controls[i][j].value2;
+
+                if (['buttonup', 'buttondown'].includes(e.type) && (controlValue === e.label || controlValue === e.index)) {
                     this.gameManager.simulateInput(i, j, (e.type === 'buttonup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 } else if (e.type === "axischanged") {
-                    if (this.controls[i][j] && typeof this.controls[i][j].value2 === 'string' && this.controls[i][j].value2.split(":")[0] === e.axis) {
+                    if (typeof controlValue === 'string' && controlValue.split(":")[0] === e.axis) {
                         if (special.includes(j)) {
                             if (e.axis === 'LEFT_STICK_X') {
                                 if (e.value > 0) {
@@ -2641,7 +2680,7 @@ class EmulatorJS {
                                     this.gameManager.simulateInput(i, 22, 0);
                                 }
                             }
-                        } else if (this.controls[i][j].value2 === e.axis+":"+value || value === 0) {
+                        } else if (value === 0 || controlValue === e.label || controlValue === `${e.axis}:${value}`) {
                             this.gameManager.simulateInput(i, j, ((value === 0) ? 0 : 1));
                         }
                     }
