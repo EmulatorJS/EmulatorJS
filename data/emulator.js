@@ -2519,19 +2519,19 @@ class EmulatorJS {
             },
             10: {
                 'value': 'q',
-                'value2': 'LEFT_SHOULDER',
+                'value2': 'LEFT_TOP_SHOULDER',
             },
             11: {
                 'value': 'e',
-                'value2': 'RIGHT_SHOULDER',
+                'value2': 'RIGHT_TOP_SHOULDER',
             },
             12: {
                 'value': 'e',
-                'value2': 'LEFT_SHOULDER_BOTTOM',
+                'value2': 'LEFT_BOTTOM_SHOULDER',
             },
             13: {
                 'value': 'w',
-                'value2': 'RIGHT_SHOULDER_BOTTOM',
+                'value2': 'RIGHT_BOTTOM_SHOULDER',
             },
             14: {
                 'value2': 'LEFT_STICK',
