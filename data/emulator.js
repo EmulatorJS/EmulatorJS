@@ -1646,8 +1646,10 @@ class EmulatorJS {
                     e.gain.gain.value = volume;
                 })
             }
-            unmuteButton.style.display = (volume === 0) ? "" : "none";
-            muteButton.style.display = (volume === 0) ? "none" : "";
+            if (!this.config.buttonOpts || this.config.buttonOpts.mute !== false) {
+                unmuteButton.style.display = (volume === 0) ? "" : "none";
+                muteButton.style.display = (volume === 0) ? "none" : "";
+            }
         }
         if (!this.muted) this.setVolume(this.volume);
         
@@ -1659,9 +1661,11 @@ class EmulatorJS {
                 this.setVolume(this.volume);
             }, 5);
         })
-        
-        volumeSettings.appendChild(volumeSlider);
-        
+
+        if (!this.config.buttonOpts || this.config.buttonOpts.volume !== false) {
+            volumeSettings.appendChild(volumeSlider);
+        }
+
         this.elements.menu.appendChild(volumeSettings);
         
         this.settingParent = this.createElement("div");
@@ -1791,6 +1795,10 @@ class EmulatorJS {
             if (this.config.buttonOpts.fullscreen === false) {
                 enter.style.display = "none";
                 exit.style.display = "none";
+            }
+            if (this.config.buttonOpts.mute === false) {
+                muteButton.style.display = "none";
+                unmuteButton.style.display = "none";
             }
             if (this.config.buttonOpts.saveState === false) saveState.style.display = "none"
             if (this.config.buttonOpts.loadState === false) loadState.style.display = "none"
