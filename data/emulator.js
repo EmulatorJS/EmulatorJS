@@ -2488,58 +2488,72 @@ class EmulatorJS {
             0: {
                 'value': 'x',
                 'value2': 'BUTTON_2',
+                'keycode': '88',
             },
             1: {
                 'value': 's',
                 'value2': 'BUTTON_4',
+                'keycode': '83',
             },
             2: {
                 'value': 'v',
                 'value2': 'SELECT',
+                'keycode': '86',
             },
             3: {
                 'value': 'enter',
                 'value2': 'START',
+                'keycode': '13',
             },
             4: {
                 'value': 'arrowup',
                 'value2': 'DPAD_UP',
+                'keycode': '38',
             },
             5: {
                 'value': 'arrowdown',
                 'value2': 'DPAD_DOWN',
+                'keycode': '40',
             },
             6: {
                 'value': 'arrowleft',
                 'value2': 'DPAD_LEFT',
+                'keycode': '37',
             },
             7: {
                 'value': 'arrowright',
                 'value2': 'DPAD_RIGHT',
+                'keycode': '39',
             },
             8: {
                 'value': 'z',
                 'value2': 'BUTTON_1',
+                'keycode': '90',
             },
             9: {
                 'value': 'a',
                 'value2': 'BUTTON_3',
+                'keycode': '65',
             },
             10: {
                 'value': 'q',
                 'value2': 'LEFT_TOP_SHOULDER',
+                'keycode': '81',
             },
             11: {
                 'value': 'e',
                 'value2': 'RIGHT_TOP_SHOULDER',
+                'keycode': '69',
             },
             12: {
                 'value': 'e',
                 'value2': 'LEFT_BOTTOM_SHOULDER',
+                'keycode': '69',
             },
             13: {
                 'value': 'w',
                 'value2': 'RIGHT_BOTTOM_SHOULDER',
+                'keycode': '87',
             },
             14: {
                 'value2': 'LEFT_STICK',
@@ -2550,34 +2564,42 @@ class EmulatorJS {
             16: {
                 'value': 'h',
                 'value2': 'LEFT_STICK_X:+1',
+                'keycode': '72'
             },
             17: {
                 'value': 'f',
                 'value2': 'LEFT_STICK_X:-1',
+                'keycode': '70'
             },
             18: {
                 'value': 'g',
                 'value2': 'LEFT_STICK_Y:+1',
+                'keycode': '71'
             },
             19: {
                 'value': 't',
                 'value2': 'LEFT_STICK_Y:-1',
+                'keycode': '84'
             },
             20: {
                 'value': 'l',
                 'value2': 'RIGHT_STICK_X:+1',
+                'keycode': '76'
             },
             21: {
                 'value': 'j',
                 'value2': 'RIGHT_STICK_X:-1',
+                'keycode': '74'
             },
             22: {
                 'value': 'k',
                 'value2': 'RIGHT_STICK_Y:+1',
+                'keycode': '75'
             },
             23: {
                 'value': 'i',
                 'value2': 'RIGHT_STICK_Y:-1',
+                'keycode': '73'
             },
             24: {},
             25: {},
@@ -2601,6 +2623,7 @@ class EmulatorJS {
                 this.controls[player][num] = {};
             }
             this.controls[player][num].value = e.key.toLowerCase();
+            this.controls[player][num].keycode = e.keyCode;
             this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
@@ -2611,7 +2634,7 @@ class EmulatorJS {
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
-                if (this.controls[i][j] && this.controls[i][j].value === e.key.toLowerCase()) {
+                if (this.controls[i][j] && (this.controls[i][j].value === e.key.toLowerCase() || this.controls[i][j].keycode === e.keyCode)) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 }
             }
