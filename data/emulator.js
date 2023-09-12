@@ -2721,16 +2721,20 @@ class EmulatorJS {
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
                 if (this.controls[i][j] && this.controls[i][j].value == this.keyMap[this.keyLookup(this.controls[i][j].value)]) {
-                    this.controls[i][j].keycode = Number(this.keyLookup(this.controls[i][j].value));
+                    this.controls[i][j].keycode = Number(this.keyLookup(this.controls[i][j]));
                 }
             }
         }
     }
     keyLookup(k){
         for (var key in this.keyMap) {
-            if (this.keyMap[key] == k) return key;
+            if (this.keyMap[key] == k.value) {
+                return key;
+            }else if (k.keycode !== undefined) {
+                return k.keycode;
+            }
         }
-        return false;
+        return 0;
     }
     keyChange(e) {
         if (e.repeat) return;
