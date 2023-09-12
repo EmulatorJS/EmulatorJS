@@ -2727,7 +2727,6 @@ class EmulatorJS {
         }
     }
     keyLookup(controllerkey){
-        console.log(controllerkey);
         for (var key in this.keyMap) {
             if (this.keyMap[key] === controllerkey.value) {
                 return key;
