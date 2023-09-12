@@ -1880,6 +1880,7 @@ class EmulatorJS {
         const body = this.createPopup("Control Settings", {
             "Reset": () => {
                 this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
+                this.setupKeys();
                 this.checkGamepadInputs();
                 this.saveSettings();
             },
@@ -1892,6 +1893,7 @@ class EmulatorJS {
                 this.controlMenu.style.display = "none";
             }
         }, true);
+        this.setupKeys();
         this.controlMenu = body.parentElement;
         body.classList.add("ejs_control_body");
         
@@ -2489,72 +2491,72 @@ class EmulatorJS {
             0: {
                 'value': 'x',
                 'value2': 'BUTTON_2',
-                'keycode': '88',
+                'keycode': 88
             },
             1: {
                 'value': 's',
                 'value2': 'BUTTON_4',
-                'keycode': '83',
+                'keycode': 83
             },
             2: {
                 'value': 'v',
                 'value2': 'SELECT',
-                'keycode': '86',
+                'keycode': 86
             },
             3: {
                 'value': 'enter',
                 'value2': 'START',
-                'keycode': '13',
+                'keycode': 13
             },
             4: {
-                'value': 'arrowup',
+                'value': 'up arrow',
                 'value2': 'DPAD_UP',
-                'keycode': '38',
+                'keycode': 38
             },
             5: {
                 'value': 'arrowdown',
                 'value2': 'DPAD_DOWN',
-                'keycode': '40',
+                'keycode': 40
             },
             6: {
                 'value': 'arrowleft',
                 'value2': 'DPAD_LEFT',
-                'keycode': '37',
+                'keycode': 37
             },
             7: {
                 'value': 'arrowright',
                 'value2': 'DPAD_RIGHT',
-                'keycode': '39',
+                'keycode': 39
             },
             8: {
                 'value': 'z',
                 'value2': 'BUTTON_1',
-                'keycode': '90',
+                'keycode': 90
             },
             9: {
                 'value': 'a',
                 'value2': 'BUTTON_3',
-                'keycode': '65',
+                'keycode': 65
             },
             10: {
                 'value': 'q',
                 'value2': 'LEFT_TOP_SHOULDER',
-                'keycode': '81',
+                'keycode': 81
             },
             11: {
                 'value': 'e',
                 'value2': 'RIGHT_TOP_SHOULDER',
-                'keycode': '69',
+                'keycode': 69
             },
             12: {
                 'value': 'e',
                 'value2': 'LEFT_BOTTOM_SHOULDER',
-                'keycode': '69',
+                'keycode': 69
             },
             13: {
                 'value': 'w',
                 'value2': 'RIGHT_BOTTOM_SHOULDER',
-                'keycode': '87',
+                'keycode': 87
             },
             14: {
                 'value2': 'LEFT_STICK',
@@ -2565,27 +2567,27 @@ class EmulatorJS {
             16: {
                 'value': 'h',
                 'value2': 'LEFT_STICK_X:+1',
-                'keycode': '72'
+                'keycode': 72
             },
             17: {
                 'value': 'f',
                 'value2': 'LEFT_STICK_X:-1',
-                'keycode': '70'
+                'keycode': 70
             },
             18: {
                 'value': 'g',
                 'value2': 'LEFT_STICK_Y:+1',
-                'keycode': '71'
+                'keycode': 71
             },
             19: {
                 'value': 't',
                 'value2': 'LEFT_STICK_Y:-1',
-                'keycode': '84'
+                'keycode': 84
             },
             20: {
                 'value': 'l',
                 'value2': 'RIGHT_STICK_X:+1',
-                'keycode': '76'
+                'keycode': 76
             },
             21: {
                 'value': 'j',
@@ -2613,7 +2615,127 @@ class EmulatorJS {
         2: {},
         3: {}
     }
+    keyMap = {
+        8: 'backspace',
+        9: 'tab',
+        13: 'enter',
+        16: 'shift',
+        17: 'ctrl',
+        18: 'alt',
+        19: 'pause/break',
+        20: 'caps lock',
+        27: 'escape',
+        32: 'space',
+        33: 'page up',
+        34: 'page down',
+        35: 'end',
+        36: 'home',
+        37: 'left arrow',
+        38: 'up arrow',
+        39: 'right arrow',
+        40: 'down arrow',
+        45: 'insert',
+        46: 'delete',
+        48: '0',
+        49: '1',
+        50: '2',
+        51: '3',
+        52: '4',
+        53: '5',
+        54: '6',
+        55: '7',
+        56: '8',
+        57: '9',
+        65: 'a',
+        66: 'b',
+        67: 'c',
+        68: 'd',
+        69: 'e',
+        70: 'f',
+        71: 'g',
+        72: 'h',
+        73: 'i',
+        74: 'j',
+        75: 'k',
+        76: 'l',
+        77: 'm',
+        78: 'n',
+        79: 'o',
+        80: 'p',
+        81: 'q',
+        82: 'r',
+        83: 's',
+        84: 't',
+        85: 'u',
+        86: 'v',
+        87: 'w',
+        88: 'x',
+        89: 'y',
+        90: 'z',
+        91: 'left window key',
+        92: 'right window key',
+        93: 'select key',
+        96: 'numpad 0',
+        97: 'numpad 1',
+        98: 'numpad 2',
+        99: 'numpad 3',
+        100: 'numpad 4',
+        101: 'numpad 5',
+        102: 'numpad 6',
+        103: 'numpad 7',
+        104: 'numpad 8',
+        105: 'numpad 9',
+        106: 'multiply',
+        107: 'add',
+        109: 'subtract',
+        110: 'decimal point',
+        111: 'divide',
+        112: 'f1',
+        113: 'f2',
+        114: 'f3',
+        115: 'f4',
+        116: 'f5',
+        117: 'f6',
+        118: 'f7',
+        119: 'f8',
+        120: 'f9',
+        121: 'f10',
+        122: 'f11',
+        123: 'f12',
+        144: 'num lock',
+        145: 'scroll lock',
+        186: 'semi-colon',
+        187: 'equal sign',
+        188: 'comma',
+        189: 'dash',
+        190: 'period',
+        191: 'forward slash',
+        192: 'grave accent',
+        219: 'open bracket',
+        220: 'back slash',
+        221: 'close braket',
+        222: 'single quote'
+    }
     controls;
+    setupKeys(){
+        for (let i=0; i<4; i++) {
+            for (let j=0; j<30; j++) {
+                if (this.controls[i][j] && this.controls[i][j].value === this.keyMap[this.keyLookup(this.controls[i][j].value)]) {
+                    this.controls[i][j].keycode = Number(this.keyLookup(this.controls[i][j]));
+                }
+            }
+        }
+    }
+    keyLookup(k){
+        for (var key in this.keyMap) {
+            if (this.keyMap[key] === k.value) {
+                return key;
+            }else if (k.keycode !== undefined) {
+                return k.keycode;
+            }
+        }
+        return 0;
+    }
     keyChange(e) {
         if (e.repeat) return;
         if (!this.started) return;
@@ -2635,7 +2757,7 @@ class EmulatorJS {
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
-                if (this.controls[i][j] && (this.controls[i][j].value === e.key.toLowerCase() || this.controls[i][j].keycode === e.keyCode)) {
+                if (this.controls[i][j] && this.controls[i][j].keycode === e.keyCode) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 }
             }
