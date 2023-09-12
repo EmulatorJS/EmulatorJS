@@ -2720,18 +2720,19 @@ class EmulatorJS {
     setupKeys(){
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
-                if (this.controls[i][j] && this.controls[i][j].value === this.keyMap[this.keyLookup(this.controls[i][j].value)]) {
+                if (this.controls[i][j] && this.controls[i][j].value === this.keyMap[this.keyLookup(this.controls[i][j])]) {
                     this.controls[i][j].keycode = Number(this.keyLookup(this.controls[i][j]));
                 }
             }
         }
     }
-    keyLookup(k){
+    keyLookup(controllerkey){
+        console.log(controllerkey);
         for (var key in this.keyMap) {
-            if (this.keyMap[key] === k.value) {
+            if (this.keyMap[key] === controllerkey.value) {
                 return key;
-            }else if (k.keycode !== undefined) {
-                return k.keycode;
+            }else if (controllerkey.keycode !== undefined) {
+                return controllerkey.keycode;
             }
         }
         return 0;
