@@ -1,219 +1,131 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>EmulatorJS</title>
+  <head>
+    <title>FTP-ROMS</title>
+    <meta content="FTP-ROMS" property="og:title" />
+    <meta
+      content="FTP (Free the iPad) is a website for running your old games on your Apple device."
+      property="og:description"
+    />
+    <meta content="./index.html" property="og:url" />
+    <meta content="docs/Logo.png" property="og:image" />
+    <meta content="0000FF" data-react-helmet="true" name="theme-color" />
 
-        <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
-        <meta name = viewport content = "width = device-width, initial-scale = 1">
+	<!--Bootstrap5-->
+	 <!-- Latest compiled and minified CSS -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        <style>
-            body, html {
-                height: 100%;
-            }
+   <!-- Latest compiled JavaScript -->
+   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script> 
 
-            body {
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 20px;
-                margin: 0;
-                overflow: hidden;
-                background-color: #222
-            }
+    <!-- CSS for Drop Down Tabs Menu #1 -->
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <link rel="icon" type="image/x-icon" href="docs/Logo.ico" />
 
-            body, #box {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
+    
+  </head>
 
-            #box {
-                color: #aaa;
-                height: 20em;
-                width: 30em;
-                max-width: 80%;
-                max-height: 80%;
-                background-color: #333;
-                border-radius: 0.4em;
-                border: 2px solid #555;
-                position: relative;
-                flex-direction: column;
-                transition-duration: 0.2s;
-                overflow: hidden
-            }
+  <body>
+ <!--     <ul id="ulinks">
+      <li id="links"><a href="docs/homepages/A2600/A2600.html">A2600</a></li>
+      September 1977
+      <li id="links"><a href="docs/homepages/NES/NES.html">NES</a></li>
+      October 18, 1985-
+      <li id="links"><a href="docs/homepages/MS/MS.html">MS</a></li>
+      September 1986
+      <li id="links"><a href="docs/homepages/GB/GB.html">GB</a></li>
+      July 31, 1989
+      <li id="links"><a href="docs/homepages/GEN/GEN.html">GEN</a></li>
+      August 14, 1989
+      <li id="links"><a href="docs/homepages/GG/GG.html">GG</a></li>
+      April 1991
+      <li id="links"><a href="docs/homepages/SNES/SNES.html">SNES</a></li>
+      August 23, 1991
+      <li id="links"><a href="docs/homepages/N64/N64.html">N64</a></li>
+      September 26, 1996
+      <li id="links"><a href="docs/homepages/GBC/GBC.html">GBC</a></li>
+      November 18, 1998
+      <li id="links"><a href="docs/homepages/GBA/GBA.html">GBA</a></li>
+      June 11, 2001
+      <li id="links"><a href="docs/homepages/NDS/NDS.html">NDS</a></li>
+      November 21, 2004
+   </ul> -->
+    <h1 style="text-align: center">Free the iPad</h1>
+    <center>
+      <a href="https://github.com/roythearsonist/FTP-ROMS"
+        ><img src="docs/Logo.png" width="80px" height="120px" alt="FTP Logo"
+      /></a>
+    </center>
+    <h2 style="text-align: center">About the Project</h2>
+    <center>
+      <p style="font-weight: bold; font-size: 20px">
+        FTP, or Free the iPad, is a website built in order to be able to emulate consoles on an iPad or other mobile devices.
+      </p>
+    </center>
 
-            #box:hover, #box[drag] {
-                border-color: #38f;
-                color: #ddd
-            }
+    <!-- A2600 -->
 
-            #input {
-                cursor: pointer;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                opacity: 0
-            }
+    <div class="a2600">
+      <center>
+        <a href="/docs/homepages/A2600/A2600.html">
+          <img src="images/a2600.png" class="a2600-img img-fluid"/>
+        </a>
+        <p>Atari 2600</p>
+      </center>
+    </div>
 
-            #display {
-                width: 100%;
-                height: 100%
-            }
+    <!-- NES -->
 
-            select, button {
-                padding: 0.6em 0.4em;
-                margin: 0.5em;
-                width: 15em;
-                max-width: 100%;
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 16px;
-                background-color: #444;
-                color: #aaa;
-                border-radius: 0.4em;
-                border: 1px solid #555;
-                cursor: pointer;
-                transition-duration: 0.2s
-            }
+    <div class="nes">
+      <center>
+        <a href="/docs/homepages/NES/NES.html">
+          <img src="images/nes.jpg" class="nes-img img-fluid"/>
+        </a>
+        <p>Nintendo Entertainment System</p>
+      </center>
+    </div>
 
-            select:hover, button:hover {
-                background-color: #666;
-                color: #ddd
-            }
-        </style>
-    </head>
+    <!-- Sega Master System -->
 
-    <body>
-        <div id = box>
-            <input type = file id = input>
-            Drag ROM file or click here
-        </div>
+    <div class="ms">
+      <center>
+        <a href="/docs/homepages/MS/MS.html">
+          <img src="images/ms.png" class="ms-img img-fluid"/>
+        </a>
+        <p>Sega Master System</p>
+      </center>
+    </div>
 
-        <script>
-            input.onchange = async () => {
-                const url = new Blob([input.files[0]])
-                const parts = input.files[0].name.split(".")
+    <!-- Game Boy -->
+    
+    <div class="gb">
+      <center>
+        <a href="docs/homepages/GB/GB.html">
+          <img src="images/gb.png" class="gb-img img-fluid"/>
+        </a>
+        <p>Game Boy</p>
+      </center>
+    </div>
 
-                const core = await (async (ext) => {
-                    if (["fds", "nes", "unif", "unf"].includes(ext))
-                        return "nes"
+    <!-- Sega Genesis -->
 
-                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
-                        return "snes"
+    <div class="sgn">
+      <center>
+        <a href="docs/homepages/GEN/GEN.html">
+          <img src="images/sgn.png" class="sgn-img img-fluid">
+        </a>
+        <p>Sega Genesis</p>
+      </center>
+    </div>
 
-                    if (["z64", "n64"].includes(ext))
-                        return "n64"
+<!-- Credits -->
 
-                    if (["pce"].includes(ext))
-                        return "pce"
-
-                    if (["ngp", "ngc"].includes(ext))
-                        return "ngp"
-
-                    if (["ws", "wsc"].includes(ext))
-                        return "ws"
-
-                    if (["col", "cv"].includes(ext))
-                        return "coleco"
-
-                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
-                        return ext
-
-                    return await new Promise(resolve => {
-                        const cores = {
-                            "Nintendo 64": "n64",
-                            "Nintendo Game Boy": "gb",
-                            "Nintendo Game Boy Advance": "gba",
-                            "Nintendo DS": "nds",
-                            "Nintendo Entertainment System": "nes",
-                            "Super Nintendo Entertainment System": "snes",
-                            "PlayStation": "psx",
-                            "Virtual Boy": "vb",
-                            "Sega Mega Drive": "segaMD",
-                            "Sega Master System": "segaMS",
-                            "Sega CD": "segaCD",
-                            "Atari Lynx": "lynx",
-                            "Sega 32X": "sega32x",
-                            "Atari Jaguar": "jaguar",
-                            "Sega Game Gear": "segaGG",
-                            "Sega Saturn": "segaSaturn",
-                            "Atari 7800": "atari7800",
-                            "Atari 2600": "atari2600",
-                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
-                            "NEC PC-FX": "pcfx",
-                            "SNK NeoGeo Pocket (Color)": "ngp",
-                            "Bandai WonderSwan (Color)": "ws",
-                            "ColecoVision": "coleco"
-                        }
-
-                        const button = document.createElement("button")
-                        const select = document.createElement("select")
-
-                        for (const type in cores) {
-                            const option = document.createElement("option")
-
-                            option.value = cores[type]
-                            option.textContent = type
-                            select.appendChild(option)
-                        }
-
-                        button.onclick = () => resolve(select[select.selectedIndex].value)
-                        button.textContent = "Load game"
-                        box.innerHTML = ""
-
-                        box.appendChild(select)
-                        box.appendChild(button)
-                    })
-                })(parts.pop())
-
-                const div = document.createElement("div")
-                const sub = document.createElement("div")
-                const script = document.createElement("script")
-
-                sub.id = "game"
-                div.id = "display"
-
-                box.remove()
-                div.appendChild(sub)
-                document.body.appendChild(div)
-
-                window.EJS_player = "#game";
-                window.EJS_gameName = parts.shift();
-                window.EJS_biosUrl = "";
-                window.EJS_gameUrl = url;
-                window.EJS_core = core;
-                window.EJS_pathtodata = "data/";
-                window.EJS_startOnLoaded = true;
-
-                if (window.location.hostname === "demo.emulatorjs.org") {
-                    window.EJS_AdUrl = "https://ads.emulatorjs.org/";
-                    window.EJS_ready = function() {
-                        detectAdBlock("https://ads.emulatorjs.org/?blocked");
-                    }
-                }
-                
-
-                script.src = "data/loader.js";
-                document.body.appendChild(script);
-            }
-            async function detectAdBlock(url) {
-                let adBlockEnabled = false
-                const googleAdUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
-                try {
-                    await fetch(new Request(googleAdUrl)).catch(_ => adBlockEnabled = true)
-                } catch (e) {
-                    adBlockEnabled = true
-                } finally {
-                    window.EJS_ready = function() {
-                        if (adBlockEnabled) {
-                            window.EJS_adBlocked("https://emulatorjs.org/?blocked");
-                        }
-                    }
-                }
-            }
-            box.ondragover = () => box.setAttribute("drag", true);
-            box.ondragleave = () => box.removeAttribute("drag");
-        </script>
-    </body>
+    <div class="credits"
+      <h3 style="font-weight: bold; font-size: 20px">Credits:</h3>
+        <ul id="credits">
+          <li>roythearsonist: Project Leader</li>
+          <li>MADMAN-Modding: Main Programmer for Web end</li>
+      </ul>
+    </div>
+  </body>
 </html>

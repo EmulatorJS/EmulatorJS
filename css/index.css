@@ -1,0 +1,103 @@
+body {
+  margin-left: auto;
+  margin-right: auto;
+  background-image: url("../../images/background.jpeg");
+  background-repeat: repeat;
+  background-attachment: fixed;
+  background-position: center;
+}
+
+#ulinks {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: transparent;
+  width: auto;
+}
+
+#links {
+  float: left;
+  width: auto;
+}
+
+#links a {
+  width: auto;
+  display: block;
+  color: #add8e6;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+p {
+  color: white;
+  max-width: 70%;
+}
+
+#credits {
+  color: white;
+}
+
+h1 {
+  color: white;
+}
+
+h2 {
+  color: white;
+}
+
+h3 {
+  color: white;
+}
+
+.credits {
+  padding-left: 5px;
+  color: white;
+}
+
+@media (min-width: 600px) {
+  .credits {
+    padding-left: 100px;
+  }
+}
+
+.a2600 {
+  font-size: 4vh;
+}
+
+.a2600-img {
+  height: 30vh;
+}
+
+.nes {
+  font-size: 4vh;
+}
+
+.nes-img {
+  height: 30vh;
+}
+
+.ms {
+  font-size: 4vh;
+}
+
+.ms-img {
+  height: 30vh;
+}
+
+.gb {
+  font-size: 4vh;
+}
+
+.gb-img {
+  height: 30vh;
+}
+
+.sgn {
+  font-size: 4vh;
+}
+
+.sgn-img {
+  height: 30vh;
+}
