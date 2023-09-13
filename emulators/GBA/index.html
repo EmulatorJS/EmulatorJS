@@ -1,0 +1,33 @@
+<html>
+  <head>
+    <!--HTML file auto generated using EmulatorJS codehelper-->
+    <!-- <link rel="stylesheet" href="../../../css/dark.css" /> -->
+  </head>
+  <body>
+    <center>
+      <a href="../../">Home</a>
+    </center>
+    <div id="game" style="width: 80vw;"></div>
+
+    <script>
+      
+      const search = window.location.search;
+
+      const urlParams = new URLSearchParams(search);
+      const rom = urlParams.get('rom');
+
+      const game = urlParams.get('game');
+
+      EJS_player = "#game";
+      EJS_core = "gba";
+      EJS_gameName = '"' + game + '"';
+      EJS_color = "#0064ff";
+      EJS_startOnLoaded = true;
+      EJS_pathtodata =
+        "https://rawcdn.githack.com/EmulatorJS/EmulatorJS/main/data/";
+      EJS_gameUrl = rom;
+      EJS_biosUrl = "gba_bios.bin";
+    </script>
+    <script src="../../../data/loader.js"></script>
+  </body>
+</html>
