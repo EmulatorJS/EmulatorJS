@@ -4667,6 +4667,7 @@ class EmulatorJS {
                 this.cheatChanged(false, code, getIndex(desc, code));
                 this.cheats.splice(getIndex(desc, code), 1);
                 row.remove();
+                this.saveSettings();
             })
             
             this.elements.cheatRows.appendChild(row);
