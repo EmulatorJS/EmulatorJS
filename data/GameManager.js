@@ -29,7 +29,8 @@ class EJS_GameManager {
             toggleRewind: this.Module.cwrap('toggle_rewind', 'null', ['number']),
             setRewindGranularity: this.Module.cwrap('set_rewind_granularity', 'null', ['number']),
             toggleSlowMotion: this.Module.cwrap('toggle_slow_motion', 'null', ['number']),
-            setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number'])
+            setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
+            getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', [''])
         }
         this.mkdir("/home");
         this.mkdir("/home/web_user");
@@ -326,6 +327,9 @@ class EJS_GameManager {
     }
     setRewindGranularity(value) {
         this.functions.setRewindGranularity(value);
+    }
+    getFrameNum() {
+        return this.functions.getFrameNum();
     }
 }
 

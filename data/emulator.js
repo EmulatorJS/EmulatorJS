@@ -4394,7 +4394,11 @@ class EmulatorJS {
         let justReset = false;
         this.netplay.dataMessage = (data) => {
             //console.log(data);
+            if (data.sync === true && this.netplay.owner) {
+                this.netplay.sync();
+            }
             if (data.state) {
+                this.netplay.wait = true;
                 this.netplay.setLoading(true);
                 this.pause(true);
                 this.gameManager.loadState(new Uint8Array(data.state));
@@ -4409,130 +4413,139 @@ class EmulatorJS {
             if (data.ready && this.netplay.owner) {
                 this.netplay.ready++;
                 if (this.netplay.ready === this.netplay.getUserCount()) {
-                    this.netplay.sendMessage({readyready:true, resetCurrentFrame: true});
-                    setTimeout(() => this.play(true), 100);
+                    this.netplay.sendMessage({readyready:true});
+                    this.netplay.reset();
+                    this.play(true);
                     this.netplay.setLoading(false);
-                    this.netplay.current_frame = 0;
-                    justReset = true;
                 }
             }
             if (data.readyready) {
                 this.netplay.setLoading(false);
-                this.netplay.current_frame = 0;
-                this.play(true)
-            }
-            if (data.resetCurrentFrame) {
+                this.netplay.reset();
                 this.play(true);
-                this.netplay.current_frame = 0;
-                this.netplay.inputs = {};
             }
-            if (data.user_frame && this.netplay.owner) {
-                if (justReset) {
-                    justReset = false;
-                    this.netplay.current_frame = 0;
-                    this.netplay.inputs = {};
-                }
-                this.netplay.users[data.user_frame.user] = data.user_frame.frame;
-                //console.log(data.user_frame.frame, this.netplay.current_frame);
-            }
-            if (data.shortPause === this.netplay.playerID) {
+            if (data.shortPause && data.shortPause !== this.netplay.playerID) {
                 this.pause(true);
-                setTimeout(() => this.play(true), 5);
-            } else if (data.lessShortPause === this.netplay.playerID) {
-                this.pause(true);
-                setTimeout(() => this.play(true), 10);
+                this.netplay.wait = true;
+                setTimeout(() => this.play(true), 48);
             }
-            if (data.input && this.netplay.owner) {
-                this.netplay.simulateInput(this.netplay.getUserIndex(data.user), data.input[0], data.input[1], true);
-            }
-            if (data.connected_input && !this.netplay.owner) {
-                if (!this.netplay.inputs[data.frame]) {
-                    this.netplay.inputs[data.frame] = [];
-                }
-                this.netplay.inputs[data.frame].push([data.connected_input[0], data.connected_input[1], data.connected_input[2]]);
+            if (data["sync-control"]) {
+                data["sync-control"].forEach((value) => {
+                    let inFrame = parseInt(value.frame);
+                    let frame = this.netplay.currentFrame;
+                    this.netplay.inputsData[inFrame] || (this.netplay.inputsData[inFrame] = []);
+                    if (!value.connected_input || value.connected_input[0] < 0) return;
+                    if (inFrame === frame) {
+                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+                    }
+                    this.netplay.inputsData[frame] || (this.netplay.inputsData[frame] = []);
+                    if (this.netplay.owner) {
+                        this.netplay.inputsData[frame].push(value);
+                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+                        if (frame - 10 >= inFrame) {
+                            this.netplay.wait = true;
+                            this.pause(true);
+                            setTimeout(() => {
+                                this.play(true);
+                                this.netplay.wait = false;
+                            }, 48)
+                        }
+                    } else {
+                        this.netplay.inputsData[inFrame].push(value);
+                        if (this.netplay.inputsData[frame]) {
+                            this.play(true);
+                        }
+                        if (frame + 10 <= inFrame && inFrame > this.netplay.init_frame + 100) {
+                            this.netplay.sendMessage({shortPause:this.netplay.playerID});
+                        }
+                    }
+                });
             }
             if (data.restart) {
                 this.gameManager.restart();
-                this.netplay.current_frame = 0;
-                this.netplay.inputs = {};
+                this.netplay.reset();
                 this.play(true);
             }
         }
         this.netplay.simulateInput = (player, index, value, resp) => {
             if (!this.isNetplay) return;
             if (player !== 0 && !resp) return;
+            player = this.netplay.getUserIndex(this.netplay.playerID)
+            const frame = this.netplay.currentFrame;
             if (this.netplay.owner) {
-                const frame = this.netplay.current_frame;
-                this.gameManager.functions.simulateInput(player, index, value);
-                this.netplay.sendMessage({
+                if (!this.netplay.inputsData[frame]) {
+                    this.netplay.inputsData[frame] = [];
+                }
+                this.netplay.inputsData[frame].push({
                     frame: frame,
                     connected_input: [player, index, value]
-                });
+                })
+                this.gameManager.functions.simulateInput(player, index, value);
             } else {
                 this.netplay.sendMessage({
-                    user: this.netplay.playerID,
-                    input: [index, value]
-                });
+                    "sync-control": [{
+                        frame: frame,
+                        connected_input: [player, index, value]
+                    }]
+                })
             }
         }
         this.netplay.sendMessage = (data) => {
             this.netplay.socket.emit("data-message", data);
         }
+        this.netplay.reset = () => {
+            this.netplay.init_frame = this.netplay.currentFrame;
+            this.netplay.inputsData = {};
+        }
         //let fps;
         //let lastTime;
+        this.netplay.init_frame = 0;
+        this.netplay.currentFrame = 0;
+        this.netplay.inputsData = {};
         this.Module.postMainLoop = () => {
             //const newTime = window.performance.now();
             //fps = 1000 / (newTime - lastTime);
             //console.log(fps);
             //lastTime = newTime;
-            if (!this.isNetplay || this.paused) return;
-            this.netplay.current_frame++;
+            
+            //frame syncing - working
+            //control syncing - broken
+            if (!this.isNetplay) return;
+            this.netplay.currentFrame = parseInt(this.gameManager.getFrameNum()) - this.netplay.init_frame;
             if (this.netplay.owner) {
-                for (const k in this.netplay.users) {
-                    if (this.netplay.getUserIndex(k) === -1) {
-                        delete this.netplay.users[k];
-                        continue;
-                    }
-                    const diff = this.netplay.current_frame - this.netplay.users[k];
-                    //console.log(diff);
-                    if (Math.abs(diff) > 75) {
-                        this.netplay.sync();
-                        return;
-                    }
-                    //this'll be adjusted if needed
-                    if (diff < 0) {
-                        this.netplay.sendMessage({
-                            lessShortPause: k
-                        })
-                    }
-                    if (diff < 5) {
-                        this.netplay.sendMessage({
-                            shortPause: k
-                        })
-                    } else if (diff > 30) {
-                        this.pause(true);
-                        setTimeout(() => this.play(true), 10);
-                    } else if (diff > 10) {
-                        this.pause(true);
-                        setTimeout(() => this.play(true), 5);
-                    }
+                let to_send = [];
+                for (let i=this.netplay.currentFrame-1; i<this.netplay.currentFrame; i++) {
+                    this.netplay.inputsData[i] ? this.netplay.inputsData[i].forEach((value) => {
+                        to_send.push(value);
+                    }) : to_send.push({frame: i});
                 }
+                this.netplay.sendMessage({"sync-control": to_send});
             } else {
-                this.netplay.sendMessage({
-                    user_frame: {
-                        user: this.netplay.playerID,
-                        frame: this.netplay.current_frame
-                    }
-                });
-                for (const k in this.netplay.inputs) {
-                    if (k <= this.netplay.current_frame) {
-                        this.netplay.inputs[k].forEach(data => {
-                            this.gameManager.functions.simulateInput(data[0], data[1], data[2]);
-                        })
-                        delete this.netplay.inputs[k];
-                    }
+                if (this.netplay.currentFrame <= 0 || this.netplay.inputsData[this.netplay.currentFrame]) {
+                    this.netplay.wait = false;
+                    this.play();
+                    this.netplay.inputsData[this.netplay.currentFrame].forEach((value) => {
+                        console.log(value);
+                        if (!value.connected_input) return;
+                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
+                    })
+                } else if (!this.netplay.syncing) {
+                    console.log("sync");
+                    this.pause(true);
+                    this.netplay.sendMessage({sync:true});
+                    this.netplay.syncing = true;
                 }
             }
+            if (this.netplay.currentFrame % 100 === 0) {
+                Object.keys(this.netplay.inputsData).forEach(value => {
+                    if (value < this.netplay.currentFrame - 50) {
+                        this.netplay.inputsData[value] = null;
+                        delete this.netplay.inputsData[value];
+                    }
+                })
+            }
+            
+            
         }
         
         this.netplay.updateList = {
