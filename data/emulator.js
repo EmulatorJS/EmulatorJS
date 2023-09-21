@@ -3332,9 +3332,9 @@ class EmulatorJS {
             createDPad({container: elem, event: (up, down, left, right) => {
                 if (dpad.joystickInput) {
                     if (up === 1) up=0x7fff;
-                    if (down === 1) up=0x7fff;
-                    if (left === 1) up=0x7fff;
-                    if (right === 1) up=0x7fff;
+                    if (down === 1) down=0x7fff;
+                    if (left === 1) left=0x7fff;
+                    if (right === 1) right=0x7fff;
                 }
                 this.gameManager.simulateInput(0, dpad.inputValues[0], up);
                 this.gameManager.simulateInput(0, dpad.inputValues[1], down);
