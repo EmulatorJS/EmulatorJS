@@ -16,6 +16,7 @@ class EmulatorJS {
             const options = {
                 'a5200': 'atari5200',
                 'beetle_vb': 'vb',
+                'desmume': 'nds',
                 'desmume2015': 'nds',
                 'fbalpha2012_cps1': 'arcade',
                 'fbalpha2012_cps2': 'arcade',
@@ -86,6 +87,7 @@ class EmulatorJS {
     }
     extensions = {
         'a5200': ['a52', 'bin'],
+        'desmume': ['nds', 'bin'],
         'desmume2015': ['nds', 'bin'],
         'fbalpha2012_cps1': ['zip'],
         'fbalpha2012_cps2': ['zip'],
