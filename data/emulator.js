@@ -389,10 +389,10 @@ class EmulatorJS {
     adBlocked(url, del){
         if (del){
             document.querySelector('div[class="ejs_ad_iframe"]').remove();
-        }else{
-            try{
+        } else {
+            try {
                 document.querySelector('div[class="ejs_ad_iframe"]').remove();
-            }catch(e){}
+            } catch(e) {}
             this.config.adUrl = url;
             this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
         }
@@ -2596,15 +2596,9 @@ class EmulatorJS {
             26: {
                 'value': '3'
             },
-            27: {
-                'value': 'add'
-            },
-            28: {
-                'value': 'space'
-            },
-            29: {
-                'value': 'subtract'
-            },
+            27: {},
+            28: {},
+            29: {},
         },
         1: {},
         2: {},
@@ -2729,6 +2723,8 @@ class EmulatorJS {
         for (var key in this.keyMap) {
             if (this.keyMap[key] === controllerkey.value || key === controllerkey.value) {
                 return key;
+            } else if (controllerkey.value === undefined) {
+                return 0;
             }
         }
         return -1;
