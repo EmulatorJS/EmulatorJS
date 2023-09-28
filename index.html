@@ -189,27 +189,22 @@
                 if (window.location.hostname === "demo.emulatorjs.org") {
                     window.EJS_AdUrl = "https://ads.emulatorjs.org/";
                     window.EJS_ready = function() {
-                        detectAdBlock("https://ads.emulatorjs.org/?blocked");
+                        detectAdBlock("data:text/html;base64,PGh0bWw+PHN0eWxlPiNhZGJsb2Nre2JhY2tncm91bmQtY29sb3I6cmdiYSgwLDAsMCwuOCk7cG9zaXRpb246Zml4ZWQ7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTt0b3A6MDtsZWZ0OjA7ei1pbmRleDoxMDAwO3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiNmZmZ9Ym9keSxodG1se2JhY2tncm91bmQtY29sb3I6dHJhbnNwYXJlbnR9PC9zdHlsZT48Ym9keSBzdHlsZT0ibWFyZ2luOjAiPjxkaXYgaWQ9ImFkYmxvY2siPjxoMT5IaSBBZGJsb2NrIFVzZXIhPC9oMT48cD5BZHMgb24gdGhpcyBwYWdlIG1heSBjb21lIGFuZCBnbyBkZXBlbmRpbmcgb24gaG93IG1hbnkgcGVvcGxlIGFyZSBmdW5kaW5nIHRoaXMgcHJvamVjdC48YnI+WW91IGNhbiBoZWxwIGZ1bmQgdGhpcyBwcm9qZWN0IG9uPGEgaHJlZj0iaHR0cHM6Ly9wYXRyZW9uLmNvbS9FbXVsYXRvckpTIj5wYXRyZW9uPC9hPjwvcD48L2Rpdj48L2JvZHk+PC9odG1sPg==");
                     }
                 }
                 
-
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
             }
-            async function detectAdBlock(url) {
-                let adBlockEnabled = false
-                const googleAdUrl = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
+            function detectAdBlock(url) {
+                let adBlockEnabled = false;
                 try {
-                    await fetch(new Request(googleAdUrl)).catch(_ => adBlockEnabled = true)
+                    window.EJS_AdUrl = document.querySelector('iframe[src="'+window.EJS_AdUrl+'"]').src;
                 } catch (e) {
-                    adBlockEnabled = true
-                } finally {
-                    window.EJS_ready = function() {
-                        if (adBlockEnabled) {
-                            window.EJS_adBlocked("https://emulatorjs.org/?blocked");
-                        }
-                    }
+                    adBlockEnabled = true;
+                }
+                if (adBlockEnabled) {
+                    window.EJS_adBlocked(url);
                 }
             }
             box.ondragover = () => box.setAttribute("drag", true);
