@@ -390,8 +390,11 @@ class EmulatorJS {
         if (del){
             document.querySelector('div[class="ejs_ad_iframe"]').remove();
         }else{
-            document.querySelector('iframe[src="'+this.config.adUrl+'"]').src = url;
+            try{
+                document.querySelector('div[class="ejs_ad_iframe"]').remove();
+            }catch(e){}
             this.config.adUrl = url;
+            this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
         }
     }
     functions = {};
@@ -1887,6 +1890,7 @@ class EmulatorJS {
             },
             "Clear": () => {
                 this.controls = {0:{},1:{},2:{},3:{}};
+                this.setupKeys();
                 this.checkGamepadInputs();
                 this.saveSettings();
             },
@@ -2371,8 +2375,7 @@ class EmulatorJS {
                     textBox2.value = "";
                     textBox1.value = "";
                     if (this.controls[i][k] && this.controls[i][k].value !== undefined) {
-                        let value = this.controls[i][k].value.toString();
-                        if (value === " ") value = "space";
+                        let value = this.keyMap[this.controls[i][k].value];
                         value = this.localization(value);
                         textBox2.value = value;
                     }
@@ -2391,8 +2394,7 @@ class EmulatorJS {
                 })
                 
                 if (this.controls[i][k] && this.controls[i][k].value) {
-                    let value = this.controls[i][k].value.toString();
-                    if (value === " ") value = "space";
+                    let value = this.keyMap[this.controls[i][k].value];
                     value = this.localization(value);
                     textBox2.value = value;
                 }
@@ -2469,7 +2471,7 @@ class EmulatorJS {
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
-            this.controls[player][num].value = "";
+            this.controls[player][num].value = 0;
             this.controls[player][num].value2 = "";
             this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
@@ -2491,132 +2493,125 @@ class EmulatorJS {
         0: {
             0: {
                 'value': 'x',
-                'value2': 'BUTTON_2',
-                'keycode': 88
+                'value2': 'BUTTON_2'
             },
             1: {
                 'value': 's',
-                'value2': 'BUTTON_4',
-                'keycode': 83
+                'value2': 'BUTTON_4'
             },
             2: {
                 'value': 'v',
-                'value2': 'SELECT',
-                'keycode': 86
+                'value2': 'SELECT'
             },
             3: {
                 'value': 'enter',
-                'value2': 'START',
-                'keycode': 13
+                'value2': 'START'
             },
             4: {
                 'value': 'up arrow',
-                'value2': 'DPAD_UP',
-                'keycode': 38
+                'value2': 'DPAD_UP'
             },
             5: {
-                'value': 'arrowdown',
-                'value2': 'DPAD_DOWN',
-                'keycode': 40
+                'value': 'down arrow',
+                'value2': 'DPAD_DOWN'
             },
             6: {
-                'value': 'arrowleft',
-                'value2': 'DPAD_LEFT',
-                'keycode': 37
+                'value': 'left arrow',
+                'value2': 'DPAD_LEFT'
             },
             7: {
-                'value': 'arrowright',
-                'value2': 'DPAD_RIGHT',
-                'keycode': 39
+                'value': 'right arrow',
+                'value2': 'DPAD_RIGHT'
             },
             8: {
                 'value': 'z',
-                'value2': 'BUTTON_1',
-                'keycode': 90
+                'value2': 'BUTTON_1'
             },
             9: {
                 'value': 'a',
-                'value2': 'BUTTON_3',
-                'keycode': 65
+                'value2': 'BUTTON_3'
             },
             10: {
                 'value': 'q',
-                'value2': 'LEFT_TOP_SHOULDER',
-                'keycode': 81
+                'value2': 'LEFT_TOP_SHOULDER'
             },
             11: {
                 'value': 'e',
-                'value2': 'RIGHT_TOP_SHOULDER',
-                'keycode': 69
+                'value2': 'RIGHT_TOP_SHOULDER'
             },
             12: {
-                'value': 'e',
-                'value2': 'LEFT_BOTTOM_SHOULDER',
-                'keycode': 69
+                'value': 'tab',
+                'value2': 'LEFT_BOTTOM_SHOULDER'
             },
             13: {
-                'value': 'w',
-                'value2': 'RIGHT_BOTTOM_SHOULDER',
-                'keycode': 87
+                'value': 'r',
+                'value2': 'RIGHT_BOTTOM_SHOULDER'
             },
             14: {
+                'value': '',
                 'value2': 'LEFT_STICK',
             },
             15: {
+                'value': '',
                 'value2': 'RIGHT_STICK',
             },
             16: {
                 'value': 'h',
-                'value2': 'LEFT_STICK_X:+1',
-                'keycode': 72
+                'value2': 'LEFT_STICK_X:+1'
             },
             17: {
                 'value': 'f',
-                'value2': 'LEFT_STICK_X:-1',
-                'keycode': 70
+                'value2': 'LEFT_STICK_X:-1'
             },
             18: {
                 'value': 'g',
-                'value2': 'LEFT_STICK_Y:+1',
-                'keycode': 71
+                'value2': 'LEFT_STICK_Y:+1'
             },
             19: {
                 'value': 't',
-                'value2': 'LEFT_STICK_Y:-1',
-                'keycode': 84
+                'value2': 'LEFT_STICK_Y:-1'
             },
             20: {
                 'value': 'l',
-                'value2': 'RIGHT_STICK_X:+1',
-                'keycode': 76
+                'value2': 'RIGHT_STICK_X:+1'
             },
             21: {
                 'value': 'j',
-                'value2': 'RIGHT_STICK_X:-1',
-                'keycode': '74'
+                'value2': 'RIGHT_STICK_X:-1'
             },
             22: {
                 'value': 'k',
-                'value2': 'RIGHT_STICK_Y:+1',
-                'keycode': '75'
+                'value2': 'RIGHT_STICK_Y:+1'
             },
             23: {
                 'value': 'i',
-                'value2': 'RIGHT_STICK_Y:-1',
-                'keycode': '73'
+                'value2': 'RIGHT_STICK_Y:-1'
             },
-            24: {},
-            25: {},
-            26: {},
-            27: {},
-            28: {},
-            29: {},
+            24: {
+                'value': '1'
+            },
+            25: {
+                'value': '2'
+            },
+            26: {
+                'value': '3'
+            },
+            27: {
+                'value': 'add'
+            },
+            28: {
+                'value': 'space'
+            },
+            29: {
+                'value': 'subtract'
+            },
         },
         1: {},
         2: {},
         3: {}
     }
     keyMap = {
+        0: '',
         8: 'backspace',
         9: 'tab',
         13: 'enter',
@@ -2721,21 +2716,22 @@ class EmulatorJS {
     setupKeys(){
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
-                if (this.controls[i][j] && this.controls[i][j].value === this.keyMap[this.keyLookup(this.controls[i][j])]) {
-                    this.controls[i][j].keycode = Number(this.keyLookup(this.controls[i][j]));
+                if (this.controls[i][j] && this.keyMap) {
+                    this.controls[i][j].value = Number(this.keyLookup(this.controls[i][j]));
+                    if(this.controls[i][j].value === -1){
+                        console.warn("Invalid key for control "+j+" player "+i+" with value "+this.keyMap[this.keyLookup(this.defaultControllers[i][j])]);
+                    }
                 }
             }
         }
     }
     keyLookup(controllerkey){
         for (var key in this.keyMap) {
-            if (this.keyMap[key] === controllerkey.value) {
+            if (this.keyMap[key] === controllerkey.value || key === controllerkey.value) {
                 return key;
-            }else if (controllerkey.keycode !== undefined) {
-                return controllerkey.keycode;
             }
         }
-        return 0;
+        return -1;
     }
     keyChange(e) {
         if (e.repeat) return;
@@ -2746,8 +2742,7 @@ class EmulatorJS {
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
-            this.controls[player][num].value = e.key.toLowerCase();
-            this.controls[player][num].keycode = e.keyCode;
+            this.controls[player][num].value = e.keyCode;
             this.controlPopup.parentElement.parentElement.setAttribute("hidden", "");
             this.checkGamepadInputs();
             this.saveSettings();
@@ -2758,7 +2753,7 @@ class EmulatorJS {
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
-                if (this.controls[i][j] && this.controls[i][j].keycode === e.keyCode) {
+                if (this.controls[i][j] && this.controls[i][j].value === e.keyCode) {
                     this.gameManager.simulateInput(i, j, (e.type === 'keyup' ? 0 : (special.includes(j) ? 0x7fff : 1)));
                 }
             }
