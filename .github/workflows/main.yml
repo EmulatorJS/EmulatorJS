@@ -1,42 +1,33 @@
 name: Minify Code
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    paths:
+      - 'data/*.js'
+      - 'data/*.css'
 
 jobs:
-  paths-filter:
+  minify:
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.filter.outputs.data }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: dorny/paths-filter@v2
-      id: filter
+    - uses: actions/checkout@v3
       with:
-        filters: |
-          data:
-            - 'data/**'
-    # run only if 'data' files were changed
-    - name: workflow tests
-      if: steps.filter.outputs.data == 'true'
-      run: echo "Data file"
-
-    # run only if not 'data' files were changed
-    - name: not workflow tests
-      if: steps.filter.outputs.data != 'true'
-      run: echo "NOT Data file"
-
-  next-job:
-    runs-on: ubuntu-latest
-    # Wait from the paths-filter to be completed before starting next-job
-    needs: paths-filter
-    if: needs.paths-filter.outputs.output1 == 'true'
-    steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+        token: ${{ secrets.BOT_ACCESS_TOKEN }}
+    - uses: actions/setup-node@v3
       with:
-        node-version: '12'
-    - run: cd data/minify && npm install
-    - run: cd data/minify && npm run build
+        node-version: '16'
+    
+    - name: Setup git
+      run: |
+        git config user.name "Ethan O'Brien"
+        git config user.email "ethanaobrien@emulatorjs.org"
+
+    - name: Install NodeJS modules
+      run: cd data/minify && npm install
+      
+    - name: Minify code
+      run: cd data/minify && npm run build
+      
     - uses: EndBug/add-and-commit@v9
       with:
         default_author: github_actions
