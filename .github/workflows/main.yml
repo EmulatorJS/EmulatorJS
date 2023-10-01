@@ -16,11 +16,6 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: '16'
-    
-    - name: Setup git
-      run: |
-        git config user.name "Ethan O'Brien"
-        git config user.email "ethanaobrien@emulatorjs.org"
 
     - name: Install NodeJS modules
       run: cd data/minify && npm install
