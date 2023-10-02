@@ -46,7 +46,9 @@ class EmulatorJS {
                 'snes9x': 'snes',
                 'stella2014': 'atari2600',
                 'virtualjaguar': 'jaguar',
-                'yabause': 'segaSaturn'
+                'yabause': 'segaSaturn',
+                'amiga': 'puae',
+                'vice_x64': 'c64'
             }
             return options[core] || core;
         }
@@ -79,6 +81,8 @@ class EmulatorJS {
             'ngp': 'mednafen_ngp',
             'ws': 'mednafen_wswan',
             'coleco': 'gearcoleco',
+            'puae': 'amiga',
+            'c64': 'vice_x64'
         }
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
             return "parallel_n64";
