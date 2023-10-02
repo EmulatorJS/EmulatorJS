@@ -299,7 +299,7 @@ class EmulatorJS {
                 this.game.classList.remove("ejs_game_background");
                 if (this.config.backgroundBlur) this.game.classList.remove("ejs_game_background_blur");
             })
-        }else{
+        } else {
             this.game.setAttribute("style", "--ejs-background-color: "+this.config.backgroundColor+";");
         }
         
@@ -310,7 +310,8 @@ class EmulatorJS {
                     this.cheats.push({
                         desc: cheat[0],
                         checked: false,
-                        code: cheat[1]
+                        code: cheat[1],
+                        is_permanent: true
                     })
                 }
             }
@@ -4686,6 +4687,12 @@ class EmulatorJS {
             }
         }, true);
         this.cheatMenu = body.parentElement;
+        this.cheatMenu.getElementsByTagName("h4")[0].style["padding-bottom"] = "0px";
+        const msg = this.createElement("div");
+        msg.style["padding-top"] = "0px";
+        msg.style["padding-bottom"] = "15px";
+        msg.innerText = "Note that some cheats require a restart to disable.";
+        body.appendChild(msg);
         const rows = this.createElement("div");
         body.appendChild(rows);
         rows.classList.add("ejs_cheat_rows");
@@ -4693,13 +4700,8 @@ class EmulatorJS {
     }
     updateCheatUI() {
         this.elements.cheatRows.innerHTML = "";
-        const getIndex = (desc, code) => {
-            for (let i=0; i<this.cheats.length; i++) {
-                if (this.cheats[i].desc === desc && this.cheats[i].code === code) return i;
-            }
-        }
         
-        const addToMenu = (desc, checked, code, i) => {
+        const addToMenu = (desc, checked, code, is_permanent, i) => {
             const row = this.createElement("div");
             row.classList.add("ejs_cheat_row");
             const input = this.createElement("input");
@@ -4714,28 +4716,28 @@ class EmulatorJS {
             row.appendChild(label);
             label.addEventListener("click", (e) => {
                 input.checked = !input.checked;
-                this.cheats[getIndex(desc, code)].checked = input.checked;
-                this.cheatChanged(input.checked, code, getIndex(desc, code));
+                this.cheats[i].checked = input.checked;
+                this.cheatChanged(input.checked, code, i);
                 this.saveSettings();
             })
-            const close = this.createElement("a");
-            close.classList.add("ejs_cheat_row_button");
-            close.innerText = "×";
-            row.appendChild(close);
-            close.addEventListener("click", (e) => {
-                this.cheatChanged(false, code, getIndex(desc, code));
-                this.cheats.splice(getIndex(desc, code), 1);
-                row.remove();
-                this.saveSettings();
-            })
-            
+            if (!is_permanent) {
+                const close = this.createElement("a");
+                close.classList.add("ejs_cheat_row_button");
+                close.innerText = "×";
+                row.appendChild(close);
+                close.addEventListener("click", (e) => {
+                    this.cheatChanged(false, code, i);
+                    this.cheats.splice(i, 1);
+                    this.updateCheatUI();
+                    this.saveSettings();
+                })
+            }
             this.elements.cheatRows.appendChild(row);
             this.cheatChanged(checked, code, i);
-            
         }
         this.gameManager.resetCheat();
         for (let i=0; i<this.cheats.length; i++) {
-            addToMenu(this.cheats[i].desc, this.cheats[i].checked, this.cheats[i].code, i);
+            addToMenu(this.cheats[i].desc, this.cheats[i].checked, this.cheats[i].code, this.cheats[i].is_permanent, i);
         }
     }
     cheatChanged(checked, code, index) {
