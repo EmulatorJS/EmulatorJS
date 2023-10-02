@@ -158,7 +158,10 @@
     font-weight: bolder;
     position: relative;
     text-decoration: none;
-    width: 200px;
+    width: fit-content;
+    padding-left: 40px;
+    padding-right: 40px;
+    white-space: nowrap;
     height: 45px;
     border: 0;
     color: #fff !important;
