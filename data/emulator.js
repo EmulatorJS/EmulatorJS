@@ -1106,6 +1106,54 @@ class EmulatorJS {
         })
         this.addEventListener(window, "resize", this.handleResize.bind(this));
         //this.addEventListener(window, "blur", e => console.log(e), true); //TODO - add "click to make keyboard keys work" message?
+        
+        let counter = 0;
+        this.elements.statePopupPanel = this.createPopup("", {}, true);
+        this.elements.statePopupPanel.innerText = "Drop save state here to load";
+        this.elements.statePopupPanel.style["text-align"] = "center";
+        this.elements.statePopupPanel.style["font-size"] = "28px";
+        this.addEventListener(this.elements.parent, "dragenter", (e) => {
+            e.preventDefault();
+            if (!this.started) return;
+            counter++;
+            this.elements.statePopupPanel.parentElement.style.display = "block";
+        });
+        this.addEventListener(this.elements.parent, "dragover", (e) => {
+            e.preventDefault();
+        });
+        this.addEventListener(this.elements.parent, "dragleave", (e) => {
+            e.preventDefault();
+            if (!this.started) return;
+            counter--;
+            if (counter === 0) {
+                this.elements.statePopupPanel.parentElement.style.display = "none";
+            }
+        });
+        this.addEventListener(this.elements.parent, "dragend", (e) => {
+            e.preventDefault();
+            if (!this.started) return;
+            counter = 0;
+            this.elements.statePopupPanel.parentElement.style.display = "none";
+        });
+        this.addEventListener(this.elements.parent, "drop", (e) => {
+            e.preventDefault();
+            if (!this.started) return;
+            this.elements.statePopupPanel.parentElement.style.display = "none";
+            counter = 0;
+            const items = e.dataTransfer.items;
+            let file;
+            for (let i=0; i<items.length; i++) {
+                if (items[i].kind !== 'file') continue;
+                file = items[i];
+                break;
+            }
+            if (!file) return;
+            const fileHandle = file.getAsFile();
+            fileHandle.arrayBuffer().then(data => {
+                this.gameManager.loadState(new Uint8Array(data));
+            })
+        });
+        
         this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         this.gamepad.on('connected', (e) => {
             if (!this.gamepadLabels) return;
