@@ -91,6 +91,7 @@ class EmulatorJS {
     }
     extensions = {
         'a5200': ['a52', 'bin'],
+        'amiga': ['adf', 'adz', 'dms', 'fdi', 'ipf', 'raw', 'hdf', 'hdz', 'lha', 'slave', 'info', 'cue', 'ccd', 'chd', 'nrg', 'mds', 'iso', 'uae', 'm3u', 'zip', '7z'],
         'desmume': ['nds', 'bin'],
         'desmume2015': ['nds', 'bin'],
         'fbalpha2012_cps1': ['zip'],
@@ -102,6 +103,7 @@ class EmulatorJS {
         'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
         'handy': ['lnx'],
         'mame2003': ['zip'],
+        'mame2003_plus': ['zip'],
         'mednafen_ngp': ['ngp', 'ngc'],
         'mednafen_pce': ['pce', 'cue', 'ccd', 'iso', 'img', 'bin', 'chd'],
         'mednafen_pcfx': ['cue', 'ccd', 'toc', 'chd'],
@@ -121,6 +123,7 @@ class EmulatorJS {
         'prosystem': ['a78', 'bin'],
         'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
         'stella2014': ['a26', 'bin', 'zip'],
+        'vice_x64': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
         'virtualjaguar': ['j64', 'jag', 'rom', 'abs', 'cof', 'bin', 'prg'],
         'yabause': ['cue', 'iso', 'ccd', 'mds', 'chd', 'zip', 'm3u']
     }
