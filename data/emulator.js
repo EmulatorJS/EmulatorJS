@@ -430,7 +430,7 @@ class EmulatorJS {
             button.classList.add("ejs_start_button_border");
             border = 1;
         }
-        button.innerText = this.localization("Start Game");
+        button.innerText = (typeof this.config.startBtnName === 'string') ? this.config.startBtnName : this.localization("Start Game");
         if (this.config.alignStartButton == "top"){
             button.style.bottom = "calc(100% - 20px)";
         }else if (this.config.alignStartButton == "center"){
