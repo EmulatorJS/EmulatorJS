@@ -1093,6 +1093,10 @@ class EmulatorJS {
                     if (this.debug) console.warn("Could not fullscreen on load");
                 }
             }
+            if (this.isSafari && this.isMobile) {
+                //Safari is --- funny
+                this.checkStarted();
+            }
         } catch(e) {
             console.warn("failed to start game", e);
             this.textElem.innerText = this.localization("Failed to start game");
@@ -1100,6 +1104,33 @@ class EmulatorJS {
             return;
         }
         this.callEvent("start");
+    }
+    checkStarted() {
+        (async() => {
+            let sleep = (ms) => new Promise(r => setTimeout(r, ms));
+            let state = "suspended";
+            let popup;
+            while (state === "suspended") {
+                if (!window.AL) return;
+                window.AL.currentCtx.sources.forEach(ctx => {
+                    state = ctx.gain.context.state;
+                });
+                if (state !== "suspended") break;
+                if (!popup) {
+                    popup = this.createPopup("", {});
+                    const button = this.createElement("button");
+                    button.innerText = "Click to resume Emulator";
+                    button.classList.add("ejs_menu_button");
+                    button.style.width = "25%";
+                    button.style.height = "25%";
+                    popup.appendChild(button);
+                    popup.style["text-align"] = "center";
+                    popup.style["font-size"] = "28px";
+                }
+                await sleep(10);
+            }
+            if (popup) this.closePopup();
+        })();
     }
     bindListeners() {
         this.createContextMenu();
