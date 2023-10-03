@@ -1,6 +1,6 @@
 # Changes
 
-# 4.0.7
+# 4.0.8
 - Fixed typo in virtual gamepad dpad.
 - Added updated desmume core.
 - Fixed key mapping (Thanks to [@allancoding](https://github.com/allancoding))
