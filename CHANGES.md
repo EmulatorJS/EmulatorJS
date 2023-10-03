@@ -1,10 +1,21 @@
 # Changes
 
 # 4.0.7
+- Fixed typo in virtual gamepad dpad.
+- Added updated desmume core.
+- Fixed key mapping (Thanks to [@allancoding](https://github.com/allancoding))
+- Fixed adblock message (Thanks to [@allancoding](https://github.com/allancoding))
+- Added `EJS_startButtonName` option.
+- Re-Added ability to drag and drop save states.
+- Fixed cheats menu.
+- Added popup message for Safari mobile users if game is not running.
+- Added `EJS_softLoad` option.
+
+# 4.0.7 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f579eb4c080f612723fd6a119b02173cafb37503)
 - Added rewind (Thanks to [@n-at](https://github.com/n-at))
 - Added slowdown (Thanks to [@n-at](https://github.com/n-at))
-- Fixes "zone" object in front of settings menu.
-- Fixes virtual gamepad alignment.
+- Fixed "zone" object in front of settings menu.
+- Fixed virtual gamepad alignment.
 - Add `EJS_fullscreenOnLoaded` option.
 - Add virtual gamepad toggle to the control menu (for touchscreen devices)
 - Fix gamepad ID showing as "undefined".
