@@ -1067,6 +1067,11 @@ class EmulatorJS {
             args.push('/'+this.fileName);
             if (this.debug) console.log(args);
             this.Module.callMain(args);
+            if (typeof this.config.softLoad === "number" && this.config.softLoad > 0) {
+                this.resetTimeout = setTimeout(() => {
+                    this.gameManager.restart();
+                }, this.config.softLoad * 1000);
+            }
             this.Module.resumeMainLoop();
             this.checkSupportedOpts();
             this.setupSettingsMenu();

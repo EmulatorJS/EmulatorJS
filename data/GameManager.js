@@ -81,7 +81,14 @@ class EJS_GameManager {
             this.FS.writeFile('/shader/'+shader, window.EJS_SHADERS[shader]);
         }
     }
+    clearEJSResetTimer() {
+        if (this.EJS.resetTimeout) {
+            clearTimeout(this.EJS.resetTimeout);
+            delete this.EJS.resetTimeout;
+        }
+    }
     restart() {
+        this.clearEJSResetTimer();
         this.functions.restart();
     }
     getState() {
@@ -115,6 +122,7 @@ class EJS_GameManager {
             this.FS.unlink('game.state');
         } catch(e){}
         this.FS.writeFile('/game.state', state);
+        this.clearEJSResetTimer();
         this.functions.loadState("game.state", 0);
         setTimeout(() => {
             try {
@@ -141,6 +149,7 @@ class EJS_GameManager {
         if (!slot) slot = 1;
         (async () => {
             let name = slot + '-quick.state';
+            this.clearEJSResetTimer();
             this.functions.loadState(name, 0);
         })();
     }
@@ -310,6 +319,7 @@ class EJS_GameManager {
         return (exists ? FS.readFile(this.getSaveFilePath()) : null);
     }
     loadSaveFiles() {
+        this.clearEJSResetTimer();
         this.functions.loadSaveFiles();
     }
     setFastForwardRatio(ratio) {
