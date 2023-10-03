@@ -10,6 +10,8 @@
 - Fixed cheats menu.
 - Added popup message for Safari mobile users if game is not running.
 - Added `EJS_softLoad` option.
+- Added amiga core.
+- Added c64 core.
 
 # 4.0.7 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f579eb4c080f612723fd6a119b02173cafb37503)
 - Added rewind (Thanks to [@n-at](https://github.com/n-at))

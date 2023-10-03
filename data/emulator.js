@@ -47,7 +47,7 @@ class EmulatorJS {
                 'stella2014': 'atari2600',
                 'virtualjaguar': 'jaguar',
                 'yabause': 'segaSaturn',
-                'amiga': 'puae',
+                'puae': 'amiga',
                 'vice_x64': 'c64'
             }
             return options[core] || core;
@@ -81,7 +81,7 @@ class EmulatorJS {
             'ngp': 'mednafen_ngp',
             'ws': 'mednafen_wswan',
             'coleco': 'gearcoleco',
-            'puae': 'amiga',
+            'amiga': 'puae',
             'c64': 'vice_x64'
         }
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
