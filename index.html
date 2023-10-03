@@ -117,6 +117,9 @@
                     if (["col", "cv"].includes(ext))
                         return "coleco"
 
+                    if (["d64"].includes(ext))
+                        return "vice_x64"
+
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
 
@@ -144,7 +147,8 @@
                             "NEC PC-FX": "pcfx",
                             "SNK NeoGeo Pocket (Color)": "ngp",
                             "Bandai WonderSwan (Color)": "ws",
-                            "ColecoVision": "coleco"
+                            "ColecoVision": "coleco",
+                            "Commodore 64": "vice_x64"
                         }
 
                         const button = document.createElement("button")
