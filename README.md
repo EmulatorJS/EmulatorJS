@@ -24,7 +24,7 @@ Self-hosted **Javascript** emulation for various system.
  
 Join our Discord server:
 
-[![Join our Discord server!](https://invite.casperiv.dev/?inviteCode=6akryGkETU&format=svg)](https://discord.gg/6akryGkETU)
+[![Join our Discord server!](https://invidget.switchblade.xyz/6akryGkETU)](https://discord.gg/6akryGkETU)
 
 </div>
 
