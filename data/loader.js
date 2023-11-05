@@ -82,6 +82,7 @@
     config.disableCue = window.EJS_disableCue;
     config.startBtnName = window.EJS_startButtonName;
     config.softLoad = window.EJS_softLoad;
+    config.screenRecording = window.EJS_screenRecording;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
