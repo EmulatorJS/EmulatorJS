@@ -4856,7 +4856,7 @@ class EmulatorJS {
     screenRecord() {
         const captureScreenWidth= (this.config.screenRecording && (typeof this.config.screenRecording.width == "number")) ? this.config.screenRecording.width : 800;
         const captureScreenHeight = (this.config.screenRecording && (typeof this.config.screenRecording.height == "number")) ? this.config.screenRecording.height : 600;
-        const captureFps = (this.config.screenRecording && (typeof this.config.screenRecording.fps == "number")) ? this.config.screenRecording.fps : 25;
+        const captureFps = (this.config.screenRecording && (typeof this.config.screenRecording.fps == "number")) ? this.config.screenRecording.fps : 30;
         const captureVideoBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.videoBitrate == "number")) ? this.config.screenRecording.videoBitrate : 2 * 1024 * 1014;
         const captureAudioBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.audioBitrate == "number")) ? this.config.screenRecording.audioBitrate : 256 * 1024;
 
@@ -4868,24 +4868,28 @@ class EmulatorJS {
         captureCanvas.style.bottom = '-999px';
         document.getElementsByTagName('body')[0].append(captureCanvas);
 
-        const captureCtx = captureCanvas.getContext('2d');
+        const captureCtx = captureCanvas.getContext('2d', { alpha: false });
         captureCtx.fillStyle = '#000';
 
-        const gameCanvas = this.canvas;
-        const interval = setInterval(() => {
-            const scaleX = captureScreenWidth / gameCanvas.width;
-            const scaleY = captureScreenHeight / gameCanvas.height;
+        let animation = true;
+
+        const drawNextFrame = () => {
+            const scaleX = captureScreenWidth / this.canvas.width;
+            const scaleY = captureScreenHeight / this.canvas.height;
             const scale = Math.max(scaleY, scaleX);
-            const width = gameCanvas.width * scale;
-            const height = gameCanvas.height * scale;
+            const width = this.canvas.width * scale;
+            const height = this.canvas.height * scale;
             const startX = (captureScreenWidth - width) / 2;
             const startY = (captureScreenHeight - height) / 2;
-            captureCtx.drawImage(gameCanvas, startX, startY, width, height);
-        }, 1000 / 60);
-
-        const tracks = this.collectScreenRecordingMediaTracks(captureCanvas, captureFps);
+            captureCtx.drawImage(this.canvas, Math.round(startX), Math.round(startY), Math.round(width), Math.round(height));
+            if (animation) {
+                requestAnimationFrame(drawNextFrame);
+            }
+        };
+        requestAnimationFrame(drawNextFrame);
 
         const chunks = [];
+        const tracks = this.collectScreenRecordingMediaTracks(captureCanvas, captureFps);
         const recorder = new MediaRecorder(tracks, {
             videoBitsPerSecond: captureVideoBitrate,
             audioBitsPerSecond: captureAudioBitrate,
@@ -4902,7 +4906,7 @@ class EmulatorJS {
             a.download = this.getBaseFileName()+"-"+date.getMonth()+"-"+date.getDate()+"-"+date.getFullYear()+".webm";
             a.click();
 
-            clearInterval(interval);
+            animation = false;
             captureCanvas.remove();
         });
         recorder.start();
