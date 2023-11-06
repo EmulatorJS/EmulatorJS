@@ -1281,6 +1281,27 @@ class EmulatorJS {
             a.click();
             hideMenu();
         });
+
+        let screenMediaRecorder = null;
+        const startScreenRecording = addButton("Start screen recording", false, () => {
+            if (screenMediaRecorder !== null) {
+                screenMediaRecorder.stop();
+            }
+            screenMediaRecorder = this.screenRecord();
+            startScreenRecording.setAttribute("hidden", "hidden");
+            stopScreenRecording.removeAttribute("hidden");
+            hideMenu();
+        });
+        const stopScreenRecording = addButton("Stop screen recording", true, () => {
+            if (screenMediaRecorder !== null) {
+                screenMediaRecorder.stop();
+                screenMediaRecorder = null;
+            }
+            startScreenRecording.removeAttribute("hidden");
+            stopScreenRecording.setAttribute("hidden", "hidden");
+            hideMenu();
+        });
+
         const qSave = addButton("Quick Save", false, () => {
             const slot = this.settings['save-state-slot'] ? this.settings['save-state-slot'] : "1";
             this.gameManager.quickSave(slot);
@@ -1295,6 +1316,8 @@ class EmulatorJS {
         });
         this.elements.contextMenu = {
             screenshot: screenshot,
+            startScreenRecording: startScreenRecording,
+            stopScreenRecording: stopScreenRecording,
             save: qSave,
             load: qLoad
         }
@@ -1395,6 +1418,7 @@ class EmulatorJS {
         
         if (this.config.buttonOpts) {
             if (this.config.buttonOpts.screenshot === false) screenshot.setAttribute("hidden", "");
+            if (this.config.buttonOpts.screenRecord === false) startScreenRecording.setAttribute("hidden", "");
             if (this.config.buttonOpts.quickSave === false) qSave.setAttribute("hidden", "");
             if (this.config.buttonOpts.quickLoad === false) qLoad.setAttribute("hidden", "");
         }
@@ -4786,5 +4810,109 @@ class EmulatorJS {
     cheatChanged(checked, code, index) {
         this.gameManager.setCheat(index, checked, code);
     }
+
+    collectScreenRecordingMediaTracks(canvasEl, fps) {
+        let videoTrack = null;
+        const videoTracks = canvasEl.captureStream(fps).getVideoTracks();
+        if (videoTracks.length !== 0) {
+            videoTrack = videoTracks[0];
+        } else {
+            console.error('Unable to capture video stream');
+            return null;
+        }
+
+        let audioTrack = null;
+        if (window.AL && window.AL.currentCtx && window.AL.currentCtx.audioCtx) {
+            const alContext = window.AL.currentCtx;
+            const audioContext = alContext.audioCtx;
+
+            const gainNodes = [];
+            for (let sourceIdx in alContext.sources) {
+                gainNodes.push(alContext.sources[sourceIdx].gain);
+            }
+
+            const merger = audioContext.createChannelMerger(gainNodes.length);
+            gainNodes.forEach(node => node.connect(merger));
+
+            const destination = audioContext.createMediaStreamDestination();
+            merger.connect(destination);
+
+            const audioTracks = destination.stream.getAudioTracks();
+            if (audioTracks.length !== 0) {
+                audioTrack = audioTracks[0];
+            }
+        }
+
+        const stream = new MediaStream();
+        if (videoTrack && videoTrack.readyState === 'live') {
+            stream.addTrack(videoTrack);
+        }
+        if (audioTrack && audioTrack.readyState === 'live') {
+            stream.addTrack(audioTrack);
+        }
+        return stream;
+    }
+
+    screenRecord() {
+        const captureScreenWidth= (this.config.screenRecording && (typeof this.config.screenRecording.width == "number")) ? this.config.screenRecording.width : 800;
+        const captureScreenHeight = (this.config.screenRecording && (typeof this.config.screenRecording.height == "number")) ? this.config.screenRecording.height : 600;
+        const captureFps = (this.config.screenRecording && (typeof this.config.screenRecording.fps == "number")) ? this.config.screenRecording.fps : 30;
+        const captureVideoBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.videoBitrate == "number")) ? this.config.screenRecording.videoBitrate : 2 * 1024 * 1014;
+        const captureAudioBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.audioBitrate == "number")) ? this.config.screenRecording.audioBitrate : 256 * 1024;
+
+        const captureCanvas = document.createElement('canvas');
+        captureCanvas.width = captureScreenWidth;
+        captureCanvas.height = captureScreenHeight;
+        captureCanvas.style.position = 'absolute';
+        captureCanvas.style.top = '-999px';
+        captureCanvas.style.bottom = '-999px';
+        document.getElementsByTagName('body')[0].append(captureCanvas);
+
+        const captureCtx = captureCanvas.getContext('2d', { alpha: false });
+        captureCtx.fillStyle = '#000';
+
+        let animation = true;
+
+        const drawNextFrame = () => {
+            const scaleX = captureScreenWidth / this.canvas.width;
+            const scaleY = captureScreenHeight / this.canvas.height;
+            const scale = Math.max(scaleY, scaleX);
+            const width = this.canvas.width * scale;
+            const height = this.canvas.height * scale;
+            const startX = (captureScreenWidth - width) / 2;
+            const startY = (captureScreenHeight - height) / 2;
+            captureCtx.drawImage(this.canvas, Math.round(startX), Math.round(startY), Math.round(width), Math.round(height));
+            if (animation) {
+                requestAnimationFrame(drawNextFrame);
+            }
+        };
+        requestAnimationFrame(drawNextFrame);
+
+        const chunks = [];
+        const tracks = this.collectScreenRecordingMediaTracks(captureCanvas, captureFps);
+        const recorder = new MediaRecorder(tracks, {
+            videoBitsPerSecond: captureVideoBitrate,
+            audioBitsPerSecond: captureAudioBitrate,
+        });
+        recorder.addEventListener('dataavailable', e => {
+            chunks.push(e.data);
+        });
+        recorder.addEventListener('stop', () => {
+            const blob = new Blob(chunks);
+            const url = URL.createObjectURL(blob);
+            const date = new Date();
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = this.getBaseFileName()+"-"+date.getMonth()+"-"+date.getDate()+"-"+date.getFullYear()+".webm";
+            a.click();
+
+            animation = false;
+            captureCanvas.remove();
+        });
+        recorder.start();
+
+        return recorder;
+    }
+
 }
 window.EmulatorJS = EmulatorJS;
