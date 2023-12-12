@@ -1788,6 +1788,16 @@ class EmulatorJS {
         }
 
         this.elements.menu.appendChild(volumeSettings);
+
+        const contextMenuButton = addButton("Context Menu", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>', () => {
+            if (this.elements.contextmenu.style.display == "none") {
+                this.elements.contextmenu.style.display = "block";
+                this.elements.contextmenu.style.left = (getComputedStyle(this.elements.parent).width.split("px")[0]/2 - getComputedStyle(this.elements.contextmenu).width.split("px")[0]/2)+"px";
+                this.elements.contextmenu.style.top = (getComputedStyle(this.elements.parent).height.split("px")[0]/2 - getComputedStyle(this.elements.contextmenu).height.split("px")[0]/2)+"px";
+            } else {
+                this.elements.contextmenu.style.display = "none";
+            }
+        });
         
         this.settingParent = this.createElement("div");
         this.settingsMenuOpen = false;
@@ -1893,6 +1903,7 @@ class EmulatorJS {
             playPause: [pauseButton, playButton],
             restart: [restartButton],
             settings: [settingButton],
+            contextMenu: [contextMenuButton],
             fullscreen: [enter, exit],
             saveState: [saveState],
             loadState: [loadState],
