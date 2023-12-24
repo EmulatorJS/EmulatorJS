@@ -1560,6 +1560,7 @@ class EmulatorJS {
         })
         
         
+        let paddingSet = false;
         //Now add buttons
         const addButton = (title, image, callback, element, both) => {
             const button = this.createElement("button");
@@ -1570,7 +1571,7 @@ class EmulatorJS {
             svg.innerHTML = image;
             const text = this.createElement("span");
             text.innerText = this.localization(title);
-            if (title == "Enter Fullscreen" || title == "Exit Fullscreen") text.classList.add("ejs_menu_text_right");
+            if (paddingSet) text.classList.add("ejs_menu_text_right");
             text.classList.add("ejs_menu_text");
             
             button.classList.add("ejs_menu_button");
@@ -1726,6 +1727,7 @@ class EmulatorJS {
         const spacer = this.createElement("span");
         spacer.classList.add("ejs_menu_bar_spacer");
         this.elements.menu.appendChild(spacer);
+        paddingSet = true;
         
         const volumeSettings = this.createElement("div");
         volumeSettings.classList.add("ejs_volume_parent");
