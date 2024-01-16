@@ -325,6 +325,7 @@ class EmulatorJS {
         }
         
         this.createStartButton();
+        this.handleResize();
     }
     setColor(color) {
         if (typeof color !== "string") color = "";
@@ -1098,6 +1099,7 @@ class EmulatorJS {
                     if (this.debug) console.warn("Could not fullscreen on load");
                 }
             }
+            this.menu.open();
             if (this.isSafari && this.isMobile) {
                 //Safari is --- funny
                 this.checkStarted();
@@ -1156,6 +1158,9 @@ class EmulatorJS {
         this.elements.statePopupPanel.innerText = "Drop save state here to load";
         this.elements.statePopupPanel.style["text-align"] = "center";
         this.elements.statePopupPanel.style["font-size"] = "28px";
+        
+        //to fix a funny apple bug
+        this.addEventListener(window, "webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange", () => {setTimeout(this.handleResize.bind(this), 0)});
         this.addEventListener(this.elements.parent, "dragenter", (e) => {
             e.preventDefault();
             if (!this.started) return;
@@ -1496,6 +1501,12 @@ class EmulatorJS {
     }
     createBottomMenuBar() {
         this.elements.menu = this.createElement("div");
+        
+        //prevent weird glitch on some devices
+        this.elements.menu.style.opacity = 0;
+        this.on("start", (e) => {
+            this.elements.menu.style.opacity = "";
+        })
         this.elements.menu.classList.add("ejs_menu_bar");
         this.elements.menu.classList.add("ejs_menu_bar_hidden");
         
