@@ -647,12 +647,26 @@ class EmulatorJS {
             let corePath = 'cores/'+filename;
             this.downloadFile(corePath, (res) => {
                 if (res === -1) {
-                    if (!this.supportsWebgl2) {
-                        this.textElem.innerText = this.localization('Outdated graphics driver');
-                    } else {
-                        this.textElem.innerText = this.localization('Network Error');
-                    }
-                    this.textElem.style.color = "red";
+                    console.log("File not found, attemping to fetch from emulatorjs cdn");
+                    this.downloadFile("https://cdn.emulatorjs.org/stable/data/"+corePath, (res) => {
+                        if (res === -1) {
+                            if (!this.supportsWebgl2) {
+                                this.textElem.innerText = this.localization('Outdated graphics driver');
+                            } else {
+                                this.textElem.innerText = this.localization('Network Error');
+                            }
+                            this.textElem.style.color = "red";
+                            return;
+                        }
+                        console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the latest release from here: https://cdn.emulatorjs.org/releases/");
+                        gotCore(res.data);
+                        this.storage.core.put(filename, {
+                            version: this.version,
+                            data: res.data
+                        });
+                    }, (progress) => {
+                        this.textElem.innerText = this.localization("Download Game Core") + progress;
+                    }, true, {responseType: "arraybuffer", method: "GET"})
                     return;
                 }
                 gotCore(res.data);
