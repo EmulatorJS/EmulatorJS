@@ -665,9 +665,12 @@ class EmulatorJS {
         script.src = URL.createObjectURL(new Blob([js], {type: "application/javascript"}));
         document.body.appendChild(script);
     }
-    getBaseFileName() {
+    getBaseFileName(force) {
         //Only once game and core is loaded
-        if (!this.started) return null;
+        if (!this.started && !force) return null;
+        if (force && this.config.gameUrl !== "game" && !this.config.gameUrl.startsWith("blob:")) {
+            return this.config.gameUrl.split('/').pop().split("#")[0].split("?")[0];
+        }
         if (typeof this.config.gameName === "string") {
             const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
             const name = this.config.gameName.replace(invalidCharacters, "").trim();
@@ -875,10 +878,6 @@ class EmulatorJS {
         })
     }
     downloadRom() {
-        const extractFileNameFromUrl = url => {
-            if (!url) return null;
-            return url.split('/').pop().split("#")[0].split("?")[0];
-        };
         const supportsExt = (ext) => {
             const core = this.getCore();
             if (!this.extensions[core]) return false;
@@ -890,13 +889,13 @@ class EmulatorJS {
 
             const gotGameData = (data) => {
                 if (['arcade', 'mame2003'].includes(this.getCore(true))) {
-                    this.fileName = extractFileNameFromUrl(this.config.gameUrl);
+                    this.fileName = this.getBaseFileName(true);
                     FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
                     return;
                 }
 
-                const altName = this.config.gameUrl.startsWith("blob:") ? (this.config.gameName || "game") : extractFileNameFromUrl(this.config.gameUrl);
+                const altName = this.getBaseFileName(true);
 
                 let disableCue = false;
                 if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce', 'vice_x64'].includes(this.getCore()) && this.config.disableCue === undefined) {
