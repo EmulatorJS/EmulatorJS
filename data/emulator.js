@@ -3619,9 +3619,13 @@ class EmulatorJS {
                 }, 250)
             }
         }
+        const positionInfo = this.elements.parent.getBoundingClientRect();
+        this.game.parentElement.classList.toggle("ejs_small_screen", positionInfo.width <= 575);
+        //This wouldnt work using :not()... strange.
+        this.game.parentElement.classList.toggle("ejs_big_screen", positionInfo.width > 575);
+        
         if (!this.Module) return;
         const dpr = window.devicePixelRatio || 1;
-        const positionInfo = this.elements.parent.getBoundingClientRect();
         const width = positionInfo.width * dpr;
         const height = (positionInfo.height * dpr);
         this.Module.setCanvasSize(width, height);
