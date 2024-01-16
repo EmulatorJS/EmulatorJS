@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>EmulatorJS</title>
-
+        <title>EmulatorJS Demo</title>
         <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
         <meta name = viewport content = "width = device-width, initial-scale = 1">
-
         <style>
-            body, html {
+             body, html {
                 height: 100%;
+                background-color: black;
+                color: white;
             }
 
             body {
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 20px;
                 margin: 0;
                 overflow: hidden;
-                background-color: #222
             }
 
-            body, #box {
+            body, #box, #top {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                flex-direction: column;
             }
 
             #box {
@@ -38,7 +35,11 @@
                 position: relative;
                 flex-direction: column;
                 transition-duration: 0.2s;
-                overflow: hidden
+                overflow: hidden;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 5px;
             }
 
             #box:hover, #box[drag] {
@@ -81,10 +82,24 @@
                 background-color: #666;
                 color: #ddd
             }
+
+            .logo {
+                width: 130px;
+                height: 130px;
+                filter: drop-shadow(0 0 10px white);
+            }
+
+            #top {
+                margin: 5px;
+            }
         </style>
     </head>
 
     <body>
+        <div id="top">
+            <h1>EmulatorJS Demo</h1>
+            <img src="docs/Logo-light.png" alt="Logo" class="logo">
+        </div>
         <div id = box>
             <input type = file id = input>
             Drag ROM file or click here
@@ -178,6 +193,8 @@
                 sub.id = "game"
                 div.id = "display"
 
+                const top = document.getElementById("top");
+                top.remove();
                 box.remove()
                 div.appendChild(sub)
                 document.body.appendChild(div)
@@ -190,26 +207,8 @@
                 window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
 
-                if (window.location.hostname === "demo.emulatorjs.org") {
-                    window.EJS_AdUrl = "https://ads.emulatorjs.org/";
-                    window.EJS_ready = function() {
-                        detectAdBlock("data:text/html;base64,PGh0bWw+PHN0eWxlPiNhZGJsb2Nre2JhY2tncm91bmQtY29sb3I6cmdiYSgwLDAsMCwuOCk7cG9zaXRpb246Zml4ZWQ7d2lkdGg6MTAwJTtoZWlnaHQ6MTAwJTt0b3A6MDtsZWZ0OjA7ei1pbmRleDoxMDAwO3RleHQtYWxpZ246Y2VudGVyO2NvbG9yOiNmZmZ9Ym9keSxodG1se2JhY2tncm91bmQtY29sb3I6dHJhbnNwYXJlbnR9PC9zdHlsZT48Ym9keSBzdHlsZT0ibWFyZ2luOjAiPjxkaXYgaWQ9ImFkYmxvY2siPjxoMT5IaSBBZGJsb2NrIFVzZXIhPC9oMT48cD5BZHMgb24gdGhpcyBwYWdlIG1heSBjb21lIGFuZCBnbyBkZXBlbmRpbmcgb24gaG93IG1hbnkgcGVvcGxlIGFyZSBmdW5kaW5nIHRoaXMgcHJvamVjdC48YnI+WW91IGNhbiBoZWxwIGZ1bmQgdGhpcyBwcm9qZWN0IG9uPGEgaHJlZj0iaHR0cHM6Ly9wYXRyZW9uLmNvbS9FbXVsYXRvckpTIj5wYXRyZW9uPC9hPjwvcD48L2Rpdj48L2JvZHk+PC9odG1sPg==");
-                    }
-                }
-                
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
-            }
-            function detectAdBlock(url) {
-                let adBlockEnabled = false;
-                try {
-                    window.EJS_AdUrl = document.querySelector('iframe[src="'+window.EJS_AdUrl+'"]').src;
-                } catch (e) {
-                    adBlockEnabled = true;
-                }
-                if (adBlockEnabled) {
-                    window.EJS_adBlocked(url);
-                }
             }
             box.ondragover = () => box.setAttribute("drag", true);
             box.ondragleave = () => box.removeAttribute("drag");

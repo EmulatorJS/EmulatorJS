@@ -1,7 +1,9 @@
 **/node_modules/
-data/minify/package-lock.json
 *.db
-roms/
-yarn.lock
-package-lock.json
 .vscode/settings.json
+data/minify/package-lock.json
+package-lock.json
+yarn.lock
+roms/
+data/emulator.min.js
+data/emulator.min.css

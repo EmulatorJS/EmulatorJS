@@ -30,13 +30,16 @@ Join our Discord server:
 
 <br>
 
-**As of EmulatorJS version 4.0, this project is no longer a reverse-engineered version of the emulatorjs.com project. It is now a complete re-write,**
+> [!NOTE]  
+> **As of EmulatorJS version 4.0, this project is no longer a reverse-engineered version of the emulatorjs.com project. It is now a complete re-write.**
 
-<br>
+> [!WARNING]  
+> As of version 4.0.9 cores and minified files are no longer included in the repository. You will need to get them separately. You can get the from [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the * new CDN (see [this](#CDN) for more info). There is also a new version system that we will be using. (read [here](#Versioning) for more info).
+>
+> The history of the project has been rewritten and force pushed. You will likely need to redo any active commits you have. Sorry for the inconvenience.
 
-**README BEFORE YOU UPDATE:** EmulatorJS Version 4.0 is a complete re-write of the application. At least some bugs are expected. If you did any communicating with the emulator, there is a 100% chance you will need to re-write your project, and to people with active branches of this project, I wish you luck with merge conflicts (I'm very sorry). The emulator object can be accessed through the `window.EJS_emulator` object.
-
-It is **HIGHLY** suggested that you update to 4.0 ASAP.
+> [!TIP]
+> Cloning the repository is no longer recommended for production use. You should use [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the [CDN](https://cdn.emulatorjs.org/) instead.
 
 <br>
 
@@ -58,6 +61,15 @@ It is **HIGHLY** suggested that you update to 4.0 ASAP.
 *with as many details as possible, as well as the console log.*
 
 <br>
+
+### Versioning
+There are 3 different version name that you need to be aware of:
+1. **stable** - This will be the most stable version of the emulator both code and cores will be tested before release. It will be updated every time a new version is released on GitHub. This is the default version on the Demo.
+2. **latest** - This will contain the latest code but use the stable cores. This will be updated every time the *main* branch is updated.
+3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is consiterd alpha.
+
+### CDN
+There is a new CDN that you can use to get any version of the emulator. The cdn is `https://cdn.emulatorjs.org/`. You can use this to get the stable, latest, nightly and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
 
 ### Extensions
 
