@@ -1,6 +1,17 @@
 # Changes
 
-# 4.0.8
+# 4.0.9
+- Repository history rewrite - expect faster cloning times.
+- Prevent Vice64 from creating cue files (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Chinese translation updated (Thanks to [@oyepriyansh](https://github.com/oyepriyansh))
+- Added button to open context menu (Thanks to [@andrigamerita](https://github.com/andrigamerita))
+- Fixed menu bar text placement for items on the right.
+- Fixed a bug in safari where fullscreen would not resize the game element.
+- Fixed a bug in safari where the bottom menu would be visible on initial page load.
+- Fixed game rom filename showing as "game" when the game name is set.
+- Added legacy nintendo 64 cores for browsers that don't support webgl2.
+
+# 4.0.8 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/f579eb4c080f612723fd6a119b02173cafb37503)
 - Fixed typo in virtual gamepad dpad.
 - Added updated desmume core.
 - Fixed key mapping (Thanks to [@allancoding](https://github.com/allancoding))

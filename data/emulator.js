@@ -239,7 +239,7 @@ class EmulatorJS {
         })
     }
     checkForUpdates() {
-        fetch('https://raw.githack.com/EmulatorJS/EmulatorJS/main/data/version.json').then(response => {
+        fetch('https://cdn.emulatorjs.org/stable/data/version.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
                     let version = JSON.parse(body);
@@ -251,8 +251,8 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.8";
-        this.ejs_num_version = 40.8;
+        this.ejs_version = "4.0.9";
+        this.ejs_num_version = 40.9;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
