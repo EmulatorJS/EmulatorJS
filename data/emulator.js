@@ -638,7 +638,9 @@ class EmulatorJS {
                 this.initGameCore(js, wasm, thread);
             });
         }
-        let filename = this.getCore()+(this.config.threads ? "-thread" : "")+(this.supportsWebgl2 ? "" : "-legacy")+"-wasm.data";
+        let legacy = (this.supportsWebgl2 ? "" : "-legacy");
+        if ("n64" !== this.getCore(true)) legacy = "";
+        let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
         this.storage.core.get(filename).then((result) => {
             if (result && result.version === this.version && !this.debug) {
                 gotCore(result.data);
