@@ -2390,6 +2390,23 @@ class EmulatorJS {
             {id: 29, label: this.localization('SLOW MOTION')},
             {id: 28, label: this.localization('REWIND')}
         );
+        let nums = [];
+        for (let i=0; i<buttons.length; i++) {
+            nums.push(buttons[i].id);
+        }
+        for (let i=0; i<30; i++) {
+            if (!nums.includes(i)) {
+                delete this.defaultControllers[0][i];
+                delete this.defaultControllers[1][i];
+                delete this.defaultControllers[2][i];
+                delete this.defaultControllers[3][i];
+                delete this.controls[0][i];
+                delete this.controls[1][i];
+                delete this.controls[2][i];
+                delete this.controls[3][i];
+            }
+        }
+
         //if (_this.statesSupported === false) {
         //    delete buttons[24];
         //    delete buttons[25];
@@ -2869,25 +2886,27 @@ class EmulatorJS {
         222: 'single quote'
     }
     controls;
-    setupKeys(){
+    setupKeys() {
         for (let i=0; i<4; i++) {
             for (let j=0; j<30; j++) {
-                if (this.controls[i][j] && this.keyMap) {
-                    this.controls[i][j].value = Number(this.keyLookup(this.controls[i][j]));
-                    if(this.controls[i][j].value === -1){
-                        console.warn("Invalid key for control "+j+" player "+i+" with value "+this.keyMap[this.keyLookup(this.defaultControllers[i][j])]);
+                if (this.controls[i][j]) {
+                    this.controls[i][j].value = parseInt(this.keyLookup(this.controls[i][j].value));
+                    if (this.controls[i][j].value === -1 && this.debug) {
+                        delete this.controls[i][j].value;
+                        console.warn("Invalid key for control "+j+" player "+i);
                     }
                 }
             }
         }
     }
-    keyLookup(controllerkey){
-        for (var key in this.keyMap) {
-            if (this.keyMap[key] === controllerkey.value || key === controllerkey.value) {
-                return key;
-            } else if (controllerkey.value === undefined) {
-                return 0;
-            }
+    keyLookup(controllerkey) {
+        if (controllerkey === undefined) return 0;
+        if (typeof controllerkey === "number") return controllerkey;
+        controllerkey = controllerkey.toString().toLowerCase()
+        const values = Object.values(this.keyMap);
+        if (values.includes(controllerkey)) {
+            const index = values.indexOf(controllerkey);
+            return Object.keys(this.keyMap)[index];
         }
         return -1;
     }
