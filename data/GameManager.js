@@ -32,6 +32,7 @@ class EJS_GameManager {
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', [''])
         }
         this.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
+        this.writeFile("/home/web_user/retroarch/userdata/config/MAME 2003 (0.78)/MAME 2003 (0.78).opt", 'mame2003_skip_disclaimer = "enabled"\nmame2003_skip_warnings = "enabled"\n');
         
         this.mkdir("/data");
         this.mkdir("/data/saves");
