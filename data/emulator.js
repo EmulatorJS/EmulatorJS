@@ -26,8 +26,8 @@ class EmulatorJS {
                 'gearcoleco': 'coleco',
                 'genesis_plus_gx': 'sega',
                 'handy': 'lynx',
-                'mame2003': 'mame2003',
-                'mame2003_plus': 'mame2003',
+                'mame2003': 'mame',
+                'mame2003_plus': 'mame',
                 'mednafen_ngp': 'ngp',
                 'mednafen_pce': 'pce',
                 'mednafen_pcfx': 'pcfx',
@@ -71,7 +71,7 @@ class EmulatorJS {
             'vb': 'beetle_vb',
             'n64': 'mupen64plus_next',
             'nds': 'melonds',
-            'mame2003': 'mame2003_plus',
+            'mame': 'mame2003_plus',
             'arcade': 'fbneo',
             'psx': 'pcsx_rearmed',
             '3do': 'opera',
@@ -910,7 +910,7 @@ class EmulatorJS {
             this.textElem.innerText = this.localization("Download Game Data");
 
             const gotGameData = (data) => {
-                if (['arcade', 'mame2003'].includes(this.getCore(true))) {
+                if (['arcade', 'mame'].includes(this.getCore(true))) {
                     this.fileName = this.getBaseFileName(true);
                     FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
