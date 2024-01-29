@@ -31,18 +31,12 @@ class EJS_GameManager {
             setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', [''])
         }
-        this.mkdir("/home");
-        this.mkdir("/home/web_user");
-        this.mkdir("/home/web_user/retroarch");
-        this.mkdir("/home/web_user/retroarch/userdata");
-        this.mkdir("/home/web_user/retroarch/userdata/config");
-        this.mkdir("/home/web_user/retroarch/userdata/config/Beetle PSX HW");
-        this.FS.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
+        this.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
         
         this.mkdir("/data");
         this.mkdir("/data/saves");
         
-        this.FS.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
         this.FS.mount(IDBFS, {}, '/data/saves');
         this.FS.syncfs(true, () => {});
@@ -53,6 +47,44 @@ class EJS_GameManager {
             this.saveSaveFiles();
             this.FS.syncfs(() => {});
         })
+    }
+    loadExternalFiles() {
+        return new Promise((resolve, reject) => {
+            if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
+                for (const key in this.EJS.config.externalFiles) {
+                    let path = key;
+                    if (key.trim().endsWith("/")) {
+                        const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
+                        let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
+                        if (!name) continue;
+                        path += name;
+                    }
+                    this.EJS.downloadFile(this.EJS.config.externalFiles[key], (res) => {
+                        if (res === -1) {
+                            if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
+                            return resolve();
+                        }
+                        try {
+                            this.writeFile(path, this.EJS.config.externalFiles[key]);
+                        } catch(e) {
+                            if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
+                        }
+                        resolve();
+                    }, null, true, {responseType: "text", method: "GET"});
+                    
+                }
+            } else resolve();
+        });
+    }
+    writeFile(path, data) {
+        const parts = path.split("/");
+        let current = "/";
+        for (let i=0; i<parts.length-1; i++) {
+            if (!parts[i].trim()) continue;
+            current += parts[i] + "/";
+            this.mkdir(current);
+        }
+        this.FS.writeFile(path, data);
     }
     mkdir(path) {
         try {
