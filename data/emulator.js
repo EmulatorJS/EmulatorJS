@@ -494,21 +494,21 @@ class EmulatorJS {
         }
         return text;
     }
+    isCompressed(data) { //https://www.garykessler.net/library/file_sigs.html
+        //todo. Use hex instead of numbers
+        if ((data[0] === 80 && data[1] === 75) && ((data[2] === 3 && data[3] === 4) || (data[2] === 5 && data[3] === 6) || (data[2] === 7 && data[3] === 8))) {
+            return 'zip';
+        } else if (data[0] === 55 && data[1] === 122 && data[2] === 188 && data[3] === 175 && data[4] === 39 && data[5] === 28) {
+            return '7z';
+        } else if ((data[0] === 82 && data[1] === 97 && data[2] === 114 && data[3] === 33 && data[4] === 26 && data[5] === 7) && ((data[6] === 0) || (data[6] === 1 && data[7] == 0))) {
+            return 'rar';
+        }
+    }
     checkCompression(data, msg, fileCbFunc) {
         if (msg) {
             this.textElem.innerText = msg;
         }
         //to be put in another file
-        function isCompressed(data) { //https://www.garykessler.net/library/file_sigs.html
-            //todo. Use hex instead of numbers
-            if ((data[0] === 80 && data[1] === 75) && ((data[2] === 3 && data[3] === 4) || (data[2] === 5 && data[3] === 6) || (data[2] === 7 && data[3] === 8))) {
-                return 'zip';
-            } else if (data[0] === 55 && data[1] === 122 && data[2] === 188 && data[3] === 175 && data[4] === 39 && data[5] === 28) {
-                return '7z';
-            } else if ((data[0] === 82 && data[1] === 97 && data[2] === 114 && data[3] === 33 && data[4] === 26 && data[5] === 7) && ((data[6] === 0) || (data[6] === 1 && data[7] == 0))) {
-                return 'rar';
-            }
-        }
         const createWorker = (path) => {
             return new Promise((resolve, reject) => {
                 this.downloadFile(path, (res) => {
@@ -595,7 +595,7 @@ class EmulatorJS {
                 })
             })
         }
-        const compression = isCompressed(data.slice(0, 10));
+        const compression = this.isCompressed(data.slice(0, 10));
         if (compression) {
             //Need to do zip and rar still
             if (compression === "7z") {

@@ -50,31 +50,41 @@ class EJS_GameManager {
         })
     }
     loadExternalFiles() {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
                 for (const key in this.EJS.config.externalFiles) {
-                    let path = key;
-                    if (key.trim().endsWith("/")) {
-                        const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
-                        let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
-                        if (!name) continue;
-                        path += name;
-                    }
-                    this.EJS.downloadFile(this.EJS.config.externalFiles[key], (res) => {
-                        if (res === -1) {
-                            if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
-                            return resolve();
-                        }
-                        try {
-                            this.writeFile(path, this.EJS.config.externalFiles[key]);
-                        } catch(e) {
-                            if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
-                        }
-                        resolve();
-                    }, null, true, {responseType: "text", method: "GET"});
-                    
+                    await new Promise(done => {
+                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], async (res) => {
+                            if (res === -1) {
+                                if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
+                                return done();
+                            }
+                            let path = key;
+                            if (key.trim().endsWith("/")) {
+                                const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
+                                let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
+                                if (!name) return done();
+                                const files = await this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Assets"));
+                                if (files["!!notCompressedData"]) {
+                                    path += name;
+                                } else {
+                                    for (const k in files) {
+                                        this.writeFile(path+k, files[k]);
+                                    }
+                                    return done();
+                                }
+                            }
+                            try {
+                                this.writeFile(path, res.data);
+                            } catch(e) {
+                                if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
+                            }
+                            done();
+                        }, null, true, {responseType: "arraybuffer", method: "GET"});
+                    })
                 }
-            } else resolve();
+            }
+            resolve();
         });
     }
     writeFile(path, data) {
