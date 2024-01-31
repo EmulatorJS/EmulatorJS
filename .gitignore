@@ -7,3 +7,4 @@ yarn.lock
 roms/
 data/emulator.min.js
 data/emulator.min.css
+data/cores

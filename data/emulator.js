@@ -933,7 +933,7 @@ class EmulatorJS {
                 const altName = this.getBaseFileName(true);
 
                 let disableCue = false;
-                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce', 'vice_x64'].includes(this.getCore()) && this.config.disableCue === undefined) {
+                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce', 'vice_x64', 'vice_x64sc', 'vice_x128', 'vice_xvic', 'vice_xplus4', 'vice_xpet'].includes(this.getCore()) && this.config.disableCue === undefined) {
                     disableCue = true;
                 } else {
                     disableCue = this.config.disableCue;
