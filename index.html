@@ -133,7 +133,7 @@
                         return "coleco"
 
                     if (["d64"].includes(ext))
-                        return "vice_x64"
+                        return "vice_x64sc"
 
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
@@ -163,7 +163,11 @@
                             "SNK NeoGeo Pocket (Color)": "ngp",
                             "Bandai WonderSwan (Color)": "ws",
                             "ColecoVision": "coleco",
-                            "Commodore 64": "vice_x64"
+                            "Commodore 64": "vice_x64sc",
+                            "Commodore 128": "vice_x128",
+                            "Commodore VIC20": "vice_xvic",
+                            "Commodore Plus/4": "vice_xplus4",
+                            "Commodore PET": "vice_xpet"
                         }
 
                         const button = document.createElement("button")
@@ -206,6 +210,7 @@
                 window.EJS_core = core;
                 window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
+                window.EJS_DEBUG_XX = false;
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
