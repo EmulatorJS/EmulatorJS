@@ -139,7 +139,7 @@
                         return ext
 
                     return await new Promise(resolve => {
-                        const cores = {
+                        var coreValues = {
                             "Nintendo 64": "n64",
                             "Nintendo Game Boy": "gb",
                             "Nintendo Game Boy Advance": "gba",
@@ -169,6 +169,14 @@
                             "Commodore Plus/4": "vice_xplus4",
                             "Commodore PET": "vice_xpet"
                         }
+
+                        const cores = Object.keys(coreValues).sort().reduce(
+                            (obj, key) => { 
+                                obj[key] = coreValues[key]; 
+                                return obj;
+                            }, 
+                            {}
+                        );
 
                         const button = document.createElement("button")
                         const select = document.createElement("select")
