@@ -89,8 +89,8 @@ class EmulatorJS {
             'c64': 'vice_x64sc',
             'c128': 'vice_x128',
             'pet': 'vice_xpet',
-            'plus4': 'vice_xplus4'
-,            'vic20': 'vice_xvic'
+            'plus4': 'vice_xplus4',
+            'vic20': 'vice_xvic'
         }
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
             return "parallel_n64";
