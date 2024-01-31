@@ -48,7 +48,11 @@ class EmulatorJS {
                 'virtualjaguar': 'jaguar',
                 'yabause': 'segaSaturn',
                 'puae': 'amiga',
-                'vice_x64': 'c64'
+                'vice_x64sc': 'c64',
+                'vice_x128': 'c128',
+                'vice_xpet': 'pet',
+                'vice_xplus4': 'plus4',
+                'vice_xvic': 'vic20'
             }
             return options[core] || core;
         }
@@ -82,7 +86,11 @@ class EmulatorJS {
             'ws': 'mednafen_wswan',
             'coleco': 'gearcoleco',
             'amiga': 'puae',
-            'c64': 'vice_x64'
+            'c64': 'vice_x64sc',
+            'c128': 'vice_x128',
+            'pet': 'vice_xpet',
+            'plus4': 'vice_xplus4'
+,            'vic20': 'vice_xvic'
         }
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
             return "parallel_n64";
@@ -124,6 +132,11 @@ class EmulatorJS {
         'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
         'stella2014': ['a26', 'bin', 'zip'],
         'vice_x64': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
+        'vice_x64sc': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
+        'vice_x128': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
+        'vice_xpet': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
+        'vice_xplus4': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
+        'vice_xvic': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
         'virtualjaguar': ['j64', 'jag', 'rom', 'abs', 'cof', 'bin', 'prg'],
         'yabause': ['cue', 'iso', 'ccd', 'mds', 'chd', 'zip', 'm3u']
     }
