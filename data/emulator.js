@@ -1489,6 +1489,10 @@ class EmulatorJS {
         popup.appendChild(title);
         popup.appendChild(main);
         
+        const padding = this.createElement("div");
+        padding.style["padding-top"] = "10px";
+        popup.appendChild(padding);
+        
         for (let k in buttons) {
             const button = this.createElement("a");
             if (buttons[k] instanceof Function) {
