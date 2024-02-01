@@ -175,7 +175,7 @@ class EJS_GameManager {
     }
     screenshot() {
         this.functions.screenshot();
-        return new Promise(resolve => async {
+        return new Promise(async resolve => {
             while (1) {
                 try {
                     FS.stat("/screenshot.png");
