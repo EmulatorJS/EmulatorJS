@@ -304,21 +304,21 @@ class EmulatorJS {
             return check;
         })();
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        if (config.disableDatabases) {
+        if (this.config.disableDatabases) {
             this.storage = {
                 rom: new window.EJS_DUMMYSTORAGE(),
                 bios: new window.EJS_DUMMYSTORAGE(),
-                core: new window.EJS_DUMMYSTORAGE(),
-                states: new window.EJS_DUMMYSTORAGE()
+                core: new window.EJS_DUMMYSTORAGE()
             }
         } else {
             this.storage = {
                 rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
                 bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
-                core: new window.EJS_STORAGE("EmulatorJS-core", "core"),
-                states: new window.EJS_STORAGE("EmulatorJS-states", "states")
+                core: new window.EJS_STORAGE("EmulatorJS-core", "core")
             }
         }
+        // This is not cache. This is save data
+        this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
         
         this.game.classList.add("ejs_game");
         if (typeof this.config.backgroundImg === "string") {
@@ -1750,6 +1750,7 @@ class EmulatorJS {
         const cache = addButton("Cache Manager", '<svg viewBox="0 0 1800 1800"><path d="M896 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5T231 896 128 768V598q119 84 325 127t443 43zm0 768q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128v-170q119 84 325 127t443 43zm0-384q237 0 443-43t325-127v170q0 69-103 128t-280 93.5-385 34.5-385-34.5-280-93.5-103-128V982q119 84 325 127t443 43zM896 0q208 0 385 34.5t280 93.5 103 128v128q0 69-103 128t-280 93.5T896 640t-385-34.5T231 512 128 384V256q0-69 103-128t280-93.5T896 0z"/></svg>', () => {
             this.openCacheMenu();
         });
+        if (this.config.disableDatabases) cache.style.display = "none";
         
         let savUrl;
         
