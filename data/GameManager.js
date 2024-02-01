@@ -175,7 +175,16 @@ class EJS_GameManager {
     }
     screenshot() {
         this.functions.screenshot();
-        return this.FS.readFile('screenshot.png');
+        return new Promise(resolve => async {
+            while (1) {
+                try {
+                    FS.stat("/screenshot.png");
+                    return resolve(this.FS.readFile("/screenshot.png"));
+                } catch(e) {}
+                
+                await new Promise(res => setTimeout(res, 50));
+            }
+        })
     }
     quickSave(slot) {
         if (!slot) slot = 1;
