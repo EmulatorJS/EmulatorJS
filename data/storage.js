@@ -101,4 +101,25 @@ class EJS_STORAGE {
         })
     }
 }
+
+class EJS_DUMMYSTORAGE {
+    constructor() {}
+    addFileToDB() {
+        return new Promise(resolve => resolve());
+    }
+    get() {
+        return new Promise(resolve => resolve());
+    }
+    put() {
+        return new Promise(resolve => resolve());
+    }
+    remove() {
+        return new Promise(resolve => resolve());
+    }
+    getSizes() {
+        return new Promise(resolve => resolve({}));
+    }
+}
+
 window.EJS_STORAGE = EJS_STORAGE;
+window.EJS_DUMMYSTORAGE = EJS_DUMMYSTORAGE;

@@ -304,11 +304,20 @@ class EmulatorJS {
             return check;
         })();
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        this.storage = {
-            rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
-            bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
-            core: new window.EJS_STORAGE("EmulatorJS-core", "core"),
-            states: new window.EJS_STORAGE("EmulatorJS-states", "states")
+        if (config.disableDatabases) {
+            this.storage = {
+                rom: new window.EJS_DUMMYSTORAGE(),
+                bios: new window.EJS_DUMMYSTORAGE(),
+                core: new window.EJS_DUMMYSTORAGE(),
+                states: new window.EJS_DUMMYSTORAGE()
+            }
+        } else {
+            this.storage = {
+                rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
+                bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
+                core: new window.EJS_STORAGE("EmulatorJS-core", "core"),
+                states: new window.EJS_STORAGE("EmulatorJS-states", "states")
+            }
         }
         
         this.game.classList.add("ejs_game");
