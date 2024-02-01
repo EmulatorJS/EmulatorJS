@@ -106,6 +106,18 @@
         </div>
 
         <script>
+            var enableDebug = false;
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            if (urlParams.get('debug') == 1)
+                enableDebug = true;
+            
+            if (enableDebug == true) {
+                console.log("Debug is enabled");
+            } else {
+                console.log("Debug is disabled");
+            }
+            
             input.onchange = async () => {
                 const url = new Blob([input.files[0]])
                 const parts = input.files[0].name.split(".")
@@ -133,13 +145,13 @@
                         return "coleco"
 
                     if (["d64"].includes(ext))
-                        return "vice_x64"
+                        return "vice_x64sc"
 
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
 
                     return await new Promise(resolve => {
-                        const cores = {
+                        var coreValues = {
                             "Nintendo 64": "n64",
                             "Nintendo Game Boy": "gb",
                             "Nintendo Game Boy Advance": "gba",
@@ -163,8 +175,20 @@
                             "SNK NeoGeo Pocket (Color)": "ngp",
                             "Bandai WonderSwan (Color)": "ws",
                             "ColecoVision": "coleco",
-                            "Commodore 64": "vice_x64"
+                            "Commodore 64": "vice_x64sc",
+                            "Commodore 128": "vice_x128",
+                            "Commodore VIC20": "vice_xvic",
+                            "Commodore Plus/4": "vice_xplus4",
+                            "Commodore PET": "vice_xpet"
                         }
+
+                        const cores = Object.keys(coreValues).sort().reduce(
+                            (obj, key) => { 
+                                obj[key] = coreValues[key]; 
+                                return obj;
+                            }, 
+                            {}
+                        );
 
                         const button = document.createElement("button")
                         const select = document.createElement("select")
@@ -206,6 +230,7 @@
                 window.EJS_core = core;
                 window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
+                window.EJS_DEBUG_XX = enableDebug;
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
