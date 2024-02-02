@@ -95,6 +95,9 @@ class EmulatorJS {
         if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
             return "parallel_n64";
         }
+        if (!this.supportsWebgl2 && this.getCore(true) === "psx") {
+            return "mednafen_psx_hw";
+        }
         return options[core] || core;
     }
     extensions = {
