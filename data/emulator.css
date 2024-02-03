@@ -1202,7 +1202,6 @@
 
 .ejs_volume_parent input[type='range']::-webkit-slider-runnable-track{
     background-color:rgba(255,255,255,0.25);
-    box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
     outline:0;
     background: transparent;
     border:0;
@@ -1226,7 +1225,6 @@
 }
 .ejs_volume_parent input[type='range']::-moz-range-track{
     background-color:rgba(255,255,255,0.25);
-    box-shadow:0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
     outline:0;
     background:transparent;
     border:0;
@@ -1252,7 +1250,6 @@
 }
 .ejs_volume_parent input[type='range']::-ms-track{
     background-color:rgba(255,255,255,0.25);
-    box-shadow:0 0 0 5px rgba(var(--ejs-primary-color), 0.5);
     outline:0;
     background:transparent;
     border:0;
