@@ -1206,7 +1206,12 @@ class EmulatorJS {
         this.elements.statePopupPanel.style["font-size"] = "28px";
         
         //to fix a funny apple bug
-        this.addEventListener(window, "webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange", () => {setTimeout(this.handleResize.bind(this), 0)});
+        this.addEventListener(window, "webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange", () => {
+            setTimeout(() => {
+                this.handleResize.bind(this);
+                this.elements.parent.focus();
+            }, 0);
+        });
         this.addEventListener(this.elements.parent, "dragenter", (e) => {
             e.preventDefault();
             if (!this.started) return;
