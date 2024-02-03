@@ -2094,7 +2094,7 @@ class EmulatorJS {
         body.classList.add("ejs_control_body");
         
         let buttons;
-        if (['nes', 'gb'].includes(this.getControlScheme())) {
+        if ("gb" === this.getControlScheme()) {
             buttons = [
                 {id: 8, label: this.localization('A')},
                 {id: 0, label: this.localization('B')},
@@ -2104,6 +2104,19 @@ class EmulatorJS {
                 {id: 5, label: this.localization('DOWN')},
                 {id: 6, label: this.localization('LEFT')},
                 {id: 7, label: this.localization('RIGHT')},
+            ];
+        } else if ("nes" === this.getControlScheme()) {
+            buttons = [
+                {id: 8, label: this.localization('A')},
+                {id: 0, label: this.localization('B')},
+                {id: 2, label: this.localization('SELECT')},
+                {id: 3, label: this.localization('START')},
+                {id: 4, label: this.localization('UP')},
+                {id: 5, label: this.localization('DOWN')},
+                {id: 6, label: this.localization('LEFT')},
+                {id: 7, label: this.localization('RIGHT')},
+                {id: 10, label: this.localization('EJECT')},//Famicon games only
+                {id: 11, label: this.localization('SWAP DISKS')},
             ];
         } else if ('snes' === this.getControlScheme()) {
             buttons = [
