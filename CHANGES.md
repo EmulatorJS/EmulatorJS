@@ -1,6 +1,21 @@
 # Changes
 
-# 4.0.9
+
+# 4.0.10
+- Fixed bug with duplicate control inputs.
+- Fixed mobile settings menu positioning.
+- Ability to load custom files into the wasm instance.
+- Renamed the `mame2003` system to `mame`.
+- Removed mame disclaimers on `mame2003` core.
+- Added VICE cores for C64, C128, VIC20, Plus/4, and PET (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Added a padding between popup body and buttons.
+- Added ability to disabled cached databases.
+- Fixed screenshot for some cores.
+- Fixed game element not being focused after fullscreening.
+- Added missing Famicom controls.
+- Fixed volume slider shadow (Thanks to [@allancoding](https://github.com/allancoding))
+
+# 4.0.9 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/ddb5c6092f12a63a46d74ea67e6469726665ebc2)
 - Repository history rewrite - expect faster cloning times.
 - Prevent Vice64 from creating cue files (Thanks to [@michael-j-green](https://github.com/michael-j-green))
 - Chinese translation updated (Thanks to [@oyepriyansh](https://github.com/oyepriyansh))
