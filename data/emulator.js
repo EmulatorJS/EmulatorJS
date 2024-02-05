@@ -3744,7 +3744,7 @@ class EmulatorJS {
         };
     }
     saveSettings() {
-        if (!window.localStorage || !this.settingsLoaded) return;
+        if (!window.localStorage || this.config.disableLocalStorage || !this.settingsLoaded) return;
         const coreSpecific = {
             controlSettings: this.controls,
             settings: this.settings,
@@ -3758,7 +3758,12 @@ class EmulatorJS {
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
     }
     loadRewindEnabled() {
-        if (!window.localStorage) return;
+        if (!window.localStorage || this.config.disableLocalStorage) {
+            if (this.config.defaultOptions && this.config.defaultOptions.rewindEnabled) {
+                return this.config.defaultOptions.rewindEnabled === 'enabled';
+            }
+            return false;
+        }
         let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
         try {
            coreSpecific = JSON.parse(coreSpecific);
@@ -3772,7 +3777,7 @@ class EmulatorJS {
         }
     }
     loadSettings() {
-        if (!window.localStorage) return;
+        if (!window.localStorage || this.config.disableLocalStorage) return;
         this.settingsLoaded = true;
         let ejs_settings = localStorage.getItem("ejs-settings");
         let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
