@@ -729,7 +729,7 @@ class EmulatorJS {
     saveInBrowserSupported() {
         return !!window.indexedDB && (typeof this.config.gameName === "string" || !this.config.gameUrl.startsWith("blob:"));
     }
-    displayMessage(message) {
+    displayMessage(message, time) {
         if (!this.msgElem) {
             this.msgElem = this.createElement("div");
             this.msgElem.classList.add("ejs_message");
@@ -738,7 +738,7 @@ class EmulatorJS {
         clearTimeout(this.msgTimeout);
         this.msgTimeout = setTimeout(() => {
             this.msgElem.innerText = "";
-        }, 3000)
+        }, (typeof time === "number" && time > 0) ? time : 3000)
         this.msgElem.innerText = message;
     }
     downloadStartState() {
