@@ -5,7 +5,6 @@ class EJS_GameManager {
         this.FS = this.Module.FS;
         this.functions = {
             restart: this.Module.cwrap('system_restart', '', []),
-            getStateInfo: this.Module.cwrap('get_state_info', 'string', []), //these names are dumb
             saveStateInfo: this.Module.cwrap('save_state_info', 'null', []),
             loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
             screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
@@ -136,29 +135,9 @@ class EJS_GameManager {
     }
     getState() {
         return new Promise(async (resolve, reject) => {
-            const stateInfo = (await this.getStateInfo()).split('|')
-            let state;
-            let size = stateInfo[0] >> 0;
-            if (size > 0) {
-                state = new Uint8Array(size);
-                let start = stateInfo[1] >> 0;
-                for (let i=0; i<size; i++) state[i] = this.Module.getValue(start + i);
-            }
-            resolve(state);
+            this.functions.saveStateInfo();
+            resolve(this.FS.readFile("/current.state"));
         })
-    }
-    getStateInfo() {
-        this.functions.saveStateInfo();
-        return new Promise((resolve, reject) => {
-            let a;
-            let b = setInterval(() => {
-                a = this.functions.getStateInfo();
-                if (a) {
-                    clearInterval(b);
-                    resolve(a);
-                }
-            }, 50)
-        });
     }
     loadState(state) {
         try {
