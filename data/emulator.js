@@ -738,7 +738,7 @@ class EmulatorJS {
         clearTimeout(this.msgTimeout);
         this.msgTimeout = setTimeout(() => {
             this.msgElem.innerText = "";
-        }, (typeof time === "number") ? time : 3000)
+        }, (typeof time === "number" && time > 0) ? time : 3000)
         this.msgElem.innerText = message;
     }
     downloadStartState() {
