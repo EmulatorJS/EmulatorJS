@@ -68,8 +68,9 @@
 <a href="https://github.com/Protektor-Desura" target="_blank" title="Protektor-Desura - Protektor">![Avatar Protektor]</a>&nbsp;
 <a href="https://github.com/oyepriyansh" target="_blank" title="oyepriyansh - Priyansh Prajapat">![Avatar Priyansh]</a>&nbsp;
 <a href="https://github.com/debuggerx01" target="_blank" title="debuggerx01">![Avatar debuggerx01]</a>&nbsp;
-<a href="https://github.com/eric183" target="_blank" title="eric183 - ericKuang">![Avatar Michael]</a>&nbsp;
-<a href="https://github.com/michael-j-green" target="_blank" title="michael-j-green - Michael Green">![Avatar ericKuang]</a>&nbsp;
+<a href="https://github.com/eric183" target="_blank" title="eric183 - ericKuang">![Avatar ericKuang]</a>&nbsp;
+<a href="https://github.com/michael-j-green" target="_blank" title="michael-j-green - Michael Green">![Avatar Michael]</a>&nbsp;
+<a href="https://github.com/gantoine" target="_blank" title="gantoine - Georges-Antoine Assi">![Avatar gantoine]</a>&nbsp;
 </div>
 
 
@@ -100,6 +101,8 @@
 [Avatar debuggerx01]: https://github.com/debuggerx01.png?size=95
 
 [Avatar Michael]: https://github.com/michael-j-green.png?size=95
+
+[Avatar gantoine]: https://github.com/gantoine.png?size=95
 
 
 <!----------------------------------{ Ethan }----------------------------------->
