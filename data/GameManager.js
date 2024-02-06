@@ -134,10 +134,8 @@ class EJS_GameManager {
         this.functions.restart();
     }
     getState() {
-        return new Promise(async (resolve, reject) => {
-            this.functions.saveStateInfo();
-            resolve(this.FS.readFile("/current.state"));
-        })
+        this.functions.saveStateInfo();
+        return this.FS.readFile("/current.state");
     }
     loadState(state) {
         try {
