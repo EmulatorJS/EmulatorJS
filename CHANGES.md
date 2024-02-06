@@ -1,7 +1,12 @@
 # Changes
 
+# 4.0.11
+- Added the ability to disable localstorage using `EJS_disableLocalStorage`. (Thanks to [@n-at](https://github.com/n-at))
+- Added the ability to trigger `EJS_emulator.displayMessage` with a duration. (Thanks to [@allancoding](https://github.com/allancoding))
+- `EJS_emulator.gameManager.getState` now returns a Uint8Array instead of a promise.
+- Fixed broken save states from the 4.0.10 release.
 
-# 4.0.10
+# 4.0.10 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/390605d2ab48db16c07c8fb4fc2815033af5c3a6)
 - Fixed bug with duplicate control inputs.
 - Fixed mobile settings menu positioning.
 - Ability to load custom files into the wasm instance.
@@ -13,7 +18,7 @@
 - Fixed screenshot for some cores.
 - Fixed game element not being focused after fullscreening.
 - Added missing Famicom controls.
-- Fixed volume slider shadow (Thanks to [@allancoding](https://github.com/allancoding))
+- Fixed volume slider shadow. (Thanks to [@allancoding](https://github.com/allancoding))
 
 # 4.0.9 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/ddb5c6092f12a63a46d74ea67e6469726665ebc2)
 - Repository history rewrite - expect faster cloning times.
