@@ -1293,9 +1293,13 @@ class EmulatorJS {
         this.addEventListener(this.game, 'contextmenu', (e) => {
             e.preventDefault();
             if ((this.config.buttonOpts && this.config.buttonOpts.rightClick === false) || !this.started) return;
+            const parentRect = this.elements.parent.getBoundingClientRect();
             this.elements.contextmenu.style.display = "block";
-            this.elements.contextmenu.style.left = e.offsetX+"px";
-            this.elements.contextmenu.style.top = e.offsetY+"px";
+            const rect = this.elements.contextmenu.getBoundingClientRect();
+            const up = e.offsetY + rect.height > parentRect.bottom - 25;
+            const left = e.offsetX + rect.width > parentRect.right - 5;
+            this.elements.contextmenu.style.left = (e.offsetX - (left ? rect.width : 0)) + "px";
+            this.elements.contextmenu.style.top = (e.offsetY - (up ? rect.height : 0)) + "px";
         })
         const hideMenu = () => {
             this.elements.contextmenu.style.display = "none";
