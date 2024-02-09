@@ -178,36 +178,36 @@ npm start
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
 
-[Nintendo Game Boy Advance]: docs/Systems/Nintendo%20Game%20Boy%20Advance.md
-[Nintendo Game Boy]: docs/Systems/Nintendo%20Game%20Boy.md
-[Nintendo 64]: docs/Systems/Nintendo%2064.md
-[Nintendo DS]: docs/Systems/Nintendo%20DS.md
+[Nintendo Game Boy Advance]: https://emulatorjs.org/systems/Nintendo%20Game%20Boy%20Advance
+[Nintendo Game Boy]: https://emulatorjs.org/systems/Nintendo%20Game%20Boy
+[Nintendo 64]: https://emulatorjs.org/systems/Nintendo%2064
+[Nintendo DS]: https://emulatorjs.org/systems/Nintendo%20DS
 
-[Sega Master System]: docs/Systems/Sega%20Master%20System.md
-[Sega Mega Drive]: docs/Systems/Sega%20Mega%20Drive.md
-[Sega Game Gear]: docs/Systems/Sega%20Game%20Gear.md
-[Sega Saturn]: docs/Systems/Sega%20Saturn.md
-[Sega 32X]: docs/Systems/Sega%2032X.md
-[Sega CD]: docs/Systems/Sega%20CD.md
+[Sega Master System]: https://emulatorjs.org/systems/Sega%20Master%20System
+[Sega Mega Drive]: https://emulatorjs.org/systems/Sega%20Mega%20Drive
+[Sega Game Gear]: https://emulatorjs.org/systems/Sega%20Game%20Gear
+[Sega Saturn]: https://emulatorjs.org/systems/Sega%20Saturn
+[Sega 32X]: https://emulatorjs.org/systems/Sega%2032X
+[Sega CD]: https://emulatorjs.org/systems/Sega%20CD
 
-[Atari Jaguar]: docs/Systems/Atari%20Jaguar.md
-[Atari Lynx]: docs/Systems/Atari%20Lynx.md
-[Atari 7800]: docs/Systems/Atari%207800.md
-[Atari 2600]: docs/Systems/Atari%202600.md
-[Atari 5200]: docs/Systems/Atari%205200.md
+[Atari Jaguar]: https://emulatorjs.org/systems/Atari%20Jaguar
+[Atari Lynx]: https://emulatorjs.org/systems/Atari%20Lynx
+[Atari 7800]: https://emulatorjs.org/systems/Atari%207800
+[Atari 2600]: https://emulatorjs.org/systems/Atari%202600
+[Atari 5200]: https://emulatorjs.org/systems/Atari%205200
 
-[NES / Famicom]: docs/Systems/NES-Famicom.md
-[SNES]: docs/Systems/SNES.md
+[NES / Famicom]: https://emulatorjs.org/systems/NES-Famicom
+[SNES]: https://emulatorjs.org/systems/SNES
 
-[TurboGrafs-16 / PC Engine]: docs/Systems/TurboGrafs%2016-PC%20Engine.md
-[WanderSwan / Color]: docs/Systems/WanderSwan-Color.md
-[Neo Geo Poket]: docs/Systems/Neo%20Geo%20Poket.md
-[PlayStation]: docs/Systems/PlayStation.md
-[Virtual Boy]: docs/Systems/Virtual%20Boy.md
-[Arcade]: docs/Systems/Arcade.md
-[MSX]: docs/Systems/MSX.md
-[3DO]: docs/Systems/3DO.md
-[MAME 2003]: docs/Systems/MAME%202003.md
+[TurboGrafs-16 / PC Engine]: https://emulatorjs.org/systems/TurboGrafx-16
+[WanderSwan / Color]: https://emulatorjs.org/systems/WonderSwan
+[Neo Geo Poket]: https://emulatorjs.org/systems/Neo%20Geo%20Pocket
+[PlayStation]: https://emulatorjs.org/systems/PlayStation
+[Virtual Boy]: https://emulatorjs.org/systems/Virtual%20Boy
+[Arcade]: https://emulatorjs.org/systems/Arcade
+[MSX]: https://emulatorjs.org/systems/MSX
+[3DO]: https://emulatorjs.org/systems/3DO
+[MAME 2003]: https://emulatorjs.org/systems/MAME%202003
 
 
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
