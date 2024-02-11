@@ -1,5 +1,21 @@
+const packageJson = require('../package.json');
+
+// Naive semver comparison that only checks major, minor, and patch
+function compareSemver(currentVersion, otherVersion) {
+    const vcparts = currentVersion.split(".").map(Number);
+    const voparts = otherVersion.split(".").map(Number);
+
+    for (let i = 0; i < 3; i++) {
+        if ((vcparts[i] ?? 0) > (voparts[i] ?? 0)) return -1;
+        if ((vcparts[i] ?? 0) < (voparts[i] ?? 0)) return 1;
+    }
+    return 0;
+}
+
 class EmulatorJS {
-    version = 12; //Increase by 1 when cores are updated
+    ejs_version = packageJson.version;
+    version = packageJson.version; // Keeping this alias for backwards compatibility
+    
     getCore(generic) {
         const core = this.config.system;
         /*todo:
@@ -255,20 +271,18 @@ class EmulatorJS {
         })
     }
     checkForUpdates() {
-        fetch('https://cdn.emulatorjs.org/stable/data/version.json').then(response => {
+        fetch('https://cdn.emulatorjs.org/stable/package.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
-                    let version = JSON.parse(body);
-                    if (this.ejs_num_version < version.current_version) {
-                        console.log('Using EmulatorJS version ' + this.ejs_num_version + ' but the newest version is ' + version.current_version + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
+                    let currentPackage = JSON.parse(body);
+                    if (compareSemver(this.ejs_version, currentPackage.version) === 1) {
+                        console.log('Using EmulatorJS version ' + this.ejs_version + ' but the newest version is ' + version.current_version + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
                     }
                 })
             }
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.11";
-        this.ejs_num_version = 401.1;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
@@ -666,7 +680,7 @@ class EmulatorJS {
         let legacy = (this.supportsWebgl2 ? "" : "-legacy");
         let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
         this.storage.core.get(filename).then((result) => {
-            if (result && result.version === this.version && !this.debug) {
+            if (result && result.version === this.ejs_version && !this.debug) {
                 gotCore(result.data);
                 return;
             }
@@ -687,7 +701,7 @@ class EmulatorJS {
                         console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the latest release from here: https://cdn.emulatorjs.org/releases/");
                         gotCore(res.data);
                         this.storage.core.put(filename, {
-                            version: this.version,
+                            version: this.ejs_version,
                             data: res.data
                         });
                     }, (progress) => {
@@ -697,7 +711,7 @@ class EmulatorJS {
                 }
                 gotCore(res.data);
                 this.storage.core.put(filename, {
-                    version: this.version,
+                    version: this.ejs_version,
                     data: res.data
                 });
             }, (progress) => {
