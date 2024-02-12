@@ -106,16 +106,27 @@
         </div>
 
         <script>
-            var enableDebug = false;
+            let enableDebug = false;
+            let enableThreads = false;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (urlParams.get('debug') == 1)
+            if (urlParams.get('debug') == 1) {
                 enableDebug = true;
-            
-            if (enableDebug == true) {
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
+            }
+
+            if (urlParams.get('threads') == 1) {
+                if (window.SharedArrayBuffer) {
+                    enableThreads = true;
+                    console.log("Threads are enabled");
+                } else {
+                    console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+                    console.log("Threads are disabled");
+                }
+            } else {
+                console.log("Threads are disabled");
             }
             
             input.onchange = async () => {
@@ -232,6 +243,7 @@
                 window.EJS_startOnLoaded = true;
                 window.EJS_DEBUG_XX = enableDebug;
                 window.EJS_disableDatabases = true;
+                window.EJS_threads = enableThreads;
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
