@@ -1,17 +1,5 @@
 const packageJson = require('../package.json');
 
-// Naive semver comparison that only checks major, minor, and patch
-function compareSemver(currentVersion, otherVersion) {
-    const vcparts = currentVersion.split(".").map(Number);
-    const voparts = otherVersion.split(".").map(Number);
-
-    for (let i = 0; i < 3; i++) {
-        if ((vcparts[i] ?? 0) > (voparts[i] ?? 0)) return -1;
-        if ((vcparts[i] ?? 0) < (voparts[i] ?? 0)) return 1;
-    }
-    return 0;
-}
-
 class EmulatorJS {
     ejs_version = packageJson.version;
     version = packageJson.version; // Keeping this alias for backwards compatibility
@@ -270,12 +258,23 @@ class EmulatorJS {
             resolve();
         })
     }
+    // Naive semver comparison that only checks major, minor, and patch
+    compareSemver(currentVersion, otherVersion) {
+        const vcparts = currentVersion.split(".").map(Number);
+        const voparts = otherVersion.split(".").map(Number);
+
+        for (let i = 0; i < 3; i++) {
+            if ((vcparts[i] ?? 0) > (voparts[i] ?? 0)) return -1;
+            if ((vcparts[i] ?? 0) < (voparts[i] ?? 0)) return 1;
+        }
+        return 0;
+    }
     checkForUpdates() {
         fetch('https://cdn.emulatorjs.org/stable/package.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
                     let currentPackage = JSON.parse(body);
-                    if (compareSemver(this.ejs_version, currentPackage.version) === 1) {
+                    if (this.compareSemver(this.ejs_version, currentPackage.version) === 1) {
                         console.log('Using EmulatorJS version ' + this.ejs_version + ' but the newest version is ' + version.current_version + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
                     }
                 })
