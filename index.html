@@ -107,15 +107,25 @@
 
         <script>
             var enableDebug = false;
+            var enableThreads = false;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             if (urlParams.get('debug') == 1)
                 enableDebug = true;
+
+            if (urlParams.get('threads') == 1)
+                enableThreads = true;
             
             if (enableDebug == true) {
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
+            }
+
+            if (enableThreads == true) {
+                console.log("Threads are enabled");
+            } else {
+                console.log("Threads are disabled");
             }
             
             input.onchange = async () => {
@@ -232,6 +242,7 @@
                 window.EJS_startOnLoaded = true;
                 window.EJS_DEBUG_XX = enableDebug;
                 window.EJS_disableDatabases = true;
+                window.EJS_threads = enableThreads;
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
