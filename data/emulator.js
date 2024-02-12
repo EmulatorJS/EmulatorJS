@@ -723,6 +723,7 @@ class EmulatorJS {
             const name = this.config.gameName.replace(invalidCharacters, "").trim();
             if (name) return name;
         }
+        if (!this.fileName) return "game";
         let parts = this.fileName.split(".");
         parts.splice(parts.length-1, 1);
         return parts.join(".");
