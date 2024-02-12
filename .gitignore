@@ -1,6 +1,5 @@
 **/node_modules/
 *.db
-.vscode/settings.json
 data/minify/package-lock.json
 package-lock.json
 yarn.lock
