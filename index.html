@@ -106,24 +106,25 @@
         </div>
 
         <script>
-            var enableDebug = false;
-            var enableThreads = false;
+            let enableDebug = false;
+            let enableThreads = false;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (urlParams.get('debug') == 1)
+            if (urlParams.get('debug') == 1) {
                 enableDebug = true;
-
-            if (urlParams.get('threads') == 1)
-                enableThreads = true;
-            
-            if (enableDebug == true) {
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
             }
 
-            if (enableThreads == true) {
-                console.log("Threads are enabled");
+            if (urlParams.get('threads') == 1) {
+                if (window.SharedArrayBuffer) {
+                    enableThreads = true;
+                    console.log("Threads are enabled");
+                } else {
+                    console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+                    console.log("Threads are disabled");
+                }
             } else {
                 console.log("Threads are disabled");
             }
