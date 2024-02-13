@@ -8,3 +8,4 @@ data/emulator.min.js
 data/emulator.min.css
 data/cores
 .DS_Store
+.vscode/*
