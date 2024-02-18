@@ -306,7 +306,7 @@ class EmulatorJS {
         this.bindListeners();
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
-        this.supportsWebgl2 = !!document.createElement('canvas').getContext('webgl2');
+        this.supportsWebgl2 = !!document.createElement('canvas').getContext('webgl2') && (this.config.forceLegacyCores !== true);
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
         if (this.config.disableDatabases) {
             this.storage = {
