@@ -112,6 +112,7 @@
     config.disableDatabases = window.EJS_disableDatabases;
     config.disableLocalStorage = window.EJS_disableLocalStorage;
     config.forceLegacyCores = window.EJS_forceLegacyCores;
+    config.noAutoFocus = window.EJS_noAutoFocus;
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {

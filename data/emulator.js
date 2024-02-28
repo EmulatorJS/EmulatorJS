@@ -1128,7 +1128,7 @@ class EmulatorJS {
             this.updateCheatUI();
             this.updateGamepadLabels();
             if (!this.muted) this.setVolume(this.volume);
-            this.elements.parent.focus();
+            if (this.config.noAutoFocus !== true) this.elements.parent.focus();
             this.textElem.remove();
             this.textElem = null;
             this.game.classList.remove("ejs_game");
@@ -1196,7 +1196,7 @@ class EmulatorJS {
         this.setVirtualGamepad();
         this.addEventListener(this.elements.parent, "keydown keyup", this.keyChange.bind(this));
         this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
-            if (document.activeElement !== this.elements.parent) this.elements.parent.focus();
+            if (document.activeElement !== this.elements.parent && this.config.noAutoFocus !== true) this.elements.parent.focus();
         })
         this.addEventListener(window, "resize", this.handleResize.bind(this));
         //this.addEventListener(window, "blur", e => console.log(e), true); //TODO - add "click to make keyboard keys work" message?
@@ -1211,7 +1211,7 @@ class EmulatorJS {
         this.addEventListener(window, "webkitfullscreenchange mozfullscreenchange fullscreenchange MSFullscreenChange", () => {
             setTimeout(() => {
                 this.handleResize.bind(this);
-                this.elements.parent.focus();
+                if (this.config.noAutoFocus !== true) this.elements.parent.focus();
             }, 0);
         });
         this.addEventListener(this.elements.parent, "dragenter", (e) => {
