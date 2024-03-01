@@ -1904,7 +1904,7 @@ class EmulatorJS {
         })
         this.addEventListener(this.canvas, "click", (e) => {
             if (e.pointerType === "touch") return;
-            if (this.getCore(true) === "nds" && !this.paused) {
+            if (!this.paused) {
                 if (this.canvas.requestPointerLock) {
                     this.canvas.requestPointerLock();
                 } else if (this.canvas.mozRequestPointerLock) {
