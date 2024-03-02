@@ -4062,15 +4062,15 @@ class EmulatorJS {
             const diskLabels = {};
             let isM3U = false;
             let disks = {};
-            if (this.fileName.split(".").pop() == "m3u") {
-                disks = FS.readFile(this.fileName, { encoding: 'utf8' }).split("\n");
+            if (this.fileName.split(".").pop() === "m3u") {
+                disks = this.gameManager.Module.FS.readFile(this.fileName, { encoding: 'utf8' }).split("\n");
                 isM3U = true;
             }
             for (let i=0; i<this.gameManager.getDiskCount(); i++) {
                 // default if not an m3u loaded rom is "Disk x"
                 // if m3u, then use the file name without the extension
                 // if m3u, and contains a |, then use the string after the | as the disk label
-                if (isM3U == false) {
+                if (!isM3U) {
                     diskLabels[i.toString()] = "Disk "+(i+1);
                 } else {
                     // get disk name from m3u
