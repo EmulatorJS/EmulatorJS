@@ -4232,8 +4232,6 @@ class EmulatorJS {
             
             const optionsMenu = this.createElement("div");
             optionsMenu.classList.add("ejs_setting_menu");
-            //optionsMenu.style["max-height"] = "385px";
-            //optionsMenu.style.overflow  = "auto";
             
             let buttons = [];
             let opts = options;
@@ -4290,38 +4288,6 @@ class EmulatorJS {
             
             nested.appendChild(menu);
         }
-        //addToMenu("Test", 'test', {a:1, b:2, c:3}, 2);
-        //addToMenu("Test2", 'test_2', [4, 5, 6]);
-        //addToMenu("Testertthgfd", 'booger', [7, 8, 9]);
-        
-        // if (this.gameManager.getDiskCount() > 1) {
-        //     const diskLabels = {};
-        //     let isM3U = false;
-        //     let disks = {};
-        //     if (this.fileName.split(".").pop() == "m3u") {
-        //         disks = FS.readFile(this.fileName, { encoding: 'utf8' }).split("\n");
-        //         isM3U = true;
-        //     }
-        //     for (let i=0; i<this.gameManager.getDiskCount(); i++) {
-        //         // default if not an m3u loaded rom is "Disk x"
-        //         // if m3u, then use the file name without the extension
-        //         // if m3u, and contains a |, then use the string after the | as the disk label
-        //         if (isM3U == false) {
-        //             diskLabels[i.toString()] = "Disk "+(i+1);
-        //         } else {
-        //             // get disk name from m3u
-        //             const diskLabelValues = disks[i].split("|");
-        //             // remove the file extension from the disk file name
-        //             let diskLabel = diskLabelValues[0].replace("." + diskLabelValues[0].split(".").pop(), "");
-        //             if (diskLabelValues.length >= 2) {
-        //                 // has a label - use that instead
-        //                 diskLabel = diskLabelValues[1];
-        //             }
-        //             diskLabels[i.toString()] = diskLabel;
-        //         }
-        //     }
-        //     addToMenu(this.localization("Disk"), "disk", diskLabels, this.gameManager.getCurrentDisk().toString());
-        // }
         
         if (window.EJS_SHADERS) {
             addToMenu(this.localization('Shaders'), 'shader', {
