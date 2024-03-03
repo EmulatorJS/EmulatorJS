@@ -1125,6 +1125,10 @@ class EmulatorJS {
             this.Module.resumeMainLoop();
             this.checkSupportedOpts();
             this.setupDisksMenu();
+            // hide the disks menu if the disk count is not greater than 1
+            if (!(this.gameManager.getDiskCount() > 1)) {
+                this.diskParent.style.display = 'none';
+            }
             this.setupSettingsMenu();
             this.loadSettings();
             this.updateCheatUI();
@@ -3988,8 +3992,6 @@ class EmulatorJS {
         let allOpts = {};
         
         const addToMenu = (title, id, options, defaultOption) => {
-            // const menuOption = this.createElement("div");
-            // menuOption.classList.add("ejs_settings_main_bar");
             const span = this.createElement("span");
             span.innerText = title;
             
@@ -3997,9 +3999,6 @@ class EmulatorJS {
             current.innerText = "";
             current.classList.add("ejs_settings_main_bar_selected");
             span.appendChild(current);
-            
-            // menuOption.appendChild(span);
-            // home.appendChild(menuOption);
             
             const menu = this.createElement("div");
             menus.push(menu);
@@ -4013,13 +4012,6 @@ class EmulatorJS {
                 menu.setAttribute("hidden", "");
                 home.removeAttribute("hidden");
             }
-            // this.addEventListener(menuOption, "click", (e) => {
-            //     const targetSize = this.getElementSize(menu);
-            //     nested.style.width = (targetSize.width+20) + "px";
-            //     nested.style.height = targetSize.height + "px";
-            //     menu.removeAttribute("hidden");
-            //     home.setAttribute("hidden", "");
-            // })
             this.addEventListener(button, "click", goToHome);
             
             button.type = "button";
@@ -4084,7 +4076,6 @@ class EmulatorJS {
                 optionsMenu.appendChild(optionButton);
             }
             
-            // menu.appendChild(optionsMenu);
             home.appendChild(optionsMenu);
             
             nested.appendChild(menu);
