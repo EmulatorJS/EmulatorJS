@@ -1908,17 +1908,6 @@ class EmulatorJS {
             if (e.target === diskButton[0] || e.target === diskButton[2]) return;
             this.closeDisksMenu();
         })
-        this.addEventListener(this.canvas, "click", (e) => {
-            if (e.pointerType === "touch") return;
-            if (this.getCore(true) === "nds" && !this.paused) {
-                if (this.canvas.requestPointerLock) {
-                    this.canvas.requestPointerLock();
-                } else if (this.canvas.mozRequestPointerLock) {
-                    this.canvas.mozRequestPointerLock();
-                }
-                this.menu.close();
-            }
-        })
 
         this.settingParent = this.createElement("div");
         this.settingsMenuOpen = false;
@@ -1942,6 +1931,7 @@ class EmulatorJS {
             if (e.target === settingButton[0] || e.target === settingButton[2]) return;
             this.closeSettingsMenu();
         })
+
         this.addEventListener(this.canvas, "click", (e) => {
             if (e.pointerType === "touch") return;
             if (this.getCore(true) === "nds" && !this.paused) {
