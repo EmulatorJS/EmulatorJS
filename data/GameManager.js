@@ -118,11 +118,12 @@ class EJS_GameManager {
                "savefile_directory = \"/data/saves\"\n";
     }
     initShaders() {
-        if (!window.EJS_SHADERS) return;
+        if (!this.EJS.config.shaders) return;
         this.mkdir("/shader");
-        for (const shader in window.EJS_SHADERS) {
-            if (typeof window.EJS_SHADERS[shader] === 'string') {
-                this.FS.writeFile(`/shader/${shader}`, window.EJS_SHADERS[shader]);
+        for (const shaderFileName in this.EJS.config.shaders) {
+            const shader = this.EJS.config.shaders[shaderFileName];
+            if (typeof shader === 'string') {
+                this.FS.writeFile(`/shader/${shaderFileName}`, shader);
             }
         }
     }

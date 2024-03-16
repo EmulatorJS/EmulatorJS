@@ -4262,7 +4262,7 @@ class EmulatorJS {
             nested.appendChild(menu);
         }
 
-        if (window.EJS_SHADERS) {
+        if (this.config.shaders) {
             const builtinShaders = {
                 '2xScaleHQ.glslp': this.localization("2xScaleHQ"),
                 '4xScaleHQ.glslp': this.localization("4xScaleHQ"),
@@ -4276,7 +4276,7 @@ class EmulatorJS {
             let shaderMenu = {
                 'disabled': this.localization("Disabled"),
             };
-            for (const shaderName in window.EJS_SHADERS) {
+            for (const shaderName in this.config.shaders) {
                 if (builtinShaders[shaderName]) {
                     shaderMenu[shaderName] = builtinShaders[shaderName];
                 } else {
@@ -5177,12 +5177,12 @@ class EmulatorJS {
             this.Module.FS.unlink("/shader/shader.glslp");
         } catch(e) {}
 
-        if (name === "disabled" || !window.EJS_SHADERS[name]) {
+        if (name === "disabled" || !this.config.shaders[name]) {
             this.gameManager.toggleShader(0);
             return;
         }
 
-        const shaderConfig = window.EJS_SHADERS[name];
+        const shaderConfig = this.config.shaders[name];
 
         if (typeof shaderConfig === 'string') {
             this.Module.FS.writeFile("/shader/shader.glslp", shaderConfig, {}, 'w+');

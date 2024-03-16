@@ -113,6 +113,7 @@
     config.disableLocalStorage = window.EJS_disableLocalStorage;
     config.forceLegacyCores = window.EJS_forceLegacyCores;
     config.noAutoFocus = window.EJS_noAutoFocus;
+    config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
         try {
