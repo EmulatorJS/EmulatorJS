@@ -121,7 +121,9 @@ class EJS_GameManager {
         if (!window.EJS_SHADERS) return;
         this.mkdir("/shader");
         for (const shader in window.EJS_SHADERS) {
-            this.FS.writeFile('/shader/'+shader, window.EJS_SHADERS[shader]);
+            if (typeof window.EJS_SHADERS[shader] === 'string') {
+                this.FS.writeFile(`/shader/${shader}`, window.EJS_SHADERS[shader]);
+            }
         }
     }
     clearEJSResetTimer() {
