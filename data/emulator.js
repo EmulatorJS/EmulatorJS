@@ -4266,12 +4266,18 @@ class EmulatorJS {
             const builtinShaders = {
                 '2xScaleHQ.glslp': this.localization("2xScaleHQ"),
                 '4xScaleHQ.glslp': this.localization("4xScaleHQ"),
-                'crt-easymode.glslp': this.localization('CRT easymode'),
                 'crt-aperture.glslp': this.localization('CRT aperture'),
-                'crt-geom.glslp': this.localization('CRT geom'),
-                'crt-mattias.glslp': this.localization('CRT mattias'),
                 'crt-beam': this.localization('CRT beam'),
+                'crt-caligari': this.localization('CRT caligari'),
+                'crt-easymode.glslp': this.localization('CRT easymode'),
+                'crt-geom.glslp': this.localization('CRT geom'),
+                'crt-lottes': this.localization('CRT lottes'),
+                'crt-mattias.glslp': this.localization('CRT mattias'),
+                'crt-yeetron': this.localization('CRT yeetron'),
+                'crt-zfast': this.localization('CRT zfast'),
                 'sabr': this.localization('SABR'),
+                'bicubic': this.localization('Bicubic'),
+                'mix-frames': this.localization('Mix frames'),
             };
             let shaderMenu = {
                 'disabled': this.localization("Disabled"),
