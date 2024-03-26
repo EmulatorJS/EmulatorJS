@@ -3879,15 +3879,7 @@ class EmulatorJS {
         this.saveSettings();
         if (this.debug) console.log(option, value);
         if (option === "shader") {
-            try {
-                this.Module.FS.unlink("/shader/shader.glslp");
-            } catch(e) {}
-            if (value === "disabled") {
-                this.gameManager.toggleShader(0);
-                return;
-            }
-            this.Module.FS.writeFile("/shader/shader.glslp", window.EJS_SHADERS[value]);
-            this.gameManager.toggleShader(1);
+            this.enableShader(value);
             return;
         } else if (option === "disk") {
             this.gameManager.setCurrentDisk(value);
@@ -4270,16 +4262,34 @@ class EmulatorJS {
             nested.appendChild(menu);
         }
 
-        if (window.EJS_SHADERS) {
-            addToMenu(this.localization('Shaders'), 'shader', {
-                'disabled': this.localization("Disabled"),
+        if (this.config.shaders) {
+            const builtinShaders = {
                 '2xScaleHQ.glslp': this.localization("2xScaleHQ"),
                 '4xScaleHQ.glslp': this.localization("4xScaleHQ"),
-                'crt-easymode.glslp': this.localization('CRT easymode'),
                 'crt-aperture.glslp': this.localization('CRT aperture'),
+                'crt-beam': this.localization('CRT beam'),
+                'crt-caligari': this.localization('CRT caligari'),
+                'crt-easymode.glslp': this.localization('CRT easymode'),
                 'crt-geom.glslp': this.localization('CRT geom'),
-                'crt-mattias.glslp': this.localization('CRT mattias')
-            }, 'disabled');
+                'crt-lottes': this.localization('CRT lottes'),
+                'crt-mattias.glslp': this.localization('CRT mattias'),
+                'crt-yeetron': this.localization('CRT yeetron'),
+                'crt-zfast': this.localization('CRT zfast'),
+                'sabr': this.localization('SABR'),
+                'bicubic': this.localization('Bicubic'),
+                'mix-frames': this.localization('Mix frames'),
+            };
+            let shaderMenu = {
+                'disabled': this.localization("Disabled"),
+            };
+            for (const shaderName in this.config.shaders) {
+                if (builtinShaders[shaderName]) {
+                    shaderMenu[shaderName] = builtinShaders[shaderName];
+                } else {
+                    shaderMenu[shaderName] = shaderName;
+                }
+            }
+            addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
         }
         
         addToMenu(this.localization('FPS'), 'fps', {
@@ -5166,6 +5176,33 @@ class EmulatorJS {
     }
     cheatChanged(checked, code, index) {
         this.gameManager.setCheat(index, checked, code);
+    }
+
+    enableShader(name) {
+        try {
+            this.Module.FS.unlink("/shader/shader.glslp");
+        } catch(e) {}
+
+        if (name === "disabled" || !this.config.shaders[name]) {
+            this.gameManager.toggleShader(0);
+            return;
+        }
+
+        const shaderConfig = this.config.shaders[name];
+
+        if (typeof shaderConfig === 'string') {
+            this.Module.FS.writeFile("/shader/shader.glslp", shaderConfig, {}, 'w+');
+        } else {
+            const shader = shaderConfig.shader;
+            this.Module.FS.writeFile('/shader/shader.glslp', shader.type === 'base64' ? atob(shader.value) : shader.value, {}, 'w+');
+            if (shaderConfig.resources && shaderConfig.resources.length) {
+                shaderConfig.resources.forEach(resource => {
+                    this.Module.FS.writeFile(`/shader/${resource.name}`, resource.type === 'base64' ? atob(resource.value) : resource.value, {}, 'w+');
+                });
+            }
+        }
+
+        this.gameManager.toggleShader(1);
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {
