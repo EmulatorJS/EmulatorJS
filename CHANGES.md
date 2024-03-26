@@ -1,6 +1,18 @@
 # Changes
 
-# 4.0.11
+# 4.0.12
+- Fix scroll bar css (Thanks to [@allancoding](https://github.com/allancoding))
+- Flip the context menu instead of going off the page
+- Add hooks for save files (Thanks to [@gantoine](https://github.com/gantoine))
+- Add class for each virtual gamepad button
+- Add `EJS_forceLegacyCores` option
+- Add `EJS_noAutoFocus` (this is only for advanced developers, not likely an option you will use)
+- Added supported Amiga file extensions (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Display the file name of the ROM/disk when using M3U lists (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Added vsync option
+- Added advanced shader configuration support (Thanks to [@n-at](https://github.com/n-at))
+
+# 4.0.11 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/cafd80d023afa9562c7054e89a4240f3381d64ff)
 - Added the ability to disable localstorage using `EJS_disableLocalStorage`. (Thanks to [@n-at](https://github.com/n-at))
 - Added the ability to trigger `EJS_emulator.displayMessage` with a duration. (Thanks to [@allancoding](https://github.com/allancoding))
 - `EJS_emulator.gameManager.getState` now returns a Uint8Array instead of a promise.

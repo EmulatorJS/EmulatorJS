@@ -1,5 +1,5 @@
 class EmulatorJS {
-    version = 12; //Increase by 1 when cores are updated
+    version = 13; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
         /*todo:
@@ -269,8 +269,8 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.11";
-        this.ejs_num_version = 401.1;
+        this.ejs_version = "4.0.12";
+        this.ejs_num_version = 401.2;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
