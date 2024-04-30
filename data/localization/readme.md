@@ -17,6 +17,7 @@ Supported languages
 `de-GER` - German<br>
 `ko-KO` - Korean<br>
 `af-FR` - French<br>
+`it-IT` - Italian<br>
 
 default: `en-US`
 
@@ -37,6 +38,7 @@ Translated for `ja-JA`, `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`,
 Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline)<br>
 Translated for `zh-CN` originally by [@allancoding](https://github.com/allancoding) and updated by [@eric183](https://github.com/eric183)<br>
 Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline) <br>
+Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
 
 ## Contributing
 
