@@ -1,5 +1,5 @@
 class EmulatorJS {
-    version = 12; //Increase by 1 when cores are updated
+    version = 13; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
         /*todo:
@@ -269,8 +269,8 @@ class EmulatorJS {
         })
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.11";
-        this.ejs_num_version = 401.1;
+        this.ejs_version = "4.0.12";
+        this.ejs_num_version = 401.2;
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
@@ -952,7 +952,7 @@ class EmulatorJS {
                 const altName = this.getBaseFileName(true);
 
                 let disableCue = false;
-                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce', 'smsplus', 'vice_x64', 'vice_x64sc', 'vice_x128', 'vice_xvic', 'vice_xplus4', 'vice_xpet'].includes(this.getCore()) && this.config.disableCue === undefined) {
+                if (['pcsx_rearmed', 'genesis_plus_gx', 'picodrive', 'mednafen_pce', 'smsplus', 'vice_x64', 'vice_x64sc', 'vice_x128', 'vice_xvic', 'vice_xplus4', 'vice_xpet', 'puae'].includes(this.getCore()) && this.config.disableCue === undefined) {
                     disableCue = true;
                 } else {
                     disableCue = this.config.disableCue;
@@ -1129,6 +1129,11 @@ class EmulatorJS {
             }
             this.Module.resumeMainLoop();
             this.checkSupportedOpts();
+            this.setupDisksMenu();
+            // hide the disks menu if the disk count is not greater than 1
+            if (!(this.gameManager.getDiskCount() > 1)) {
+                this.diskParent.style.display = 'none';
+            }
             this.setupSettingsMenu();
             this.loadSettings();
             this.updateCheatUI();
@@ -1580,7 +1585,7 @@ class EmulatorJS {
         let timeout = null;
         let ignoreEvents = false;
         const hide = () => {
-            if (this.paused || this.settingsMenuOpen) return;
+            if (this.paused || this.settingsMenuOpen || this.disksMenuOpen) return;
             this.elements.menu.classList.add("ejs_menu_bar_hidden");
         }
         
@@ -1882,6 +1887,30 @@ class EmulatorJS {
             }
         });
         
+        this.diskParent = this.createElement("div");
+        this.diskParent.id = "ejs_disksMenu";
+        this.disksMenuOpen = false;
+        const diskButton = addButton("Disks", '<svg fill="#FFFFFF" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 473.109 473.109"><path d="M340.963,101.878H12.105C5.423,101.878,0,107.301,0,113.983v328.862c0,6.68,5.423,12.105,12.105,12.105h328.857 c6.685,0,12.104-5.426,12.104-12.105V113.983C353.067,107.301,347.647,101.878,340.963,101.878z M67.584,120.042h217.895v101.884 H67.584V120.042z M296.076,429.228H56.998V278.414h239.079V429.228z M223.947,135.173h30.269v72.638h-30.269V135.173z M274.13,315.741H78.933v-12.105H274.13V315.741z M274.13,358.109H78.933v-12.105H274.13V358.109z M274.13,398.965H78.933v-12.105 H274.13V398.965z M473.109,30.263v328.863c0,6.68-5.426,12.105-12.105,12.105H384.59v-25.724h31.528V194.694H384.59v-56.489h20.93 V36.321H187.625v43.361h-67.583v-49.42c0-6.682,5.423-12.105,12.105-12.105H461.01C467.695,18.158,473.109,23.581,473.109,30.263z M343.989,51.453h30.269v31.321c-3.18-1.918-6.868-3.092-10.853-3.092h-19.416V51.453z M394.177,232.021h-9.581v-12.105h9.581 V232.021z M384.59,262.284h9.581v12.105h-9.581V262.284z M384.59,303.14h9.581v12.104h-9.581V303.14z"/></svg>', () => {
+            this.disksMenuOpen = !this.disksMenuOpen;
+            diskButton[1].classList.toggle("ejs_svg_rotate", this.disksMenuOpen);
+            this.disksMenu.style.display = this.disksMenuOpen ? "" : "none";
+            diskButton[2].classList.toggle("ejs_disks_text", this.disksMenuOpen);
+        }, this.diskParent, true);
+        this.elements.menu.appendChild(this.diskParent);
+        this.closeDisksMenu = () => {
+            if (!this.disksMenu) return;
+            this.disksMenuOpen = false;
+            diskButton[1].classList.toggle("ejs_svg_rotate", this.disksMenuOpen);
+            diskButton[2].classList.toggle("ejs_disks_text", this.disksMenuOpen);
+            this.disksMenu.style.display = "none";
+        }
+        this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
+            if (this.isChild(this.disksMenu, e.target)) return;
+            if (e.pointerType === "touch") return;
+            if (e.target === diskButton[0] || e.target === diskButton[2]) return;
+            this.closeDisksMenu();
+        })
+
         this.settingParent = this.createElement("div");
         this.settingsMenuOpen = false;
         const settingButton = addButton("Settings", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M495.9 166.6C499.2 175.2 496.4 184.9 489.6 191.2L446.3 230.6C447.4 238.9 448 247.4 448 256C448 264.6 447.4 273.1 446.3 281.4L489.6 320.8C496.4 327.1 499.2 336.8 495.9 345.4C491.5 357.3 486.2 368.8 480.2 379.7L475.5 387.8C468.9 398.8 461.5 409.2 453.4 419.1C447.4 426.2 437.7 428.7 428.9 425.9L373.2 408.1C359.8 418.4 344.1 427 329.2 433.6L316.7 490.7C314.7 499.7 307.7 506.1 298.5 508.5C284.7 510.8 270.5 512 255.1 512C241.5 512 227.3 510.8 213.5 508.5C204.3 506.1 197.3 499.7 195.3 490.7L182.8 433.6C167 427 152.2 418.4 138.8 408.1L83.14 425.9C74.3 428.7 64.55 426.2 58.63 419.1C50.52 409.2 43.12 398.8 36.52 387.8L31.84 379.7C25.77 368.8 20.49 357.3 16.06 345.4C12.82 336.8 15.55 327.1 22.41 320.8L65.67 281.4C64.57 273.1 64 264.6 64 256C64 247.4 64.57 238.9 65.67 230.6L22.41 191.2C15.55 184.9 12.82 175.3 16.06 166.6C20.49 154.7 25.78 143.2 31.84 132.3L36.51 124.2C43.12 113.2 50.52 102.8 58.63 92.95C64.55 85.8 74.3 83.32 83.14 86.14L138.8 103.9C152.2 93.56 167 84.96 182.8 78.43L195.3 21.33C197.3 12.25 204.3 5.04 213.5 3.51C227.3 1.201 241.5 0 256 0C270.5 0 284.7 1.201 298.5 3.51C307.7 5.04 314.7 12.25 316.7 21.33L329.2 78.43C344.1 84.96 359.8 93.56 373.2 103.9L428.9 86.14C437.7 83.32 447.4 85.8 453.4 92.95C461.5 102.8 468.9 113.2 475.5 124.2L480.2 132.3C486.2 143.2 491.5 154.7 495.9 166.6V166.6zM256 336C300.2 336 336 300.2 336 255.1C336 211.8 300.2 175.1 256 175.1C211.8 175.1 176 211.8 176 255.1C176 300.2 211.8 336 256 336z"/></svg>', () => {
@@ -1904,6 +1933,7 @@ class EmulatorJS {
             if (e.target === settingButton[0] || e.target === settingButton[2]) return;
             this.closeSettingsMenu();
         })
+
         this.addEventListener(this.canvas, "click", (e) => {
             if (e.pointerType === "touch") return;
             if (!this.paused) {
@@ -3853,15 +3883,7 @@ class EmulatorJS {
         this.saveSettings();
         if (this.debug) console.log(option, value);
         if (option === "shader") {
-            try {
-                this.Module.FS.unlink("/shader/shader.glslp");
-            } catch(e) {}
-            if (value === "disabled") {
-                this.gameManager.toggleShader(0);
-                return;
-            }
-            this.Module.FS.writeFile("/shader/shader.glslp", window.EJS_SHADERS[value]);
-            this.gameManager.toggleShader(1);
+            this.enableShader(value);
             return;
         } else if (option === "disk") {
             this.gameManager.setCurrentDisk(value);
@@ -3912,9 +3934,196 @@ class EmulatorJS {
             } else {
                 this.isPointerCapture = false;
             }
+        } else if (option === "vsync") {
+            this.gameManager.setVSync(value === "enabled");
         }
         this.gameManager.setVariable(option, value);
         this.saveSettings();
+    }
+    setupDisksMenu() {
+        this.disksMenu = this.createElement("div");
+        this.disksMenu.classList.add("ejs_settings_parent");
+        const nested = this.createElement("div");
+        nested.classList.add("ejs_settings_transition");
+        this.disks = {};
+        
+        const home = this.createElement("div");
+        home.style.overflow = "auto";
+        const menus = [];
+        this.handleDisksResize = () => {
+            let needChange = false;
+            if (this.disksMenu.style.display !== "") {
+                this.disksMenu.style.opacity = "0";
+                this.disksMenu.style.display = "";
+                needChange = true;
+            }
+            let height = this.elements.parent.getBoundingClientRect().height;
+            let w2 = this.diskParent.parentElement.getBoundingClientRect().width;
+            let disksX = this.diskParent.getBoundingClientRect().x;
+            if (w2 > window.innerWidth) disksX += (w2 - window.innerWidth);
+            const onTheRight = disksX > (w2-15)/2;
+            if (height > 375) height = 375;
+            home.style['max-height'] = (height - 95) + "px";
+            nested.style['max-height'] = (height - 95) + "px";
+            for (let i=0; i<menus.length; i++) {
+                menus[i].style['max-height'] = (height - 95) + "px";
+            }
+            this.disksMenu.classList.toggle("ejs_settings_center_left", !onTheRight);
+            this.disksMenu.classList.toggle("ejs_settings_center_right", onTheRight);
+            if (needChange) {
+                this.disksMenu.style.display = "none";
+                this.disksMenu.style.opacity = "";
+            }
+        }
+        
+        home.classList.add("ejs_setting_menu");
+        nested.appendChild(home);
+        let funcs = [];
+        this.changeDiskOption = (title, newValue) => {
+            this.disks[title] = newValue;
+            funcs.forEach(e => e(title));
+        }
+        let allOpts = {};
+        
+        const addToMenu = (title, id, options, defaultOption) => {
+            const span = this.createElement("span");
+            span.innerText = title;
+            
+            const current = this.createElement("div");
+            current.innerText = "";
+            current.classList.add("ejs_settings_main_bar_selected");
+            span.appendChild(current);
+            
+            const menu = this.createElement("div");
+            menus.push(menu);
+            menu.style.overflow  = "auto";
+            menu.setAttribute("hidden", "");
+            const button = this.createElement("button");
+            const goToHome = () => {
+                const homeSize = this.getElementSize(home);
+                nested.style.width = (homeSize.width+20) + "px";
+                nested.style.height = homeSize.height + "px";
+                menu.setAttribute("hidden", "");
+                home.removeAttribute("hidden");
+            }
+            this.addEventListener(button, "click", goToHome);
+            
+            button.type = "button";
+            button.classList.add("ejs_back_button");
+            menu.appendChild(button);
+            const pageTitle = this.createElement("span");
+            pageTitle.innerText = title;
+            pageTitle.classList.add("ejs_menu_text_a");
+            button.appendChild(pageTitle);
+            
+            const optionsMenu = this.createElement("div");
+            optionsMenu.classList.add("ejs_setting_menu");
+            
+            let buttons = [];
+            let opts = options;
+            if (Array.isArray(options)) {
+                opts = {};
+                for (let i=0; i<options.length; i++) {
+                    opts[options[i]] = options[i];
+                }
+            }
+            allOpts[id] = opts;
+            
+            funcs.push((title) => {
+                if (id !== title) return;
+                for (let j=0; j<buttons.length; j++) {
+                    buttons[j].classList.toggle("ejs_option_row_selected", buttons[j].getAttribute("ejs_value") === this.disks[id]);
+                }
+                this.menuOptionChanged(id, this.disks[id]);
+                current.innerText = opts[this.disks[id]];
+            });
+            
+            for (const opt in opts) {
+                const optionButton = this.createElement("button");
+                buttons.push(optionButton);
+                optionButton.setAttribute("ejs_value", opt);
+                optionButton.type = "button";
+                optionButton.value = opts[opt];
+                optionButton.classList.add("ejs_option_row");
+                optionButton.classList.add("ejs_button_style");
+                
+                this.addEventListener(optionButton, "click", (e) => {
+                    this.disks[id] = opt;
+                    for (let j=0; j<buttons.length; j++) {
+                        buttons[j].classList.remove("ejs_option_row_selected");
+                    }
+                    optionButton.classList.add("ejs_option_row_selected");
+                    this.menuOptionChanged(id, opt);
+                    current.innerText = opts[opt];
+                    goToHome();
+                })
+                if (defaultOption === opt) {
+                    optionButton.classList.add("ejs_option_row_selected");
+                    this.menuOptionChanged(id, opt);
+                    current.innerText = opts[opt];
+                }
+                
+                const msg = this.createElement("span");
+                msg.innerText = opts[opt];
+                optionButton.appendChild(msg);
+                
+                optionsMenu.appendChild(optionButton);
+            }
+            
+            home.appendChild(optionsMenu);
+            
+            nested.appendChild(menu);
+        }
+        
+        if (this.gameManager.getDiskCount() > 1) {
+            const diskLabels = {};
+            let isM3U = false;
+            let disks = {};
+            if (this.fileName.split(".").pop() === "m3u") {
+                disks = this.gameManager.Module.FS.readFile(this.fileName, { encoding: 'utf8' }).split("\n");
+                isM3U = true;
+            }
+            for (let i=0; i<this.gameManager.getDiskCount(); i++) {
+                // default if not an m3u loaded rom is "Disk x"
+                // if m3u, then use the file name without the extension
+                // if m3u, and contains a |, then use the string after the | as the disk label
+                if (!isM3U) {
+                    diskLabels[i.toString()] = "Disk "+(i+1);
+                } else {
+                    // get disk name from m3u
+                    const diskLabelValues = disks[i].split("|");
+                    // remove the file extension from the disk file name
+                    let diskLabel = diskLabelValues[0].replace("." + diskLabelValues[0].split(".").pop(), "");
+                    if (diskLabelValues.length >= 2) {
+                        // has a label - use that instead
+                        diskLabel = diskLabelValues[1];
+                    }
+                    diskLabels[i.toString()] = diskLabel;
+                }
+            }
+            addToMenu(this.localization("Disk"), "disk", diskLabels, this.gameManager.getCurrentDisk().toString());
+        }
+        
+        this.disksMenu.appendChild(nested);
+        
+        this.diskParent.appendChild(this.disksMenu);
+        this.diskParent.style.position = "relative";
+        
+        const homeSize = this.getElementSize(home);
+        nested.style.width = (homeSize.width+20) + "px";
+        nested.style.height = homeSize.height + "px";
+        
+        this.disksMenu.style.display = "none";
+        
+        if (this.debug) {
+            console.log("Available core options", allOpts);
+        }
+        
+        if (this.config.defaultOptions) {
+            for (const k in this.config.defaultOptions) {
+                this.changeDiskOption(k, this.config.defaultOptions[k]);
+            }
+        }
     }
     setupSettingsMenu() {
         this.settingsMenu = this.createElement("div");
@@ -4006,8 +4215,6 @@ class EmulatorJS {
             
             const optionsMenu = this.createElement("div");
             optionsMenu.classList.add("ejs_setting_menu");
-            //optionsMenu.style["max-height"] = "385px";
-            //optionsMenu.style.overflow  = "auto";
             
             let buttons = [];
             let opts = options;
@@ -4064,28 +4271,35 @@ class EmulatorJS {
             
             nested.appendChild(menu);
         }
-        //addToMenu("Test", 'test', {a:1, b:2, c:3}, 2);
-        //addToMenu("Test2", 'test_2', [4, 5, 6]);
-        //addToMenu("Testertthgfd", 'booger', [7, 8, 9]);
-        
-        if (this.gameManager.getDiskCount() > 1) {
-            const diskLabels = {};
-            for (let i=0; i<this.gameManager.getDiskCount(); i++) {
-                diskLabels[i.toString()] = "Disk "+(i+1);
-            }
-            addToMenu(this.localization("Disk"), "disk", diskLabels, this.gameManager.getCurrentDisk().toString());
-        }
-        
-        if (window.EJS_SHADERS) {
-            addToMenu(this.localization('Shaders'), 'shader', {
-                'disabled': this.localization("Disabled"),
+
+        if (this.config.shaders) {
+            const builtinShaders = {
                 '2xScaleHQ.glslp': this.localization("2xScaleHQ"),
                 '4xScaleHQ.glslp': this.localization("4xScaleHQ"),
-                'crt-easymode.glslp': this.localization('CRT easymode'),
                 'crt-aperture.glslp': this.localization('CRT aperture'),
+                'crt-beam': this.localization('CRT beam'),
+                'crt-caligari': this.localization('CRT caligari'),
+                'crt-easymode.glslp': this.localization('CRT easymode'),
                 'crt-geom.glslp': this.localization('CRT geom'),
-                'crt-mattias.glslp': this.localization('CRT mattias')
-            }, 'disabled');
+                'crt-lottes': this.localization('CRT lottes'),
+                'crt-mattias.glslp': this.localization('CRT mattias'),
+                'crt-yeetron': this.localization('CRT yeetron'),
+                'crt-zfast': this.localization('CRT zfast'),
+                'sabr': this.localization('SABR'),
+                'bicubic': this.localization('Bicubic'),
+                'mix-frames': this.localization('Mix frames'),
+            };
+            let shaderMenu = {
+                'disabled': this.localization("Disabled"),
+            };
+            for (const shaderName in this.config.shaders) {
+                if (builtinShaders[shaderName]) {
+                    shaderMenu[shaderName] = builtinShaders[shaderName];
+                } else {
+                    shaderMenu[shaderName] = shaderName;
+                }
+            }
+            addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
         }
         
         addToMenu(this.localization('Capture Pointer'), 'capturepointer', {
@@ -4097,6 +4311,11 @@ class EmulatorJS {
             'show': this.localization("show"),
             'hide': this.localization("hide")
         }, 'hide');
+        
+        addToMenu(this.localization("VSync"), "vsync", {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, "enabled");
         
         addToMenu(this.localization('Fast Forward Ratio'), 'ff-ratio', [
             "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
@@ -4972,6 +5191,33 @@ class EmulatorJS {
     }
     cheatChanged(checked, code, index) {
         this.gameManager.setCheat(index, checked, code);
+    }
+
+    enableShader(name) {
+        try {
+            this.Module.FS.unlink("/shader/shader.glslp");
+        } catch(e) {}
+
+        if (name === "disabled" || !this.config.shaders[name]) {
+            this.gameManager.toggleShader(0);
+            return;
+        }
+
+        const shaderConfig = this.config.shaders[name];
+
+        if (typeof shaderConfig === 'string') {
+            this.Module.FS.writeFile("/shader/shader.glslp", shaderConfig, {}, 'w+');
+        } else {
+            const shader = shaderConfig.shader;
+            this.Module.FS.writeFile('/shader/shader.glslp', shader.type === 'base64' ? atob(shader.value) : shader.value, {}, 'w+');
+            if (shaderConfig.resources && shaderConfig.resources.length) {
+                shaderConfig.resources.forEach(resource => {
+                    this.Module.FS.writeFile(`/shader/${resource.name}`, resource.type === 'base64' ? atob(resource.value) : resource.value, {}, 'w+');
+                });
+            }
+        }
+
+        this.gameManager.toggleShader(1);
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {

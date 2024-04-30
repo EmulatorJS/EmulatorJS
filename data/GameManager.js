@@ -29,7 +29,8 @@ class EJS_GameManager {
             setRewindGranularity: this.Module.cwrap('set_rewind_granularity', 'null', ['number']),
             toggleSlowMotion: this.Module.cwrap('toggle_slow_motion', 'null', ['number']),
             setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
-            getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', [''])
+            getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
+            setVSync: this.Module.cwrap('set_vsync', 'null', ['number'])
         }
         this.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
         this.writeFile("/home/web_user/retroarch/userdata/config/MAME 2003 (0.78)/MAME 2003 (0.78).opt", 'mame2003_skip_disclaimer = "enabled"\nmame2003_skip_warnings = "enabled"\n');
@@ -118,10 +119,13 @@ class EJS_GameManager {
                "savefile_directory = \"/data/saves\"\n";
     }
     initShaders() {
-        if (!window.EJS_SHADERS) return;
+        if (!this.EJS.config.shaders) return;
         this.mkdir("/shader");
-        for (const shader in window.EJS_SHADERS) {
-            this.FS.writeFile('/shader/'+shader, window.EJS_SHADERS[shader]);
+        for (const shaderFileName in this.EJS.config.shaders) {
+            const shader = this.EJS.config.shaders[shaderFileName];
+            if (typeof shader === 'string') {
+                this.FS.writeFile(`/shader/${shaderFileName}`, shader);
+            }
         }
     }
     clearEJSResetTimer() {
@@ -305,6 +309,9 @@ class EJS_GameManager {
                 })
             }, null, false, {responseType: "arraybuffer", method: "GET"});
         })
+    }
+    setVSync(enabled) {
+        this.functions.setVSync(enabled);
     }
     toggleMainLoop(playing) {
         this.functions.toggleMainLoop(playing);
