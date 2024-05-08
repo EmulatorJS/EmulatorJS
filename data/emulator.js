@@ -1180,7 +1180,7 @@ class EmulatorJS {
                 if (!popup) {
                     popup = this.createPopup("", {});
                     const button = this.createElement("button");
-                    button.innerText = "Click to resume Emulator";
+                    button.innerText = this.localization("Click to resume Emulator");
                     button.classList.add("ejs_menu_button");
                     button.style.width = "25%";
                     button.style.height = "25%";
@@ -1209,7 +1209,7 @@ class EmulatorJS {
         
         let counter = 0;
         this.elements.statePopupPanel = this.createPopup("", {}, true);
-        this.elements.statePopupPanel.innerText = "Drop save state here to load";
+        this.elements.statePopupPanel.innerText = this.localization("Drop save state here to load");
         this.elements.statePopupPanel.style["text-align"] = "center";
         this.elements.statePopupPanel.style["font-size"] = "28px";
         
@@ -1465,7 +1465,7 @@ class EmulatorJS {
             })
             //Todo - Core specific licenses, contributors.
             
-            retroarch.innerText = "This project is powered by ";
+            retroarch.innerText = this.localization("This project is powered by") + " ";
             const a = this.createElement("a");
             a.href = "https://github.com/libretro/RetroArch";
             a.target = "_blank";
@@ -1474,7 +1474,7 @@ class EmulatorJS {
             const licenseLink = this.createElement("a");
             licenseLink.target = "_blank";
             licenseLink.href = "https://github.com/libretro/RetroArch/blob/master/COPYING";
-            licenseLink.innerText = "View the RetroArch license here.";
+            licenseLink.innerText = this.localization("View the RetroArch license here");
             a.appendChild(this.createElement("br"));
             a.appendChild(licenseLink);
             
@@ -5125,7 +5125,7 @@ class EmulatorJS {
         const msg = this.createElement("div");
         msg.style["padding-top"] = "0px";
         msg.style["padding-bottom"] = "15px";
-        msg.innerText = "Note that some cheats require a restart to disable.";
+        msg.innerText = this.localization("Note that some cheats require a restart to disable");
         body.appendChild(msg);
         const rows = this.createElement("div");
         body.appendChild(rows);
