@@ -1015,14 +1015,14 @@ class EmulatorJS {
                     } else {
                         this.fileName = fileNames[0];
                     }
-                    if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
-                        this.fileName = isoFile;
-                    } else if (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u')) {
+                    if (supportsExt('cue') || supportsExt('ccd') || supportsExt('toc') || supportsExt('m3u')) {
                         if (cueFile !== null) {
                             this.fileName = cueFile;
                         } else if (!disableCue) {
                             this.fileName = this.gameManager.createCueFile(fileNames);
                         }
+                    } else if (isoFile !== null && (supportsExt('iso') || supportsExt('cso') || supportsExt('chd') || supportsExt('elf'))) {
+                        this.fileName = isoFile;
                     }
                     resolve();
                 });
