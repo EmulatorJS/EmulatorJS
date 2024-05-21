@@ -22,6 +22,7 @@ class EJS_GameManager {
             saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
             supportsStates: this.Module.cwrap('supports_states', 'number', []),
             loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', []),
+            togglePointerCapture: this.Module.cwrap('toggle_capturepointer', 'null', ['number']),
             toggleFastForward: this.Module.cwrap('toggle_fastforward', 'null', ['number']),
             setFastForwardRatio: this.Module.cwrap('set_ff_ratio', 'null', ['number']),
             toggleRewind: this.Module.cwrap('toggle_rewind', 'null', ['number']),
@@ -357,6 +358,9 @@ class EJS_GameManager {
     loadSaveFiles() {
         this.clearEJSResetTimer();
         this.functions.loadSaveFiles();
+    }
+    togglePointerCapture(active) {
+        this.functions.togglePointerCapture(active);
     }
     setFastForwardRatio(ratio) {
         this.functions.setFastForwardRatio(ratio);
