@@ -18,6 +18,7 @@ Supported languages
 `ko-KO` - Korean<br>
 `af-FR` - French<br>
 `it-IT` - Italian<br>
+`tr-Tr` - Turkish<br>
 
 default: `en-US`
 
@@ -39,6 +40,7 @@ Translated for `pt-BR` originally by [@allancoding](https://github.com/allancodi
 Translated for `zh-CN` originally by [@allancoding](https://github.com/allancoding) and updated by [@eric183](https://github.com/eric183)<br>
 Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline) <br>
 Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
+Translated for `tr-Tr` by [@iGoodie](https://github.com/iGoodie) <br>
 
 ## Contributing
 
