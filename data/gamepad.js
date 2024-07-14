@@ -37,7 +37,7 @@ class GamepadHandler {
         this.timeout = setTimeout(this.loop.bind(this), 10);
     }
     updateGamepadState() {
-        const gamepads = this.getGamepads();
+        const gamepads = Array.from(this.getGamepads());
         gamepads.forEach((gamepad, index) => {
             if (!gamepad) return;
             let hasGamepad = false;
