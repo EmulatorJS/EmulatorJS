@@ -4291,7 +4291,7 @@ class EmulatorJS {
             addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
         }
 
-        addToMenu(this.localization('WebGL2'), 'webgl2Enabled', {
+        addToMenu(this.localization('WebGL2') + "(" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
             'enabled': this.localization("Enabled"),
             'disabed': this.localization("Disabled")
         }, 'disabed');
