@@ -2,16 +2,6 @@ class EmulatorJS {
     version = 13; //Increase by 1 when cores are updated
     getCore(generic) {
         const core = this.config.system;
-        /*todo:
-        Systems: msx
-        
-        Cores:
-        - FreeChaF
-        - FreeIntv
-        - NeoCD
-        - O2EM
-        - Vecx
-        */
         if (generic) {
             const options = {
                 'a5200': 'atari5200',
@@ -279,7 +269,7 @@ class EmulatorJS {
         this.currentPopup = null;
         this.isFastForward = false;
         this.isSlowMotion = false;
-        this.rewindEnabled = this.loadRewindEnabled();
+        this.rewindEnabled = this.preGetSetting("rewindEnabled") === 'enabled';
         this.touch = false;
         this.cheats = [];
         this.started = false;
@@ -308,6 +298,15 @@ class EmulatorJS {
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
         this.supportsWebgl2 = !!document.createElement('canvas').getContext('webgl2') && (this.config.forceLegacyCores !== true);
+        this.webgl2Enabled = (() => {
+            let setting = this.preGetSetting("webgl2Enabled");
+            if (setting === "disabled" || !this.supportsWebgl2) {
+                return false;
+            } else if (setting === "enabled") {
+                return true;
+            }
+            return ["n64", "psx", "nds"].includes(this.getCore(true));
+        })();
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
         if (this.config.disableDatabases) {
             this.storage = {
@@ -665,7 +664,7 @@ class EmulatorJS {
                 this.initGameCore(js, wasm, thread);
             });
         }
-        let legacy = (this.supportsWebgl2 ? "" : "-legacy");
+        let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
         let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
         this.storage.core.get(filename).then((result) => {
             if (result && result.version === this.version && !this.debug) {
@@ -3812,10 +3811,10 @@ class EmulatorJS {
         localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
     }
-    loadRewindEnabled() {
+    preGetSetting(setting) {
         if (!window.localStorage || this.config.disableLocalStorage) {
-            if (this.config.defaultOptions && this.config.defaultOptions.rewindEnabled) {
-                return this.config.defaultOptions.rewindEnabled === 'enabled';
+            if (this.config.defaultOptions && this.config.defaultOptions[setting]) {
+                return this.config.defaultOptions[setting];
             }
             return false;
         }
@@ -3825,7 +3824,7 @@ class EmulatorJS {
            if (!coreSpecific || !coreSpecific.settings) {
                return false;
            }
-           return coreSpecific.settings.rewindEnabled === 'enabled';
+           return coreSpecific.settings[setting];
         } catch (e) {
             console.warn("Could not load previous settings", e);
             return false;
@@ -4291,6 +4290,11 @@ class EmulatorJS {
             }
             addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
         }
+
+        addToMenu(this.localization('WebGL2'), 'webgl2Enabled', {
+            'enabled': this.localization("Enabled"),
+            'disabed': this.localization("Disabled")
+        }, 'disabed');
         
         addToMenu(this.localization('FPS'), 'fps', {
             'show': this.localization("show"),
