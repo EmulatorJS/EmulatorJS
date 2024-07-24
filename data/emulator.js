@@ -90,51 +90,7 @@ class EmulatorJS {
         }
         return options[core] || core;
     }
-    extensions = {
-        'a5200': ['a52', 'bin'],
-        'amiga': ['adf', 'adz', 'dms', 'fdi', 'ipf', 'raw', 'hdf', 'hdz', 'lha', 'slave', 'info', 'cue', 'ccd', 'chd', 'nrg', 'mds', 'iso', 'uae', 'm3u', 'zip', '7z'],
-        'desmume': ['nds', 'bin'],
-        'desmume2015': ['nds', 'bin'],
-        'fbalpha2012_cps1': ['zip'],
-        'fbalpha2012_cps2': ['zip'],
-        'fbneo': ['zip', '7z'],
-        'fceumm': ['fds', 'nes', 'unif', 'unf'],
-        'gambatte': ['gb', 'gbc', 'dmg'],
-        'gearcoleco': ['col', 'cv', 'bin', 'rom'],
-        'genesis_plus_gx': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
-        'handy': ['lnx'],
-        'mame2003': ['zip'],
-        'mame2003_plus': ['zip'],
-        'mednafen_ngp': ['ngp', 'ngc'],
-        'mednafen_pce': ['pce', 'cue', 'ccd', 'iso', 'img', 'bin', 'chd'],
-        'mednafen_pcfx': ['cue', 'ccd', 'toc', 'chd'],
-        'mednafen_psx': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
-        'mednafen_wswan': ['ws', 'wsc', 'pc2'],
-        'mednafen_psx_hw': ['cue', 'toc', 'm3u', 'ccd', 'exe', 'pbp', 'chd'],
-        'beetle_vb': ['vb', 'vboy', 'bin'],
-        'melonds': ['nds'],
-        'mgba': ['gb', 'gbc', 'gba'],
-        'mupen64plus_next': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
-        'nestopia': ['fds', 'nes', 'unif', 'unf'],
-        'opera': ['iso', 'bin', 'chd', 'cue'],
-        'parallel_n64': ['n64', 'v64', 'z64', 'bin', 'u1', 'ndd', 'gb'],
-        'pcsx_rearmed': ['bin', 'cue', 'img', 'mdf', 'pbp', 'toc', 'cbn', 'm3u', 'ccd'],
-        'picodrive': ['bin', 'gen', 'smd', 'md', '32x', 'cue', 'iso', 'sms', '68k', 'chd'],
-        'ppsspp': ['elf', 'iso', 'cso', 'prx', 'pbp'],
-        'prosystem': ['a78', 'bin'],
-        'puae': ['adf', 'adz', 'dms', 'fdi', 'ipf', 'raw', 'hdf', 'hdz', 'lha', 'slave', 'info', 'cue', 'ccd', 'chd', 'nrg', 'mds', 'iso', 'uae', 'm3u', 'zip', '7z'],
-        'smsplus': ['m3u', 'mdx', 'md', 'smd', 'gen', 'bin', 'cue', 'iso', 'chd', 'bms', 'sms', 'gg', 'sg', '68k', 'sgd'],
-        'snes9x': ['smc', 'sfc', 'swc', 'fig', 'bs', 'st'],
-        'stella2014': ['a26', 'bin', 'zip'],
-        'vice_x64': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
-        'vice_x64sc': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
-        'vice_x128': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
-        'vice_xpet': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
-        'vice_xplus4': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
-        'vice_xvic': ['d64', 'd6z', 'd71', 'd7z', 'd80', 'd81', 'd82', 'd8z', 'g64', 'g6z', 'g41', 'g4z', 'x64', 'x6z', 'nib', 'nbz', 'd2m', 'd4m', 't64', 'tap', 'tcrt', 'prg', 'p00', 'crt', 'bin', 'cmd', 'm3u', 'vfl', 'vsf', 'zip', '7z', 'gz', '20', '40', '60', 'a0', 'b0', 'rom'],
-        'virtualjaguar': ['j64', 'jag', 'rom', 'abs', 'cof', 'bin', 'prg'],
-        'yabause': ['cue', 'iso', 'ccd', 'mds', 'chd', 'zip', 'm3u']
-    }
+    extensions = []
     createElement(type) {
         return document.createElement(type);
     }
@@ -671,6 +627,9 @@ class EmulatorJS {
                         js = data[k];
                     } else if (k === "build.json") {
                         this.checkCoreCompatibility(JSON.parse(new TextDecoder().decode(data[k])));
+                    } else if (k === "core.json") {
+                        let core = JSON.parse(new TextDecoder().decode(data[k]));
+                        this.extensions = core.extensions;
                     }
                 }
                 this.initGameCore(js, wasm, thread);
@@ -940,8 +899,8 @@ class EmulatorJS {
     downloadRom() {
         const supportsExt = (ext) => {
             const core = this.getCore();
-            if (!this.extensions[core]) return false;
-            return this.extensions[core].includes(ext);
+            if (!this.extensions) return false;
+            return this.extensions.includes(ext);
         };
 
         return new Promise(resolve => {
