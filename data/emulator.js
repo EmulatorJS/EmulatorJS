@@ -4294,7 +4294,7 @@ class EmulatorJS {
         addToMenu(this.localization('WebGL2') + "(" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
             'enabled': this.localization("Enabled"),
             'disabed': this.localization("Disabled")
-        }, 'disabed');
+        }, ["n64", "psx", "nds"].includes(this.getCore(true)) ? "enabled" : "disabed");
         
         addToMenu(this.localization('FPS'), 'fps', {
             'show': this.localization("show"),
