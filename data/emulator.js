@@ -630,6 +630,10 @@ class EmulatorJS {
                     } else if (k === "core.json") {
                         let core = JSON.parse(new TextDecoder().decode(data[k]));
                         this.extensions = core.extensions;
+                        this.coreName = core.name;
+                        this.repository = core.repo;
+                    } else if (k === "license.txt") {
+                        this.license = new TextDecoder().decode(data[k]);
                     }
                 }
                 this.initGameCore(js, wasm, thread);
@@ -1265,6 +1269,19 @@ class EmulatorJS {
             }
         }
     }
+    createLink(elem, link, text, useP) {
+        const elm = this.createElement("a");
+        elm.href = link;
+        elm.target = "_blank";
+        elm.innerText = this.localization(text);
+        if (useP) {
+            const p = this.createElement("p");
+            p.appendChild(elm);
+            elem.appendChild(p);
+        } else {
+            elem.appendChild(elm);
+        }
+    }
     createContextMenu() {
         this.elements.contextmenu = this.createElement('div');
         this.elements.contextmenu.classList.add("ejs_context_menu");
@@ -1394,25 +1411,38 @@ class EmulatorJS {
             license.style.display = "none";
             const retroarch = this.createElement("div");
             retroarch.style.display = "none";
+            const coreLicense = this.createElement("div");
+            coreLicense.style.display = "none";
             body.appendChild(home);
             body.appendChild(license);
             body.appendChild(retroarch);
+            body.appendChild(coreLicense);
             
             let current = home;
             home.innerText = "EmulatorJS v"+this.ejs_version;
             home.appendChild(this.createElement("br"));
             home.appendChild(this.createElement("br"));
-            const gh = this.createElement("a");
-            gh.href = "https://github.com/EmulatorJS/EmulatorJS";
-            gh.target = "_blank";
-            gh.innerText = this.localization("View on GitHub");
-            home.appendChild(gh);
-            home.appendChild(this.createElement("br"));
-            const dc = this.createElement("a");
-            dc.href = "https://discord.gg/6akryGkETU";
-            dc.target = "_blank";
-            dc.innerText = this.localization("Join the discord");
-            home.appendChild(dc);
+
+            this.createLink(home, "https://github.com/EmulatorJS/EmulatorJS", "View on GitHub", true);
+
+            this.createLink(home, "https://discord.gg/6akryGkETU", "Join the discord", true);
+
+            const info = this.createElement("div");
+
+            this.createLink(info, "https://emulatorjs.org", "EmulatorJS");
+            // I do not like using innerHTML, though this should be "safe"
+            info.innerHTML += " is powered by ";
+            this.createLink(info, "https://github.com/libretro/RetroArch/", "RetroArch");
+            if (this.repository && this.coreName) {
+                info.innerHTML += ". This core is powered by ";
+                this.createLink(info, this.repository, this.coreName);
+                info.innerHTML += ".";
+            } else {
+                info.innerHTML += ".";
+            }
+            home.appendChild(info);
+
+
             home.appendChild(this.createElement("br"));
             menu.appendChild(parent);
             body.appendChild(menu);
@@ -1433,7 +1463,15 @@ class EmulatorJS {
             addButton("RetroArch License", false, () => {
                 setElem(retroarch);
             })
-            //Todo - Core specific licenses, contributors.
+            if (this.coreName && this.license) {
+                addButton(this.coreName + " License", false, () => {
+                    setElem(coreLicense);
+                })
+                coreLicense.style['text-align'] = "center";
+                coreLicense.style['padding'] = "10px";
+                coreLicense.innerText = this.license;
+            }
+            //Todo - Contributors.
             
             retroarch.innerText = this.localization("This project is powered by") + " ";
             const a = this.createElement("a");
