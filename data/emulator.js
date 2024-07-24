@@ -639,7 +639,17 @@ class EmulatorJS {
                 return new Promise(resolve => resolve({"!!notCompressedData": data}));
             }
         }
-        
+    }
+    versionAsInt(ver) {
+        return parseInt(ver.replaceAll(".", ""));
+    }
+    checkCoreCompatibility(version) {
+        // Leave commented until next release - this is ready to go.
+        if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
+            //this.textElem.innerText = this.localization("Outdated EmulatorJS version");
+            //this.textElem.style.color = "red";
+            //throw new Error("Core requires minimum EmulatorJS version of " + version.minimumEJSVersion);
+        }
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
@@ -659,6 +669,8 @@ class EmulatorJS {
                         thread = data[k];
                     } else if (k.endsWith(".js")) {
                         js = data[k];
+                    } else if (k === "build.json") {
+                        this.checkCoreCompatibility(JSON.parse(new TextDecoder().decode(data[k])));
                     }
                 }
                 this.initGameCore(js, wasm, thread);
