@@ -155,9 +155,6 @@ npm start
 
 <br>
 
-***PSP is not yet supported***. Some of y'all may have seen that I pushed a "beta" ppsspp core, but this core is not ready for daily use. It still crashes randomly and any games that use 3d (so like, all of them) will just have a white screen (and might just crash). Do not open issues related to the "psp" core.
-
-
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
 [License]: LICENSE
