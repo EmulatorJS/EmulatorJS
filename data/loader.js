@@ -20,7 +20,7 @@
             script.src = function() {
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
                     return EJS_paths[file];
-                } else if (file.endsWith(".min.js")) {
+                } else if (file.endsWith("emulator.min.js")) {
                     return scriptPath + file;
                 } else {
                     return scriptPath + "src/" + file;
