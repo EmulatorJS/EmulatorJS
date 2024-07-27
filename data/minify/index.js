@@ -2,18 +2,18 @@ const UglifyJS = require("uglify-js");
 const fs = require('fs');
 const uglifycss = require('uglifycss');
 
-let files = [
-    'nipplejs.js',
-    'shaders.js',
-    'storage.js',
-    'gamepad.js',
-    'GameManager.js',
-    'socket.io.min.js',
-    'emulator.js'
-]
+const scripts = [
+    "emulator.js",
+    "nipplejs.js",
+    "shaders.js",
+    "storage.js",
+    "gamepad.js",
+    "GameManager.js",
+    "socket.io.min.js"
+];
 let code = "(function() {\n";
-for (let i=0; i<files.length; i++) {
-    code += fs.readFileSync('../'+files[i], 'utf8') + "\n";
+for (let i=0; i<scripts.length; i++) {
+    code += fs.readFileSync('../src/'+scripts[i], 'utf8') + "\n";
 }
 code += "\n})();"
 
