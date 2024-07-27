@@ -261,7 +261,7 @@ class EmulatorJS {
             } else if (setting === "enabled") {
                 return true;
             }
-            return ["n64", "psx", "nds"].includes(this.getCore(true));
+            return null;
         })();
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
         if (this.config.disableDatabases) {
@@ -632,6 +632,10 @@ class EmulatorJS {
                         this.extensions = core.extensions;
                         this.coreName = core.name;
                         this.repository = core.repo;
+                        this.defaultWebgl2 = core.options.defaultWebGL2 === true;
+                        if (this.webgl2Enabled === null) {
+                            this.webgl2Enabled = this.defaultWebgl2;
+                        }
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
                     }
@@ -4303,7 +4307,7 @@ class EmulatorJS {
         addToMenu(this.localization('WebGL2') + "(" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
             'enabled': this.localization("Enabled"),
             'disabed': this.localization("Disabled")
-        }, ["n64", "psx", "nds"].includes(this.getCore(true)) ? "enabled" : "disabed");
+        }, this.defaultWebgl2 ? "enabled" : "disabed");
         
         addToMenu(this.localization('FPS'), 'fps', {
             'show': this.localization("show"),
