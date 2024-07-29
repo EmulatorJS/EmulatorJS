@@ -596,7 +596,7 @@ class EmulatorJS {
         }
     }
     versionAsInt(ver) {
-        return parseInt(ver.replaceAll(".", ""));
+        return parseInt(ver.split(".").join(""));
     }
     checkCoreCompatibility(version) {
         // Leave commented until next release - this is ready to go.
@@ -3447,7 +3447,7 @@ class EmulatorJS {
         
         const leftHandedMode = false;
         const blockCSS = 'height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;';
-        const controlSchemeCls = `cs_${this.getControlScheme()}`.replaceAll(/\s/g, '_');
+        const controlSchemeCls = `cs_${this.getControlScheme()}`.split(/\s/g).join('_');
         
         for (let i=0; i<info.length; i++) {
             if (info[i].type !== 'button') continue;
