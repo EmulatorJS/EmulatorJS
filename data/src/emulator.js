@@ -607,11 +607,13 @@ class EmulatorJS {
         console.log(message);
         this.textElem.innerText = message;
         this.textElem.style.color = "red";
+        this.textElem.style.bottom = "10%";
 
         this.setupSettingsMenu();
         this.loadSettings();
 
         this.menu.failedToStart();
+        this.handleResize();
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
@@ -2095,7 +2097,6 @@ class EmulatorJS {
             volumeSlider.style.display = "none";
 
             this.elements.menu.style.opacity = "";
-            this.elements.menu.style.background = "none";
             this.menu.open(true);
         }
     }
