@@ -494,8 +494,7 @@ class EmulatorJS {
             return new Promise((resolve, reject) => {
                 this.downloadFile(path, (res) => {
                     if (res === -1) {
-                        this.textElem.innerText = this.localization('Network Error');
-                        this.textElem.style.color = "red";
+                        this.startGameError(this.localization('Network Error'));
                         return;
                     }
                     const blob = new Blob([res.data], {
@@ -548,8 +547,7 @@ class EmulatorJS {
                 this.downloadFile("compression/libunrar.js", (res) => {
                     this.downloadFile("compression/libunrar.wasm", (res2) => {
                         if (res === -1 || res2 === -1) {
-                            this.textElem.innerText = this.localization('Network Error');
-                            this.textElem.style.color = "red";
+                            this.startGameError(this.localization('Network Error'));
                             return;
                         }
                         const path = URL.createObjectURL(new Blob([res2.data], {type: "application/wasm"}));
@@ -601,16 +599,24 @@ class EmulatorJS {
     checkCoreCompatibility(version) {
         // Leave commented until next release - this is ready to go.
         if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
-            //this.textElem.innerText = this.localization("Outdated EmulatorJS version");
-            //this.textElem.style.color = "red";
+            //this.startGameError(this.localization("Outdated EmulatorJS version"));
             //throw new Error("Core requires minimum EmulatorJS version of " + version.minimumEJSVersion);
         }
+    }
+    startGameError(message) {
+        console.log(message);
+        this.textElem.innerText = message;
+        this.textElem.style.color = "red";
+
+        this.setupSettingsMenu();
+        this.loadSettings();
+
+        this.menu.failedToStart();
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
         if (this.config.threads && ((typeof window.SharedArrayBuffer) !== "function")) {
-            this.textElem.innerText = this.localization('Error for site owner')+"\n"+this.localization("Check console");
-            this.textElem.style.color = "red";
+            this.startGameError(this.localization('Error for site owner')+"\n"+this.localization("Check console"));
             console.warn("Threads is set to true, but the SharedArrayBuffer function is not exposed. Threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
             return;
         }
@@ -661,11 +667,10 @@ class EmulatorJS {
                         this.downloadFile("https://cdn.emulatorjs.org/stable/data/"+corePath, (res) => {
                             if (res === -1) {
                                 if (!this.supportsWebgl2) {
-                                    this.textElem.innerText = this.localization('Outdated graphics driver');
+                                    this.startGameError(this.localization('Outdated graphics driver'));
                                 } else {
-                                    this.textElem.innerText = this.localization('Network Error');
+                                    this.startGameError(this.localization('Network Error'));
                                 }
-                                this.textElem.style.color = "red";
                                 return;
                             }
                             console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the latest release from here: https://cdn.emulatorjs.org/releases/");
@@ -737,8 +742,7 @@ class EmulatorJS {
             
             this.downloadFile(this.config.loadState, (res) => {
                 if (res === -1) {
-                    this.textElem.innerText = this.localization('Network Error');
-                    this.textElem.style.color = "red";
+                    this.startGameError(this.localization('Network Error'));
                     return;
                 }
                 this.on("start", () => {
@@ -781,8 +785,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.gamePatchUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = this.localization('Network Error');
-                            this.textElem.style.color = "red";
+                            this.startGameError(this.localization('Network Error'));
                             return;
                         }
                         if (this.toData(this.config.gamePatchUrl, true)) {
@@ -832,8 +835,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.gameParentUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = this.localization('Network Error');
-                            this.textElem.style.color = "red";
+                            this.startGameError(this.localization('Network Error'));
                             return;
                         }
                         if (this.toData(this.config.gameParentUrl, true)) {
@@ -877,8 +879,7 @@ class EmulatorJS {
             
             this.downloadFile(this.config.biosUrl, (res) => {
                 if (res === -1) {
-                    this.textElem.innerText = this.localization('Network Error');
-                    this.textElem.style.color = "red";
+                    this.startGameError(this.localization('Network Error'));
                     return;
                 }
                 this.storage.bios.get(this.config.biosUrl.split("/").pop()).then((result) => {
@@ -888,8 +889,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.biosUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = this.localization('Network Error');
-                            this.textElem.style.color = "red";
+                            this.startGameError(this.localization('Network Error'));
                             return;
                         }
                         if (this.toData(this.config.biosUrl, true)) {
@@ -1013,8 +1013,7 @@ class EmulatorJS {
             
             this.downloadFile(this.config.gameUrl, (res) => {
                 if (res === -1) {
-                    this.textElem.innerText = this.localization('Network Error');
-                    this.textElem.style.color = "red";
+                    this.startGameError(this.localization('Network Error'));
                     return;
                 }
                 const name = (typeof this.config.gameUrl === "string") ? this.config.gameUrl.split('/').pop() : "game";
@@ -1025,8 +1024,7 @@ class EmulatorJS {
                     }
                     this.downloadFile(this.config.gameUrl, (res) => {
                         if (res === -1) {
-                            this.textElem.innerText = this.localization('Network Error');
-                            this.textElem.style.color = "red";
+                            this.startGameError(this.localization('Network Error'));
                             return;
                         }
                         if (this.toData(this.config.gameUrl, true)) {
@@ -1143,8 +1141,7 @@ class EmulatorJS {
             }
         } catch(e) {
             console.warn("failed to start game", e);
-            this.textElem.innerText = this.localization("Failed to start game");
-            this.textElem.style.color = "red";
+            this.startGameError(this.localization("Failed to start game"));
             return;
         }
         this.callEvent("start");
@@ -1618,12 +1615,11 @@ class EmulatorJS {
         })
         this.menu = {
             close: () => {
-                if (!this.started) return;
                 clearTimeout(timeout);
                 this.elements.menu.classList.add("ejs_menu_bar_hidden");
             },
-            open: () => {
-                if (!this.started) return;
+            open: (force) => {
+                if (!this.started && force !== true) return;
                 clearTimeout(timeout);
                 timeout = setTimeout(hide, 3000);
                 this.elements.menu.classList.remove("ejs_menu_bar_hidden");
@@ -1635,7 +1631,6 @@ class EmulatorJS {
                     timeout = setTimeout(hide, 3000);
                 }
                 this.elements.menu.classList.toggle("ejs_menu_bar_hidden");
-                
             }
         }
         this.elements.parent.appendChild(this.elements.menu);
@@ -2061,14 +2056,47 @@ class EmulatorJS {
                 muteButton.style.display = "none";
                 unmuteButton.style.display = "none";
             }
-            if (this.config.buttonOpts.saveState === false) saveState.style.display = "none"
-            if (this.config.buttonOpts.loadState === false) loadState.style.display = "none"
-            if (this.config.buttonOpts.saveSavFiles === false) saveSavFiles.style.display = "none"
-            if (this.config.buttonOpts.loadSavFiles === false) loadSavFiles.style.display = "none"
-            if (this.config.buttonOpts.gamepad === false) controlMenu.style.display = "none"
-            if (this.config.buttonOpts.cheat === false) cheatMenu.style.display = "none"
-            if (this.config.buttonOpts.cacheManager === false) cache.style.display = "none"
-            if (this.config.buttonOpts.netplay === false) netplay.style.display = "none"
+            if (this.config.buttonOpts.saveState === false) saveState.style.display = "none";
+            if (this.config.buttonOpts.loadState === false) loadState.style.display = "none";
+            if (this.config.buttonOpts.saveSavFiles === false) saveSavFiles.style.display = "none";
+            if (this.config.buttonOpts.loadSavFiles === false) loadSavFiles.style.display = "none";
+            if (this.config.buttonOpts.gamepad === false) controlMenu.style.display = "none";
+            if (this.config.buttonOpts.cheat === false) cheatMenu.style.display = "none";
+            if (this.config.buttonOpts.cacheManager === false) cache.style.display = "none";
+            if (this.config.buttonOpts.netplay === false) netplay.style.display = "none";
+            if (this.config.buttonOpts.diskButton === false) diskButton[0].style.display = "none";
+            if (this.config.buttonOpts.volumeSlider === false) volumeSlider.style.display = "none";
+        }
+
+        this.menu.failedToStart = () => {
+            if (!this.config.buttonOpts) this.config.buttonOpts = {};
+            this.config.buttonOpts.mute = false;
+
+            settingButton[0].style.display = "";
+
+            // Hide all except settings button.
+            pauseButton.style.display = "none";
+            playButton.style.display = "none";
+            contextMenuButton.style.display = "none";
+            restartButton.style.display = "none";
+            enter.style.display = "none";
+            exit.style.display = "none";
+            muteButton.style.display = "none";
+            unmuteButton.style.display = "none";
+            saveState.style.display = "none";
+            loadState.style.display = "none";
+            saveSavFiles.style.display = "none";
+            loadSavFiles.style.display = "none";
+            controlMenu.style.display = "none";
+            cheatMenu.style.display = "none";
+            cache.style.display = "none";
+            netplay.style.display = "none";
+            diskButton[0].style.display = "none";
+            volumeSlider.style.display = "none";
+
+            this.elements.menu.style.opacity = "";
+            this.elements.menu.style.background = "none";
+            this.menu.open(true);
         }
     }
     openCacheMenu() {
@@ -3895,6 +3923,7 @@ class EmulatorJS {
     menuOptionChanged(option, value) {
         this.saveSettings();
         if (this.debug) console.log(option, value);
+        if (!this.gameManager) return;
         if (option === "shader") {
             this.enableShader(value);
             return;
@@ -4309,7 +4338,7 @@ class EmulatorJS {
             addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
         }
 
-        addToMenu(this.localization('WebGL2') + "(" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
+        addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
             'enabled': this.localization("Enabled"),
             'disabed': this.localization("Disabled")
         }, this.defaultWebgl2 ? "enabled" : "disabed");
@@ -5155,6 +5184,7 @@ class EmulatorJS {
         this.elements.cheatRows = rows;
     }
     updateCheatUI() {
+        if (!this.gameManager) return;
         this.elements.cheatRows.innerHTML = "";
         
         const addToMenu = (desc, checked, code, is_permanent, i) => {
@@ -5197,10 +5227,12 @@ class EmulatorJS {
         }
     }
     cheatChanged(checked, code, index) {
+        if (!this.gameManager) return;
         this.gameManager.setCheat(index, checked, code);
     }
 
     enableShader(name) {
+        if (!this.gameManager) return;
         try {
             this.Module.FS.unlink("/shader/shader.glslp");
         } catch(e) {}
