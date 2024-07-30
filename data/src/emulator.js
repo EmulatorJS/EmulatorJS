@@ -4339,10 +4339,12 @@ class EmulatorJS {
             addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
         }
 
-        addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
-            'enabled': this.localization("Enabled"),
-            'disabed': this.localization("Disabled")
-        }, this.defaultWebgl2 ? "enabled" : "disabed");
+        if (this.supportsWebgl2) {
+            addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
+                'enabled': this.localization("Enabled"),
+                'disabed': this.localization("Disabled")
+            }, this.defaultWebgl2 ? "enabled" : "disabed");
+        }
         
         addToMenu(this.localization('FPS'), 'fps', {
             'show': this.localization("show"),
