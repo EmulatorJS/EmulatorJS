@@ -639,10 +639,6 @@ class EmulatorJS {
                         this.extensions = core.extensions;
                         this.coreName = core.name;
                         this.repository = core.repo;
-                        this.defaultWebgl2 = core.options.defaultWebGL2 === true;
-                        if (this.webgl2Enabled === null) {
-                            this.webgl2Enabled = this.defaultWebgl2;
-                        }
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
                     }
@@ -653,7 +649,15 @@ class EmulatorJS {
         const report = "cores/reports/" + this.getCore() + ".json";
         this.downloadFile(report, (rep) => {
             if (rep === -1) {
-                rep = {buildStart: Math.random() * 100};
+                rep = {};
+            } else {
+                rep = rep.data;
+            }
+            if (!rep.buildStart) {
+                rep.buildStart = Math.random() * 100;
+            }
+            if (this.webgl2Enabled === null) {
+                this.webgl2Enabled = rep.options && rep.options.defaultWebGL2;
             }
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
@@ -4342,8 +4346,8 @@ class EmulatorJS {
         if (this.supportsWebgl2) {
             addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
                 'enabled': this.localization("Enabled"),
-                'disabed': this.localization("Disabled")
-            }, this.defaultWebgl2 ? "enabled" : "disabed");
+                'disabled': this.localization("Disabled")
+            }, this.webgl2Enabled ? "enabled" : "disabled");
         }
         
         addToMenu(this.localization('FPS'), 'fps', {
