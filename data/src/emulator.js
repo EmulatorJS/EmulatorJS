@@ -1686,19 +1686,18 @@ class EmulatorJS {
         
         const restartButton = addButton("Restart", '<svg viewBox="0 0 512 512"><path d="M496 48V192c0 17.69-14.31 32-32 32H320c-17.69 0-32-14.31-32-32s14.31-32 32-32h63.39c-29.97-39.7-77.25-63.78-127.6-63.78C167.7 96.22 96 167.9 96 256s71.69 159.8 159.8 159.8c34.88 0 68.03-11.03 95.88-31.94c14.22-10.53 34.22-7.75 44.81 6.375c10.59 14.16 7.75 34.22-6.375 44.81c-39.03 29.28-85.36 44.86-134.2 44.86C132.5 479.9 32 379.4 32 256s100.5-223.9 223.9-223.9c69.15 0 134 32.47 176.1 86.12V48c0-17.69 14.31-32 32-32S496 30.31 496 48z"/></svg>', () => {
             if (this.isNetplay && this.netplay.owner) {
-                this.gameManager.saveSaveFiles();
                 this.gameManager.restart();
                 this.netplay.reset();
                 this.netplay.sendMessage({restart:true});
                 this.play();
             } else if (!this.isNetplay) {
-                this.gameManager.saveSaveFiles();
                 this.gameManager.restart();
             }
         });
         const pauseButton = addButton("Pause", '<svg viewBox="0 0 320 512"><path d="M272 63.1l-32 0c-26.51 0-48 21.49-48 47.1v288c0 26.51 21.49 48 48 48L272 448c26.51 0 48-21.49 48-48v-288C320 85.49 298.5 63.1 272 63.1zM80 63.1l-32 0c-26.51 0-48 21.49-48 48v288C0 426.5 21.49 448 48 448l32 0c26.51 0 48-21.49 48-48v-288C128 85.49 106.5 63.1 80 63.1z"/></svg>', () => {
             if (this.isNetplay && this.netplay.owner) {
                 this.pause();
+                this.gameManager.saveSaveFiles();
                 this.netplay.sendMessage({pause:true});
             } else if (!this.isNetplay) {
                 this.pause();
@@ -2007,6 +2006,56 @@ class EmulatorJS {
                 }
             }
         }
+
+        const exitEmulation = addButton("Exit EmulatorJS", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 460"><path style="fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(255,255,255);stroke-opacity:1;stroke-miterlimit:4;" d="M 14.000061 7.636414 L 14.000061 4.5 C 14.000061 4.223877 13.776123 3.999939 13.5 3.999939 L 4.5 3.999939 C 4.223877 3.999939 3.999939 4.223877 3.999939 4.5 L 3.999939 19.5 C 3.999939 19.776123 4.223877 20.000061 4.5 20.000061 L 13.5 20.000061 C 13.776123 20.000061 14.000061 19.776123 14.000061 19.5 L 14.000061 16.363586 " transform="matrix(21.333333,0,0,21.333333,0,0)"/><path style="fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(255,255,255);stroke-opacity:1;stroke-miterlimit:4;" d="M 9.999939 12 L 21 12 M 21 12 L 18.000366 8.499939 M 21 12 L 18 15.500061 " transform="matrix(21.333333,0,0,21.333333,0,0)"/></svg>', async () => {
+            const popups = this.createSubPopup();
+            this.game.appendChild(popups[0]);
+            popups[1].classList.add("ejs_cheat_parent");
+            popups[1].style.width = "100%";
+            const popup = popups[1];
+            const header = this.createElement("div");
+            header.classList.add("ejs_cheat_header");
+            const title = this.createElement("h2");
+            title.innerText = this.localization("Are you sure you want to exit?");
+            title.classList.add("ejs_cheat_heading");
+            const close = this.createElement("button");
+            close.classList.add("ejs_cheat_close");
+            header.appendChild(title);
+            header.appendChild(close);
+            popup.appendChild(header);
+            this.addEventListener(close, "click", (e) => {
+                popups[0].remove();
+            })
+            popup.appendChild(this.createElement("br"));
+
+            const footer = this.createElement("footer");
+            const submit = this.createElement("button");
+            const closeButton = this.createElement("button");
+            submit.innerText = this.localization("Exit");
+            closeButton.innerText = this.localization("Cancel");
+            submit.classList.add("ejs_button_button");
+            closeButton.classList.add("ejs_button_button");
+            submit.classList.add("ejs_popup_submit");
+            closeButton.classList.add("ejs_popup_submit");
+            submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+            footer.appendChild(submit);
+            const span = this.createElement("span");
+            span.innerText = " ";
+            footer.appendChild(span);
+            footer.appendChild(closeButton);
+            popup.appendChild(footer);
+
+            this.addEventListener(closeButton, "click", (e) => {
+                popups[0].remove();
+            })
+
+            this.addEventListener(submit, "click", (e) => {
+                popups[0].remove();
+                const body = this.createPopup("EmulatorJS has exited", {});
+                this.callEvent("exit");
+            })
+
+        });
         
         
         this.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {

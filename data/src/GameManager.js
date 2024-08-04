@@ -43,10 +43,15 @@ class EJS_GameManager {
         this.FS.syncfs(true, () => {});
         
         this.initShaders();
-        
-        this.EJS.addEventListener(window, "beforeunload", () => {
-            this.saveSaveFiles();
-            this.FS.syncfs(() => {});
+
+        this.EJS.on("exit", () => {
+            this.toggleMainLoop(0);
+            this.functions.saveSaveFiles();
+            setTimeout(() => {
+                this.FS.syncfs(() => {
+                    try {window.abort()} catch(e){};
+                });
+            }, 500);
         })
     }
     loadExternalFiles() {
