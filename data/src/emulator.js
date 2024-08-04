@@ -475,123 +475,16 @@ class EmulatorJS {
         }
         return text;
     }
-    isCompressed(data) { //https://www.garykessler.net/library/file_sigs.html
-        //todo. Use hex instead of numbers
-        if ((data[0] === 80 && data[1] === 75) && ((data[2] === 3 && data[3] === 4) || (data[2] === 5 && data[3] === 6) || (data[2] === 7 && data[3] === 8))) {
-            return 'zip';
-        } else if (data[0] === 55 && data[1] === 122 && data[2] === 188 && data[3] === 175 && data[4] === 39 && data[5] === 28) {
-            return '7z';
-        } else if ((data[0] === 82 && data[1] === 97 && data[2] === 114 && data[3] === 33 && data[4] === 26 && data[5] === 7) && ((data[6] === 0) || (data[6] === 1 && data[7] == 0))) {
-            return 'rar';
-        }
-    }
     checkCompression(data, msg, fileCbFunc) {
+        if (!this.compression) {
+            this.compression = new EJS_COMPRESSION(this);
+        }
         if (msg) {
             this.textElem.innerText = msg;
         }
-        //to be put in another file
-        const createWorker = (path) => {
-            return new Promise((resolve, reject) => {
-                this.downloadFile(path, (res) => {
-                    if (res === -1) {
-                        this.startGameError(this.localization('Network Error'));
-                        return;
-                    }
-                    const blob = new Blob([res.data], {
-                        'type': 'application/javascript'
-                    })
-                    const url = window.URL.createObjectURL(blob);
-                    resolve(new Worker(url));
-                }, null, false, {responseType: "arraybuffer", method: "GET"});
-            })
-        }
-        const files = {};
-        let res;
-        const onMessage = (data) => {
-            if (!data.data) return;
-            //data.data.t/ 4=progress, 2 is file, 1 is zip done
-            if (data.data.t === 4 && msg) {
-                const pg = data.data;
-                const num = Math.floor(pg.current / pg.total * 100);
-                if (isNaN(num)) return;
-                const progress = ' '+num.toString()+'%';
-                this.textElem.innerText = msg + progress;
-            }
-            if (data.data.t === 2) {
-                if (typeof fileCbFunc === "function") {
-                    fileCbFunc(data.data.file, data.data.data);
-                    files[data.data.file] = true;
-                } else {
-                    files[data.data.file] = data.data.data;
-                }
-            }
-            if (data.data.t === 1) {
-                res(files);
-            }
-        }
-        const decompress7z = (file) => {
-            return new Promise((resolve, reject) => {
-                res = resolve;
-                
-                createWorker('compression/extract7z.js').then((worker) => {
-                    worker.onmessage = onMessage;
-                    worker.postMessage(file);
-                    //console.log(file);
-                })
-            })
-        }
-        const decompressRar = (file) => {
-            return new Promise((resolve, reject) => {
-                res = resolve;
-                
-                this.downloadFile("compression/libunrar.js", (res) => {
-                    this.downloadFile("compression/libunrar.wasm", (res2) => {
-                        if (res === -1 || res2 === -1) {
-                            this.startGameError(this.localization('Network Error'));
-                            return;
-                        }
-                        const path = URL.createObjectURL(new Blob([res2.data], {type: "application/wasm"}));
-                        let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \''+path+'\';\n    }\n};\n'+res.data+'\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (!entry) return;\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
-                        const blob = new Blob([data], {
-                            'type': 'application/javascript'
-                        })
-                        const url = window.URL.createObjectURL(blob);
-                        const worker = new Worker(url);
-                        worker.onmessage = onMessage;
-                        worker.postMessage(file);
-                    }, null, false, {responseType: "arraybuffer", method: "GET"})
-                }, null, false, {responseType: "text", method: "GET"});
-                
-            })
-        }
-        const decompressZip = (file) => {
-            return new Promise((resolve, reject) => {
-                res = resolve;
-                
-                createWorker('compression/extractzip.js').then((worker) => {
-                    worker.onmessage = onMessage;
-                    worker.postMessage(file);
-                })
-            })
-        }
-        const compression = this.isCompressed(data.slice(0, 10));
-        if (compression) {
-            //Need to do zip and rar still
-            if (compression === "7z") {
-                return decompress7z(data);
-            } else if (compression === "zip") {
-                return decompressZip(data);
-            } else if (compression === "rar") {
-                return decompressRar(data);
-            }
-        } else {
-            if (typeof fileCbFunc === "function") {
-                fileCbFunc("!!notCompressedData", data);
-                return new Promise(resolve => resolve({"!!notCompressedData": true}));
-            } else {
-                return new Promise(resolve => resolve({"!!notCompressedData": data}));
-            }
-        }
+        return this.compression.decompress(data, (m, appendMsg) => {
+            this.textElem.innerText = appendMsg ? (msg + m) : m;
+        }, fileCbFunc);
     }
     versionAsInt(ver) {
         return parseInt(ver.split(".").join(""));

@@ -6,7 +6,8 @@
         "storage.js",
         "gamepad.js",
         "GameManager.js",
-        "socket.io.min.js"
+        "socket.io.min.js",
+        "compression.js"
     ];
 
 

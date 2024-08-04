@@ -9,7 +9,8 @@ const scripts = [
     "storage.js",
     "gamepad.js",
     "GameManager.js",
-    "socket.io.min.js"
+    "socket.io.min.js",
+    "compression.js"
 ];
 let code = "(function() {\n";
 for (let i=0; i<scripts.length; i++) {
