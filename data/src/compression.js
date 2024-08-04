@@ -100,3 +100,5 @@ class EJS_COMPRESSION {
         });
     }
 }
+
+window.EJS_COMPRESSION = EJS_COMPRESSION;

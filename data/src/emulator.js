@@ -202,20 +202,29 @@ class EmulatorJS {
         })
     }
     checkForUpdates() {
+        if (this.ejs_version.endsWith("-beta")) {
+            console.warn("Using EmulatorJS beta. Not checking for updates. This instance may be out of date. Using stable is highly recommended unless you build and ship your own cores.");
+            return;
+        }
         fetch('https://cdn.emulatorjs.org/stable/data/version.json').then(response => {
             if (response.ok) {
                 response.text().then(body => {
                     let version = JSON.parse(body);
-                    if (this.ejs_num_version < version.current_version) {
-                        console.log('Using EmulatorJS version ' + this.ejs_num_version + ' but the newest version is ' + version.current_version + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
+                    if (this.versionAsInt(this.ejs_version) < this.versionAsInt(version.current_version)) {
+                        console.log('Using EmulatorJS version ' + this.versionAsInt(this.ejs_version) + ' but the newest version is ' + this.versionAsInt(version.current_version) + '\nopen https://github.com/EmulatorJS/EmulatorJS to update');
                     }
                 })
             }
         })
     }
+    versionAsInt(ver) {
+        if (ver.endsWith("-beta")) {
+            return 99999999;
+        }
+        return parseInt(ver.split(".").join(""));
+    }
     constructor(element, config) {
-        this.ejs_version = "4.0.12";
-        this.ejs_num_version = 401.2;
+        this.ejs_version = "4.0.13-beta";
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
@@ -477,7 +486,7 @@ class EmulatorJS {
     }
     checkCompression(data, msg, fileCbFunc) {
         if (!this.compression) {
-            this.compression = new EJS_COMPRESSION(this);
+            this.compression = new window.EJS_COMPRESSION(this);
         }
         if (msg) {
             this.textElem.innerText = msg;
@@ -485,9 +494,6 @@ class EmulatorJS {
         return this.compression.decompress(data, (m, appendMsg) => {
             this.textElem.innerText = appendMsg ? (msg + m) : m;
         }, fileCbFunc);
-    }
-    versionAsInt(ver) {
-        return parseInt(ver.split(".").join(""));
     }
     checkCoreCompatibility(version) {
         // Leave commented until next release - this is ready to go.
