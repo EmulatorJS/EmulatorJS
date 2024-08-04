@@ -39,8 +39,8 @@ class EJS_GameManager {
         
         this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
         
-        this.FS.mount(IDBFS, {}, '/data/saves');
-        this.FS.syncfs(true, () => {});
+        this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
+        //this.FS.syncfs(true, () => {});
         
         this.initShaders();
 
@@ -48,10 +48,8 @@ class EJS_GameManager {
             this.toggleMainLoop(0);
             this.functions.saveSaveFiles();
             setTimeout(() => {
-                this.FS.syncfs(() => {
-                    try {window.abort()} catch(e){};
-                });
-            }, 500);
+                try {window.abort()} catch(e){};
+            }, 1000);
         })
     }
     loadExternalFiles() {
@@ -164,7 +162,7 @@ class EJS_GameManager {
         return new Promise(async resolve => {
             while (1) {
                 try {
-                    FS.stat("/screenshot.png");
+                    this.FS.stat("/screenshot.png");
                     return resolve(this.FS.readFile("/screenshot.png"));
                 } catch(e) {}
                 
@@ -273,14 +271,14 @@ class EJS_GameManager {
         }
         for (let i=0; i<fileNames.length; i++) {
             const contents = " FILE \""+fileNames[i]+"\" BINARY\n  TRACK 01 MODE1/2352\n   INDEX 01 00:00:00";
-            FS.writeFile("/"+baseFileName+"-"+i+".cue", contents);
+            this.FS.writeFile("/"+baseFileName+"-"+i+".cue", contents);
         }
         if (fileNames.length > 1) {
             let contents = "";
             for (let i=0; i<fileNames.length; i++) {
                 contents += "/"+baseFileName+"-"+i+".cue\n";
             }
-            FS.writeFile("/"+baseFileName+".m3u", contents);
+            this.FS.writeFile("/"+baseFileName+".m3u", contents);
         }
         return (fileNames.length === 1) ? baseFileName+"-0.cue" : baseFileName+".m3u";
     }
@@ -304,7 +302,7 @@ class EJS_GameManager {
                             if (paths[i] === "") continue;
                             cp += "/"+paths[i];
                             if (!FS.analyzePath(cp).exists) {
-                                FS.mkdir(cp);
+                                this.FS.mkdir(cp);
                             }
                         }
                         this.FS.writeFile(path, data);
@@ -349,15 +347,15 @@ class EJS_GameManager {
     }
     saveSaveFiles() {
         this.functions.saveSaveFiles();
-        this.FS.syncfs(false, () => {});
+        //this.FS.syncfs(false, () => {});
     }
     supportsStates() {
         return !!this.functions.supportsStates();
     }
     getSaveFile() {
         this.saveSaveFiles();
-        const exists = FS.analyzePath(this.getSaveFilePath()).exists;
-        return (exists ? FS.readFile(this.getSaveFilePath()) : null);
+        const exists = this.FS.analyzePath(this.getSaveFilePath()).exists;
+        return (exists ? this.FS.readFile(this.getSaveFilePath()) : null);
     }
     loadSaveFiles() {
         this.clearEJSResetTimer();
