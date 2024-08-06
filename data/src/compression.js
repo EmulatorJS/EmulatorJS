@@ -1,5 +1,4 @@
 class EJS_COMPRESSION {
-    cache = {};
     constructor(EJS) {
         this.EJS = EJS;
     }
@@ -37,16 +36,12 @@ class EJS_COMPRESSION {
                 path = "compression/libunrar.js";
                 obj = "rar";
             }
-            if (this.cache[obj]) {
-                return this.cache[obj];
-            }
             this.EJS.downloadFile(path, (res) => {
                 if (res === -1) {
                     this.EJS.startGameError(this.EJS.localization('Network Error'));
                     return;
                 }
                 if (method === "rar") {
-                    // Do not cache rar. This shouldnt normally be used more than once anyways.
                     this.EJS.downloadFile("compression/libunrar.wasm", (res2) => {
                         if (res2 === -1) {
                             this.EJS.startGameError(this.EJS.localization('Network Error'));
@@ -63,7 +58,6 @@ class EJS_COMPRESSION {
                     const blob = new Blob([res.data], {
                         type: 'application/javascript'
                     })
-                    this.cache[obj] = blob;
                     resolve(blob);
                 }
             }, null, false, {responseType: "arraybuffer", method: "GET"});
