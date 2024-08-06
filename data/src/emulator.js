@@ -1517,13 +1517,6 @@ class EmulatorJS {
             timeout = setTimeout(hide, 3000);
             this.elements.menu.classList.remove("ejs_menu_bar_hidden");
         })
-        this.addEventListener(this.elements.menu, 'touchstart touchend', (e) => {
-            if (!this.started) return;
-            if (this.isPopupOpen()) return;
-            clearTimeout(timeout);
-            timeout = setTimeout(hide, 3000);
-            this.elements.menu.classList.remove("ejs_menu_bar_hidden");
-        })
         this.menu = {
             close: () => {
                 clearTimeout(timeout);
@@ -1532,7 +1525,7 @@ class EmulatorJS {
             open: (force) => {
                 if (!this.started && force !== true) return;
                 clearTimeout(timeout);
-                timeout = setTimeout(hide, 3000);
+                if (force !== true) timeout = setTimeout(hide, 3000);
                 this.elements.menu.classList.remove("ejs_menu_bar_hidden");
             },
             toggle: () => {
@@ -1798,10 +1791,11 @@ class EmulatorJS {
         this.elements.menu.appendChild(volumeSettings);
 
         const contextMenuButton = addButton("Context Menu", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>', () => {
-            if (this.elements.contextmenu.style.display == "none") {
+            if (this.elements.contextmenu.style.display === "none") {
                 this.elements.contextmenu.style.display = "block";
                 this.elements.contextmenu.style.left = (getComputedStyle(this.elements.parent).width.split("px")[0]/2 - getComputedStyle(this.elements.contextmenu).width.split("px")[0]/2)+"px";
                 this.elements.contextmenu.style.top = (getComputedStyle(this.elements.parent).height.split("px")[0]/2 - getComputedStyle(this.elements.contextmenu).height.split("px")[0]/2)+"px";
+                setTimeout(this.menu.close.bind(this), 20);
             } else {
                 this.elements.contextmenu.style.display = "none";
             }
@@ -1912,7 +1906,10 @@ class EmulatorJS {
             }
         }
 
+        let exitMenuIsOpen = false;
         const exitEmulation = addButton("Exit EmulatorJS", '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 460"><path style="fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(255,255,255);stroke-opacity:1;stroke-miterlimit:4;" d="M 14.000061 7.636414 L 14.000061 4.5 C 14.000061 4.223877 13.776123 3.999939 13.5 3.999939 L 4.5 3.999939 C 4.223877 3.999939 3.999939 4.223877 3.999939 4.5 L 3.999939 19.5 C 3.999939 19.776123 4.223877 20.000061 4.5 20.000061 L 13.5 20.000061 C 13.776123 20.000061 14.000061 19.776123 14.000061 19.5 L 14.000061 16.363586 " transform="matrix(21.333333,0,0,21.333333,0,0)"/><path style="fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke:rgb(255,255,255);stroke-opacity:1;stroke-miterlimit:4;" d="M 9.999939 12 L 21 12 M 21 12 L 18.000366 8.499939 M 21 12 L 18 15.500061 " transform="matrix(21.333333,0,0,21.333333,0,0)"/></svg>', async () => {
+            if (exitMenuIsOpen) return;
+            exitMenuIsOpen = true;
             const popups = this.createSubPopup();
             this.game.appendChild(popups[0]);
             popups[1].classList.add("ejs_cheat_parent");
@@ -1929,6 +1926,7 @@ class EmulatorJS {
             header.appendChild(close);
             popup.appendChild(header);
             this.addEventListener(close, "click", (e) => {
+                exitMenuIsOpen = false
                 popups[0].remove();
             })
             popup.appendChild(this.createElement("br"));
@@ -1952,6 +1950,7 @@ class EmulatorJS {
 
             this.addEventListener(closeButton, "click", (e) => {
                 popups[0].remove();
+                exitMenuIsOpen = false
             })
 
             this.addEventListener(submit, "click", (e) => {
@@ -1959,7 +1958,7 @@ class EmulatorJS {
                 const body = this.createPopup("EmulatorJS has exited", {});
                 this.callEvent("exit");
             })
-
+            setTimeout(this.menu.close.bind(this), 20);
         });
         
         
@@ -1995,7 +1994,8 @@ class EmulatorJS {
             cacheManager: [cache],
             saveSavFiles: [saveSavFiles],
             loadSavFiles: [loadSavFiles],
-            netplay: [netplay]
+            netplay: [netplay],
+            exit: [exitEmulation]
         }
         
         
@@ -2026,6 +2026,7 @@ class EmulatorJS {
             if (this.config.buttonOpts.netplay === false) netplay.style.display = "none";
             if (this.config.buttonOpts.diskButton === false) diskButton[0].style.display = "none";
             if (this.config.buttonOpts.volumeSlider === false) volumeSlider.style.display = "none";
+            if (this.config.buttonOpts.exitEmulation === false) exitEmulation.style.display = "none";
         }
 
         this.menu.failedToStart = () => {
@@ -2053,6 +2054,7 @@ class EmulatorJS {
             netplay.style.display = "none";
             diskButton[0].style.display = "none";
             volumeSlider.style.display = "none";
+            exitEmulation.style.display = "none";
 
             this.elements.menu.style.opacity = "";
             this.menu.open(true);
