@@ -521,6 +521,7 @@ class EmulatorJS {
             return;
         }
         const gotCore = (data) => {
+            this.defaultCoreOpts = {};
             this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
                 let js, thread, wasm;
                 for (let k in data) {
@@ -537,6 +538,7 @@ class EmulatorJS {
                         this.extensions = core.extensions;
                         this.coreName = core.name;
                         this.repository = core.repo;
+                        this.defaultCoreOpts = core.options;
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
                     }
@@ -546,7 +548,7 @@ class EmulatorJS {
         }
         const report = "cores/reports/" + this.getCore() + ".json";
         this.downloadFile(report, (rep) => {
-            if (rep === -1) {
+            if (rep === -1 || typeof report === "string") {
                 rep = {};
             } else {
                 rep = rep.data;
@@ -1623,7 +1625,7 @@ class EmulatorJS {
             this.gameManager.toggleMainLoop(this.paused ? 0 : 1);
             
             //I now realize its not easy to pause it while the cursor is locked, just in case I guess
-            if (this.getCore(true) === "nds") {
+            if (this.defaultCoreOpts.supportsMouse) {
                 if (this.canvas.exitPointerLock) {
                     this.canvas.exitPointerLock();
                 } else if (this.canvas.mozExitPointerLock) {
@@ -1849,7 +1851,7 @@ class EmulatorJS {
 
         this.addEventListener(this.canvas, "click", (e) => {
             if (e.pointerType === "touch") return;
-            if (this.getCore(true) === "nds" && !this.paused) {
+            if (this.defaultCoreOpts.supportsMouse && !this.paused) {
                 if (this.canvas.requestPointerLock) {
                     this.canvas.requestPointerLock();
                 } else if (this.canvas.mozRequestPointerLock) {
@@ -1882,7 +1884,7 @@ class EmulatorJS {
                 enter.style.display = "none";
                 if (this.isMobile) {
                     try {
-                        screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});;
+                        screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});
                     } catch(e) {}
                 }
             } else {
