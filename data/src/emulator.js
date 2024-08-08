@@ -496,10 +496,9 @@ class EmulatorJS {
         }, fileCbFunc);
     }
     checkCoreCompatibility(version) {
-        // Leave commented until next release - this is ready to go.
         if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
-            //this.startGameError(this.localization("Outdated EmulatorJS version"));
-            //throw new Error("Core requires minimum EmulatorJS version of " + version.minimumEJSVersion);
+            this.startGameError(this.localization("Outdated EmulatorJS version"));
+            throw new Error("Core requires minimum EmulatorJS version of " + version.minimumEJSVersion);
         }
     }
     startGameError(message) {
