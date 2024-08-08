@@ -31,9 +31,6 @@ class EJS_GameManager {
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
             setVSync: this.Module.cwrap('set_vsync', 'null', ['number'])
         }
-        this.writeFile("/home/web_user/retroarch/userdata/config/Beetle PSX HW/Beetle PSX HW.opt", 'beetle_psx_hw_renderer = "software"\n');
-        this.writeFile("/home/web_user/retroarch/userdata/config/MAME 2003 (0.78)/MAME 2003 (0.78).opt", 'mame2003_skip_disclaimer = "enabled"\nmame2003_skip_warnings = "enabled"\n');
-        
         this.mkdir("/data");
         this.mkdir("/data/saves");
         
@@ -42,6 +39,7 @@ class EJS_GameManager {
         this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
         //this.FS.syncfs(true, () => {});
         
+        this.writeConfigFile();
         this.initShaders();
 
         this.EJS.on("exit", () => {
@@ -51,6 +49,17 @@ class EJS_GameManager {
                 try {window.abort()} catch(e){};
             }, 1000);
         })
+    }
+    writeConfigFile() {
+        if (!this.EJS.defaultCoreOpts.file || !this.EJS.defaultCoreOpts.settings) {
+            return;
+        }
+        let output = "";
+        for (const k in this.EJS.defaultCoreOpts.settings) {
+            output += k + ' = "' + this.EJS.defaultCoreOpts.settings[k] +'"\n';
+        }
+
+        this.writeFile("/home/web_user/retroarch/userdata/config/" + this.EJS.defaultCoreOpts.file, output);
     }
     loadExternalFiles() {
         return new Promise(async (resolve, reject) => {

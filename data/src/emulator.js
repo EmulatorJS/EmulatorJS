@@ -570,7 +570,7 @@ class EmulatorJS {
                 this.downloadFile(corePath, (res) => {
                     if (res === -1) {
                         console.log("File not found, attemping to fetch from emulatorjs cdn");
-                        this.downloadFile("https://cdn.emulatorjs.org/stable/data/"+corePath, (res) => {
+                        this.downloadFile("https://cdn.emulatorjs.org/latest/data/"+corePath, (res) => {
                             if (res === -1) {
                                 if (!this.supportsWebgl2) {
                                     this.startGameError(this.localization('Outdated graphics driver'));
