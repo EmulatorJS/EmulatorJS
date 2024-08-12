@@ -130,7 +130,7 @@
             }
             
             input.onchange = async () => {
-                const url = new Blob([input.files[0]])
+                const url = input.files[0]
                 const parts = input.files[0].name.split(".")
 
                 const core = await (async (ext) => {

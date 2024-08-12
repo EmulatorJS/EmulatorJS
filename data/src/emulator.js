@@ -696,7 +696,9 @@ class EmulatorJS {
                             this.startGameError(this.localization('Network Error'));
                             return;
                         }
-                        if (this.toData(this.config.gamePatchUrl, true)) {
+                        if (this.config.gamePatchUrl instanceof File) {
+                            this.config.gamePatchUrl = this.config.gamePatchUrl.name;
+                        } else if (this.toData(this.config.gamePatchUrl, true)) {
                             this.config.gamePatchUrl = "game";
                         }
                         gotData(res.data);
@@ -746,7 +748,9 @@ class EmulatorJS {
                             this.startGameError(this.localization('Network Error'));
                             return;
                         }
-                        if (this.toData(this.config.gameParentUrl, true)) {
+                        if (this.config.gameParentUrl instanceof File) {
+                            this.config.gameParentUrl = this.config.gameParentUrl.name;
+                        } else if (this.toData(this.config.gameParentUrl, true)) {
                             this.config.gameParentUrl = "game";
                         }
                         gotData(res.data);
@@ -800,7 +804,9 @@ class EmulatorJS {
                             this.startGameError(this.localization('Network Error'));
                             return;
                         }
-                        if (this.toData(this.config.biosUrl, true)) {
+                        if (this.config.biosUrl instanceof File) {
+                            this.config.biosUrl = this.config.biosUrl.name;
+                        } else if (this.toData(this.config.biosUrl, true)) {
                             this.config.biosUrl = "game";
                         }
                         gotBios(res.data);
@@ -935,7 +941,9 @@ class EmulatorJS {
                             this.startGameError(this.localization('Network Error'));
                             return;
                         }
-                        if (this.toData(this.config.gameUrl, true)) {
+                        if (this.config.gameUrl instanceof File) {
+                            this.config.gameUrl = this.config.gameUrl.name;
+                        } else if (this.toData(this.config.gameUrl, true)) {
                             this.config.gameUrl = "game";
                         }
                         gotGameData(res.data);
