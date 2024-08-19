@@ -1,6 +1,25 @@
 # Changes
 
-# 4.0.12
+# 4.1.1
+- Fixed 2xScaleHQ and 2xScaleHQ shaders (Thanks to [@n-at](https://github.com/n-at))
+- Added Vietnamese (`vi-VN`) (Thanks to [@TimKieu](https://github.com/TimKieu))
+- Disable CUE generation for the PUAE core (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Updated German translation (Thanks to [@jonas0b1011001](https://github.com/jonas0b1011001))
+- Add missing calls to translate (Thanks to [@angelmarfil](https://github.com/angelmarfil))
+- Added Turkish (`tr-TR`) (Thanks to [@iGoodie](https://github.com/iGoodie))
+- Fixed Gamepad support for some older browsers (Thanks to [@ZhaoTonggang](https://github.com/ZhaoTonggang))
+- Default to webgl1 on lower end cores.
+- Added ability to switch between webgl1 and webgl2.
+- Check core compatibility with EmulatorJS.
+- Added core license to right-click menu.
+- Removed usage of `replaceAll`.
+- Added the ability to change settings on game start crash.
+- Added `exit` button, to properly shutdown and save files.
+- Fixed mouse on mobile devices.
+- Modularized EmulatorJS.
+- Added support for `File` objects (Thanks to [@pastisme](https://github.com/pastisme)).
+
+# 4.0.12 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/c3ba473d1afc278db136f8e1252d0456050d6047)
 - Fix scroll bar css (Thanks to [@allancoding](https://github.com/allancoding))
 - Flip the context menu instead of going off the page
 - Add hooks for save files (Thanks to [@gantoine](https://github.com/gantoine))

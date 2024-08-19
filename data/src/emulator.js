@@ -220,10 +220,14 @@ class EmulatorJS {
         if (ver.endsWith("-beta")) {
             return 99999999;
         }
-        return parseInt(ver.split(".").join(""));
+        let rv = ver.split(".");
+        if (rv[rv.length-1].length === 1) {
+            rv[rv.length-1] = "0" + rv[rv.length-1];
+        }
+        return parseInt(rv.join(""));
     }
     constructor(element, config) {
-        this.ejs_version = "4.0.13-beta";
+        this.ejs_version = "4.1.1";
         this.extensions = [];
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
