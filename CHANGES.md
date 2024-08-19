@@ -17,6 +17,7 @@
 - Added `exit` button, to properly shutdown and save files.
 - Fixed mouse on mobile devices.
 - Modularized EmulatorJS.
+- Fixed WHLoader hdf roms.
 - Added support for `File` objects (Thanks to [@pastisme](https://github.com/pastisme)).
 
 # 4.0.12 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/c3ba473d1afc278db136f8e1252d0456050d6047)
