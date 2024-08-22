@@ -782,6 +782,11 @@ class EmulatorJS {
             }
             this.textElem.innerText = this.localization("Download Game BIOS");
             const gotBios = (data) => {
+                if (this.getCore() === "same_cdi") {
+                    this.gameManager.FS.writeFile(this.config.biosUrl.split('/').pop().split("#")[0].split("?")[0], new Uint8Array(data));
+                    resolve();
+                    return;
+                }
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game BIOS")).then((data) => {
                     for (const k in data) {
                         if (k === "!!notCompressedData") {
