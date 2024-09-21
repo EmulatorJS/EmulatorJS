@@ -1083,8 +1083,8 @@ class EmulatorJS {
             let state = "suspended";
             let popup;
             while (state === "suspended") {
-                if (!window.AL) return;
-                window.AL.currentCtx.sources.forEach(ctx => {
+                if (!this.Module.AL) return;
+                this.Module.AL.currentCtx.sources.forEach(ctx => {
                     state = ctx.gain.context.state;
                 });
                 if (state !== "suspended") break;
@@ -1784,8 +1784,8 @@ class EmulatorJS {
             volumeSlider.setAttribute("aria-valuenow", volume*100);
             volumeSlider.setAttribute("aria-valuetext", (volume*100).toFixed(1) + "%");
             volumeSlider.setAttribute("style", "--value: "+volume*100+"%;margin-left: 5px;position: relative;z-index: 2;");
-            if (window.AL && AL.currentCtx && AL.currentCtx.sources) {
-                AL.currentCtx.sources.forEach(e => {
+            if (this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.sources) {
+                this.Module.AL.currentCtx.sources.forEach(e => {
                     e.gain.gain.value = volume;
                 })
             }
@@ -5250,8 +5250,8 @@ class EmulatorJS {
         }
 
         let audioTrack = null;
-        if (window.AL && window.AL.currentCtx && window.AL.currentCtx.audioCtx) {
-            const alContext = window.AL.currentCtx;
+        if (window.this.Module.AL && window.this.Module.AL.currentCtx && window.this.Module.AL.currentCtx.audioCtx) {
+            const alContext = window.this.Module.AL.currentCtx;
             const audioContext = alContext.audioCtx;
 
             const gainNodes = [];
