@@ -263,6 +263,8 @@ class EmulatorJS {
         })();
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
+        this.videoRotation = (typeof this.config.videoRotation === "number") ? this.config.videoRotation : 0;
+        this.canvas.style.transform = "rotate("+this.videoRotation+"deg)";
         this.bindListeners();
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
@@ -3954,6 +3956,8 @@ class EmulatorJS {
             }
         } else if (option === "vsync") {
             this.gameManager.setVSync(value === "enabled");
+        } else if (option === "videoRotation"){
+            this.canvas.style.transform = (value === "default") ? "rotate("+this.videoRotation+"deg)" : "rotate(-"+value+"deg)";
         }
         this.gameManager.setVariable(option, value);
         this.saveSettings();
@@ -4371,6 +4375,14 @@ class EmulatorJS {
                 'browser': this.localization("Keep in Browser")
             }, 'download');
         }
+
+        addToMenu(this.localization('Video Rotation'), 'videoRotation', {
+            'default': this.localization("Default"),
+            '0': "0 deg",
+            '90': "90 deg",
+            '180': "180 deg",
+            '270': "270 deg"
+        }, "default");
         
         if (this.touch || navigator.maxTouchPoints > 0) {
             addToMenu(this.localization('Virtual Gamepad'), 'virtual-gamepad', {

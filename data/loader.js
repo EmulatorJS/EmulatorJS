@@ -10,7 +10,6 @@
         "compression.js"
     ];
 
-
     const folderPath = (path) => path.substring(0, path.length - path.split('/').pop().length);
     let scriptPath = (typeof window.EJS_pathtodata === "string") ? window.EJS_pathtodata : folderPath((new URL(document.currentScript.src)).pathname);
     if (!scriptPath.endsWith('/')) scriptPath+='/';
@@ -119,6 +118,7 @@
     config.disableLocalStorage = window.EJS_disableLocalStorage;
     config.forceLegacyCores = window.EJS_forceLegacyCores;
     config.noAutoFocus = window.EJS_noAutoFocus;
+    config.videoRotation = window.EJS_videoRotation;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
     
     if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
