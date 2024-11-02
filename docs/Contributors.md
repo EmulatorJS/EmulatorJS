@@ -69,24 +69,25 @@
 <br>
 
 <a href="https://github.com/n-at" target="_blank" title="n-at - Alexey Nurgaliev">![Avatar Alexey]</a>&nbsp;
-<a href="https://github.com/incredibleIdea" target="_blank" title="incredibleIdea">![Avatar incredibleIdea]</a>&nbsp;
 <a href="https://github.com/angelmarfil" target="_blank" title="angelmarfil - Angel Marfil">![Avatar angelmarfil]</a>&nbsp;
+<a href="https://github.com/incredibleIdea" target="_blank" title="incredibleIdea">![Avatar incredibleIdea]</a>&nbsp;
+<a href="https://github.com/pastisme" target="_blank" title="pastisme">![Avatar pastisme]</a>&nbsp;
 <a href="https://github.com/gantoine" target="_blank" title="gantoine - Georges-Antoine Assi">![Avatar gantoine]</a>&nbsp;
 <a href="https://github.com/E-Sh4rk" target="_blank" title="E-Sh4rk - Mickaël Laurent" width="95px"><img src="https://github.com/E-Sh4rk.png?size=95" width="95px"></a>&nbsp;
 <a href="https://github.com/Grey41" target="_blank" title="Grey41 - Grey Hope">![Avatar Grey]</a>&nbsp;
-<a href="https://github.com/imneckro" target="_blank" title="ImNekro - ck-oneman">![Avatar Nekro]</a>&nbsp;
-<a href="https://github.com/cheesykyle" target="_blank" title="CheesyKyle - Kyle Steffel">![Avatar Kyle]</a>&nbsp;
-<a href="https://github.com/Protektor-Desura" target="_blank" title="Protektor-Desura - Protektor">![Avatar Protektor]</a>&nbsp;
-<a href="https://github.com/eric183" target="_blank" title="eric183 - ericKuang">![Avatar ericKuang]</a>&nbsp;
-<a href="https://github.com/debuggerx01" target="_blank" title="debuggerx01">![Avatar debuggerx01]</a>&nbsp;
 <a href="https://github.com/oyepriyansh" target="_blank" title="oyepriyansh - Priyansh Prajapat">![Avatar Priyansh]</a>&nbsp;
 <a href="https://github.com/andrigamerita" target="_blank" title="andrigamerita">![Avatar andrigamerita]</a>&nbsp;
+<a href="https://github.com/debuggerx01" target="_blank" title="debuggerx01">![Avatar debuggerx01]</a>&nbsp;
 <a href="https://github.com/MattiaPell" target="_blank" title="MattiaPell">![Avatar MattiaPell]</a>&nbsp;
 <a href="https://github.com/TimKieu" target="_blank" title="TimKieu"><img src="https://github.com/TimKieu.png?size=95" width="95px"></a>&nbsp;
 <a href="https://github.com/jonas0b1011001" target="_blank" title="jonas0b1011001">![Avatar jonas0b1011001]</a>&nbsp;
 <a href="https://github.com/IvanMazzoli" target="_blank" title="IvanMazzoli">![Avatar IvanMazzoli]</a>&nbsp;
 <a href="https://github.com/iGoodie" target="_blank" title="iGoodie - Anılcan Metinyurt">![Avatar iGoodie]</a>&nbsp;
+<a href="https://github.com/eric183" target="_blank" title="eric183 - ericKuang">![Avatar ericKuang]</a>&nbsp;
 <a href="https://github.com/ZhaoTonggang" target="_blank" title="ZhaoTonggang - 赵彤刚">![Avatar ZhaoTonggang]</a>&nbsp;
+<a href="https://github.com/Protektor-Desura" target="_blank" title="Protektor-Desura - Protektor">![Avatar Protektor]</a>&nbsp;
+<a href="https://github.com/cheesykyle" target="_blank" title="CheesyKyle - Kyle Steffel">![Avatar Kyle]</a>&nbsp;
+<a href="https://github.com/imneckro" target="_blank" title="ImNekro - ck-oneman">![Avatar Nekro]</a>&nbsp;
 </div>
 
 
@@ -127,6 +128,8 @@
 [Avatar iGoodie]: https://github.com/iGoodie.png?size=95
 
 [Avatar ZhaoTonggang]: https://github.com/ZhaoTonggang.png?size=95
+
+[Avatar pastisme]: https://github.com/pastisme.png?size=95
 
 
 <!----------------------------------{ Ethan }----------------------------------->
