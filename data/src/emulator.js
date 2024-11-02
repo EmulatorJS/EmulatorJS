@@ -263,7 +263,7 @@ class EmulatorJS {
         })();
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
-        this.videoRotation = (typeof this.config.videoRotation === "number" && [0, 1, 2, 3].includes(this.config.videoRotation)) ? this.config.videoRotation : this.preGetSetting("videoRotation") || 0;
+        this.videoRotation = ([0, 1, 2, 3].includes(this.config.videoRotation)) ? this.config.videoRotation : this.preGetSetting("videoRotation") || 0;
         this.bindListeners();
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
@@ -5262,8 +5262,8 @@ class EmulatorJS {
         }
 
         let audioTrack = null;
-        if (window.this.Module.AL && window.this.Module.AL.currentCtx && window.this.Module.AL.currentCtx.audioCtx) {
-            const alContext = window.this.Module.AL.currentCtx;
+        if (this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.audioCtx) {
+            const alContext = this.Module.AL.currentCtx;
             const audioContext = alContext.audioCtx;
 
             const gainNodes = [];
