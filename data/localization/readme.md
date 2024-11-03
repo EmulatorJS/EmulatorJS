@@ -1,4 +1,3 @@
-
 # Localization
 
 Supported languages
@@ -19,9 +18,9 @@ Supported languages
 `af-FR` - French<br>
 `it-IT` - Italian<br>
 `tr-Tr` - Turkish<br>
+`fa-AF` - Persian<br>
 
 default: `en-US`
-
 
 add the line to your code to use
 
@@ -33,7 +32,7 @@ If the language file is not found or there was an error fetching the file, the e
 
 ## Credits
 
-Translated for `es-ES` originally by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) and updated by [@angelmarfil](https://github.com/angelmarfil)  <br>
+Translated for `es-ES` originally by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) and updated by [@angelmarfil](https://github.com/angelmarfil) <br>
 Translated for `el-GR` by [@imneckro](https://github.com/imneckro) <br>
 Translated for `ja-JA`, `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO`, `af-FR` by [@allancoding](https://github.com/allancoding) <br>
 Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline)<br>
@@ -41,12 +40,13 @@ Translated for `zh-CN` originally by [@allancoding](https://github.com/allancodi
 Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline) <br>
 Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
 Translated for `tr-Tr` by [@iGoodie](https://github.com/iGoodie) <br>
+Translated for `fa-AF` by [@rezamohdev](https://github.com/rezamohdev) <br>
 
 ## Contributing
 
 Download the default `en.json` file and simply translate all the words that start with the `-` (remove the dash afterwards) then perform a pull request or open an issue with the file uploaded and I will add your work.
 
-The `retroarch.json` are all the setting names for the menu. They will default to english if not found. You can set `EJS_settingsLanguage` to `true` to see the missing retroarch settings names for the current language. You can translate them and add the to the language file. 
+The `retroarch.json` are all the setting names for the menu. They will default to english if not found. You can set `EJS_settingsLanguage` to `true` to see the missing retroarch settings names for the current language. You can translate them and add the to the language file.
 
 The control maping traslations for controllers are diffrent for each controller. They will need to be added to the language file if they are not in the default `en.json` file.
 
