@@ -67,7 +67,7 @@ Or the Matrix server (#emulatorjs:matrix.emulatorjs.org):
 <br>
 
 ### Versioning
-There are 3 different version name that you need to be aware of:
+There are three different version names that you need to be aware of:
 1. **stable** - This will be the most stable version of the emulator both code and cores will be tested before release. It will be updated every time a new version is released on GitHub. This is the default version on the Demo.
 2. **latest** - This will contain the latest code but use the stable cores. This will be updated every time the *main* branch is updated.
 3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is consiterd alpha.
