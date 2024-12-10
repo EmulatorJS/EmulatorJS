@@ -46,7 +46,11 @@ class EJS_GameManager {
             this.toggleMainLoop(0);
             this.functions.saveSaveFiles();
             setTimeout(() => {
-                try {window.abort()} catch(e){};
+                try {
+                    this.Module.abort();
+                } catch(e) {
+                    console.warn(e);
+                };
             }, 1000);
         })
     }
