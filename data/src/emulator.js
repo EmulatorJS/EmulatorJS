@@ -4155,10 +4155,65 @@ class EmulatorJS {
         const nested = this.createElement("div");
         nested.classList.add("ejs_settings_transition");
         this.settings = {};
-        
-        const home = this.createElement("div");
-        home.style.overflow = "auto";
         const menus = [];
+        
+        const createSettingParent = (child, title, parentElement) => {
+            const rv = this.createElement("div");
+            rv.style.overflow = "auto";
+            rv.classList.add("ejs_setting_menu");
+
+            if (child) {
+                const menuOption = this.createElement("div");
+                menuOption.classList.add("ejs_settings_main_bar");
+                const span = this.createElement("span");
+                span.innerText = title;
+
+                menuOption.appendChild(span);
+                parentElement.appendChild(menuOption);
+
+                const menu = this.createElement("div");
+                menus.push(menu);
+                menu.style.overflow  = "auto";
+                menu.setAttribute("hidden", "");
+                const button = this.createElement("button");
+                const goToHome = () => {
+                    const homeSize = this.getElementSize(parentElement);
+                    nested.style.width = (homeSize.width+20) + "px";
+                    nested.style.height = homeSize.height + "px";
+                    menu.setAttribute("hidden", "");
+                    parentElement.removeAttribute("hidden");
+                }
+                this.addEventListener(menuOption, "click", (e) => {
+                    const targetSize = this.getElementSize(menu);
+                    nested.style.width = (targetSize.width+20) + "px";
+                    nested.style.height = targetSize.height + "px";
+                    menu.removeAttribute("hidden");
+                    parentElement.setAttribute("hidden", "");
+                })
+                this.addEventListener(button, "click", goToHome);
+
+                button.type = "button";
+                button.classList.add("ejs_back_button");
+                menu.appendChild(button);
+                const pageTitle = this.createElement("span");
+                pageTitle.innerText = title;
+                pageTitle.classList.add("ejs_menu_text_a");
+                button.appendChild(pageTitle);
+/*
+                const optionsMenu = this.createElement("div");
+                optionsMenu.classList.add("ejs_setting_menu");
+
+                menu.appendChild(optionsMenu);*/
+
+                menu.appendChild(rv);
+                nested.appendChild(menu);
+            }
+
+            return rv;
+        }
+
+        const home = createSettingParent();
+
         this.handleSettingsResize = () => {
             let needChange = false;
             if (this.settingsMenu.style.display !== "") {
@@ -4184,9 +4239,8 @@ class EmulatorJS {
                 this.settingsMenu.style.opacity = "";
             }
         }
-        
-        home.classList.add("ejs_setting_menu");
         nested.appendChild(home);
+
         let funcs = [];
         this.changeSettingOption = (title, newValue) => {
             this.settings[title] = newValue;
@@ -4194,7 +4248,9 @@ class EmulatorJS {
         }
         let allOpts = {};
         
-        const addToMenu = (title, id, options, defaultOption) => {
+        const addToMenu = (title, id, options, defaultOption, parentElement, useParentParent) => {
+            parentElement = parentElement || home;
+            const transitionElement = useParentParent ? parentElement.parentElement : parentElement;
             const menuOption = this.createElement("div");
             menuOption.classList.add("ejs_settings_main_bar");
             const span = this.createElement("span");
@@ -4206,7 +4262,7 @@ class EmulatorJS {
             span.appendChild(current);
             
             menuOption.appendChild(span);
-            home.appendChild(menuOption);
+            parentElement.appendChild(menuOption);
             
             const menu = this.createElement("div");
             menus.push(menu);
@@ -4214,18 +4270,18 @@ class EmulatorJS {
             menu.setAttribute("hidden", "");
             const button = this.createElement("button");
             const goToHome = () => {
-                const homeSize = this.getElementSize(home);
+                const homeSize = this.getElementSize(transitionElement);
                 nested.style.width = (homeSize.width+20) + "px";
                 nested.style.height = homeSize.height + "px";
                 menu.setAttribute("hidden", "");
-                home.removeAttribute("hidden");
+                transitionElement.removeAttribute("hidden");
             }
             this.addEventListener(menuOption, "click", (e) => {
                 const targetSize = this.getElementSize(menu);
                 nested.style.width = (targetSize.width+20) + "px";
                 nested.style.height = targetSize.height + "px";
                 menu.removeAttribute("hidden");
-                home.setAttribute("hidden", "");
+                transitionElement.setAttribute("hidden", "");
             })
             this.addEventListener(button, "click", goToHome);
             
@@ -4296,6 +4352,8 @@ class EmulatorJS {
             nested.appendChild(menu);
         }
 
+        const graphicsOptions = createSettingParent(true, "Graphics Settings", home);
+
         if (this.config.shaders) {
             const builtinShaders = {
                 '2xScaleHQ.glslp': this.localization("2xScaleHQ"),
@@ -4323,67 +4381,72 @@ class EmulatorJS {
                     shaderMenu[shaderName] = shaderName;
                 }
             }
-            addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled');
+            addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled', graphicsOptions, true);
         }
 
         if (this.supportsWebgl2) {
-            addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires page reload') + ")", 'webgl2Enabled', {
+            addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires restart') + ")", 'webgl2Enabled', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
-            }, this.webgl2Enabled ? "enabled" : "disabled");
+            }, this.webgl2Enabled ? "enabled" : "disabled", graphicsOptions, true);
         }
         
         addToMenu(this.localization('FPS'), 'fps', {
             'show': this.localization("show"),
             'hide': this.localization("hide")
-        }, 'hide');
+        }, 'hide', graphicsOptions, true);
         
         addToMenu(this.localization("VSync"), "vsync", {
             'enabled': this.localization("Enabled"),
             'disabled': this.localization("Disabled")
-        }, "enabled");
-        
-        addToMenu(this.localization('Fast Forward Ratio'), 'ff-ratio', [
-            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
-        ], "3.0");
+        }, "enabled", graphicsOptions, true);
 
-        addToMenu(this.localization('Slow Motion Ratio'), 'sm-ratio', [
-            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0"
-        ], "3.0");
-
-        addToMenu(this.localization('Fast Forward'), 'fastForward', {
-            'enabled': this.localization("Enabled"),
-            'disabled': this.localization("Disabled")
-        }, "disabled");
-
-        addToMenu(this.localization('Slow Motion'), 'slowMotion', {
-            'enabled': this.localization("Enabled"),
-            'disabled': this.localization("Disabled")
-        }, "disabled");
-
-        addToMenu(this.localization('Rewind Enabled (requires restart)'), 'rewindEnabled', {
-            'enabled': this.localization("Enabled"),
-            'disabled': this.localization("Disabled")
-        }, 'disabled');
-
-        addToMenu(this.localization('Rewind Granularity'), 'rewind-granularity', [
-            '1', '3', '6', '12', '25', '50', '100'
-        ], '6');
-
-        if (this.saveInBrowserSupported()) {
-            addToMenu(this.localization('Save State Slot'), 'save-state-slot', ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1");
-            addToMenu(this.localization('Save State Location'), 'save-state-location', {
-                'download': this.localization("Download"),
-                'browser': this.localization("Keep in Browser")
-            }, 'download');
-        }
-
-        addToMenu(this.localization('Video Rotation (requires restart)'), 'videoRotation', {
+        addToMenu(this.localization('Video Rotation (requires reload)'), 'videoRotation', {
             '0': "0 deg",
             '1': "90 deg",
             '2': "180 deg",
             '3': "270 deg"
-        }, this.videoRotation.toString());
+        }, this.videoRotation.toString(), graphicsOptions, true);
+
+        const speedOptions = createSettingParent(true, "Speed Options", home);
+
+        addToMenu(this.localization('Fast Forward'), 'fastForward', {
+            'enabled': this.localization("Enabled"),
+                  'disabled': this.localization("Disabled")
+        }, "disabled", speedOptions, true);
+
+        addToMenu(this.localization('Fast Forward Ratio'), 'ff-ratio', [
+            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0", "unlimited"
+        ], "3.0", speedOptions, true);
+
+        addToMenu(this.localization('Slow Motion'), 'slowMotion', {
+            'enabled': this.localization("Enabled"),
+                  'disabled': this.localization("Disabled")
+        }, "disabled", speedOptions, true);
+
+        addToMenu(this.localization('Slow Motion Ratio'), 'sm-ratio', [
+            "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0"
+        ], "3.0", speedOptions, true);
+
+        addToMenu(this.localization('Rewind Enabled (requires reload)'), 'rewindEnabled', {
+            'enabled': this.localization("Enabled"),
+            'disabled': this.localization("Disabled")
+        }, 'disabled', speedOptions, true);
+
+        if (this.rewindEnabled) {
+            addToMenu(this.localization('Rewind Granularity'), 'rewind-granularity', [
+                '1', '3', '6', '12', '25', '50', '100'
+            ], '6', speedOptions, true);
+        }
+
+        if (this.saveInBrowserSupported()) {
+            const saveStateOpts = createSettingParent(true, "Save States", home);
+            addToMenu(this.localization('Save State Slot'), 'save-state-slot', ["1", "2", "3", "4", "5", "6", "7", "8", "9"], "1", saveStateOpts, true);
+            addToMenu(this.localization('Save State Location'), 'save-state-location', {
+                'download': this.localization("Download"),
+                'browser': this.localization("Keep in Browser")
+            }, 'download', saveStateOpts, true);
+        }
         
         if (this.touch || navigator.maxTouchPoints > 0) {
             addToMenu(this.localization('Virtual Gamepad'), 'virtual-gamepad', {
@@ -4395,6 +4458,8 @@ class EmulatorJS {
                 'disabled': this.localization("Disabled")
             }, 'disabled');
         }
+
+        const coreOptions = createSettingParent(true, "Core Options", home);
         let coreOpts;
         try {
             coreOpts = this.gameManager.getCoreOptions();
@@ -4413,7 +4478,7 @@ class EmulatorJS {
                 }
                 addToMenu(this.localization(optionName, this.settingsLanguage),
                           name.split("|")[0], availableOptions,
-                          (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''));
+                          (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''), coreOptions, true);
             })
         }
         
