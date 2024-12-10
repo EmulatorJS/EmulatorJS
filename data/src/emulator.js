@@ -555,7 +555,7 @@ class EmulatorJS {
         }
         const report = "cores/reports/" + this.getCore() + ".json";
         this.downloadFile(report, (rep) => {
-            if (rep === -1 || typeof report === "string") {
+            if (rep === -1 || typeof rep === "string") {
                 rep = {};
             } else {
                 rep = rep.data;
@@ -3832,7 +3832,7 @@ class EmulatorJS {
         };
     }
     saveSettings() {
-        if (!window.localStorage || this.config.disableLocalStorage || !this.settingsLoaded) return;
+        if (!window.localStorage || this.config.disableLocalStorage || !this.settingsLoaded || !this.started) return;
         const coreSpecific = {
             controlSettings: this.controls,
             settings: this.settings,
@@ -3846,23 +3846,22 @@ class EmulatorJS {
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
     }
     preGetSetting(setting) {
-        if (!window.localStorage || this.config.disableLocalStorage) {
-            if (this.config.defaultOptions && this.config.defaultOptions[setting]) {
-                return this.config.defaultOptions[setting];
+        if (window.localStorage && !this.config.disableLocalStorage) {
+            let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+            try {
+            coreSpecific = JSON.parse(coreSpecific);
+            if (!coreSpecific || !coreSpecific.settings) {
+                return false;
             }
-            return false;
+            return coreSpecific.settings[setting];
+            } catch (e) {
+                console.warn("Could not load previous settings", e);
+            }
         }
-        let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
-        try {
-           coreSpecific = JSON.parse(coreSpecific);
-           if (!coreSpecific || !coreSpecific.settings) {
-               return false;
-           }
-           return coreSpecific.settings[setting];
-        } catch (e) {
-            console.warn("Could not load previous settings", e);
-            return false;
+        if (this.config.defaultOptions && this.config.defaultOptions[setting]) {
+            return this.config.defaultOptions[setting];
         }
+        return false;
     }
     loadSettings() {
         if (!window.localStorage || this.config.disableLocalStorage) return;
@@ -3908,16 +3907,11 @@ class EmulatorJS {
             }
         }
     }
-    menuOptionChanged(option, value) {
-        this.saveSettings();
-        if (this.debug) console.log(option, value);
-        if (!this.gameManager) return;
+    handleSpecialOptions(option, value) {
         if (option === "shader") {
             this.enableShader(value);
-            return;
         } else if (option === "disk") {
             this.gameManager.setCurrentDisk(value);
-            return;
         } else if (option === "virtual-gamepad") {
             this.toggleVirtualGamepad(value !== "disabled");
         } else if (option === "virtual-gamepad-left-handed-mode") {
@@ -3961,6 +3955,12 @@ class EmulatorJS {
         } else if (option === "vsync") {
             this.gameManager.setVSync(value === "enabled");
         }
+    }
+    menuOptionChanged(option, value) {
+        this.saveSettings();
+        if (this.debug) console.log(option, value);
+        if (!this.gameManager) return;
+        this.handleSpecialOptions(option, value);
         this.gameManager.setVariable(option, value);
         this.saveSettings();
     }
