@@ -989,6 +989,11 @@ class EmulatorJS {
         })();
     }
     initModule(wasmData, threadData) {
+        if (typeof window.EJS_Runtime !== "function") {
+            console.warn("EJS_Runtime is not defined!");
+            this.startGameError(this.localization("Failed to start game"));
+            return;
+        }
         window.EJS_Runtime({
             noInitialRun: true,
             onRuntimeInitialized: null,
