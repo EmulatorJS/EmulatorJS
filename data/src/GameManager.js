@@ -119,20 +119,33 @@ class EJS_GameManager {
         } catch(e) {}
     }
     getRetroArchCfg() {
-        return "autosave_interval = 60\n" +
-               "screenshot_directory = \"/\"\n" +
-               "block_sram_overwrite = false\n" +
-               "video_gpu_screenshot = false\n" +
-               "audio_latency = 64\n" +
-               "video_top_portrait_viewport = true\n" +
-               "video_vsync = true\n" +
-               "video_smooth = false\n" +
-               "fastforward_ratio = 3.0\n" +
-               "slowmotion_ratio = 3.0\n" +
-                (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
-                (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
-               "savefile_directory = \"/data/saves\"\n" +
-               "video_rotation = " + this.EJS.videoRotation + "\n";
+        let cfg = "autosave_interval = 60\n" +
+                  "screenshot_directory = \"/\"\n" +
+                  "block_sram_overwrite = false\n" +
+                  "video_gpu_screenshot = false\n" +
+                  "audio_latency = 64\n" +
+                  "video_top_portrait_viewport = true\n" +
+                  "video_vsync = true\n" +
+                  "video_smooth = false\n" +
+                  "fastforward_ratio = 3.0\n" +
+                  "slowmotion_ratio = 3.0\n" +
+                   (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
+                   (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
+                  "savefile_directory = \"/data/saves\"\n" +
+                  "video_rotation = " + this.EJS.videoRotation + "\n";
+
+        if (this.EJS.retroarchOpts && Array.isArray(this.EJS.retroarchOpts)) {
+            this.EJS.retroarchOpts.forEach(option => {
+                let selected = this.EJS.preGetSetting(option.name);
+                console.log(selected);
+                if (!selected) {
+                    selected = option.default;
+                }
+                const value = option.isString === false ? selected : '"' + selected + '"';
+                cfg += option.name + " = " + value + "\n"
+            })
+        }
+        return cfg;
     }
     initShaders() {
         if (!this.EJS.config.shaders) return;

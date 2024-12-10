@@ -233,8 +233,8 @@ class EmulatorJS {
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ['localhost', '127.0.0.1'].includes(location.hostname))) this.checkForUpdates();
         this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
-        this.settingsLanguage = window.EJS_settingsLanguage || false;
         this.config = config;
+        this.config.settingsLanguage = window.EJS_settingsLanguage || false;
         this.currentPopup = null;
         this.isFastForward = false;
         this.isSlowMotion = false;
@@ -546,6 +546,7 @@ class EmulatorJS {
                         this.coreName = core.name;
                         this.repository = core.repo;
                         this.defaultCoreOpts = core.options;
+                        this.retroarchOpts = core.retroarchOpts;
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
                     }
@@ -3851,7 +3852,7 @@ class EmulatorJS {
             try {
             coreSpecific = JSON.parse(coreSpecific);
             if (!coreSpecific || !coreSpecific.settings) {
-                return false;
+                return null;
             }
             return coreSpecific.settings[setting];
             } catch (e) {
@@ -3861,7 +3862,7 @@ class EmulatorJS {
         if (this.config.defaultOptions && this.config.defaultOptions[setting]) {
             return this.config.defaultOptions[setting];
         }
-        return false;
+        return null;
     }
     loadSettings() {
         if (!window.localStorage || this.config.disableLocalStorage) return;
@@ -4459,12 +4460,12 @@ class EmulatorJS {
             }, 'disabled');
         }
 
-        const coreOptions = createSettingParent(true, "Core Options", home);
         let coreOpts;
         try {
             coreOpts = this.gameManager.getCoreOptions();
         } catch(e){}
         if (coreOpts) {
+            const coreOptions = createSettingParent(true, "Core Options", home);
             coreOpts.split('\n').forEach((line, index) => {
                 let option = line.split('; ');
                 let name = option[0];
@@ -4474,11 +4475,38 @@ class EmulatorJS {
                 if (options.length === 1) return;
                 let availableOptions = {};
                 for (let i=0; i<options.length; i++) {
-                    availableOptions[options[i]] = this.localization(options[i], this.settingsLanguage);
+                    availableOptions[options[i]] = this.localization(options[i], this.config.settingsLanguage);
                 }
-                addToMenu(this.localization(optionName, this.settingsLanguage),
+                addToMenu(this.localization(optionName, this.config.settingsLanguage),
                           name.split("|")[0], availableOptions,
-                          (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''), coreOptions, true);
+                          (name.split("|").length > 1) ? name.split("|")[1] : options[0].replace('(Default) ', ''),
+                          coreOptions,
+                          true);
+            })
+        }
+
+        /*
+        this.retroarchOpts = [
+            {
+                title: "Audio Latency", // String
+                name: "audio_latency", // String - value to be set in retroarch.cfg
+                // options should ALWAYS be strings here...
+                options: ["8", "16", "32", "64", "128"], // values
+                options: {"8": "eight", "16": "sixteen", "32": "thirty-two", "64": "sixty-four", "128": "one hundred-twenty-eight"}, // This also works
+                default: "128", // Default
+                isString: false // Surround value with quotes in retroarch.cfg file?
+            }
+        ];*/
+
+        if (this.retroarchOpts && Array.isArray(this.retroarchOpts)) {
+            const retroarchOptsMenu = createSettingParent(true, "RetroArch Core Options (requires reload)", home);
+            this.retroarchOpts.forEach(option => {
+                addToMenu(this.localization(option.title, this.config.settingsLanguage),
+                          option.name,
+                          option.options,
+                          option.default,
+                          retroarchOptsMenu,
+                          true);
             })
         }
         
