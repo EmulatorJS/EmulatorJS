@@ -328,7 +328,7 @@ class EJS_GameManager {
                         for (let i=0; i<paths.length-1; i++) {
                             if (paths[i] === "") continue;
                             cp += "/"+paths[i];
-                            if (!FS.analyzePath(cp).exists) {
+                            if (!this.FS.analyzePath(cp).exists) {
                                 this.FS.mkdir(cp);
                             }
                         }

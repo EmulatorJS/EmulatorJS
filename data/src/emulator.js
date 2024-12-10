@@ -565,7 +565,7 @@ class EmulatorJS {
                 rep.buildStart = Math.random() * 100;
             }
             if (this.webgl2Enabled === null) {
-                this.webgl2Enabled = rep.options && rep.options.defaultWebGL2;
+                this.webgl2Enabled = rep.options ? rep.options.defaultWebGL2 : false;
             }
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
@@ -3850,11 +3850,10 @@ class EmulatorJS {
         if (window.localStorage && !this.config.disableLocalStorage) {
             let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
             try {
-            coreSpecific = JSON.parse(coreSpecific);
-            if (!coreSpecific || !coreSpecific.settings) {
-                return null;
-            }
-            return coreSpecific.settings[setting];
+                coreSpecific = JSON.parse(coreSpecific);
+                if (coreSpecific && coreSpecific.settings) {
+                    return coreSpecific.settings[setting];
+                }
             } catch (e) {
                 console.warn("Could not load previous settings", e);
             }
@@ -4243,8 +4242,12 @@ class EmulatorJS {
         nested.appendChild(home);
 
         let funcs = [];
-        this.changeSettingOption = (title, newValue) => {
-            this.settings[title] = newValue;
+        let settings = {};
+        this.changeSettingOption = (title, newValue, startup) => {
+            if (startup !== true) {
+                this.settings[title] = newValue;
+            }
+            settings[title] = newValue;
             funcs.forEach(e => e(title));
         }
         let allOpts = {};
@@ -4310,10 +4313,10 @@ class EmulatorJS {
             funcs.push((title) => {
                 if (id !== title) return;
                 for (let j=0; j<buttons.length; j++) {
-                    buttons[j].classList.toggle("ejs_option_row_selected", buttons[j].getAttribute("ejs_value") === this.settings[id]);
+                    buttons[j].classList.toggle("ejs_option_row_selected", buttons[j].getAttribute("ejs_value") === settings[id]);
                 }
-                this.menuOptionChanged(id, this.settings[id]);
-                current.innerText = opts[this.settings[id]];
+                this.menuOptionChanged(id, settings[id]);
+                current.innerText = opts[settings[id]];
             });
             
             for (const opt in opts) {
@@ -4326,7 +4329,7 @@ class EmulatorJS {
                 optionButton.classList.add("ejs_button_style");
                 
                 this.addEventListener(optionButton, "click", (e) => {
-                    this.settings[id] = opt;
+                    this.changeSettingOption(id, opt);
                     for (let j=0; j<buttons.length; j++) {
                         buttons[j].classList.remove("ejs_option_row_selected");
                     }
@@ -4527,7 +4530,7 @@ class EmulatorJS {
         
         if (this.config.defaultOptions) {
             for (const k in this.config.defaultOptions) {
-                this.changeSettingOption(k, this.config.defaultOptions[k]);
+                this.changeSettingOption(k, this.config.defaultOptions[k], true);
             }
         }
     }
