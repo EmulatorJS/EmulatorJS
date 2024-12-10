@@ -227,7 +227,7 @@ class EmulatorJS {
         return parseInt(rv.join(""));
     }
     constructor(element, config) {
-        this.ejs_version = "4.1.1";
+        this.ejs_version = "4.2.0-beta";
         this.extensions = [];
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
