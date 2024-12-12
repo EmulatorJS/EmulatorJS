@@ -238,6 +238,7 @@ class EmulatorJS {
         this.currentPopup = null;
         this.isFastForward = false;
         this.isSlowMotion = false;
+        this.failedToStart = false;
         this.rewindEnabled = this.preGetSetting("rewindEnabled") === 'enabled';
         this.touch = false;
         this.cheats = [];
@@ -519,6 +520,7 @@ class EmulatorJS {
 
         this.menu.failedToStart();
         this.handleResize();
+        this.failedToStart = true;
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
@@ -993,7 +995,7 @@ class EmulatorJS {
         if (typeof window.EJS_Runtime !== "function") {
             console.warn("EJS_Runtime is not defined!");
             this.startGameError(this.localization("Failed to start game"));
-            return;
+            throw new Error("EJS_Runtime is not defined!");
         }
         window.EJS_Runtime({
             noInitialRun: true,
@@ -3833,7 +3835,8 @@ class EmulatorJS {
         };
     }
     saveSettings() {
-        if (!window.localStorage || this.config.disableLocalStorage || !this.settingsLoaded || !this.started) return;
+        if (!window.localStorage || this.config.disableLocalStorage || !this.settingsLoaded) return;
+        if (!this.started && !this.failedToStart) return;
         const coreSpecific = {
             controlSettings: this.controls,
             settings: this.settings,
