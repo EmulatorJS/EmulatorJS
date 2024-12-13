@@ -980,6 +980,7 @@ class EmulatorJS {
         (async () => {
             this.gameManager = new window.EJS_GameManager(this.Module, this);
             await this.gameManager.loadExternalFiles();
+            await this.gameManager.mountFileSystems();
             if (this.getCore() === "ppsspp") {
                 await this.gameManager.loadPpssppAssets();
             }

@@ -31,13 +31,8 @@ class EJS_GameManager {
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
             setVSync: this.Module.cwrap('set_vsync', 'null', ['number'])
         }
-        this.mkdir("/data");
-        this.mkdir("/data/saves");
         
         this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
-        
-        this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
-        //this.FS.syncfs(true, () => {});
         
         this.writeConfigFile();
         this.initShaders();
@@ -47,12 +42,21 @@ class EJS_GameManager {
             this.functions.saveSaveFiles();
             setTimeout(() => {
                 try {
+                    this.FS.unmount('/data/saves');
                     this.Module.abort();
                 } catch(e) {
                     console.warn(e);
                 };
             }, 1000);
         })
+    }
+    mountFileSystems() {
+        return new Promise(async resolve => {
+            this.mkdir("/data");
+            this.mkdir("/data/saves");
+            this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
+            this.FS.syncfs(true, resolve);
+        });
     }
     writeConfigFile() {
         if (!this.EJS.defaultCoreOpts.file || !this.EJS.defaultCoreOpts.settings) {
