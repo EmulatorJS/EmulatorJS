@@ -268,6 +268,7 @@ class EmulatorJS {
         this.bindListeners();
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
+        this.enableMouseLock = false;
         this.supportsWebgl2 = !!document.createElement('canvas').getContext('webgl2') && (this.config.forceLegacyCores !== true);
         this.webgl2Enabled = (() => {
             let setting = this.preGetSetting("webgl2Enabled");
@@ -548,6 +549,7 @@ class EmulatorJS {
                         this.coreName = core.name;
                         this.repository = core.repo;
                         this.defaultCoreOpts = core.options;
+                        this.enableMouseLock = core.options.supportsMouse;
                         this.retroarchOpts = core.retroarchOpts;
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
@@ -1654,7 +1656,7 @@ class EmulatorJS {
             this.gameManager.toggleMainLoop(this.paused ? 0 : 1);
             
             //I now realize its not easy to pause it while the cursor is locked, just in case I guess
-            if (this.defaultCoreOpts.supportsMouse) {
+            if (this.enableMouseLock) {
                 if (this.canvas.exitPointerLock) {
                     this.canvas.exitPointerLock();
                 } else if (this.canvas.mozExitPointerLock) {
@@ -1880,7 +1882,7 @@ class EmulatorJS {
 
         this.addEventListener(this.canvas, "click", (e) => {
             if (e.pointerType === "touch") return;
-            if (this.defaultCoreOpts.supportsMouse && !this.paused) {
+            if (this.enableMouseLock && !this.paused) {
                 if (this.canvas.requestPointerLock) {
                     this.canvas.requestPointerLock();
                 } else if (this.canvas.mozRequestPointerLock) {
@@ -4506,7 +4508,7 @@ class EmulatorJS {
         ];*/
 
         if (this.retroarchOpts && Array.isArray(this.retroarchOpts)) {
-            const retroarchOptsMenu = createSettingParent(true, "RetroArch Core Options (requires reload)", home);
+            const retroarchOptsMenu = createSettingParent(true, "RetroArch Options (requires reload)", home);
             this.retroarchOpts.forEach(option => {
                 addToMenu(this.localization(option.title, this.config.settingsLanguage),
                           option.name,
