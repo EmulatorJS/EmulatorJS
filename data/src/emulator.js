@@ -560,7 +560,7 @@ class EmulatorJS {
         }
         const report = "cores/reports/" + this.getCore() + ".json";
         this.downloadFile(report, (rep) => {
-            if (rep === -1 || typeof rep === "string") {
+            if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
                 rep = {};
             } else {
                 rep = rep.data;
