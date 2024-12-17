@@ -343,7 +343,9 @@ class EJS_GameManager {
                                 this.FS.mkdir(cp);
                             }
                         }
-                        this.FS.writeFile(path, data);
+                        if (!path.endsWith("/")) {
+                            this.FS.writeFile(path, data);
+                        }
                     }
                     resolve();
                 })
