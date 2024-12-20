@@ -39,7 +39,9 @@ class EJS_GameManager {
 
         this.EJS.on("exit", () => {
             this.toggleMainLoop(0);
-            this.functions.saveSaveFiles();
+            if (!this.EJS.failedToStart) {
+                this.functions.saveSaveFiles();
+            }
             this.FS.unmount('/data/saves');
             setTimeout(() => {
                 try {
@@ -74,7 +76,7 @@ class EJS_GameManager {
             if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
                 for (const key in this.EJS.config.externalFiles) {
                     await new Promise(done => {
-                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], async (res) => {
+                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], null, true, {responseType: "arraybuffer", method: "GET"}).then(async (res) => {
                             if (res === -1) {
                                 if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
                                 return done();
@@ -100,7 +102,7 @@ class EJS_GameManager {
                                 if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
                             }
                             done();
-                        }, null, true, {responseType: "arraybuffer", method: "GET"});
+                        });
                     })
                 }
             }
@@ -322,7 +324,7 @@ class EJS_GameManager {
     }
     loadPpssppAssets() {
         return new Promise(resolve => {
-            this.EJS.downloadFile('cores/ppsspp-assets.zip', (res) => {
+            this.EJS.downloadFile('cores/ppsspp-assets.zip', null, false, {responseType: "arraybuffer", method: "GET"}).then((res) => {
                 this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
                     if (pspassets === -1) {
                         this.EJS.textElem.innerText = this.localization('Network Error');
@@ -330,7 +332,7 @@ class EJS_GameManager {
                         return;
                     }
                     this.mkdir("/PPSSPP");
-                    
+
                     for (const file in pspassets) {
                         const data = pspassets[file];
                         const path = "/PPSSPP/"+file;
@@ -349,7 +351,7 @@ class EJS_GameManager {
                     }
                     resolve();
                 })
-            }, null, false, {responseType: "arraybuffer", method: "GET"});
+            });
         })
     }
     setVSync(enabled) {

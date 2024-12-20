@@ -42,6 +42,14 @@ class EmulatorJS {
         }
         return rv;
     }
+    requiresThreads(core) {
+        const requiresThreads = ["ppsspp"];
+        return requiresThreads.includes(core);
+    }
+    requiresWebGL2(core) {
+        const requiresWebGL2 = ["ppsspp"];
+        return requiresWebGL2.includes(core);
+    }
     getCore(generic) {
         const cores = this.getCores();
         const core = this.config.system;
@@ -77,30 +85,47 @@ class EmulatorJS {
             data[i].elem.removeEventListener(data[i].listener, data[i].cb);
         }
     }
-    downloadFile(path, cb, progressCB, notWithPath, opts) {
-        const data = this.toData(path);//check other data types
-        if (data) {
-            data.then((game) => {
+    downloadFile(path, progressCB, notWithPath, opts) {
+        return new Promise(async cb => {
+            const data = this.toData(path);//check other data types
+            if (data) {
+                data.then((game) => {
+                    if (opts.method === 'HEAD') {
+                        cb({headers:{}});
+                    } else {
+                        cb({headers:{}, data:game});
+                    }
+                })
+                return;
+            }
+            const basePath = notWithPath ? '' : this.config.dataPath;
+            path = basePath + path;
+            if (!notWithPath && this.config.filePaths && typeof this.config.filePaths[path.split('/').pop()] === "string") {
+                path = this.config.filePaths[path.split('/').pop()];
+            }
+            let url;
+            try {url=new URL(path)}catch(e){};
+            if (!url || !['http:', 'https:'].includes(url.protocol)) {
+                //Most commonly blob: urls. Not sure what else it could be
                 if (opts.method === 'HEAD') {
                     cb({headers:{}});
                     return;
-                } else {
-                    cb({headers:{}, data:game});
-                    return;
                 }
-            })
-            return;
-        }
-        const basePath = notWithPath ? '' : this.config.dataPath;
-        path = basePath + path;
-        if (!notWithPath && this.config.filePaths) {
-            if (typeof this.config.filePaths[path.split('/').pop()] === "string") {
-                path = this.config.filePaths[path.split('/').pop()];
+                try {
+                    let res = await fetch(path)
+                    if ((opts.type && opts.type.toLowerCase() === 'arraybuffer') || !opts.type) {
+                        res = await res.arrayBuffer();
+                    } else {
+                        res = await res.text();
+                        try {res = JSON.parse(res)} catch(e) {}
+                    }
+                    if (path.startsWith('blob:')) URL.revokeObjectURL(path);
+                    cb({data: res, headers: {}});
+                } catch(e) {
+                    cb(-1);
+                }
+                return;
             }
-        }
-        let url;
-        try {url=new URL(path)}catch(e){};
-        if ((url && ['http:', 'https:'].includes(url.protocol)) || !url) {
             const xhr = new XMLHttpRequest();
             if (progressCB instanceof Function) {
                 xhr.addEventListener('progress', (e) => {
@@ -128,32 +153,7 @@ class EmulatorJS {
             xhr.onerror = () => cb(-1);
             xhr.open(opts.method, path, true);
             xhr.send();
-        } else {
-            (async () => {
-                //Most commonly blob: urls. Not sure what else it could be
-                if (opts.method === 'HEAD') {
-                    cb({headers:{}});
-                    return;
-                }
-                let res;
-                try {
-                    res = await fetch(path);
-                    if ((opts.type && opts.type.toLowerCase() === 'arraybuffer') || !opts.type) {
-                        res = await res.arrayBuffer();
-                    } else {
-                        res = await res.text();
-                        try {res = JSON.parse(res)} catch(e) {}
-                    }
-                } catch(e) {
-                    cb(-1);
-                }
-                if (path.startsWith('blob:')) URL.revokeObjectURL(path);
-                cb({
-                    data: res,
-                    headers: {}
-                });
-            })();
-        }
+        })
     }
     toData(data, rv) {
         if (!(data instanceof ArrayBuffer) && !(data instanceof Uint8Array) && !(data instanceof Blob)) return null;
@@ -494,7 +494,16 @@ class EmulatorJS {
     }
     downloadGameCore() {
         this.textElem.innerText = this.localization("Download Game Core");
-        if (this.config.threads && ((typeof window.SharedArrayBuffer) !== "function")) {
+        if (!this.config.threads && this.requiresThreads(this.getCore())) {
+            this.startGameError(this.localization('Error for site owner')+"\n"+this.localization("Check console"));
+            console.warn("This core requires threads, but EJS_threads is not set!");
+            return;
+        }
+        if (!this.supportsWebgl2 && this.requiresWebGL2(this.getCore())) {
+            this.startGameError(this.localization("Outdated graphics driver"));
+            return;
+        }
+        if (this.config.threads && typeof window.SharedArrayBuffer !== "function") {
             this.startGameError(this.localization('Error for site owner')+"\n"+this.localization("Check console"));
             console.warn("Threads is set to true, but the SharedArrayBuffer function is not exposed. Threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
             return;
@@ -528,7 +537,7 @@ class EmulatorJS {
             });
         }
         const report = "cores/reports/" + this.getCore() + ".json";
-        this.downloadFile(report, (rep) => {
+        this.downloadFile(report, null, false, {responseType: "text", method: "GET"}).then(async rep => {
             if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
                 rep = {};
             } else {
@@ -542,45 +551,38 @@ class EmulatorJS {
             }
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
-            this.storage.core.get(filename).then((result) => {
-                if (result && result.version === rep.buildStart && !this.debug) {
+            if (!this.debug) {
+                const result = await this.storage.core.get(filename);
+                if (result && result.version === rep.buildStart) {
                     gotCore(result.data);
                     return;
                 }
-                const corePath = 'cores/'+filename;
-                this.downloadFile(corePath, (res) => {
-                    if (res === -1) {
-                        console.log("File not found, attemping to fetch from emulatorjs cdn");
-                        this.downloadFile("https://cdn.emulatorjs.org/stable/data/"+corePath, (res) => {
-                            if (res === -1) {
-                                if (!this.supportsWebgl2) {
-                                    this.startGameError(this.localization('Outdated graphics driver'));
-                                } else {
-                                    this.startGameError(this.localization('Network Error'));
-                                }
-                                return;
-                            }
-                            console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
-                            gotCore(res.data);
-                            this.storage.core.put(filename, {
-                                version: rep.buildStart,
-                                data: res.data
-                            });
-                        }, (progress) => {
-                            this.textElem.innerText = this.localization("Download Game Core") + progress;
-                        }, true, {responseType: "arraybuffer", method: "GET"})
-                        return;
-                    }
-                    gotCore(res.data);
-                    this.storage.core.put(filename, {
-                        version: rep.buildStart,
-                        data: res.data
-                    });
-                }, (progress) => {
+            }
+            const corePath = 'cores/'+filename;
+            let res = await this.downloadFile(corePath, (progress) => {
+                this.textElem.innerText = this.localization("Download Game Core") + progress;
+            }, false, {responseType: "arraybuffer", method: "GET"});
+            if (res === -1) {
+                console.log("File not found, attemping to fetch from emulatorjs cdn");
+                res = await this.downloadFile("https://cdn.emulatorjs.org/stable/data/"+corePath, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Core") + progress;
-                }, false, {responseType: "arraybuffer", method: "GET"});
-            })
-        }, null, false, {responseType: "text", method: "GET"});
+                }, true, {responseType: "arraybuffer", method: "GET"});
+                if (res === -1) {
+                    if (!this.supportsWebgl2) {
+                        this.startGameError(this.localization('Outdated graphics driver'));
+                    } else {
+                        this.startGameError(this.localization('Network Error'));
+                    }
+                    return;
+                }
+                console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
+            }
+            gotCore(res.data);
+            this.storage.core.put(filename, {
+                version: rep.buildStart,
+                data: res.data
+            });
+        });
     }
     initGameCore(js, wasm, thread) {
         let script = this.createElement("script");
@@ -629,7 +631,9 @@ class EmulatorJS {
             }
             this.textElem.innerText = this.localization("Download Game State");
             
-            this.downloadFile(this.config.loadState, (res) => {
+            this.downloadFile(this.config.loadState, (progress) => {
+                this.textElem.innerText = this.localization("Download Game State") + progress;
+            }, true, {responseType: "arraybuffer", method: "GET"}).then((res) => {
                 if (res === -1) {
                     this.startGameError(this.localization('Network Error'));
                     return;
@@ -640,9 +644,7 @@ class EmulatorJS {
                     }, 10);
                 })
                 resolve();
-            }, (progress) => {
-                this.textElem.innerText = this.localization("Download Game State") + progress;
-            }, true, {responseType: "arraybuffer", method: "GET"});
+            });
         })
     }
     downloadGamePatch() {
@@ -665,36 +667,41 @@ class EmulatorJS {
                     resolve();
                 })
             }
-            
-            this.downloadFile(this.config.gamePatchUrl, (res) => {
-                this.storage.rom.get(this.config.gamePatchUrl.split("/").pop()).then((result) => {
-                    if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
+            const downloadFile = async () => {
+                const res = await this.downloadFile(this.config.gamePatchUrl, (progress) => {
+                    this.textElem.innerText = this.localization("Download Game Patch") + progress;
+                }, true, {responseType: "arraybuffer", method: "GET"});
+                if (res === -1) {
+                    this.startGameError(this.localization('Network Error'));
+                    return;
+                }
+                if (this.config.gamePatchUrl instanceof File) {
+                    this.config.gamePatchUrl = this.config.gamePatchUrl.name;
+                } else if (this.toData(this.config.gamePatchUrl, true)) {
+                    this.config.gamePatchUrl = "game";
+                }
+                gotData(res.data);
+                const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
+                if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gamePatchUrl !== "game") {
+                    this.storage.rom.put(this.config.gamePatchUrl.split("/").pop(), {
+                        "content-length": res.headers['content-length'],
+                        data: res.data
+                    })
+                }
+
+            }
+            if (!this.debug) {
+                this.downloadFile(this.config.gamePatchUrl, null, true, {method: "HEAD"}).then(async (res) => {
+                    const result = await this.storage.rom.get(this.config.gamePatchUrl.split("/").pop())
+                    if (result && result['content-length'] === res.headers['content-length']) {
                         gotData(result.data);
                         return;
                     }
-                    this.downloadFile(this.config.gamePatchUrl, (res) => {
-                        if (res === -1) {
-                            this.startGameError(this.localization('Network Error'));
-                            return;
-                        }
-                        if (this.config.gamePatchUrl instanceof File) {
-                            this.config.gamePatchUrl = this.config.gamePatchUrl.name;
-                        } else if (this.toData(this.config.gamePatchUrl, true)) {
-                            this.config.gamePatchUrl = "game";
-                        }
-                        gotData(res.data);
-                        const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gamePatchUrl !== "game") {
-                            this.storage.rom.put(this.config.gamePatchUrl.split("/").pop(), {
-                                "content-length": res.headers['content-length'],
-                                data: res.data
-                            })
-                        }
-                    }, (progress) => {
-                        this.textElem.innerText = this.localization("Download Game Patch") + progress;
-                    }, true, {responseType: "arraybuffer", method: "GET"});
+                    downloadFile();
                 })
-            }, null, true, {method: "HEAD"})
+            } else {
+                downloadFile();
+            }
         })
     }
     downloadGameParent() {
@@ -717,37 +724,42 @@ class EmulatorJS {
                     resolve();
                 })
             }
+            const downloadFile = async () => {
+                const res = await this.downloadFile(this.config.gameParentUrl, (progress) => {
+                    this.textElem.innerText = this.localization("Download Game Parent") + progress;
+                }, true, {responseType: "arraybuffer", method: "GET"});
+                if (res === -1) {
+                    this.startGameError(this.localization('Network Error'));
+                    return;
+                }
+                if (this.config.gameParentUrl instanceof File) {
+                    this.config.gameParentUrl = this.config.gameParentUrl.name;
+                } else if (this.toData(this.config.gameParentUrl, true)) {
+                    this.config.gameParentUrl = "game";
+                }
+                gotData(res.data);
+                const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
+                if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameParentUrl !== "game") {
+                    this.storage.rom.put(this.config.gameParentUrl.split("/").pop(), {
+                        "content-length": res.headers['content-length'],
+                        data: res.data
+                    })
+                }
+            }
             
-            this.downloadFile(this.config.gameParentUrl, (res) => {
-                this.storage.rom.get(this.config.gameParentUrl.split("/").pop()).then((result) => {
-                    if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
+            if (!this.debug) {
+                this.downloadFile(this.config.gameParentUrl, null, true, {method: "HEAD"}).then(async res => {
+                    const result = await this.storage.rom.get(this.config.gameParentUrl.split("/").pop())
+                    if (result && result['content-length'] === res.headers['content-length']) {
                         gotData(result.data);
                         return;
                     }
-                    this.downloadFile(this.config.gameParentUrl, (res) => {
-                        if (res === -1) {
-                            this.startGameError(this.localization('Network Error'));
-                            return;
-                        }
-                        if (this.config.gameParentUrl instanceof File) {
-                            this.config.gameParentUrl = this.config.gameParentUrl.name;
-                        } else if (this.toData(this.config.gameParentUrl, true)) {
-                            this.config.gameParentUrl = "game";
-                        }
-                        gotData(res.data);
-                        const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameParentUrl !== "game") {
-                            this.storage.rom.put(this.config.gameParentUrl.split("/").pop(), {
-                                "content-length": res.headers['content-length'],
-                                data: res.data
-                            })
-                        }
-                    }, (progress) => {
-                        this.textElem.innerText = this.localization("Download Game Parent") + progress;
-                    }, true, {responseType: "arraybuffer", method: "GET"});
+                    downloadFile();
                 })
-            }, null, true, {method: "HEAD"})
-        })
+            } else {
+                downloadFile();
+            }
+        });
     }
     downloadBios() {
         return new Promise((resolve, reject) => {
@@ -774,40 +786,40 @@ class EmulatorJS {
                     resolve();
                 })
             }
-            
-            this.downloadFile(this.config.biosUrl, (res) => {
+            const downloadFile = async () => {
+                const res = await this.downloadFile(this.config.biosUrl, (progress) => {
+                    this.textElem.innerText = this.localization("Download Game BIOS") + progress;
+                }, true, {responseType: "arraybuffer", method: "GET"});
                 if (res === -1) {
                     this.startGameError(this.localization('Network Error'));
                     return;
                 }
-                this.storage.bios.get(this.config.biosUrl.split("/").pop()).then((result) => {
-                    if (result && result['content-length'] === res.headers['content-length'] && !this.debug) {
+                if (this.config.biosUrl instanceof File) {
+                    this.config.biosUrl = this.config.biosUrl.name;
+                } else if (this.toData(this.config.biosUrl, true)) {
+                    this.config.biosUrl = "game";
+                }
+                gotBios(res.data);
+                if (this.saveInBrowserSupported() && this.config.biosUrl !== "game") {
+                    this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
+                        "content-length": res.headers['content-length'],
+                        data: res.data
+                    })
+                }
+            }
+            if (!this.debug) {
+                this.downloadFile(this.config.biosUrl, null, true, {method: "HEAD"}).then(async (res) => {
+                    const result = await this.storage.bios.get(this.config.biosUrl.split("/").pop());
+                    if (result && result['content-length'] === res.headers['content-length']) {
                         gotBios(result.data);
                         return;
                     }
-                    this.downloadFile(this.config.biosUrl, (res) => {
-                        if (res === -1) {
-                            this.startGameError(this.localization('Network Error'));
-                            return;
-                        }
-                        if (this.config.biosUrl instanceof File) {
-                            this.config.biosUrl = this.config.biosUrl.name;
-                        } else if (this.toData(this.config.biosUrl, true)) {
-                            this.config.biosUrl = "game";
-                        }
-                        gotBios(res.data);
-                        if (this.saveInBrowserSupported() && this.config.biosUrl !== "game") {
-                            this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
-                                "content-length": res.headers['content-length'],
-                                data: res.data
-                            })
-                        }
-                    }, (progress) => {
-                        this.textElem.innerText = this.localization("Download Game BIOS") + progress;
-                    }, true, {responseType: "arraybuffer", method: "GET"});
+                    downloadFile();
                 })
-            }, null, true, {method: "HEAD"})
-        })
+            } else {
+                downloadFile();
+            }
+        });
     }
     downloadRom() {
         const supportsExt = (ext) => {
@@ -910,41 +922,42 @@ class EmulatorJS {
                     resolve();
                 });
             }
-            
-            this.downloadFile(this.config.gameUrl, (res) => {
+            const downloadFile = async () => {
+                const res = await this.downloadFile(this.config.gameUrl, (progress) => {
+                    this.textElem.innerText = this.localization("Download Game Data") + progress;
+                }, true, {responseType: "arraybuffer", method: "GET"});
                 if (res === -1) {
                     this.startGameError(this.localization('Network Error'));
                     return;
                 }
-                const name = (typeof this.config.gameUrl === "string") ? this.config.gameUrl.split('/').pop() : "game";
-                this.storage.rom.get(name).then((result) => {
-                    if (result && result['content-length'] === res.headers['content-length'] && !this.debug && name !== "game") {
+                if (this.config.gameUrl instanceof File) {
+                    this.config.gameUrl = this.config.gameUrl.name;
+                } else if (this.toData(this.config.gameUrl, true)) {
+                    this.config.gameUrl = "game";
+                }
+                gotGameData(res.data);
+                const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
+                if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameUrl !== "game") {
+                    this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
+                        "content-length": res.headers['content-length'],
+                        data: res.data
+                    })
+                }
+            }
+            
+            if (!this.debug) {
+                this.downloadFile(this.config.gameUrl, null, true, {method: "HEAD"}).then(async (res) => {
+                    const name = (typeof this.config.gameUrl === "string") ? this.config.gameUrl.split('/').pop() : "game";
+                    const result = await this.storage.rom.get(name);
+                    if (result && result['content-length'] === res.headers['content-length'] && name !== "game") {
                         gotGameData(result.data);
                         return;
                     }
-                    this.downloadFile(this.config.gameUrl, (res) => {
-                        if (res === -1) {
-                            this.startGameError(this.localization('Network Error'));
-                            return;
-                        }
-                        if (this.config.gameUrl instanceof File) {
-                            this.config.gameUrl = this.config.gameUrl.name;
-                        } else if (this.toData(this.config.gameUrl, true)) {
-                            this.config.gameUrl = "game";
-                        }
-                        gotGameData(res.data);
-                        const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                        if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameUrl !== "game") {
-                            this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
-                                "content-length": res.headers['content-length'],
-                                data: res.data
-                            })
-                        }
-                    }, (progress) => {
-                        this.textElem.innerText = this.localization("Download Game Data") + progress;
-                    }, true, {responseType: "arraybuffer", method: "GET"});
+                    downloadFile();
                 })
-            }, null, true, {method: "HEAD"})
+            } else {
+                downloadFile();
+            }
         })
     }
     downloadFiles() {
@@ -984,9 +997,7 @@ class EmulatorJS {
             printErr: (msg) => {
                 if (this.debug) {
                     console.log(msg);
-
                 }
-
             },
             totalDependencies: 0,
             monitorRunDependencies: () => {},
@@ -1001,6 +1012,9 @@ class EmulatorJS {
         }).then(module => {
             this.Module = module;
             this.downloadFiles();
+        }).catch(e => {
+            console.warn(e);
+            this.startGameError(this.localization("Failed to start game"));
         });
     }
     startGame() {
