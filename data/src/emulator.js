@@ -1,93 +1,62 @@
 class EmulatorJS {
+    getCores() {
+        let rv = {
+            "atari5200": ["a5200"],
+            "vb": ["beetle_vb"],
+            "nds": ["melonds", "desmume", "desmume2015"],
+            "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2"],
+            "nes": ["fceumm", "nestopia"],
+            "gb": ["gambatte"],
+            "coleco": ["gearcoleco"],
+            "sega": ["genesis_plus_gx", "picodrive"],
+            "segaMS": ["smsplus"],
+            "segaMD": ["genesis_plus_gx"],
+            "segaGG": ["genesis_plus_gx"],
+            "segaCD": ["genesis_plus_gx"],
+            "sega32x": ["picodrive"],
+            "lynx": ["handy"],
+            "mame": ["mame2003_plus", "mame2003"],
+            "ngp": ["mednafen_ngp"],
+            "pce": ["mednafen_pce"],
+            "pcfx": ["mednafen_pcfx"],
+            "psx": ["pcsx_rearmed", "mednafen_psx_hw"],
+            "ws": ["mednafen_wswan"],
+            "gba": ["mgba"],
+            "n64": ["mupen64plus_next", "parallel_n64"],
+            "3do": ["opera"],
+            "psp": ["ppsspp"],
+            "atari7800": ["prosystem"],
+            "snes": ["snes9x"],
+            "atari2600": ["stella2014"],
+            "jaguar": ["virtualjaguar"],
+            "segaSaturn": ["yabause"],
+            "amiga": ["puae"],
+            "c64": ["vice_x64sc"],
+            "c128": ["vice_x128"],
+            "pet": ["vice_xpet"],
+            "plus4": ["vice_xplus4"],
+            "vic20": ["vice_xvic"]
+        };
+        if (this.isSafari && this.isMobile) {
+            rv.n64 = rv.n64.reverse();
+        }
+        return rv;
+    }
     getCore(generic) {
+        const cores = this.getCores();
         const core = this.config.system;
         if (generic) {
-            const options = {
-                'a5200': 'atari5200',
-                'beetle_vb': 'vb',
-                'desmume': 'nds',
-                'desmume2015': 'nds',
-                'fbalpha2012_cps1': 'arcade',
-                'fbalpha2012_cps2': 'arcade',
-                'fbneo': 'arcade',
-                'fceumm': 'nes',
-                'gambatte': 'gb',
-                'gearcoleco': 'coleco',
-                'genesis_plus_gx': 'sega',
-                'handy': 'lynx',
-                'mame2003': 'mame',
-                'mame2003_plus': 'mame',
-                'mednafen_ngp': 'ngp',
-                'mednafen_pce': 'pce',
-                'mednafen_pcfx': 'pcfx',
-                'mednafen_psx_hw': 'psx',
-                'mednafen_wswan': 'ws',
-                'melonds': 'nds',
-                'mgba': 'gba',
-                'mupen64plus_next': 'n64',
-                'nestopia': 'nes',
-                'opera': '3do',
-                'parallel_n64': 'n64',
-                'pcsx_rearmed': 'psx',
-                'picodrive': 'sega',
-                'ppsspp': 'psp',
-                'prosystem': 'atari7800',
-                'snes9x': 'snes',
-                'stella2014': 'atari2600',
-                'virtualjaguar': 'jaguar',
-                'yabause': 'segaSaturn',
-                'puae': 'amiga',
-                'vice_x64sc': 'c64',
-                'vice_x128': 'c128',
-                'vice_xpet': 'pet',
-                'vice_xplus4': 'plus4',
-                'vice_xvic': 'vic20'
+            for (const k in cores) {
+                if (cores[k].includes(core)) {
+                    return k;
+                }
             }
-            return options[core] || core;
+            return core;
         }
-        const options = {
-            'jaguar': 'virtualjaguar',
-            'lynx': 'handy',
-            'segaSaturn': 'yabause',
-            'segaMS': 'smsplus',
-            'segaMD': 'genesis_plus_gx',
-            'segaGG': 'genesis_plus_gx',
-            'segaCD': 'genesis_plus_gx',
-            'sega32x': 'picodrive',
-            'atari2600': 'stella2014',
-            'atari7800': 'prosystem',
-            'nes': 'fceumm',
-            'snes': 'snes9x',
-            'atari5200': 'a5200',
-            'gb': 'gambatte',
-            'gba': 'mgba',
-            'vb': 'beetle_vb',
-            'n64': 'mupen64plus_next',
-            'nds': 'melonds',
-            'mame': 'mame2003_plus',
-            'arcade': 'fbneo',
-            'psx': 'pcsx_rearmed',
-            '3do': 'opera',
-            'psp': 'ppsspp',
-            'pce': 'mednafen_pce',
-            'pcfx': 'mednafen_pcfx',
-            'ngp': 'mednafen_ngp',
-            'ws': 'mednafen_wswan',
-            'coleco': 'gearcoleco',
-            'amiga': 'puae',
-            'c64': 'vice_x64sc',
-            'c128': 'vice_x128',
-            'pet': 'vice_xpet',
-            'plus4': 'vice_xplus4',
-            'vic20': 'vice_xvic'
+        if (cores[core]) {
+            return cores[core][0];
         }
-        if (this.isSafari && this.isMobile && this.getCore(true) === "n64") {
-            return "parallel_n64";
-        }
-        if (!this.supportsWebgl2 && this.getCore(true) === "psx") {
-            return "mednafen_psx_hw";
-        }
-        return options[core] || core;
+        return core;
     }
     createElement(type) {
         return document.createElement(type);
@@ -1083,8 +1052,9 @@ class EmulatorJS {
                 this.checkStarted();
             }
         } catch(e) {
-            console.warn("failed to start game", e);
+            console.warn("Failed to start game", e);
             this.startGameError(this.localization("Failed to start game"));
+            this.callEvent("exit");
             return;
         }
         this.callEvent("start");
@@ -1143,6 +1113,10 @@ class EmulatorJS {
                 if (this.config.noAutoFocus !== true) this.elements.parent.focus();
             }, 0);
         });
+        this.addEventListener(window, "beforeunload", (e) => {
+            if (!this.started) return;
+            this.callEvent("exit");
+        });
         this.addEventListener(this.elements.parent, "dragenter", (e) => {
             e.preventDefault();
             if (!this.started) return;
@@ -1166,6 +1140,7 @@ class EmulatorJS {
             counter = 0;
             this.elements.statePopupPanel.parentElement.style.display = "none";
         });
+
         this.addEventListener(this.elements.parent, "drop", (e) => {
             e.preventDefault();
             if (!this.started) return;

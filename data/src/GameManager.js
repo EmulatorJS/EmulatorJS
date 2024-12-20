@@ -40,9 +40,9 @@ class EJS_GameManager {
         this.EJS.on("exit", () => {
             this.toggleMainLoop(0);
             this.functions.saveSaveFiles();
+            this.FS.unmount('/data/saves');
             setTimeout(() => {
                 try {
-                    this.FS.unmount('/data/saves');
                     this.Module.abort();
                 } catch(e) {
                     console.warn(e);
