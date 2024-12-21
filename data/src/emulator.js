@@ -3986,6 +3986,8 @@ class EmulatorJS {
             }
         } else if (option === "vsync") {
             this.gameManager.setVSync(value === "enabled");
+        } else if (option === "videoRotation") {
+            this.gameManager.setVideoRotation(value);
         }
     }
     menuOptionChanged(option, value) {
@@ -3993,7 +3995,10 @@ class EmulatorJS {
         if (this.debug) console.log(option, value);
         if (!this.gameManager) return;
         this.handleSpecialOptions(option, value);
-        this.gameManager.setVariable(option, value);
+        const notCoreOption = [ "webgl2Enabled", "videoRotation"];
+        if (!notCoreOption.includes(option)) {
+            this.gameManager.setVariable(option, value);
+        }
         this.saveSettings();
     }
     setupDisksMenu() {
@@ -4448,7 +4453,7 @@ class EmulatorJS {
             'disabled': this.localization("Disabled")
         }, "enabled", graphicsOptions, true);
 
-        addToMenu(this.localization("Video Rotation" + " (" + this.localization('Requires restart') + ")"), 'videoRotation', {
+        addToMenu(this.localization('Video Rotation'), 'videoRotation', {
             '0': "0 deg",
             '1': "90 deg",
             '2': "180 deg",
@@ -4530,6 +4535,7 @@ class EmulatorJS {
                           true);
             })
         }
+        
 
         /*
         this.retroarchOpts = [
