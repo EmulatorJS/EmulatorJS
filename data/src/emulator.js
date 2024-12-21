@@ -109,7 +109,7 @@ class EmulatorJS {
             }
             let url;
             try {url=new URL(path)}catch(e){};
-            if (!url || !['http:', 'https:'].includes(url.protocol)) {
+            if (url && !['http:', 'https:'].includes(url.protocol)) {
                 //Most commonly blob: urls. Not sure what else it could be
                 if (opts.method === 'HEAD') {
                     cb({headers:{}});
