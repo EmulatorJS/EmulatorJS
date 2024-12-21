@@ -557,7 +557,7 @@ class EmulatorJS {
                 this.webgl2Enabled = true;
             }
             let threads = false;
-            if (SharedArrayBuffer instanceof Function) {
+            if (typeof window.SharedArrayBuffer === "function") {
                 const opt = this.preGetSetting("ejs_threads");
                 if (opt) {
                     threads = (opt === "enabled");
@@ -4397,7 +4397,7 @@ class EmulatorJS {
         if (core && core.length > 1) {
             addToMenu(this.localization("Core" + " (" + this.localization('Requires restart') + ")"), 'retroarch_core', core, this.getCore(), home);
         }
-        if (SharedArrayBuffer instanceof Function && !this.requiresThreads(this.getCore())) {
+        if (typeof window.SharedArrayBuffer === "function" && !this.requiresThreads(this.getCore())) {
             addToMenu(this.localization("Threads"), "ejs_threads", {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
