@@ -3995,10 +3995,7 @@ class EmulatorJS {
         if (this.debug) console.log(option, value);
         if (!this.gameManager) return;
         this.handleSpecialOptions(option, value);
-        const notCoreOption = [ "webgl2Enabled", "videoRotation"];
-        if (!notCoreOption.includes(option)) {
-            this.gameManager.setVariable(option, value);
-        }
+        this.gameManager.setVariable(option, value);
         this.saveSettings();
     }
     setupDisksMenu() {
