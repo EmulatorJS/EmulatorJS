@@ -557,7 +557,7 @@ class EmulatorJS {
                 this.webgl2Enabled = true;
             }
             let threads = false;
-            if (SharedArrayBuffer instanceof Function) {
+            if (typeof window.SharedArrayBuffer === "function") {
                 const opt = this.preGetSetting("ejs_threads");
                 if (opt) {
                     threads = (opt === "enabled");
@@ -3986,6 +3986,8 @@ class EmulatorJS {
             }
         } else if (option === "vsync") {
             this.gameManager.setVSync(value === "enabled");
+        } else if (option === "videoRotation") {
+            this.gameManager.setVideoRotation(value);
         }
     }
     menuOptionChanged(option, value) {
@@ -4392,7 +4394,7 @@ class EmulatorJS {
         if (core && core.length > 1) {
             addToMenu(this.localization("Core" + " (" + this.localization('Requires restart') + ")"), 'retroarch_core', core, this.getCore(), home);
         }
-        if (SharedArrayBuffer instanceof Function && !this.requiresThreads(this.getCore())) {
+        if (typeof window.SharedArrayBuffer === "function" && !this.requiresThreads(this.getCore())) {
             addToMenu(this.localization("Threads"), "ejs_threads", {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
@@ -4448,7 +4450,7 @@ class EmulatorJS {
             'disabled': this.localization("Disabled")
         }, "enabled", graphicsOptions, true);
 
-        addToMenu(this.localization("Video Rotation" + " (" + this.localization('Requires restart') + ")"), 'videoRotation', {
+        addToMenu(this.localization('Video Rotation'), 'videoRotation', {
             '0': "0 deg",
             '1': "90 deg",
             '2': "180 deg",
@@ -4530,6 +4532,7 @@ class EmulatorJS {
                           true);
             })
         }
+        
 
         /*
         this.retroarchOpts = [
