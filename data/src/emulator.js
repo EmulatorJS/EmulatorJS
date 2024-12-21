@@ -61,6 +61,10 @@ class EmulatorJS {
             }
             return core;
         }
+        const gen = this.getCore(true);
+        if (cores[gen].includes(this.preGetSetting("retroarch_core", cores[gen][0]))) {
+            return this.preGetSetting("retroarch_core", cores[gen][0]);
+        }
         if (cores[core]) {
             return cores[core][0];
         }
@@ -548,6 +552,9 @@ class EmulatorJS {
             }
             if (this.webgl2Enabled === null) {
                 this.webgl2Enabled = rep.options ? rep.options.defaultWebGL2 : false;
+            }
+            if (this.requiresWebGL2(this.getCore())) {
+                this.webgl2Enabled = true;
             }
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
@@ -3841,9 +3848,10 @@ class EmulatorJS {
         localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
     }
-    preGetSetting(setting) {
+    preGetSetting(setting, core) {
+        core = core || this.getCore();
         if (window.localStorage && !this.config.disableLocalStorage) {
-            let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+            let coreSpecific = localStorage.getItem("ejs-"+core+"-settings");
             try {
                 coreSpecific = JSON.parse(coreSpecific);
                 if (coreSpecific && coreSpecific.settings) {
@@ -4350,6 +4358,11 @@ class EmulatorJS {
             
             nested.appendChild(menu);
         }
+        const cores = this.getCores();
+        const core = cores[this.getCore(true)];
+        if (core && core.length > 1) {
+            addToMenu(this.localization("Core" + " (" + this.localization('Requires restart') + ")"), 'retroarch_core', core, this.getCore(), home);
+        }
 
         const graphicsOptions = createSettingParent(true, "Graphics Settings", home);
 
@@ -4383,7 +4396,7 @@ class EmulatorJS {
             addToMenu(this.localization('Shaders'), 'shader', shaderMenu, 'disabled', graphicsOptions, true);
         }
 
-        if (this.supportsWebgl2) {
+        if (this.supportsWebgl2 && !this.requiresWebGL2(this.getCore())) {
             addToMenu(this.localization('WebGL2') + " (" + this.localization('Requires restart') + ")", 'webgl2Enabled', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
@@ -4400,7 +4413,7 @@ class EmulatorJS {
             'disabled': this.localization("Disabled")
         }, "enabled", graphicsOptions, true);
 
-        addToMenu(this.localization('Video Rotation (requires reload)'), 'videoRotation', {
+        addToMenu(this.localization("Video Rotation" + " (" + this.localization('Requires restart') + ")"), 'videoRotation', {
             '0': "0 deg",
             '1': "90 deg",
             '2': "180 deg",
@@ -4427,7 +4440,7 @@ class EmulatorJS {
             "1.5", "2.0", "2.5", "3.0", "3.5", "4.0", "4.5", "5.0", "5.5", "6.0", "6.5", "7.0", "7.5", "8.0", "8.5", "9.0", "9.5", "10.0"
         ], "3.0", speedOptions, true);
 
-        addToMenu(this.localization('Rewind Enabled (requires reload)'), 'rewindEnabled', {
+        addToMenu(this.localization('Rewind Enabled' + " (" + this.localization('Requires restart') + ")"), 'rewindEnabled', {
             'enabled': this.localization("Enabled"),
             'disabled': this.localization("Disabled")
         }, 'disabled', speedOptions, true);
@@ -4497,7 +4510,7 @@ class EmulatorJS {
         ];*/
 
         if (this.retroarchOpts && Array.isArray(this.retroarchOpts)) {
-            const retroarchOptsMenu = createSettingParent(true, "RetroArch Options (requires reload)", home);
+            const retroarchOptsMenu = createSettingParent(true, "RetroArch Options" + " (" + this.localization('Requires restart') + ")", home);
             this.retroarchOpts.forEach(option => {
                 addToMenu(this.localization(option.title, this.config.settingsLanguage),
                           option.name,
