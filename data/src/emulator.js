@@ -556,8 +556,18 @@ class EmulatorJS {
             if (this.requiresWebGL2(this.getCore())) {
                 this.webgl2Enabled = true;
             }
+            let threads = false;
+            if (SharedArrayBuffer instanceof Function) {
+                const opt = this.preGetSetting("ejs_threads");
+                if (opt) {
+                    threads = (opt === "enabled");
+                } else {
+                    threads = this.config.threads;
+                }
+            }
+
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
-            let filename = this.getCore()+(this.config.threads ? "-thread" : "")+legacy+"-wasm.data";
+            let filename = this.getCore()+(threads ? "-thread" : "")+legacy+"-wasm.data";
             if (!this.debug) {
                 const result = await this.storage.core.get(filename);
                 if (result && result.version === rep.buildStart) {
@@ -4362,6 +4372,12 @@ class EmulatorJS {
         const core = cores[this.getCore(true)];
         if (core && core.length > 1) {
             addToMenu(this.localization("Core" + " (" + this.localization('Requires restart') + ")"), 'retroarch_core', core, this.getCore(), home);
+        }
+        if (SharedArrayBuffer instanceof Function && !this.requiresThreads(this.getCore())) {
+            addToMenu(this.localization("Threads"), "ejs_threads", {
+                'enabled': this.localization("Enabled"),
+                'disabled': this.localization("Disabled")
+            }, this.config.threads ? "enabled" : "disabled", home);
         }
 
         const graphicsOptions = createSettingParent(true, "Graphics Settings", home);
