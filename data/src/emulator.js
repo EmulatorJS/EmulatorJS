@@ -593,6 +593,7 @@ class EmulatorJS {
                     return;
                 }
                 console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
+                console.warn("**THIS METHOD IS A FAILSAFE, AND NOT OFFICIALLY SUPPORTED. USE AT YOUR OWN RISK**");
             }
             gotCore(res.data);
             this.storage.core.put(filename, {
