@@ -1198,13 +1198,11 @@
 .ejs_volume_parent {
     padding-right: 15px;
 }
-.ejs_volume_parent input[type='range'] {
-    display: block;
-}
 .ejs_volume_parent::-webkit-media-controls{
     display: none;
 }
-.ejs_volume_parent input[type='range']{
+.ejs_volume_parent input[type='range'] {
+    display: block;
     -webkit-appearance:none;
     appearance: none;
     border:0;
@@ -1213,7 +1211,9 @@
     margin:0;
     padding:0;
     transition:box-shadow 0.3s ease;
-    width:100%
+    width:100%;
+    background: white;
+    height:6px;
 }
 
 .ejs_volume_parent input[type='range']::-webkit-slider-runnable-track{

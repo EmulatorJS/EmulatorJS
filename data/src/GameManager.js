@@ -5,7 +5,7 @@ class EJS_GameManager {
         this.FS = this.Module.FS;
         this.functions = {
             restart: this.Module.cwrap('system_restart', '', []),
-            saveStateInfo: this.Module.cwrap('save_state_info', 'null', []),
+            saveStateInfo: this.Module.cwrap('save_state_info', 'string', []),
             loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
             screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
             simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
@@ -29,26 +29,37 @@ class EJS_GameManager {
             toggleSlowMotion: this.Module.cwrap('toggle_slow_motion', 'null', ['number']),
             setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
-            setVSync: this.Module.cwrap('set_vsync', 'null', ['number'])
+            setVSync: this.Module.cwrap('set_vsync', 'null', ['number']),
+            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number'])
         }
-        this.mkdir("/data");
-        this.mkdir("/data/saves");
         
         this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
-        
-        this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
-        //this.FS.syncfs(true, () => {});
         
         this.writeConfigFile();
         this.initShaders();
 
         this.EJS.on("exit", () => {
             this.toggleMainLoop(0);
-            this.functions.saveSaveFiles();
+            if (!this.EJS.failedToStart) {
+                this.functions.saveSaveFiles();
+            }
+            this.FS.unmount('/data/saves');
             setTimeout(() => {
-                try {window.abort()} catch(e){};
+                try {
+                    this.Module.abort();
+                } catch(e) {
+                    console.warn(e);
+                };
             }, 1000);
         })
+    }
+    mountFileSystems() {
+        return new Promise(async resolve => {
+            this.mkdir("/data");
+            this.mkdir("/data/saves");
+            this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
+            this.FS.syncfs(true, resolve);
+        });
     }
     writeConfigFile() {
         if (!this.EJS.defaultCoreOpts.file || !this.EJS.defaultCoreOpts.settings) {
@@ -66,7 +77,7 @@ class EJS_GameManager {
             if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
                 for (const key in this.EJS.config.externalFiles) {
                     await new Promise(done => {
-                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], async (res) => {
+                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], null, true, {responseType: "arraybuffer", method: "GET"}).then(async (res) => {
                             if (res === -1) {
                                 if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
                                 return done();
@@ -92,7 +103,7 @@ class EJS_GameManager {
                                 if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
                             }
                             done();
-                        }, null, true, {responseType: "arraybuffer", method: "GET"});
+                        });
                     })
                 }
             }
@@ -115,20 +126,33 @@ class EJS_GameManager {
         } catch(e) {}
     }
     getRetroArchCfg() {
-        return "autosave_interval = 60\n" +
-               "screenshot_directory = \"/\"\n" +
-               "block_sram_overwrite = false\n" +
-               "video_gpu_screenshot = false\n" +
-               "audio_latency = 64\n" +
-               "video_top_portrait_viewport = true\n" +
-               "video_vsync = true\n" +
-               "video_smooth = false\n" +
-               "fastforward_ratio = 3.0\n" +
-               "slowmotion_ratio = 3.0\n" +
-                (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
-                (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
-               "savefile_directory = \"/data/saves\"\n" +
-               "video_rotation = " + this.EJS.videoRotation + "\n";
+        let cfg = "autosave_interval = 60\n" +
+                  "screenshot_directory = \"/\"\n" +
+                  "block_sram_overwrite = false\n" +
+                  "video_gpu_screenshot = false\n" +
+                  "audio_latency = 64\n" +
+                  "video_top_portrait_viewport = true\n" +
+                  "video_vsync = true\n" +
+                  "video_smooth = false\n" +
+                  "fastforward_ratio = 3.0\n" +
+                  "slowmotion_ratio = 3.0\n" +
+                   (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
+                   (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
+                  "savefile_directory = \"/data/saves\"\n" +
+                  "video_rotation = " + this.EJS.videoRotation + "\n";
+
+        if (this.EJS.retroarchOpts && Array.isArray(this.EJS.retroarchOpts)) {
+            this.EJS.retroarchOpts.forEach(option => {
+                let selected = this.EJS.preGetSetting(option.name);
+                console.log(selected);
+                if (!selected) {
+                    selected = option.default;
+                }
+                const value = option.isString === false ? selected : '"' + selected + '"';
+                cfg += option.name + " = " + value + "\n"
+            })
+        }
+        return cfg;
     }
     initShaders() {
         if (!this.EJS.config.shaders) return;
@@ -151,8 +175,15 @@ class EJS_GameManager {
         this.functions.restart();
     }
     getState() {
-        this.functions.saveStateInfo();
-        return this.FS.readFile("/current.state");
+        const state = this.functions.saveStateInfo().split("|");
+        if (state[2] !== "1") {
+            console.error(state[0]);
+            return state[0];
+        }
+        const size = parseInt(state[0]);
+        const dataStart = parseInt(state[1]);
+        const data = this.Module.HEAPU8.subarray(dataStart, dataStart + size);
+        return new Uint8Array(data);
     }
     loadState(state) {
         try {
@@ -294,7 +325,7 @@ class EJS_GameManager {
     }
     loadPpssppAssets() {
         return new Promise(resolve => {
-            this.EJS.downloadFile('cores/ppsspp-assets.zip', (res) => {
+            this.EJS.downloadFile('cores/ppsspp-assets.zip', null, false, {responseType: "arraybuffer", method: "GET"}).then((res) => {
                 this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
                     if (pspassets === -1) {
                         this.EJS.textElem.innerText = this.localization('Network Error');
@@ -302,7 +333,7 @@ class EJS_GameManager {
                         return;
                     }
                     this.mkdir("/PPSSPP");
-                    
+
                     for (const file in pspassets) {
                         const data = pspassets[file];
                         const path = "/PPSSPP/"+file;
@@ -311,15 +342,17 @@ class EJS_GameManager {
                         for (let i=0; i<paths.length-1; i++) {
                             if (paths[i] === "") continue;
                             cp += "/"+paths[i];
-                            if (!FS.analyzePath(cp).exists) {
+                            if (!this.FS.analyzePath(cp).exists) {
                                 this.FS.mkdir(cp);
                             }
                         }
-                        this.FS.writeFile(path, data);
+                        if (!path.endsWith("/")) {
+                            this.FS.writeFile(path, data);
+                        }
                     }
                     resolve();
                 })
-            }, null, false, {responseType: "arraybuffer", method: "GET"});
+            });
         })
     }
     setVSync(enabled) {
@@ -388,6 +421,13 @@ class EJS_GameManager {
     }
     getFrameNum() {
         return this.functions.getFrameNum();
+    }
+    setVideoRotation(rotation) {
+        try { 
+            this.functions.setVideoRoation(rotation);
+        } catch(e) {
+            console.warn(e);
+        }
     }
 }
 
