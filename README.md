@@ -18,7 +18,6 @@ Self-hosted **Javascript** emulation for various system.
 [![Button Usage]][Usage]<br>
 [![Button Configurator]][Configurator]<br>
 [![Button Demo]][Demo] 
-[![Button Legacy]][Legacy]
     
 [![Button Contributors]][Contributors]   
  
@@ -169,6 +168,16 @@ npm start
 
 <br>
 
+## Star History
+
+<a href="https://star-history.com/#EmulatorJS/EmulatorJS&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
+ </picture>
+</a>
+
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
 [License]: LICENSE
@@ -186,7 +195,6 @@ npm start
 [Configurator]: https://emulatorjs.org/editor
 [Contributors]: docs/Contributors.md
 [Website]: https://emulatorjs.org/
-[Legacy]: https://coldcast.org/games/1/Super-Mario-Bros
 [Usage]: https://emulatorjs.org/docs/
 [Demo]: https://demo.emulatorjs.org/
 
@@ -242,7 +250,6 @@ npm start
 [Button Configurator]: https://img.shields.io/badge/Configurator-992cb3?style=for-the-badge
 [Button Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
 [Button Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
-[Button Legacy]: https://img.shields.io/badge/Legacy-ab910b?style=for-the-badge
 [Button Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
 [Button Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
 [Button Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
