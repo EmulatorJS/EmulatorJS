@@ -62,8 +62,8 @@ class EmulatorJS {
             return core;
         }
         const gen = this.getCore(true);
-        if (cores[gen].includes(this.getCoreSetting(gen))) {
-            return this.getCoreSetting(gen);
+        if (cores[gen].includes(this.preGetSetting("retroarch_core"))) {
+            return this.preGetSetting("retroarch_core");
         }
         if (cores[core]) {
             return cores[core][0];
@@ -3771,30 +3771,22 @@ class EmulatorJS {
             muted: this.muted
         }
         localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
-        localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
-        this.saveCoreSettings();
+        localStorage.setItem(this.getLocalStorageKey(), JSON.stringify(coreSpecific));
     }
-    saveCoreSettings() {
-        let settings = localStorage.getItem("ejs-core-settings");
-        try {
-            settings = JSON.parse(settings);
-        } catch(e) {
-            settings = {};
+    getLocalStorageKey() {
+        let identifier = (this.config.gameId || 1) + "-" + this.getCore(true);
+        if (typeof this.config.gameUrl === "string" && !this.config.gameUrl.toLowerCase().startsWith("blob:")) {
+            identifier += "-" + this.config.gameUrl;
+        } else if (this.config.gameUrl instanceof File) {
+            identifier += "-" + this.config.gameUrl.name;
+        } else if (typeof this.config.gameId !== "number") {
+            console.warn("gameId (EJS_gameID) is not set. This may result in settings persisting across games.");
         }
-        settings[this.getCore(true)] = this.settings.retroarch_core;
-        localStorage.setItem("ejs-core-settings", JSON.stringify(settings));
-    }
-    getCoreSetting(core) {
-        let settings = localStorage.getItem("ejs-core-settings");
-        try {
-            return JSON.parse(settings)[core];
-        } catch(e) {
-            return "";
-        }
+        return "ejs-"+identifier+"-settings";
     }
     preGetSetting(setting) {
         if (window.localStorage && !this.config.disableLocalStorage) {
-            let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+            let coreSpecific = localStorage.getItem(this.getLocalStorageKey());
             try {
                 coreSpecific = JSON.parse(coreSpecific);
                 if (coreSpecific && coreSpecific.settings) {
@@ -3813,7 +3805,7 @@ class EmulatorJS {
         if (!window.localStorage || this.config.disableLocalStorage) return;
         this.settingsLoaded = true;
         let ejs_settings = localStorage.getItem("ejs-settings");
-        let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
+        let coreSpecific = localStorage.getItem(this.getLocalStorageKey());
         if (coreSpecific) {
             try {
                 coreSpecific = JSON.parse(coreSpecific);
