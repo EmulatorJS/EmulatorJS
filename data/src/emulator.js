@@ -665,178 +665,73 @@ class EmulatorJS {
             });
         })
     }
-    downloadGamePatch() {
-        return new Promise((resolve, reject) => {
-            if ((typeof this.config.gamePatchUrl !== "string" || !this.config.gamePatchUrl.trim()) && !this.toData(this.config.gamePatchUrl, true)) {
-                resolve();
-                return;
+    downloadGameFile(assetUrl, type, progressMessage, decompressProgressMessage) {
+        return new Promise(async (resolve, reject) => {
+            if ((typeof assetUrl !== "string" || !assetUrl.trim()) && !this.toData(assetUrl, true)) {
+                return resolve(assetUrl);
             }
-            this.textElem.innerText = this.localization("Download Game Patch");
-            const gotData = (data) => {
-                this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Patch")).then((data) => {
-                    for (const k in data) {
-                        if (k === "!!notCompressedData") {
-                            this.gameManager.FS.writeFile(this.config.gamePatchUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
-                            break;
-                        }
-                        if (k.endsWith('/')) continue;
-                        this.gameManager.FS.writeFile("/" + k.split('/').pop(), data[k]);
+            const gotData = async (input) => {
+                const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage);
+                for (const k in data) {
+                    if (k === "!!notCompressedData") {
+                        this.gameManager.FS.writeFile(assetUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
+                        break;
                     }
-                    resolve();
-                })
-            }
-            const downloadFile = async () => {
-                const res = await this.downloadFile(this.config.gamePatchUrl, (progress) => {
-                    this.textElem.innerText = this.localization("Download Game Patch") + progress;
-                }, true, {responseType: "arraybuffer", method: "GET"});
-                if (res === -1) {
-                    this.startGameError(this.localization('Network Error'));
-                    return;
-                }
-                if (this.config.gamePatchUrl instanceof File) {
-                    this.config.gamePatchUrl = this.config.gamePatchUrl.name;
-                } else if (this.toData(this.config.gamePatchUrl, true)) {
-                    this.config.gamePatchUrl = "game";
-                }
-                gotData(res.data);
-                const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gamePatchUrl !== "game") {
-                    this.storage.rom.put(this.config.gamePatchUrl.split("/").pop(), {
-                        "content-length": res.headers['content-length'],
-                        data: res.data
-                    })
-                }
-
-            }
-            if (!this.debug) {
-                this.downloadFile(this.config.gamePatchUrl, null, true, {method: "HEAD"}).then(async (res) => {
-                    const result = await this.storage.rom.get(this.config.gamePatchUrl.split("/").pop())
-                    if (result && result['content-length'] === res.headers['content-length']) {
-                        gotData(result.data);
-                        return;
-                    }
-                    downloadFile();
-                })
-            } else {
-                downloadFile();
-            }
-        })
-    }
-    downloadGameParent() {
-        return new Promise((resolve, reject) => {
-            if ((typeof this.config.gameParentUrl !== "string" || !this.config.gameParentUrl.trim()) && !this.toData(this.config.gameParentUrl, true)) {
-                resolve();
-                return;
-            }
-            this.textElem.innerText = this.localization("Download Game Parent");
-            const gotData = (data) => {
-                this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Parent")).then((data) => {
-                    for (const k in data) {
-                        if (k === "!!notCompressedData") {
-                            this.gameManager.FS.writeFile(this.config.gameParentUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
-                            break;
-                        }
-                        if (k.endsWith('/')) continue;
-                        this.gameManager.FS.writeFile("/" + k.split('/').pop(), data[k]);
-                    }
-                    resolve();
-                })
-            }
-            const downloadFile = async () => {
-                const res = await this.downloadFile(this.config.gameParentUrl, (progress) => {
-                    this.textElem.innerText = this.localization("Download Game Parent") + progress;
-                }, true, {responseType: "arraybuffer", method: "GET"});
-                if (res === -1) {
-                    this.startGameError(this.localization('Network Error'));
-                    return;
-                }
-                if (this.config.gameParentUrl instanceof File) {
-                    this.config.gameParentUrl = this.config.gameParentUrl.name;
-                } else if (this.toData(this.config.gameParentUrl, true)) {
-                    this.config.gameParentUrl = "game";
-                }
-                gotData(res.data);
-                const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && this.config.gameParentUrl !== "game") {
-                    this.storage.rom.put(this.config.gameParentUrl.split("/").pop(), {
-                        "content-length": res.headers['content-length'],
-                        data: res.data
-                    })
+                    if (k.endsWith('/')) continue;
+                    this.gameManager.FS.writeFile("/" + k.split('/').pop(), data[k]);
                 }
             }
             
+            this.textElem.innerText = progressMessage;
             if (!this.debug) {
-                this.downloadFile(this.config.gameParentUrl, null, true, {method: "HEAD"}).then(async res => {
-                    const result = await this.storage.rom.get(this.config.gameParentUrl.split("/").pop())
-                    if (result && result['content-length'] === res.headers['content-length']) {
-                        gotData(result.data);
-                        return;
-                    }
-                    downloadFile();
+                const res = await this.downloadFile(assetUrl, null, true, {method: "HEAD"});
+                const result = await this.storage.rom.get(assetUrl.split("/").pop());
+                if (result && result['content-length'] === res.headers['content-length'] && result.type === type) {
+                    await gotData(result.data);
+                    return resolve(assetUrl);
+                }
+            }
+            const res = await this.downloadFile(assetUrl, (progress) => {
+                this.textElem.innerText = progressMessage + progress;
+            }, true, {responseType: "arraybuffer", method: "GET"});
+            if (res === -1) {
+                this.startGameError(this.localization("Network Error"));
+                resolve(assetUrl);
+                return;
+            }
+            if (assetUrl instanceof File) {
+                assetUrl = assetUrl.name;
+            } else if (this.toData(assetUrl, true)) {
+                assetUrl = "game";
+            }
+            await gotData(res.data);
+            resolve(assetUrl);
+            const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
+            if (parseFloat(res.headers['content-length']) < limit && this.saveInBrowserSupported() && assetUrl !== "game") {
+                this.storage.rom.put(assetUrl.split("/").pop(), {
+                    "content-length": res.headers['content-length'],
+                    data: res.data,
+                    type: type
                 })
-            } else {
-                downloadFile();
             }
         });
     }
+    downloadGamePatch() {
+        return new Promise(async (resolve) => {
+            this.config.gamePatchUrl = await this.downloadGameFile(this.config.gamePatchUrl, "patch", this.localization("Download Game Patch"), this.localization("Decompress Game Patch"));
+            resolve();
+        });
+    }
+    downloadGameParent() {
+        return new Promise(async (resolve) => {
+            this.config.gameParentUrl = await this.downloadGameFile(this.config.gameParentUrl, "parent", this.localization("Download Game Parent"), this.localization("Decompress Game Parent"));
+            resolve();
+        });
+    }
     downloadBios() {
-        return new Promise((resolve, reject) => {
-            if ((typeof this.config.biosUrl !== "string" || !this.config.biosUrl.trim()) && !this.toData(this.config.biosUrl, true)) {
-                resolve();
-                return;
-            }
-            this.textElem.innerText = this.localization("Download Game BIOS");
-            const gotBios = (data) => {
-                if (this.getCore() === "same_cdi") {
-                    this.gameManager.FS.writeFile(this.config.biosUrl.split('/').pop().split("#")[0].split("?")[0], new Uint8Array(data));
-                    resolve();
-                    return;
-                }
-                this.checkCompression(new Uint8Array(data), this.localization("Decompress Game BIOS")).then((data) => {
-                    for (const k in data) {
-                        if (k === "!!notCompressedData") {
-                            this.gameManager.FS.writeFile(this.config.biosUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
-                            break;
-                        }
-                        if (k.endsWith('/')) continue;
-                        this.gameManager.FS.writeFile("/" + k.split('/').pop(), data[k]);
-                    }
-                    resolve();
-                })
-            }
-            const downloadFile = async () => {
-                const res = await this.downloadFile(this.config.biosUrl, (progress) => {
-                    this.textElem.innerText = this.localization("Download Game BIOS") + progress;
-                }, true, {responseType: "arraybuffer", method: "GET"});
-                if (res === -1) {
-                    this.startGameError(this.localization('Network Error'));
-                    return;
-                }
-                if (this.config.biosUrl instanceof File) {
-                    this.config.biosUrl = this.config.biosUrl.name;
-                } else if (this.toData(this.config.biosUrl, true)) {
-                    this.config.biosUrl = "game";
-                }
-                gotBios(res.data);
-                if (this.saveInBrowserSupported() && this.config.biosUrl !== "game") {
-                    this.storage.bios.put(this.config.biosUrl.split("/").pop(), {
-                        "content-length": res.headers['content-length'],
-                        data: res.data
-                    })
-                }
-            }
-            if (!this.debug) {
-                this.downloadFile(this.config.biosUrl, null, true, {method: "HEAD"}).then(async (res) => {
-                    const result = await this.storage.bios.get(this.config.biosUrl.split("/").pop());
-                    if (result && result['content-length'] === res.headers['content-length']) {
-                        gotBios(result.data);
-                        return;
-                    }
-                    downloadFile();
-                })
-            } else {
-                downloadFile();
-            }
+        return new Promise(async (resolve) => {
+            this.config.biosUrl = await this.downloadGameFile(this.config.biosUrl, "bios", this.localization("Download Game BIOS"), this.localization("Decompress Game BIOS"));
+            resolve();
         });
     }
     downloadRom() {
