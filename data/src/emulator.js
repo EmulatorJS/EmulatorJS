@@ -62,8 +62,8 @@ class EmulatorJS {
             return core;
         }
         const gen = this.getCore(true);
-        if (cores[gen].includes(this.preGetSetting("retroarch_core", cores[gen][0]))) {
-            return this.preGetSetting("retroarch_core", cores[gen][0]);
+        if (cores[gen].includes(this.getCoreSetting(gen))) {
+            return this.getCoreSetting(gen);
         }
         if (cores[core]) {
             return cores[core][0];
@@ -3772,11 +3772,29 @@ class EmulatorJS {
         }
         localStorage.setItem("ejs-settings", JSON.stringify(ejs_settings));
         localStorage.setItem("ejs-"+this.getCore()+"-settings", JSON.stringify(coreSpecific));
+        this.saveCoreSettings();
     }
-    preGetSetting(setting, core) {
-        core = core || this.getCore();
+    saveCoreSettings() {
+        let settings = localStorage.getItem("ejs-core-settings");
+        try {
+            settings = JSON.parse(settings);
+        } catch(e) {
+            settings = {};
+        }
+        settings[this.getCore(true)] = this.settings.retroarch_core;
+        localStorage.setItem("ejs-core-settings", JSON.stringify(settings));
+    }
+    getCoreSetting(core) {
+        let settings = localStorage.getItem("ejs-core-settings");
+        try {
+            return JSON.parse(settings)[core];
+        } catch(e) {
+            return "";
+        }
+    }
+    preGetSetting(setting) {
         if (window.localStorage && !this.config.disableLocalStorage) {
-            let coreSpecific = localStorage.getItem("ejs-"+core+"-settings");
+            let coreSpecific = localStorage.getItem("ejs-"+this.getCore()+"-settings");
             try {
                 coreSpecific = JSON.parse(coreSpecific);
                 if (coreSpecific && coreSpecific.settings) {
