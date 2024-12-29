@@ -178,7 +178,7 @@ class EmulatorJS {
             console.warn("Using EmulatorJS beta. Not checking for updates. This instance may be out of date. Using stable is highly recommended unless you build and ship your own cores.");
             return;
         }
-        fetch('https://cdn.emulatorjs.org/stable/data/version.json').then(response => {
+        fetch(`https://cdn.emulatorjs.org/${this.ejs_version}/data/version.json`).then(response => {
             if (response.ok) {
                 response.text().then(body => {
                     let version = JSON.parse(body);
@@ -581,7 +581,7 @@ class EmulatorJS {
             }, false, {responseType: "arraybuffer", method: "GET"});
             if (res === -1) {
                 console.log("File not found, attemping to fetch from emulatorjs cdn");
-                res = await this.downloadFile("https://cdn.emulatorjs.org/stable/data/"+corePath, (progress) => {
+                res = await this.downloadFile(`https://cdn.emulatorjs.org/${this.ejs_version}/data/${corePath}`, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Core") + progress;
                 }, true, {responseType: "arraybuffer", method: "GET"});
                 if (res === -1) {
