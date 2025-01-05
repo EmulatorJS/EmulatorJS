@@ -39,10 +39,12 @@ class EJS_GameManager {
         this.initShaders();
 
         this.EJS.on("exit", () => {
-            this.toggleMainLoop(0);
             if (!this.EJS.failedToStart) {
                 this.functions.saveSaveFiles();
+                this.functions.restart();
+                this.functions.saveSaveFiles();
             }
+            this.toggleMainLoop(0);
             this.FS.unmount('/data/saves');
             setTimeout(() => {
                 try {
