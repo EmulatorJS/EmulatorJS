@@ -534,6 +534,7 @@ class EmulatorJS {
                         this.defaultCoreOpts = core.options;
                         this.enableMouseLock = core.options.supportsMouse;
                         this.retroarchOpts = core.retroarchOpts;
+                        this.saveFileExt = core.save;
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
                     }
@@ -549,6 +550,7 @@ class EmulatorJS {
                 rep = rep.data;
             }
             if (!rep.buildStart) {
+                console.warn("Could not fetch core report JSON! Core caching will be disabled!");
                 rep.buildStart = Math.random() * 100;
             }
             if (this.webgl2Enabled === null) {
@@ -581,7 +583,7 @@ class EmulatorJS {
                 this.textElem.innerText = this.localization("Download Game Core") + progress;
             }, false, {responseType: "arraybuffer", method: "GET"});
             if (res === -1) {
-                console.log("File not found, attemping to fetch from emulatorjs cdn");
+                console.log("File not found, attemping to fetch from emulatorjs cdn.");
                 console.error("**THIS METHOD IS A FAILSAFE, AND NOT OFFICIALLY SUPPORTED. USE AT YOUR OWN RISK**");
                 res = await this.downloadFile(`https://cdn.emulatorjs.org/${this.ejs_version}/data/${corePath}`, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Core") + progress;
@@ -922,6 +924,12 @@ class EmulatorJS {
                 } else if (fileName.endsWith(".worker.js")) {
                     return URL.createObjectURL(new Blob([threadData], {type: "application/javascript"}));
                 }
+            },
+            getSavExt() => {
+                if (this.saveFileExt) {
+                    return this.saveFileExt;
+                }
+                return "srm";
             }
         }).then(module => {
             this.Module = module;
