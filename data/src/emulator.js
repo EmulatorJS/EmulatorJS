@@ -925,11 +925,11 @@ class EmulatorJS {
                     return URL.createObjectURL(new Blob([threadData], {type: "application/javascript"}));
                 }
             },
-            getSavExt() => {
+            getSavExt: () => {
                 if (this.saveFileExt) {
-                    return this.saveFileExt;
+                    return "." + this.saveFileExt;
                 }
-                return "srm";
+                return ".srm";
             }
         }).then(module => {
             this.Module = module;
