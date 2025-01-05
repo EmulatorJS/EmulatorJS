@@ -4420,14 +4420,15 @@ class EmulatorJS {
         }
         
         if (this.touch || navigator.maxTouchPoints > 0) {
+            const virtualGamepad = createSettingParent(true, "Virtual Gamepad", home);
             addToMenu(this.localization('Virtual Gamepad'), 'virtual-gamepad', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
-            }, this.isMobile ? 'enabled' : 'disabled');
+            }, this.isMobile ? 'enabled' : 'disabled', virtualGamepad, true);
             addToMenu(this.localization('Left Handed Mode'), 'virtual-gamepad-left-handed-mode', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
-            }, 'disabled');
+            }, 'disabled', virtualGamepad, true);
         }
 
         let coreOpts;
