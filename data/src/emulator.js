@@ -238,6 +238,7 @@ class EmulatorJS {
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
         this.videoRotation = ([0, 1, 2, 3].includes(this.config.videoRotation)) ? this.config.videoRotation : this.preGetSetting("videoRotation") || 0;
+        this.videoRotationChanged = false;
         this.bindListeners();
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
@@ -3893,7 +3894,14 @@ class EmulatorJS {
         } else if (option === "vsync") {
             this.gameManager.setVSync(value === "enabled");
         } else if (option === "videoRotation") {
-            this.gameManager.setVideoRotation(value);
+            value = parseInt(value);
+            if (this.videoRotationChanged === true || value !== 0) {
+                this.gameManager.setVideoRotation(value);
+                this.videoRotationChanged = true;
+            } else if (this.videoRotationChanged === true && value === 0) {
+                this.gameManager.setVideoRotation(0);
+                this.videoRotationChanged = true;
+            }
         }
     }
     menuOptionChanged(option, value) {

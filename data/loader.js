@@ -33,6 +33,7 @@
             document.head.appendChild(script);
         })
     }
+    
     function loadStyle(file) {
         return new Promise(function(resolve, reject) {
             let css = document.createElement('link');
