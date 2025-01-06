@@ -539,6 +539,12 @@ class EmulatorJS {
                         this.license = new TextDecoder().decode(data[k]);
                     }
                 }
+                
+                if (this.saveFileExt === false) {
+                    this.elements.bottomBar.saveSavFiles[0].style.display = "none";
+                    this.elements.bottomBar.loadSavFiles[0].style.display = "none";
+                }
+                
                 this.initGameCore(js, wasm, thread);
             });
         }
