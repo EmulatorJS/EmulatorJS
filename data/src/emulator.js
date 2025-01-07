@@ -62,7 +62,7 @@ class EmulatorJS {
             return core;
         }
         const gen = this.getCore(true);
-        if (cores[gen].includes(this.preGetSetting("retroarch_core"))) {
+        if (cores[gen] && cores[gen].includes(this.preGetSetting("retroarch_core"))) {
             return this.preGetSetting("retroarch_core");
         }
         if (cores[core]) {
