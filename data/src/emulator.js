@@ -682,12 +682,14 @@ class EmulatorJS {
             const gotData = async (input) => {
                 const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage);
                 for (const k in data) {
+                    const coreFilename = "/"+this.fileName;
+                    const coreFilePath = coreFilename.substring(0, coreFilename.length - coreFilename.split("/").pop().length);
                     if (k === "!!notCompressedData") {
-                        this.gameManager.FS.writeFile(assetUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
+                        this.gameManager.FS.writeFile(coreFilePath + assetUrl.split('/').pop().split("#")[0].split("?")[0], data[k]);
                         break;
                     }
                     if (k.endsWith('/')) continue;
-                    this.gameManager.FS.writeFile("/" + k.split('/').pop(), data[k]);
+                    this.gameManager.FS.writeFile(coreFilePath + k.split('/').pop(), data[k]);
                 }
             }
             
