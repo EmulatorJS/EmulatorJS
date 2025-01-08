@@ -5,6 +5,7 @@ This was a bug-fix only release.
 
 - Core-fetch failsafe now fetches a pinned version (Thanks to [@gantoine](https://github.com/n-at))
 - Fixes video rotation on the arcade core (Thanks to [@allancoding](https://github.com/allancoding))
+- Updated French `af-FR` translation (Thanks to [@t3chnob0y](https://github.com/t3chnob0y))
 - Fixes switching between cores.
 - Change: Localstorage settings are now stored by game instead of by system.
 - Fixed gamepad input for c-down.
