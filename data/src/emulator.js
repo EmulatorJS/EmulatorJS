@@ -3792,7 +3792,9 @@ class EmulatorJS {
     }
     getLocalStorageKey() {
         let identifier = (this.config.gameId || 1) + "-" + this.getCore(true);
-        if (typeof this.config.gameUrl === "string" && !this.config.gameUrl.toLowerCase().startsWith("blob:")) {
+        if (typeof this.config.gameName === "string") {
+            identifier += "-" + this.config.gameName;
+        } else if (typeof this.config.gameUrl === "string" && !this.config.gameUrl.toLowerCase().startsWith("blob:")) {
             identifier += "-" + this.config.gameUrl;
         } else if (this.config.gameUrl instanceof File) {
             identifier += "-" + this.config.gameUrl.name;
