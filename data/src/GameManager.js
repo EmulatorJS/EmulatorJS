@@ -39,10 +39,12 @@ class EJS_GameManager {
         this.initShaders();
 
         this.EJS.on("exit", () => {
-            this.toggleMainLoop(0);
             if (!this.EJS.failedToStart) {
                 this.functions.saveSaveFiles();
+                this.functions.restart();
+                this.functions.saveSaveFiles();
             }
+            this.toggleMainLoop(0);
             this.FS.unmount('/data/saves');
             setTimeout(() => {
                 try {
@@ -138,8 +140,7 @@ class EJS_GameManager {
                   "slowmotion_ratio = 3.0\n" +
                    (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
                    (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
-                  "savefile_directory = \"/data/saves\"\n" +
-                  "video_rotation = " + this.EJS.videoRotation + "\n";
+                  "savefile_directory = \"/data/saves\"\n";
 
         if (this.EJS.retroarchOpts && Array.isArray(this.EJS.retroarchOpts)) {
             this.EJS.retroarchOpts.forEach(option => {

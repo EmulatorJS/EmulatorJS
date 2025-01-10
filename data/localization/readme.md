@@ -34,13 +34,14 @@ If the language file is not found or there was an error fetching the file, the e
 
 Translated for `es-ES` originally by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) and updated by [@angelmarfil](https://github.com/angelmarfil) <br>
 Translated for `el-GR` by [@imneckro](https://github.com/imneckro) <br>
-Translated for `ja-JA`, `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO`, `af-FR` by [@allancoding](https://github.com/allancoding) <br>
-Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline)<br>
-Translated for `zh-CN` originally by [@allancoding](https://github.com/allancoding) and updated by [@eric183](https://github.com/eric183)<br>
-Translated for `pt-BR` originally by [@allancoding](https://github.com/allancoding) and updated by [@zmarteline](https://github.com/zmarteline) <br>
+Translated for `pt-BR` by [@zmarteline](https://github.com/zmarteline)<br>
+Translated for `zh-CN` by [@eric183](https://github.com/eric183)<br>
+Translated for `pt-BR` by [@zmarteline](https://github.com/zmarteline) <br>
 Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
 Translated for `tr-Tr` by [@iGoodie](https://github.com/iGoodie) <br>
 Translated for `fa-AF` by [@rezamohdev](https://github.com/rezamohdev) <br>
+Translated for `af-FR` by [@t3chnob0y](https://github.com/t3chnob0y) <br>
+Translated for `ja-JA`, `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO` by [@allancoding](https://github.com/allancoding), using a translate application <br>
 
 ## Contributing
 

@@ -1,7 +1,24 @@
 # Changes
 
-# 4.2.0
+# 4.2.1
+This was a bug-fix only release.
 
+- Core-fetch failsafe now fetches a pinned version (Thanks to [@gantoine](https://github.com/n-at))
+- Fixes video rotation on the arcade core (Thanks to [@allancoding](https://github.com/allancoding))
+- Updated French `af-FR` translation (Thanks to [@t3chnob0y](https://github.com/t3chnob0y))
+- Fixes switching between cores.
+- Change: Localstorage settings are now stored by game instead of by system.
+- Fixed gamepad input for c-down.
+- Fixed RetroArch always assuming save is `.srm`.
+- Fixed EJS exit event
+- Hide the "save/load save files" buttons if unsupported.
+- Corrects the order of the core list.
+- Corrects behaviour of the placement of bios/parent/patch files.
+- Fixed rar decompression.
+- Fixed picodrive core (`sega32x`)
+- Fixed libretro-uae core (`amiga`)
+
+# 4.2.0 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/8d42d53d4fdf0166f71eaa07529cadf93350b76e)
 In my opinion, this is the most stable release we've had in a while. Many features added in this release were just side affects of fixing up some bugs.
 
 - Let same_cdi core handle zipped bios file directly (Thanks to [@pastisme](https://github.com/pastisme))

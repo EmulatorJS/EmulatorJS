@@ -36,7 +36,7 @@ class EJS_COMPRESSION {
                 path = "compression/libunrar.js";
                 obj = "rar";
             }
-            const res = await this.EJS.downloadFile(path, null, false, {responseType: "arraybuffer", method: "GET"});
+            const res = await this.EJS.downloadFile(path, null, false, {responseType: "text", method: "GET"});
             if (res === -1) {
                 this.EJS.startGameError(this.EJS.localization('Network Error'));
                 return;
