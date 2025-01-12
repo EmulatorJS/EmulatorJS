@@ -10,7 +10,7 @@
 [![Badge License]][License]
     
     
-Self-hosted **Javascript** emulation for various system.
+Self-hosted **Javascript** emulation for various systems.
 
 <br>
 
@@ -34,12 +34,10 @@ Or the Matrix server (#emulatorjs:matrix.emulatorjs.org):
 <br>
 
 > [!NOTE]  
-> **As of EmulatorJS version 4.0, this project is no longer a reverse-engineered version of the emulatorjs.com project. It is now a complete re-write.**
+> **As of EmulatorJS version 4.0, this project is no longer a reverse-engineered version of the emulatorjs.com project. It is now a complete rewrite.**
 
 > [!WARNING]  
-> As of version 4.0.9 cores and minified files are no longer included in the repository. You will need to get them separately. You can get the from [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the * new CDN (see [this](#CDN) for more info). There is also a new version system that we will be using. (read [here](#Versioning) for more info).
->
-> The history of the project has been rewritten and force pushed. You will likely need to redo any active commits you have. Sorry for the inconvenience.
+> As of version 4.0.9 cores and minified files are no longer included in the repository. You will need to get them separately. You can get it from [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the * new CDN (see [this](#CDN) for more info). There is also a new version system that we will be using. (read [here](#Versioning) for more info).
 
 > [!TIP]
 > Cloning the repository is no longer recommended for production use. You should use [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the [CDN](https://cdn.emulatorjs.org/) instead.
@@ -69,10 +67,10 @@ Or the Matrix server (#emulatorjs:matrix.emulatorjs.org):
 There are three different version names that you need to be aware of:
 1. **stable** - This will be the most stable version of the emulator both code and cores will be tested before release. It will be updated every time a new version is released on GitHub. This is the default version on the Demo.
 2. **latest** - This will contain the latest code but use the stable cores. This will be updated every time the *main* branch is updated.
-3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is consiterd alpha.
+3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is considered alpha.
 
 ### CDN
-There is a new CDN that you can use to get any version of the emulator. The cdn is `https://cdn.emulatorjs.org/`. You can use this to get the stable, latest, nightly and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
+There is a new CDN that you can use to get any version of the emulator. The CDN is `https://cdn.emulatorjs.org/`. You can get the stable, latest, nightly, and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
 
 ### Extensions
 
@@ -92,7 +90,7 @@ npm start
 
 <br>
 
-**>> When reporting bugs, please specify that you are using the old version**
+**>> When reporting bugs, please specify what version you are using**
 
 <br>
 <br>
@@ -158,9 +156,10 @@ npm start
 ### Other
     
 **[PlayStation]**   | 
-**[Arcade]**   | 
-**[3DO]**
+**[PlayStation Portable]**   | 
+**[Arcade]**    
 
+**[3DO]** |
 **[MAME 2003]** |
 **[ColecoVision]**
     
@@ -229,6 +228,7 @@ npm start
 [Neo Geo Poket]: https://emulatorjs.org/systems/Neo%20Geo%20Pocket
 --->
 [PlayStation]: https://emulatorjs.org/docs/systems/playstation
+[PlayStation Portable]: https://emulatorjs.org/docs/systems/psp
 [Virtual Boy]: https://emulatorjs.org/docs/systems/virtual-boy
 [Arcade]: https://emulatorjs.org/docs/systems/arcade
 [3DO]: https://emulatorjs.org/docs/systems/3do
