@@ -274,7 +274,7 @@ class EmulatorJS {
         if (typeof this.config.backgroundImg === "string") {
             this.game.classList.add("ejs_game_background");
             if (this.config.backgroundBlur) this.game.classList.add("ejs_game_background_blur");
-            this.game.setAttribute("style", "--ejs-background-image: url("+this.config.backgroundImg+"); --ejs-background-color: "+this.config.backgroundColor+";");
+            this.game.setAttribute("style", `--ejs-background-image: url("${this.config.backgroundImg}"); --ejs-background-color: ${this.config.backgroundColor};`);
             this.on("start", () => {
                 this.game.classList.remove("ejs_game_background");
                 if (this.config.backgroundBlur) this.game.classList.remove("ejs_game_background_blur");
