@@ -682,6 +682,7 @@ class EmulatorJS {
             const gotData = async (input) => {
                 if (['arcade', 'mame'].includes(this.getCore(true))) {
                     this.gameManager.FS.writeFile(assetUrl, new Uint8Array(input));
+                    return resolve(assetUrl);
                 }
                 const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage);
                 for (const k in data) {
