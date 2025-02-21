@@ -4509,7 +4509,7 @@ class EmulatorJS {
         
         if (this.config.defaultOptions) {
             for (const k in this.config.defaultOptions) {
-                this.changeSettingOption(k, this.config.defaultOptions[k], true);
+                this.changeSettingOption(k, this.config.defaultOptions[k]);
             }
         }
     }
