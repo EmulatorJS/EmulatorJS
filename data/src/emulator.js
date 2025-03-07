@@ -680,7 +680,7 @@ class EmulatorJS {
                 return resolve(assetUrl);
             }
             const gotData = async (input) => {
-                if (window.EJS_dontExtractBIOS === true) {
+                if (this.config.dontExtractBIOS === true) {
                     this.gameManager.FS.writeFile(assetUrl, new Uint8Array(input));
                     return resolve(assetUrl);
                 }
