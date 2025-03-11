@@ -69,16 +69,18 @@
 <br>
 
 <a href="https://github.com/n-at" target="_blank" title="n-at - Alexey Nurgaliev">![Avatar Alexey]</a>&nbsp;
-<a href="https://github.com/gantoine" target="_blank" title="gantoine - Georges-Antoine Assi">![Avatar gantoine]</a>&nbsp;
-<a href="https://github.com/incredibleIdea" target="_blank" title="incredibleIdea">![Avatar incredibleIdea]</a>&nbsp;
 <a href="https://github.com/angelmarfil" target="_blank" title="angelmarfil - Angel Marfil">![Avatar angelmarfil]</a>&nbsp;
+<a href="https://github.com/incredibleIdea" target="_blank" title="incredibleIdea">![Avatar incredibleIdea]</a>&nbsp;
+<a href="https://github.com/gantoine" target="_blank" title="gantoine - Georges-Antoine Assi">![Avatar gantoine]</a>&nbsp;
 <a href="https://github.com/Grey41" target="_blank" title="Grey41 - Grey Hope">![Avatar Grey]</a>&nbsp;
-<a href="https://github.com/E-Sh4rk" target="_blank" title="E-Sh4rk - Mickaël Laurent" width="95px"><img src="https://github.com/E-Sh4rk.png?size=95" width="95px"></a>&nbsp;
+<a href="https://github.com/E-Sh4rk" target="_blank" title="E-Sh4rk - Mickaël Laurent"><img src="https://github.com/E-Sh4rk.png?size=95" width="95px"></a>&nbsp;
 <a href="https://github.com/pastisme" target="_blank" title="pastisme">![Avatar pastisme]</a>&nbsp;
-<a href="https://github.com/t3chnob0y" target="_blank" title="t3chnob0y">![Avatar t3chnob0y]</a>&nbsp;
-<a href="https://github.com/iits-reza" target="_blank" title="iits-reza - Reza Mohammadi">![Avatar iits-reza]</a>&nbsp;
-<a href="https://github.com/ZhaoTonggang" target="_blank" title="ZhaoTonggang - 赵彤刚">![Avatar ZhaoTonggang]</a>&nbsp;
 <a href="https://github.com/iGoodie" target="_blank" title="iGoodie - Anılcan Metinyurt">![Avatar iGoodie]</a>&nbsp;
+<a href="https://github.com/ZhaoTonggang" target="_blank" title="ZhaoTonggang - 赵彤刚">![Avatar ZhaoTonggang]</a>&nbsp;
+<a href="https://github.com/iits-reza" target="_blank" title="iits-reza - Reza Mohammadi">![Avatar iits-reza]</a>&nbsp;
+<a href="https://github.com/t3chnob0y" target="_blank" title="t3chnob0y">![Avatar t3chnob0y]</a>&nbsp;
+<a href="https://github.com/kellenmace" target="_blank" title="kellenmace - Kellen Mace">![Avatar kellenmace]</a>&nbsp;
+<a href="https://github.com/pjft" target="_blank" title="pjft"><img src="https://github.com/pjft.png?size=95" width="95px"></a>&nbsp;
 <a href="https://github.com/IvanMazzoli" target="_blank" title="IvanMazzoli">![Avatar IvanMazzoli]</a>&nbsp;
 <a href="https://github.com/jonas0b1011001" target="_blank" title="jonas0b1011001">![Avatar jonas0b1011001]</a>&nbsp;
 <a href="https://github.com/TimKieu" target="_blank" title="TimKieu"><img src="https://github.com/TimKieu.png?size=95" width="95px"></a>&nbsp;
@@ -137,6 +139,7 @@
 
 [Avatar iits-reza]: https://github.com/iits-reza.png?size=95
 
+[Avatar kellenmace]: https://github.com/kellenmace.png?size=95
 
 <!----------------------------------{ Ethan }----------------------------------->
 [Badge Ethan GitHub]: https://img.shields.io/badge/Ethan_O'_Brien-181717.svg?style=for-the-badge&logo=GitHub&logoColor=white

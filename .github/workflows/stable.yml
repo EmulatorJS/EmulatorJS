@@ -12,7 +12,71 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run Script
+      - name: Set Variables
+        run: |
+          cd /mnt/HDD/public/
+          wget "https://api.github.com/repos/EmulatorJS/EmulatorJS/releases/latest" -O .tmp.json
+          version=$(jq -r '.tag_name' .tmp.json)
+          download_url=$(jq -r '.assets[0].browser_download_url' .tmp.json)
+          name=$(jq -r '.assets[0].name' .tmp.json)
+          old_version=$(jq -r '.github' versions.json)
+          v_version="$version"
+          if [[ $version == v* ]]; then
+              version="${version:1}"
+          fi
+          rm .tmp.json
+          echo "VERSION=$version" >> $GITHUB_ENV
+          echo "DOWNLOAD_URL=$download_url" >> $GITHUB_ENV
+          echo "NAME=$name" >> $GITHUB_ENV
+          echo "OLD_VERSION=$old_version" >> $GITHUB_ENV
+          echo "V_VERSION=$v_version" >> $GITHUB_ENV
+      - name: Set Stable Version
+        run: |
+          cd /mnt/HDD/public/
+          mkdir -p ".stable"
+          jq --arg version "$VERSION" '.github = $VERSION' versions.json | sponge versions.json
+      - name: Download Stable
+        run: |
+          cd /mnt/HDD/public/
+          wget "$DOWNLOAD_URL" -O ".stable/$NAME"
+      - name: Extract Stable
+        run: |
+          cd /mnt/HDD/public/.stable/
+          7z x "$NAME"
+      - name: Move Versions
+        run: |
+          cd /mnt/HDD/public/
+          mv ".stable/$NAME" releases/
+          mv "$OLD_VERSION" "$VERSION"
+          mv stable "$OLD_VERSION"
+          mv .stable stable
+      - name: Set Permissions
         run: |
           cd /mnt/HDD/public
-          ./.stable.sh
+          chmod -R 755 stable/
+      - name: Update Stable Cores
+        run: |
+          rsync -az --delete /mnt/HDD/public/stable/data/cores/ /mnt/HDD/public/.EmulatorJS/data/cores/
+      - name: Zip Stable
+        run: |
+          cd /mnt/HDD/public/stable/data/
+          zip emulator.min.zip emulator.min.js emulator.min.css
+      - name: Update Version
+        run: |
+          cd /mnt/HDD/public/
+          jq --arg old_version "$OLD_VERSION" '.versions += {($old_version): ($old_version + "/")}' versions.json | sponge versions.json
+      - name: Clean Up
+        run: |
+          cd /mnt/HDD/public/
+          rm "$OLD_VERSION/data/emulator.min.zip"
+          rm -rf "$OLD_VERSION/data/minify/node_modules/"
+          rm "./releases/$OLD_VERSION.7z"
+      - name: Compress Old Version
+        run: |
+          cd /mnt/HDD/public/
+          7z a "./releases/$OLD_VERSION.7z" "./$OLD_VERSION/*"
+
+
+
+
+

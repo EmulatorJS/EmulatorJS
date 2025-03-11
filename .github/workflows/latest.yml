@@ -12,7 +12,27 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Run Script
+      - name: Set Permissions
         run: |
           cd /mnt/HDD/public
-          ./.latest.sh
+          chmod -R 755 .EmulatorJS/
+      - name: Update Stable
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/
+          git fetch --all
+          git reset --hard origin/main
+          git pull
+      - name: Minify Files
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/data/minify/
+          npm i
+          npm run build
+      - name: Zip Minified Files
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/data/
+          zip emulator.min.zip emulator.min.js emulator.min.css
+      - name: Clean Up Minify
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/data/
+          rm "minify/package-lock.json"
+          rm -rf "minify/node_modules/"
