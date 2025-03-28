@@ -200,6 +200,9 @@ class EJS_GameManager {
         }, 5000)
     }
     screenshot() {
+        try {
+            this.FS.unlink('screenshot.png');
+        } catch(e){}
         this.functions.screenshot();
         return new Promise(async resolve => {
             while (1) {
