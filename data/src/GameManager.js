@@ -39,10 +39,11 @@ class EJS_GameManager {
         this.initShaders();
 
         this.EJS.on("exit", () => {
+            clearInterval(this.saveInterval);
             if (!this.EJS.failedToStart) {
-                this.functions.saveSaveFiles();
+                this.saveSaveFiles();
                 this.functions.restart();
-                this.functions.saveSaveFiles();
+                this.saveSaveFiles();
             }
             this.toggleMainLoop(0);
             this.FS.unmount('/data/saves');
@@ -54,6 +55,7 @@ class EJS_GameManager {
                 };
             }, 1000);
         })
+        this.saveInterval = setInterval(this.saveSaveFiles.bind(this), 1000);
     }
     mountFileSystems() {
         return new Promise(async resolve => {
@@ -394,13 +396,16 @@ class EJS_GameManager {
     }
     saveSaveFiles() {
         this.functions.saveSaveFiles();
+        this.callEvent("saveSaveFiles", this.getSaveFile(false));
         //this.FS.syncfs(false, () => {});
     }
     supportsStates() {
         return !!this.functions.supportsStates();
     }
-    getSaveFile() {
-        this.saveSaveFiles();
+    getSaveFile(save) {
+        if (save !== false) {
+            this.saveSaveFiles();
+        }
         const exists = this.FS.analyzePath(this.getSaveFilePath()).exists;
         return (exists ? this.FS.readFile(this.getSaveFilePath()) : null);
     }
