@@ -396,7 +396,7 @@ class EJS_GameManager {
     }
     saveSaveFiles() {
         this.functions.saveSaveFiles();
-        this.callEvent("saveSaveFiles", this.getSaveFile(false));
+        this.EJS.callEvent("saveSaveFiles", this.getSaveFile(false));
         //this.FS.syncfs(false, () => {});
     }
     supportsStates() {
