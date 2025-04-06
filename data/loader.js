@@ -124,18 +124,26 @@
     config.hideSettings = window.EJS_hideSettings;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
     
-    if (typeof window.EJS_language === "string" && window.EJS_language !== "en-US") {
+    let systemLang;
+    try {
+        systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
+    } catch(e) {} //Ignore
+    if ((typeof window.EJS_language === "string" && window.EJS_language !== "en-US") || (systemLang && window.EJS_disableAutoLang !== false)) {
+        const language = window.EJS_language || systemLang;
         try {
             let path;
-            if ('undefined' != typeof EJS_paths && typeof EJS_paths[window.EJS_language] === 'string') {
-                path = EJS_paths[window.EJS_language];
+            console.log("Loading language", language);
+            if ('undefined' != typeof EJS_paths && typeof EJS_paths[language] === 'string') {
+                path = EJS_paths[language];
             } else {
-                path = scriptPath+"localization/"+window.EJS_language+".json";
+                path = scriptPath+"localization/"+language+".json";
             }
-            config.language = window.EJS_language;
+            config.language = language;
             config.langJson = JSON.parse(await (await fetch(path)).text());
         } catch(e) {
-            config.langJson = {};
+            console.log("Missing language", language, "!!");
+            delete config.language;
+            delete config.langJson;
         }
     }
     
