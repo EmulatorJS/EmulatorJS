@@ -3989,6 +3989,7 @@ class EmulatorJS {
         }
         let allOpts = {};
         
+        // TODO - Why is this duplicated?
         const addToMenu = (title, id, options, defaultOption) => {
             const span = this.createElement("span");
             span.innerText = title;
@@ -4136,6 +4137,7 @@ class EmulatorJS {
         nested.classList.add("ejs_settings_transition");
         this.settings = {};
         const menus = [];
+        let parentMenuCt = 0;
         
         const createSettingParent = (child, title, parentElement) => {
             const rv = this.createElement("div");
@@ -4153,6 +4155,7 @@ class EmulatorJS {
 
                 const menu = this.createElement("div");
                 menus.push(menu);
+                parentMenuCt++;
                 menu.style.overflow  = "auto";
                 menu.setAttribute("hidden", "");
                 const button = this.createElement("button");
@@ -4170,6 +4173,24 @@ class EmulatorJS {
                     menu.removeAttribute("hidden");
                     parentElement.setAttribute("hidden", "");
                 })
+                const observer = new MutationObserver((list) => {
+                    for (const k of list) {
+                        for (const removed of k.removedNodes) {
+                            if (removed === menu) {
+                                menuOption.remove();
+                                observer.disconnect();
+                                const index = menus.indexOf(menu);
+                                if (index !== -1) menus.splice(index, 1);
+                                this.settingsMenu.style.display = "";
+                                const homeSize = this.getElementSize(parentElement);
+                                nested.style.width = (homeSize.width+20) + "px";
+                                nested.style.height = homeSize.height + "px";
+                                // This SHOULD always be called before the game started - this SHOULD never be an issue
+                                this.settingsMenu.style.display = "none";
+                            }
+                        }
+                    }
+                });
                 this.addEventListener(button, "click", goToHome);
 
                 button.type = "button";
@@ -4187,9 +4208,20 @@ class EmulatorJS {
 
                 menu.appendChild(rv);
                 nested.appendChild(menu);
+                observer.observe(nested, {
+                    childList: true,
+                    subtree: true,
+                });
             }
 
             return rv;
+        }
+        
+        const checkForEmptyMenu = (element) => {
+            if (element.firstChild === null) {
+                element.parentElement.remove(); // No point in keeping an empty menu
+                parentMenuCt--;
+            }
         }
 
         const home = createSettingParent();
@@ -4233,6 +4265,9 @@ class EmulatorJS {
         let allOpts = {};
         
         const addToMenu = (title, id, options, defaultOption, parentElement, useParentParent) => {
+            if (Array.isArray(this.config.hideSettings) && this.config.hideSettings.includes(id)) {
+                return;
+            }
             parentElement = parentElement || home;
             const transitionElement = useParentParent ? parentElement.parentElement : parentElement;
             const menuOption = this.createElement("div");
@@ -4450,6 +4485,7 @@ class EmulatorJS {
                 "900": "15 minutes",
                 "1800": "30 minutes"
             }, '300', saveStateOpts, true);
+            checkForEmptyMenu(saveStateOpts);
         }
         
         if (this.touch || navigator.maxTouchPoints > 0) {
@@ -4462,6 +4498,7 @@ class EmulatorJS {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
             }, 'disabled', virtualGamepad, true);
+            checkForEmptyMenu(virtualGamepad);
         }
 
         let coreOpts;
@@ -4487,6 +4524,7 @@ class EmulatorJS {
                           coreOptions,
                           true);
             })
+            checkForEmptyMenu(coreOptions);
         }
         
 
@@ -4513,13 +4551,18 @@ class EmulatorJS {
                           retroarchOptsMenu,
                           true);
             })
+            checkForEmptyMenu(retroarchOptsMenu);
         }
+        
+        checkForEmptyMenu(graphicsOptions);
+        checkForEmptyMenu(speedOptions);
         
         this.settingsMenu.appendChild(nested);
         
         this.settingParent.appendChild(this.settingsMenu);
         this.settingParent.style.position = "relative";
         
+        this.settingsMenu.style.display = "";
         const homeSize = this.getElementSize(home);
         nested.style.width = (homeSize.width+20) + "px";
         nested.style.height = homeSize.height + "px";
@@ -4534,6 +4577,12 @@ class EmulatorJS {
             for (const k in this.config.defaultOptions) {
                 this.changeSettingOption(k, this.config.defaultOptions[k]);
             }
+        }
+        
+        if (parentMenuCt === 0) {
+            this.on("start", () => {
+                this.elements.bottomBar.settings[0][0].style.display = "none";
+            });
         }
     }
     createSubPopup(hidden) {
