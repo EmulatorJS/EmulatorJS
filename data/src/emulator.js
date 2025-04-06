@@ -3926,14 +3926,17 @@ class EmulatorJS {
             }
         } else if (option === "save-save-interval") {
             value = parseInt(value);
-            if (this.saveSaveInterval !== null) {
+            if (this.saveSaveInterval && this.saveSaveInterval !== null) {
                 clearInterval(this.saveSaveInterval);
+                this.saveSaveInterval = null;
             }
             // Disabled
             if (value === 0 || isNaN(value)) return;
-            this.gameManager.saveSaveFiles();
+            if (this.started) this.gameManager.saveSaveFiles();
             if (this.debug) console.log("Saving every", value * 1000, "miliseconds");
-            setInterval(() => this.gameManager.saveSaveFiles(), value * 1000);
+            this.saveSaveInterval = setInterval(() => {
+                if (this.started) this.gameManager.saveSaveFiles();
+            }, value * 1000);
         }
     }
     menuOptionChanged(option, value) {
