@@ -39,7 +39,6 @@ class EJS_GameManager {
         this.initShaders();
 
         this.EJS.on("exit", () => {
-            clearInterval(this.saveInterval);
             if (!this.EJS.failedToStart) {
                 this.saveSaveFiles();
                 this.functions.restart();
@@ -55,7 +54,6 @@ class EJS_GameManager {
                 };
             }, 1000);
         })
-        this.saveInterval = setInterval(this.saveSaveFiles.bind(this), 1000);
     }
     mountFileSystems() {
         return new Promise(async resolve => {
@@ -63,6 +61,7 @@ class EJS_GameManager {
             this.mkdir("/data/saves");
             this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
             this.FS.syncfs(true, resolve);
+            this.EJS.callEvent("saveDatabaseLoaded", this.FS);
         });
     }
     writeConfigFile() {
