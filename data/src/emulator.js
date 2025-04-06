@@ -3924,6 +3924,16 @@ class EmulatorJS {
                 this.gameManager.setVideoRotation(0);
                 this.videoRotationChanged = true;
             }
+        } else if (option === "save-save-interval") {
+            value = parseInt(value);
+            if (this.saveSaveInterval !== null) {
+                clearInterval(this.saveSaveInterval);
+            }
+            // Disabled
+            if (value === 0 || isNaN(value)) return;
+            this.gameManager.saveSaveFiles();
+            if (this.debug) console.log("Saving every", value * 1000, "miliseconds");
+            setInterval(() => this.gameManager.saveSaveFiles(), value * 1000);
         }
     }
     menuOptionChanged(option, value) {
@@ -4431,6 +4441,15 @@ class EmulatorJS {
                 'download': this.localization("Download"),
                 'browser': this.localization("Keep in Browser")
             }, 'download', saveStateOpts, true);
+            addToMenu(this.localization("System Save interval"), 'save-save-interval', {
+                "0": "Disabled",
+                "30": "30 seconds",
+                "60": "1 minute",
+                "300": "5 minutes",
+                "600": "10 minutes",
+                "900": "15 minutes",
+                "1800": "30 minutes"
+            }, '300', saveStateOpts, true);
         }
         
         if (this.touch || navigator.maxTouchPoints > 0) {
