@@ -893,6 +893,7 @@ class EmulatorJS {
             this.gameManager = new window.EJS_GameManager(this.Module, this);
             await this.gameManager.loadExternalFiles();
             await this.gameManager.mountFileSystems();
+            this.callEvent("saveDatabaseLoaded", this.gameManager.FS);
             if (this.getCore() === "ppsspp") {
                 await this.gameManager.loadPpssppAssets();
             }

@@ -61,7 +61,6 @@ class EJS_GameManager {
             this.mkdir("/data/saves");
             this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
             this.FS.syncfs(true, resolve);
-            this.EJS.callEvent("saveDatabaseLoaded", this.FS);
         });
     }
     writeConfigFile() {
