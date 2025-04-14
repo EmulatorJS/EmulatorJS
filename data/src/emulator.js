@@ -3047,6 +3047,10 @@ class EmulatorJS {
     }
     gamepadEvent(e) {
         if (!this.started) return;
+        const gamepadIndex = this.gamepadSelection.indexOf(this.gamepad.gamepads[e.gamepadIndex].id);
+        if (gamepadIndex < 0) {
+            return; // Gamepad not set anywhere
+        }
         const value = function(value) {
             if (value > 0.5 || value < -0.5) {
                 return (value > 0) ? 1 : -1;
@@ -3058,7 +3062,7 @@ class EmulatorJS {
             if ('buttonup' === e.type || (e.type === "axischanged" && value === 0)) return;
             const num = this.controlPopup.getAttribute("button-num");
             const player = parseInt(this.controlPopup.getAttribute("player-num"));
-            if (e.gamepadIndex !== player) return;
+            if (gamepadIndex !== player) return;
             if (!this.controls[player][num]) {
                 this.controls[player][num] = {};
             }
@@ -3071,7 +3075,7 @@ class EmulatorJS {
         if (this.settingsMenu.style.display !== "none" || this.isPopupOpen()) return;
         const special = [16, 17, 18, 19, 20, 21, 22, 23];
         for (let i=0; i<4; i++) {
-            if (e.gamepadIndex !== i) continue;
+            if (gamepadIndex !== i) continue;
             for (let j=0; j<30; j++) {
                 if (!this.controls[i][j] || this.controls[i][j].value2 === undefined) {
                     continue;
