@@ -1396,3 +1396,18 @@
 .ejs_netplay_table_row:hover {
     background-color: #2d2d2d;
 }
+
+.ejs_gamepad_dropdown {
+  background-color: var(--ejs-background-color);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-family: inherit;
+  outline: none;
+  cursor: pointer;
+}
+
+.ejs_gamepad_dropdown:focus {
+  box-shadow: 0 0 0 2px rgba(51, 153, 255, 0.6);
+}

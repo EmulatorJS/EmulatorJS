@@ -1112,6 +1112,12 @@ class EmulatorJS {
         this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         this.gamepad.on('connected', (e) => {
             if (!this.gamepadLabels) return;
+            for (let i=0; i<this.gamepadSelection.length; i++) {
+                if (this.gamepadSelection[i] === "") {
+                    this.gamepadSelection[i] = this.gamepad.gamepads[e.gamepadIndex].id;
+                    break;
+                }
+            }
             this.updateGamepadLabels();
         })
         this.gamepad.on('disconnected', (e) => {
@@ -1135,11 +1141,18 @@ class EmulatorJS {
     }
     updateGamepadLabels() {
         for (let i=0; i<this.gamepadLabels.length; i++) {
-            if (this.gamepad.gamepads[i]) {
-                this.gamepadLabels[i].innerText = this.gamepad.gamepads[i].id;
-            } else {
-                this.gamepadLabels[i].innerText = "n/a";
+            this.gamepadLabels[i].innerHTML = ""
+            const def = this.createElement("option");
+            def.setAttribute("value", "notconnected");
+            def.innerText = "Not Connected";
+            this.gamepadLabels[i].appendChild(def);
+            for (let j=0; j<this.gamepad.gamepads.length; j++) {
+                const opt = this.createElement("option");
+                opt.setAttribute("value", this.gamepad.gamepads[j].id);
+                opt.innerText = this.gamepad.gamepads[j].id;
+                this.gamepadLabels[i].appendChild(opt);
             }
+            this.gamepadLabels[i].value = this.gamepadSelection[i] || "notconnected";
         }
     }
     createLink(elem, link, text, useP) {
@@ -2081,6 +2094,7 @@ class EmulatorJS {
         let buttonListeners = [];
         this.checkGamepadInputs = () => buttonListeners.forEach(elem => elem());
         this.gamepadLabels = [];
+        this.gamepadSelection = [];
         this.controls = JSON.parse(JSON.stringify(this.defaultControllers));
         const body = this.createPopup("Control Settings", {
             "Reset": () => {
@@ -2523,9 +2537,32 @@ class EmulatorJS {
             gamepadTitle.style = "font-size:12px;";
             gamepadTitle.innerText = this.localization("Connected Gamepad")+": ";
             
-            const gamepadName = this.createElement("span");
+            const gamepadName = this.createElement("select");
+            gamepadName.classList.add("ejs_gamepad_dropdown");
+            gamepadName.setAttribute("title", "gamepad-"+i);
+            gamepadName.setAttribute("index", i);
             this.gamepadLabels.push(gamepadName);
-            gamepadName.innerText = "n/a";
+            this.gamepadSelection.push("");
+            this.addEventListener(gamepadName, "change", e => {
+                const controller = e.target.value;
+                const player = parseInt(e.target.getAttribute("index"));
+                if (controller === "notconnected") {
+                    this.gamepadSelection[player] = "";
+                } else {
+                    for (let i=0; i<this.gamepadSelection.length; i++) {
+                        if (player === i) continue;
+                        if (this.gamepadSelection[i] === controller) {
+                            this.gamepadSelection[i] = "";
+                        }
+                    }
+                    this.gamepadSelection[player] = controller;
+                    this.updateGamepadLabels();
+                }
+            });
+            const def = this.createElement("option");
+            def.setAttribute("value", "notconnected");
+            def.innerText = "Not Connected";
+            gamepadName.appendChild(def);
             gamepadTitle.appendChild(gamepadName);
             
             const leftPadding = this.createElement("div");
