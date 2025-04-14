@@ -19,6 +19,7 @@ Supported languages
 `it-IT` - Italian<br>
 `tr-Tr` - Turkish<br>
 `fa-AF` - Persian<br>
+`ro-RO` - Romanian<br>
 
 default: `en-US`
 
@@ -41,7 +42,9 @@ Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
 Translated for `tr-Tr` by [@iGoodie](https://github.com/iGoodie) <br>
 Translated for `fa-AF` by [@rezamohdev](https://github.com/rezamohdev) <br>
 Translated for `af-FR` by [@t3chnob0y](https://github.com/t3chnob0y) <br>
-Translated for `ja-JA`, `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO` by [@allancoding](https://github.com/allancoding), using a translate application <br>
+Translated for `ro-RO` by [@jurcaalexandrucristian](https://github.com/jurcaalexandrucristian) <br>
+Translated for `ja-JA` by [@noel-forester](https://github.com/noel-forester) <br>
+Translated for `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO` by [@allancoding](https://github.com/allancoding), using a translate application <br>
 
 ## Contributing
 
