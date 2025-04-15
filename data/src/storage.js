@@ -34,7 +34,7 @@ class EJS_STORAGE {
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
-                if (! db.objectStoreNames.contains(this.storeName)) {
+                if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 };
             };
@@ -44,7 +44,7 @@ class EJS_STORAGE {
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) return resolve();
             let openRequest = indexedDB.open(this.dbName, 1);
-            openRequest.onerror = () => {};
+            openRequest.onerror = () => { };
             openRequest.onsuccess = () => {
                 let db = openRequest.result;
                 let transaction = db.transaction([this.storeName], "readwrite");
@@ -58,7 +58,7 @@ class EJS_STORAGE {
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
-                if (! db.objectStoreNames.contains(this.storeName)) {
+                if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 };
             };
@@ -68,7 +68,7 @@ class EJS_STORAGE {
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) return resolve();
             let openRequest = indexedDB.open(this.dbName, 1);
-            openRequest.onerror = () => {};
+            openRequest.onerror = () => { };
             openRequest.onsuccess = () => {
                 let db = openRequest.result;
                 let transaction = db.transaction([this.storeName], "readwrite");
@@ -76,11 +76,11 @@ class EJS_STORAGE {
                 let request2 = objectStore.delete(key);
                 this.addFileToDB(key, false);
                 request2.onsuccess = () => resolve();
-                request2.onerror = () => {};
+                request2.onerror = () => { };
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
-                if (! db.objectStoreNames.contains(this.storeName)) {
+                if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 };
             };
@@ -92,7 +92,7 @@ class EJS_STORAGE {
             const keys = await this.get("?EJS_KEYS!");
             if (!keys) return resolve({});
             let rv = {};
-            for (let i=0; i<keys.length; i++) {
+            for (let i = 0; i < keys.length; i++) {
                 const result = await this.get(keys[i]);
                 if (!result || !result.data || typeof result.data.byteLength !== "number") continue;
                 rv[keys[i]] = result.data.byteLength;
@@ -103,7 +103,7 @@ class EJS_STORAGE {
 }
 
 class EJS_DUMMYSTORAGE {
-    constructor() {}
+    constructor() { }
     addFileToDB() {
         return new Promise(resolve => resolve());
     }

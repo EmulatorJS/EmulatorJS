@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Translation Helper Tool | EmulatorJS</title>
+    <link rel="icon" type="image/png" href="../../docs/favicon.ico" />
+</head>
+
+<body>
+    <div class="header">
+        <h1>Translation Helper Tool</h1>
+        <img style="width: 150px" src="../../docs/Logo.png" />
+    </div>
+    <br />
+    <div class="boxes">
+        <div class="box">
+            <button class="copyBtn" id="copyBtn1" onclick="copy('box1')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px"
+                    height="18px">
+                    <path
+                        d="M6 4V8H18V4H20.0066C20.5552 4 21 4.44495 21 4.9934V21.0066C21 21.5552 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5551 3 21.0066V4.9934C3 4.44476 3.44495 4 3.9934 4H6ZM8 2H16V6H8V2Z">
+                    </path>
+                </svg>
+            </button>
+            <textarea id="box1" rows="39.5" cols="30" spellcheck="false"></textarea>
+        </div>
+        <div class="box">
+            <textarea id="box2"
+                placeholder="Copy what is on the left into google translate or any other translation service, then translate it into the language you whant and paste the translation here."
+                rows="39.5" cols="50" spellcheck="false"></textarea>
+            <button class="nextBtn" onclick="start()">Next</button>
+        </div>
+        <div class="box">
+            <button class="copyBtn" id="copyBtn3" onclick="copy('box3')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px"
+                    height="18px">
+                    <path
+                        d="M6 4V8H18V4H20.0066C20.5552 4 21 4.44495 21 4.9934V21.0066C21 21.5552 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5551 3 21.0066V4.9934C3 4.44476 3.44495 4 3.9934 4H6ZM8 2H16V6H8V2Z">
+                    </path>
+                </svg>
+            </button>
+            <textarea id="box3" placeholder="Then click next and you are done copy this box in to a .json file"
+                rows="39.5" cols="50" spellcheck="false"></textarea>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+    let data = {};
+
+        fetch('../../data/localization/en-US.json')
+        .then(response => response.json())
+        .then(json => {
+            data = json;
+            let data1 = '';
+            for (let i = 0; i < Object.keys(data).length; i++) {
+                data1 = data1 + "" + Object.keys(data)[i] + '\n';
+            }
+            data1 = data1.slice(0, -1);
+            document.getElementById('box1').value = data1;
+        })
+        .catch(error => console.error('Error loading en-US.json:', error));
+
+    function start() {
+        var data2 = document.getElementById('box1').value;
+        var data3 = document.getElementById('box2').value;
+        var data4 = data2.split('\n').map(function (line) { return line.split(/\n/g); });
+        var data5 = data3.split('\n').map(function (line) { return line.split(/\n/g); });
+        var data6 = new Map();
+        for (var i = 0; i < data4.length; i++) {
+            var key = data4[i][0].replace("", '');
+            data6.set(key, data5[i]);
+        }
+        var data7 = {};
+        data6.forEach(function (value, key) {
+            data7[key] = value[0].replace("", '');
+        });
+        data7 = JSON.stringify(data7, null, 4);
+        document.getElementById('box3').value = data7;
+        navigator.clipboard.writeText(document.getElementById('box3').value);
+        console.log(data7);
+    }
+
+    function copy(textareaId) {
+        var textarea = document.getElementById(textareaId);
+        textarea.select();
+        document.execCommand('copy');
+    }
+</script>
+
+<style>
+    :root {
+        --bg: #f6f5f2;
+        --color-primary: #3596C5;
+        --color-secondary: #41B8F2;
+        --success: #01b12d;
+    }
+
+    body {
+        background-color: var(--bg);
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+            sans-serif;
+    }
+
+    .header {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 3rem;
+    }
+
+    .boxes {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+
+    textarea {
+        padding: 12px 20px;
+        border: 2px solid #ccc;
+        border-radius: 4px;
+        background-color: #f8f8f8;
+        height: 50vh;
+        font-family: inherit;
+    }
+
+    #box3:not(:placeholder-shown) {
+        color: var(--success);
+    }
+
+    textarea::placeholder {
+        font-size: 1rem;
+    }
+
+    textarea:focus-visible {
+        outline: 2px solid var(--color-primary);
+    }
+
+    .box {
+        position: relative;
+    }
+
+    button {
+        appearance: none;
+        background-color: var(--color-primary);
+        border: none;
+        border-radius: 0.5rem;
+        padding: 0.625rem 1.25rem;
+        color: #fff;
+        position: absolute;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: var(--color-secondary);
+    }
+
+    .nextBtn {
+        bottom: 1rem;
+        right: 1rem;
+    }
+
+    .copyBtn {
+        top: 1rem;
+        right: 1rem;
+    }
+</style>
+
+</html>

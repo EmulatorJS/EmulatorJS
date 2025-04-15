@@ -1,0 +1,16 @@
+{
+  "name": "@emulatorjs/cores",
+  "version": "4.2.1",
+  "type": "module",
+  "description": "EmulatorJS Cores",
+  "homepage": "https://emulatorjs.org",
+  "license": "GPL-3.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EmulatorJS/EmulatorJS.git"
+  },
+  "bugs": {
+    "url": "https://github.com/EmulatorJS/EmulatorJS/issues"
+  },
+  "sideEffects": true
+}

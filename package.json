@@ -1,16 +1,31 @@
 {
   "name": "@emulatorjs/emulatorjs",
   "version": "4.2.1",
+  "type": "module",
+  "description": "EmulatorJS is a frontend for RetroArch in the web browser.",
+  "homepage": "https://emulatorjs.org",
+  "license": "GPL-3.0",
+  "sideEffects": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/EmulatorJS/EmulatorJS.git"
   },
-  "license": "GPL-3.0",
-  "description": "EmulatorJS is a frontend for RetroArch in the web browser.",
+  "bugs": {
+    "url": "https://github.com/EmulatorJS/EmulatorJS/issues"
+  },
   "scripts": {
-    "start": "http-server"
+    "start": "http-server",
+    "minify": "node data/minify.js",
+    "update": "node update.js",
+    "build": "node build.js"
   },
   "dependencies": {
-    "http-server": "^14.1.1"
+    "@node-minify/clean-css": "^9.0.1",
+    "@node-minify/core": "^9.0.2",
+    "@node-minify/terser": "^9.0.1",
+    "http-server": "^14.1.1",
+    "nipplejs": "^0.10.2",
+    "node-7z": "^3.0.0",
+    "socket.io": "^4.8.1"
   }
 }
