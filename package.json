@@ -26,6 +26,7 @@
     "http-server": "^14.1.1",
     "nipplejs": "^0.10.2",
     "node-7z": "^3.0.0",
+    "node-fetch": "^3.3.2",
     "socket.io": "^4.8.1"
   }
 }
