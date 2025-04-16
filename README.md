@@ -17,7 +17,7 @@ Self-hosted **Javascript** emulation for various systems.
 [![Button Configurator]][Configurator]<br>
 [![Button Demo]][Demo]<br>
 [![Button Contributors]][Contributors]
- 
+
 Join our Discord server:
 
 [![Join our Discord server!](https://invidget.switchblade.xyz/6akryGkETU)](https://discord.gg/6akryGkETU)
@@ -27,8 +27,6 @@ Or the Matrix server (#emulatorjs:matrix.emulatorjs.org):
 <a href="https://matrix.to/#/#emulatorjs:matrix.emulatorjs.org" rel="noopener" target="_blank"><img src="https://matrix.to/img/matrix-badge.svg" alt="Chat on Matrix"></a>
 
 </div>
-
-<!-- nocores -->
 
 <br>
 
@@ -72,11 +70,12 @@ There are three different version names that you need to be aware of:
 
 There is a new CDN that you can use to get any version of the emulator. The CDN is `https://cdn.emulatorjs.org/`. You can get the stable, latest, nightly, and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
 
-### Extensions
+### 3rd Party Projects
 
-**[GameLibrary]**
+EmulatorJS itself is built to be a plugin, rather than an entire website. This is why there is no docker container of this project. However, there are several projects you can use that use EmulatorJS!
 
-_A library overview for your **ROM** folder._
+You can check them out here:
+[3rd Party Projects](https://emulatorjs.org/docs/3rd-party)
 
 <br>
 

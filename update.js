@@ -6,7 +6,9 @@ import { log } from 'console';
 
 const args = process.argv.slice(2);
 const versionArg = args.find(arg => arg.startsWith('--ejs_v='));
+const devArg = args.find(arg => arg.startsWith('--dev='));
 const update_version = versionArg ? versionArg.split('=')[1] : process.env.ejs_v;
+const dev = devArg ? devArg.split('=')[1]: false;
 let version;
 
 try {
@@ -79,40 +81,8 @@ const fetchContributors = async () => {
 
 const updateContributors = async () => {
     const contributors = await fetchContributors();
-    const ignoredContributors = ['ethanaobrien', 'allancoding', 'michael-j-green', 'ElectronicsArchiver'];
-    const missingContributors = [
-        {
-            login: 'jurcaalexandrucristian',
-            contributions: 1,
-            avatar_url: "https://avatars.githubusercontent.com/u/74395896?v=4",
-            html_url: "https://github.com/jurcaalexandrucristian"
-        }, {
-            login: 'Grey41',
-            contributions: 2,
-            avatar_url: "https://avatars.githubusercontent.com/u/85015029?v=4",
-            html_url: "https://github.com/Grey41"
-        }, {
-            login: 'eric183',
-            contributions: 1,
-            avatar_url: "https://avatars.githubusercontent.com/u/10773980?v=4",
-            html_url: "https://github.com/eric183"
-        }, {
-            login: 'Protektor-Desura',
-            contributions: 1,
-            avatar_url: "https://avatars.githubusercontent.com/u/1195496?v=4",
-            html_url: "https://github.com/Protektor-Desura"
-        }, {
-            login: 'cheesykyle',
-            contributions: 1,
-            avatar_url: "https://avatars.githubusercontent.com/u/17484761?v=4",
-            html_url: "https://github.com/cheesykyle"
-        }, {
-            login: 'imneckro',
-            contributions: 1,
-            avatar_url: "https://avatars.githubusercontent.com/u/42493772?v=4",
-            html_url: "https://github.com/imneckro"
-        }
-    ];
+    const ignoredContributors = JSON.parse(fs.readFileSync(path.resolve('docs', 'contributors.json'), 'utf8')).ignore;
+    const missingContributors = JSON.parse(fs.readFileSync(path.resolve('docs', 'missing_contributors.json'), 'utf8')).missing;
     if (!contributors) return;
     const sortedContributors = contributors
         .concat(missingContributors)

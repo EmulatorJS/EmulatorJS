@@ -929,7 +929,6 @@ class EmulatorJS {
                 }
             },
             totalDependencies: 0,
-            monitorRunDependencies: () => { },
             locateFile: function (fileName) {
                 if (this.debug) console.log(fileName);
                 if (fileName.endsWith(".wasm")) {
@@ -3625,7 +3624,8 @@ class EmulatorJS {
             elem.style = style;
             elems[dpad.location].appendChild(elem);
             createDPad({
-                container: elem, event: (up, down, left, right) => {
+                container: elem,
+                event: (up, down, left, right) => {
                     if (dpad.joystickInput) {
                         if (up === 1) up = 0x7fff;
                         if (down === 1) down = 0x7fff;
@@ -4248,10 +4248,10 @@ class EmulatorJS {
                 pageTitle.classList.add("ejs_menu_text_a");
                 button.appendChild(pageTitle);
                 /*
-                                const optionsMenu = this.createElement("div");
-                                optionsMenu.classList.add("ejs_setting_menu");
-                
-                                menu.appendChild(optionsMenu);*/
+                    const optionsMenu = this.createElement("div");
+                    optionsMenu.classList.add("ejs_setting_menu");
+                    menu.appendChild(optionsMenu);
+                */
 
                 menu.appendChild(rv);
                 nested.appendChild(menu);

@@ -8,10 +8,9 @@ package-lock.json
 update.js
 data/minify/
 data/localization/translate.html
-data/cores/logs/
+data/cores/*
 !data/cores/README.md
 !data/cores/package.json
-data/cores/package-lock.json
 minify/
 .npmignore
 .gitignore

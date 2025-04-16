@@ -15,7 +15,7 @@
     <br />
     <div class="boxes">
         <div class="box">
-            <button class="copyBtn" id="copyBtn1" onclick="copy('box1')">
+            <button class="copyBtn" id="copyBtn1">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px"
                     height="18px">
                     <path
@@ -29,10 +29,10 @@
             <textarea id="box2"
                 placeholder="Copy what is on the left into google translate or any other translation service, then translate it into the language you whant and paste the translation here."
                 rows="39.5" cols="50" spellcheck="false"></textarea>
-            <button class="nextBtn" onclick="start()">Next</button>
+            <button class="nextBtn" id="nextBtn">Next</button>
         </div>
         <div class="box">
-            <button class="copyBtn" id="copyBtn3" onclick="copy('box3')">
+            <button class="copyBtn" id="copyBtn3">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="18px"
                     height="18px">
                     <path
@@ -46,9 +46,15 @@
     </div>
 </body>
 <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('copyBtn1').addEventListener('click', () => copy('box1'));
+        document.getElementById('nextBtn').addEventListener('click', start);
+        document.getElementById('copyBtn3').addEventListener('click', () => copy('box3'));
+    });
+
     let data = {};
 
-        fetch('../../data/localization/en-US.json')
+    fetch('../../data/localization/en-US.json')
         .then(response => response.json())
         .then(json => {
             data = json;
@@ -62,27 +68,29 @@
         .catch(error => console.error('Error loading en-US.json:', error));
 
     function start() {
-        var data2 = document.getElementById('box1').value;
-        var data3 = document.getElementById('box2').value;
-        var data4 = data2.split('\n').map(function (line) { return line.split(/\n/g); });
-        var data5 = data3.split('\n').map(function (line) { return line.split(/\n/g); });
-        var data6 = new Map();
-        for (var i = 0; i < data4.length; i++) {
-            var key = data4[i][0].replace("", '');
-            data6.set(key, data5[i]);
+        const [box1, box2, box3] = ['box1', 'box2', 'box3'].map(id => document.getElementById(id));
+
+        if (![box1.value, box2.value].every(value => value.trim())) {
+            return alert('Please fill in both input boxes before proceeding.');
         }
-        var data7 = {};
-        data6.forEach(function (value, key) {
-            data7[key] = value[0].replace("", '');
-        });
-        data7 = JSON.stringify(data7, null, 4);
-        document.getElementById('box3').value = data7;
-        navigator.clipboard.writeText(document.getElementById('box3').value);
-        console.log(data7);
+
+        const data4 = box1.value.split('\n').map(line => line.replace("", '').trim());
+        const data5 = box2.value.split('\n').map(line => line.replace("", '').trim());
+
+        if (data4.length !== data5.length) {
+            return alert('The number of lines in both boxes must match.');
+        }
+
+        const jsonOutput = JSON.stringify(Object.fromEntries(data4.map((key, i) => [key, data5[i]])), null, 4);
+
+        box3.value = jsonOutput;
+
+        navigator.clipboard.writeText(jsonOutput);
+        console.log(jsonOutput);
     }
 
     function copy(textareaId) {
-        var textarea = document.getElementById(textareaId);
+        let textarea = document.getElementById(textareaId);
         textarea.select();
         document.execCommand('copy');
     }

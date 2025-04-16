@@ -39,10 +39,5 @@ jobs:
           npm i
           npm ci
           npm publish --access public
-      - name: Make @emulatorjs/emulatorjs-nocores
-        run: |
-          node build.js --npm=nocores
-          npm ci
-          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

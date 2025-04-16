@@ -1,4 +1,4 @@
-(async function () {
+(async function() {
     const scripts = [
         "emulator.js",
         "nipplejs.js",

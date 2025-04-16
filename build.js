@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import Seven from 'node-7z';
-import { console } from 'inspector';
 let version;
 
 try {
@@ -49,105 +48,58 @@ if (!build_type) {
 
     console.log(`Creating archives for EmulatorJS version: ${version}`);
 
+    const npmIgnorePath = path.resolve('.npmignore');
+    const distNpmIgnorePath = path.resolve('dist/.ignore');
+    const npmIgnoreContent = fs.readFileSync(npmIgnorePath, 'utf8');
+    const updatedNpmIgnoreContent = npmIgnoreContent.replace('data/cores/*', 'data/cores/logs/');
+    fs.writeFileSync(distNpmIgnorePath, updatedNpmIgnoreContent, 'utf8');
+
     Seven.add(`dist/${version}.7z`, './', {
-        $raw: ['-xr@.npmignore'],
+        $raw: ['-xr@dist/.ignore'],
         $progress: true
     }).on('progress', function (progress) {
         progressData['7z'] = progress.percent;
     }).on('end', function () {
         progressData['7z'] = 100;
+
     });
 
     Seven.add(`dist/${version}.zip`, './', {
-        $raw: ['-xr@.npmignore'],
+        $raw: ['-xr@dist/.ignore'],
         $progress: true
     }).on('progress', function (progress) {
         progressData['zip'] = progress.percent;
     }).on('end', function () {
         progressData['zip'] = 100;
     });
-} else if (build_type != "emulatorjs" && build_type != "cores" && build_type != "nocores") {
-    console.log("Invalid argument. Use --npm=emulatorjs, --npm=cores or --npm=nocores.");
+} else if (build_type !== "emulatorjs" && build_type !== "cores") {
+    console.log("Invalid argument. Use --npm=emulatorjs or --npm=cores.");
     process.exit(1);
-}
-
-const removeIgnoreCores = () => {
-    const ignorePath = path.resolve('.npmignore');
-    const ignoreContent = fs.readFileSync(ignorePath, 'utf8');
-    const updatedContent = ignoreContent
-        .split('\n')
-        .filter(line => line.trim() !== 'data/cores/')
-        .join('\n');
-    fs.writeFileSync(ignorePath, updatedContent, 'utf8');
-}
-
-const addIgnoreCores = () => {
-    const ignorePath = path.resolve('.npmignore');
-    const ignoreContent = fs.readFileSync(ignorePath, 'utf8');
-    if (!ignoreContent.split('\n').includes('data/cores/')) {
-        fs.appendFileSync(ignorePath, '\ndata/cores/');
+} else {
+    const removeLogo = (readme) => {
+        const readmePath = path.resolve(readme);
+        const readmeContent = fs.readFileSync(readmePath, 'utf8');
+        const updatedContent = readmeContent
+            .split('\n')
+            .filter(line => !line.includes('docs/Logo-light.png#gh-dark-mode-only>'))
+            .join('\n');
+        fs.writeFileSync(readmePath, updatedContent, 'utf8');
+    };
+    
+    const getCores = () => {
+        const coresJsonPath = path.resolve('data', 'cores', 'cores.json');
+        const coresJson = JSON.parse(fs.readFileSync(coresJsonPath, 'utf8'));
+        const coreNames = coresJson.map(core => core.name);
+        console.log("Core Names:", coreNames);
+    };
+    
+    console.log(`Current EmulatorJS Version: ${version}`);
+    if (build_type === "emulatorjs") {
+        removeLogo('README.md');
+    } else if (build_type === "cores") {
+        removeLogo('data/cores/README.md');
+        getCores();
     }
-};
-
-const removeLogo = (readme) => {
-    const readmePath = path.resolve(readme);
-    const readmeContent = fs.readFileSync(readmePath, 'utf8');
-    const updatedContent = readmeContent
-        .split('\n')
-        .filter(line => !line.includes('docs/Logo-light.png#gh-dark-mode-only>'))
-        .join('\n');
-    fs.writeFileSync(readmePath, updatedContent, 'utf8');
-};
-
-const setCores = () => {
-    const packageJsonPath = path.resolve('package.json');
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    packageJson.name = "@emulatorjs/emulatorjs-nocores";
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-};
-
-const setEmulatorJS = () => {
-    const packageJsonPath = path.resolve('package.json');
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    packageJson.name = "@emulatorjs/emulatorjs";
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    
+    console.log("Set configs and removed logo from README.md");
 }
-
-const coresMessage = `<div id="nocores">\n\n## EmulatorJS-nocores\n\nThis package does not contain any cores.\n\nIf you want the bundled version: https://www.npmjs.com/package/@emulatorjs/emulatorjs\n\nJust the cores:\nhttps://www.npmjs.com/package/@emulatorjs/cores\n\n</div>`;
-
-const addCoresMessage = () => {
-    const readmePath = path.resolve('README.md');
-    const readmeContent = fs.readFileSync(readmePath, 'utf8');
-    const updatedContent = readmeContent
-        .split('\n')
-        .map(line => line.includes('<!-- nocores -->') ? line + '\n' + coresMessage : line)
-        .join('\n');
-    fs.writeFileSync(readmePath, updatedContent, 'utf8');
-}
-
-const removeCoresMessage = () => {
-    const readmePath = path.resolve('README.md');
-    const readmeContent = fs.readFileSync(readmePath, 'utf8');
-    const updatedContent = readmeContent.replace(coresMessage +"\n", '');
-    fs.writeFileSync(readmePath, updatedContent, 'utf8');
-}
-
-console.log(`Current EmulatorJS Version: ${version}`);
-console.log(`Build Type: ${build_type}`);
-console.log(`Building...`);
-if (build_type == "emulatorjs") {
-    setEmulatorJS();
-    removeIgnoreCores();
-    removeLogo('README.md');
-    removeCoresMessage();
-} else if (build_type == "nocores") {
-    setCores();
-    removeIgnoreCores();
-    addIgnoreCores();
-    removeLogo('README.md');
-    addCoresMessage();
-} else if (build_type == "cores") {
-    removeLogo('data/cores/README.md');
-}
-
-console.log("Set config and removed logo from README.md");
