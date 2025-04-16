@@ -1,0 +1,15 @@
+.git
+dist/
+node_modules/
+package-lock.json
+.github/
+*.tgz
+update.js
+build.js
+data/localization/translate.html
+data/cores/*
+!data/cores/README.md
+!data/cores/package.json
+minify/
+.npmignore
+.gitignore
