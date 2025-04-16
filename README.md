@@ -88,6 +88,10 @@ npm i
 npm start
 ```
 
+#### Localization
+
+If you want to help with localization, please check out the [localization](data/localization/README.md) documentation.
+
 <br>
 
 **>> When reporting bugs, please specify what version you are using**
