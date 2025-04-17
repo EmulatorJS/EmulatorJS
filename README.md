@@ -192,7 +192,7 @@ npm start
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
 [Configurator]: https://emulatorjs.org/editor
-[Contributors]: docs/Contributors.md
+[Contributors]: docs/contributors.md
 [Website]: https://emulatorjs.org/
 [Usage]: https://emulatorjs.org/docs/
 [Demo]: https://demo.emulatorjs.org/
