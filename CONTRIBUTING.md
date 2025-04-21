@@ -14,7 +14,7 @@ Just wanna donate? That'd help too!
 
 By default Visual Studio Code will apply formatting that is not consistent with the standard formatting used by this project.
 
-Please disable the formatter _before_ submitting a Pull Request.
+Please disable the formatter *before* submitting a Pull Request.
 
 The formatter can be disabled for this repo only (without affecting your own preferences) by creating a new file called `.vscode/settings.json` (if it doesn't already exist).
 
