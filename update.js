@@ -42,19 +42,19 @@ const updateVersion = async (newVersion) => {
     const packageJsonPath = path.resolve('package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     packageJson.version = newVersion;
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 4) + '\n');
     console.log(`Updated version to ${newVersion} in package.json.`);
 
     const versionJsonPath = path.resolve('data', 'version.json');
     const versionJson = JSON.parse(fs.readFileSync(versionJsonPath, 'utf8'));
     versionJson.version = newVersion;
-    fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 2));
+    fs.writeFileSync(versionJsonPath, JSON.stringify(versionJson, null, 4) + '\n');
     console.log(`Updated version to ${newVersion} in data/version.json.`);
 
     const coresJsonPath = path.resolve('data', 'cores', 'package.json');
     const coresJson = JSON.parse(fs.readFileSync(coresJsonPath, 'utf8'));
     coresJson.version = newVersion;
-    fs.writeFileSync(coresJsonPath, JSON.stringify(coresJson, null, 2));
+    fs.writeFileSync(coresJsonPath, JSON.stringify(coresJson, null, 4) + '\n');
     console.log(`Updated version to ${newVersion} in data/cores/package.json.`);
 
     const emulatorJsPath = path.resolve('data', 'src', 'emulator.js');
