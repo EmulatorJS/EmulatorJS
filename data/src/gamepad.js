@@ -1,4 +1,7 @@
 class GamepadHandler {
+    gamepads;
+    timeout;
+    listeners;
     constructor() {
         this.buttonLabels = {
             0: 'BUTTON_1',
@@ -34,7 +37,16 @@ class GamepadHandler {
         this.timeout = setTimeout(this.loop.bind(this), 10);
     }
     updateGamepadState() {
-        const gamepads = Array.from(this.getGamepads());
+        let gamepads = Array.from(this.getGamepads());
+        if (!gamepads) return;
+        if (!Array.isArray(gamepads) && gamepads.length) {
+            let gp = [];
+            for (let i=0; i<gamepads.length; i++) {
+                gp.push(gamepads[i]);
+            }
+            gamepads = gp;
+        } else if (!Array.isArray(gamepads)) return;
+
         gamepads.forEach((gamepad, index) => {
             if (!gamepad) return;
             let hasGamepad = false;
@@ -74,27 +86,28 @@ class GamepadHandler {
                     if (typeof button === "object") {
                         pressed2 = button.pressed;
                     }
-                    gamepadToSave.buttons[buttonIndex] = { pressed: pressed2 };
+                    gamepadToSave.buttons[buttonIndex] = {pressed:pressed2};
                     if (pressed !== pressed2) {
                         if (pressed2) {
-                            this.dispatchEvent('buttondown', { index: buttonIndex, label: this.getButtonLabel(buttonIndex), gamepadIndex: gamepad.index });
+                            this.dispatchEvent('buttondown', {index: buttonIndex, label: this.getButtonLabel(buttonIndex), gamepadIndex: gamepad.index});
                         } else {
-                            this.dispatchEvent('buttonup', { index: buttonIndex, label: this.getButtonLabel(buttonIndex), gamepadIndex: gamepad.index });
+                            this.dispatchEvent('buttonup', {index: buttonIndex, label:this.getButtonLabel(buttonIndex), gamepadIndex: gamepad.index});
                         }
                     }
+
                 })
                 this.gamepads[oldIndex] = gamepadToSave;
             })
             if (!hasGamepad) {
                 this.gamepads.push(gamepads[index]);
-                this.dispatchEvent('connected', { gamepadIndex: gamepad.index });
+                this.dispatchEvent('connected', {gamepadIndex: gamepad.index});
             }
         });
 
-        for (let j = 0; j < this.gamepads.length; j++) {
+        for (let j=0; j<this.gamepads.length; j++) {
             if (!this.gamepads[j]) continue;
             let has = false;
-            for (let i = 0; i < gamepads.length; i++) {
+            for (let i=0; i<gamepads.length; i++) {
                 if (!gamepads[i]) continue;
                 if (this.gamepads[j].index === gamepads[i].index) {
                     has = true;
@@ -102,7 +115,7 @@ class GamepadHandler {
                 }
             }
             if (!has) {
-                this.dispatchEvent('disconnected', { gamepadIndex: this.gamepads[j].index });
+                this.dispatchEvent('disconnected', {gamepadIndex: this.gamepads[j].index});
                 this.gamepads.splice(j, 1);
                 j--;
             }
@@ -110,7 +123,7 @@ class GamepadHandler {
     }
     dispatchEvent(name, arg) {
         if (typeof this.listeners[name] !== 'function') return;
-        if (!arg) arg = {};
+        if (!arg) arg={};
         arg.type = name;
         this.listeners[name](arg);
     }

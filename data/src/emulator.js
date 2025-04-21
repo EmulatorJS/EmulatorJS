@@ -3620,7 +3620,8 @@ class EmulatorJS {
             elem.style = style;
             elems[dpad.location].appendChild(elem);
             createDPad({
-                container: elem, event: (up, down, left, right) => {
+                container: elem,
+                event: (up, down, left, right) => {
                     if (dpad.joystickInput) {
                         if (up === 1) up = 0x7fff;
                         if (down === 1) down = 0x7fff;

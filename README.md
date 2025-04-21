@@ -67,16 +67,19 @@ There are three different version names that you need to be aware of:
 2. **latest** - This will contain the latest code but use the stable cores. This will be updated every time the *main* branch is updated.
 3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is considered alpha.
 
+<br>
+
 ### CDN
 
-There is a new CDN that you can use to get any version of the emulator. The CDN is `https://cdn.emulatorjs.org/`. You can get the stable, latest, nightly, and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
+There is a CDN that you can use to get any version of the emulator. The CDN is `https://cdn.emulatorjs.org/`. You can get the stable, latest, nightly, and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
+
+<br>
 
 ### 3rd Party Projects
 
 EmulatorJS itself is built to be a plugin, rather than an entire website. This is why there is no docker container of this project. However, there are several projects you can use that use EmulatorJS!
 
-You can check them out here:
-[3rd Party Projects Page](https://emulatorjs.org/docs/3rd-party)
+Looking for projects that integrate EmulatorJS? Check out https://emulatorjs.org/docs/3rd-party
 
 <br>
 
@@ -99,6 +102,8 @@ You can check them out here:
    ```
 
 4. Open your browser and go to `http://localhost:8080/` to see the demo page.
+
+<br>
 
 #### Minifying
 

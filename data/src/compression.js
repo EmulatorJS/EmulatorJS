@@ -48,8 +48,54 @@ class EJS_COMPRESSION {
                     return;
                 }
                 const path = URL.createObjectURL(new Blob([res2.data], { type: "application/wasm" }));
-                let data = '\nlet dataToPass = [];\nModule = {\n    monitorRunDependencies: function(left)  {\n        if (left == 0) {\n            setTimeout(function() {\n                unrar(dataToPass, null);\n            }, 100);\n        }\n    },\n    onRuntimeInitialized: function() {\n    },\n    locateFile: function(file) {\n        return \'' + path + '\';\n    }\n};\n' + res.data + '\nlet unrar = function(data, password) {\n    let cb = function(fileName, fileSize, progress) {\n        postMessage({"t":4,"current":progress,"total":fileSize, "name": fileName});\n    };\n\n    let rarContent = readRARContent(data.map(function(d) {\n        return {\n            name: d.name,\n            content: new Uint8Array(d.content)\n        }\n    }), password, cb)\n    let rec = function(entry) {\n        if (!entry) return;\n        if (entry.type === \'file\') {\n            postMessage({"t":2,"file":entry.fullFileName,"size":entry.fileSize,"data":entry.fileContent});\n        } else if (entry.type === \'dir\') {\n            Object.keys(entry.ls).forEach(function(k) {\n                rec(entry.ls[k]);\n            })\n        } else {\n            throw "Unknown type";\n        }\n    }\n    rec(rarContent);\n    postMessage({"t":1});\n    return rarContent;\n};\nonmessage = function(data) {\n    dataToPass.push({name:  \'test.rar\', content: data.data});\n};\n                ';
-                const blob = new Blob([data], {
+                let script = `
+                    let dataToPass = [];
+                    Module = {
+                        monitorRunDependencies: function(left) {
+                            if (left == 0) {
+                                setTimeout(function() {
+                                    unrar(dataToPass, null);
+                                }, 100);
+                            }
+                        },
+                        onRuntimeInitialized: function() {},
+                        locateFile: function(file) {
+                            console.log("locateFile");
+                            return '` + path + `';
+                        }
+                    };
+                    ` + res.data + `
+                    let unrar = function(data, password) {
+                        let cb = function(fileName, fileSize, progress) {
+                            postMessage({ "t": 4, "current": progress, "total": fileSize, "name": fileName });
+                        };
+                        let rarContent = readRARContent(data.map(function(d) {
+                            return {
+                                name: d.name,
+                                content: new Uint8Array(d.content)
+                            }
+                        }), password, cb)
+                        let rec = function(entry) {
+                            if (!entry) return;
+                            if (entry.type === 'file') {
+                                postMessage({ "t": 2, "file": entry.fullFileName, "size": entry.fileSize, "data": entry.fileContent });
+                            } else if (entry.type === 'dir') {
+                                Object.keys(entry.ls).forEach(function(k) {
+                                    rec(entry.ls[k]);
+                                });
+                            } else {
+                                throw "Unknown type";
+                            }
+                        }
+                        rec(rarContent);
+                        postMessage({ "t": 1 });
+                        return rarContent;
+                    };
+                    onmessage = function(data) {
+                        dataToPass.push({ name: 'test.rar', content: data.data });
+                    };
+                `;
+                const blob = new Blob([script], {
                     type: 'application/javascript'
                 })
                 resolve(blob);

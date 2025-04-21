@@ -167,7 +167,7 @@ In my opinion, this is the most stable release we've had in a while. Many featur
 - Added ability to use threads (pre compiled cores not yet available)
 - Fixed reversed gamepad button events (down was up, up was down)
 - Fixed Gamepad axis release not triggering
-- Add **_highly beta_** psp core - see readme
+- Add ***highly beta*** psp core - see readme
 
 # 4.0.4 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/41491a738cf92ef9cee7d53f323aa2ab9732c053)
 
