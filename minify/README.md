@@ -1,9 +1,6 @@
-
 # Minifying
 
-Before pushing the script files onto your production <br>
-server it is recommended to minify them to save on <br>
-load times as well as bandwidth.
+Before pushing the script files onto your production server it is recommended to minify them to save on load times as well as bandwidth.
 
 <br>
 
@@ -15,20 +12,19 @@ load times as well as bandwidth.
 
 ## Steps
 
-1. Open a terminal in `/data/minify` .
+1. Open a terminal in the root of the project.
 
 2. Install the dependencies with:
 
-    ```sh
-    npm install
-    ```
+   ```sh
+   npm i
+   ```
 
 3. Start the minification with:
 
-    ```sh
-    node index.js
-    ```
-
+   ```sh
+   node run minify
+   ```
 
 <!----------------------------------------------------------------------------->
 

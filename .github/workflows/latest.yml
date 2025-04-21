@@ -24,15 +24,15 @@ jobs:
           git pull
       - name: Minify Files
         run: |
-          cd /mnt/HDD/public/.EmulatorJS/data/minify/
+          cd /mnt/HDD/public/.EmulatorJS/
           npm i
-          npm run build
+          npm run minify
       - name: Zip Minified Files
         run: |
           cd /mnt/HDD/public/.EmulatorJS/data/
           zip emulator.min.zip emulator.min.js emulator.min.css
       - name: Clean Up Minify
         run: |
-          cd /mnt/HDD/public/.EmulatorJS/data/
+          cd /mnt/HDD/public/.EmulatorJS/
           rm "minify/package-lock.json"
           rm -rf "minify/node_modules/"

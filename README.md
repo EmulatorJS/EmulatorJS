@@ -100,6 +100,12 @@ You can check them out here:
 
 4. Open your browser and go to `http://localhost:8080/` to see the demo page.
 
+#### Minifying
+
+Before pushing the script files onto your production server it is recommended to minify them to save on load times as well as bandwidth.
+
+Read the [minifying](minify/README.md) documentation for more info.
+
 <br>
 
 **>> When reporting bugs, please specify what version you are using**
