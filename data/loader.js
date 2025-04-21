@@ -33,7 +33,7 @@
             document.head.appendChild(script);
         })
     }
-
+    
     function loadStyle(file) {
         return new Promise(function(resolve, reject) {
             let css = document.createElement('link');
@@ -68,7 +68,7 @@
             }
         }
     }
-
+    
     if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
         for (let i=0; i<scripts.length; i++) {
             await loadScript(scripts[i]);
@@ -330,7 +330,7 @@
     config.videoRotation = window.EJS_videoRotation;
     config.hideSettings = window.EJS_hideSettings;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
-
+    
     let systemLang;
     try {
         systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
@@ -353,7 +353,7 @@
             delete config.langJson;
         }
     }
-
+    
     window.EJS_emulator = new EmulatorJS(EJS_player, config);
     window.EJS_adBlocked = (url, del) => window.EJS_emulator.adBlocked(url, del);
     if (typeof window.EJS_ready === "function") {

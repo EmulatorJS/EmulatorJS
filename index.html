@@ -1,277 +1,277 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>EmulatorJS</title>
+    <head>
+        <title>EmulatorJS</title>
         <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
         <meta name = viewport content = "width = device-width, initial-scale = 1">
-    <style>
+        <style>
              body, html {
-            height: 100%;
-            background-color: black;
-            color: white;
-        }
+                height: 100%;
+                background-color: black;
+                color: white;
+            }
 
-        body {
-            margin: 0;
-            overflow: hidden;
-        }
+            body {
+                margin: 0;
+                overflow: hidden;
+            }
 
             body, #box, #top {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+            }
 
-        #box {
-            color: #aaa;
-            height: 20em;
-            width: 30em;
-            max-width: 80%;
-            max-height: 80%;
-            background-color: #333;
-            border-radius: 0.4em;
-            border: 2px solid #555;
-            position: relative;
-            flex-direction: column;
-            transition-duration: 0.2s;
-            overflow: hidden;
-            font-family: monospace;
-            font-weight: bold;
-            font-size: 20px;
-            margin: 5px;
-        }
+            #box {
+                color: #aaa;
+                height: 20em;
+                width: 30em;
+                max-width: 80%;
+                max-height: 80%;
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                position: relative;
+                flex-direction: column;
+                transition-duration: 0.2s;
+                overflow: hidden;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 5px;
+            }
 
             #box:hover, #box[drag] {
-            border-color: #38f;
-            color: #ddd
-        }
+                border-color: #38f;
+                color: #ddd
+            }
 
-        #input {
-            cursor: pointer;
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0
-        }
+            #input {
+                cursor: pointer;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0
+            }
 
-        #display {
-            width: 100%;
-            height: 100%
-        }
+            #display {
+                width: 100%;
+                height: 100%
+            }
 
             select, button {
-            padding: 0.6em 0.4em;
-            margin: 0.5em;
-            width: 15em;
-            max-width: 100%;
-            font-family: monospace;
-            font-weight: bold;
-            font-size: 16px;
-            background-color: #444;
-            color: #aaa;
-            border-radius: 0.4em;
-            border: 1px solid #555;
-            cursor: pointer;
-            transition-duration: 0.2s
-        }
+                padding: 0.6em 0.4em;
+                margin: 0.5em;
+                width: 15em;
+                max-width: 100%;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 16px;
+                background-color: #444;
+                color: #aaa;
+                border-radius: 0.4em;
+                border: 1px solid #555;
+                cursor: pointer;
+                transition-duration: 0.2s
+            }
 
             select:hover, button:hover {
-            background-color: #666;
-            color: #ddd
-        }
+                background-color: #666;
+                color: #ddd
+            }
 
-        .logo {
-            width: 130px;
-            height: 130px;
-            filter: drop-shadow(0 0 10px white);
-        }
+            .logo {
+                width: 130px;
+                height: 130px;
+                filter: drop-shadow(0 0 10px white);
+            }
 
-        #top {
-            margin: 5px;
-        }
-    </style>
-</head>
+            #top {
+                margin: 5px;
+            }
+        </style>
+    </head>
 
-<body>
-    <div id="top">
-        <h1>EmulatorJS Demo</h1>
-        <img src="docs/Logo-light.png" alt="Logo" class="logo">
-    </div>
+    <body>
+        <div id="top">
+            <h1>EmulatorJS Demo</h1>
+            <img src="docs/Logo-light.png" alt="Logo" class="logo">
+        </div>
         <div id = box>
             <input type = file id = input>
-        Drag ROM file or click here
-    </div>
+            Drag ROM file or click here
+        </div>
 
-    <script>
-        let enableDebug = false;
-        let enableThreads = false;
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
-        if (urlParams.get('debug') == 1) {
-            enableDebug = true;
-            console.log("Debug is enabled");
-        } else {
-            console.log("Debug is disabled");
-        }
-
-        if (urlParams.get('threads') == 1) {
-            if (window.SharedArrayBuffer) {
-                enableThreads = true;
-                console.log("Threads are enabled");
+        <script>
+            let enableDebug = false;
+            let enableThreads = false;
+            const queryString = window.location.search;
+            const urlParams = new URLSearchParams(queryString);
+            if (urlParams.get('debug') == 1) {
+                enableDebug = true;
+                console.log("Debug is enabled");
             } else {
-                console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+                console.log("Debug is disabled");
+            }
+
+            if (urlParams.get('threads') == 1) {
+                if (window.SharedArrayBuffer) {
+                    enableThreads = true;
+                    console.log("Threads are enabled");
+                } else {
+                    console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+                    console.log("Threads are disabled");
+                }
+            } else {
                 console.log("Threads are disabled");
             }
-        } else {
-            console.log("Threads are disabled");
-        }
+            
+            input.onchange = async () => {
+                const url = input.files[0]
+                const parts = input.files[0].name.split(".")
 
-        input.onchange = async () => {
-            const url = input.files[0]
-            const parts = input.files[0].name.split(".")
+                const core = await (async (ext) => {
+                    if (["fds", "nes", "unif", "unf"].includes(ext))
+                        return "nes"
 
-            const core = await (async (ext) => {
-                if (["fds", "nes", "unif", "unf"].includes(ext))
-                    return "nes"
+                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
+                        return "snes"
 
-                if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
-                    return "snes"
+                    if (["z64", "n64"].includes(ext))
+                        return "n64"
 
-                if (["z64", "n64"].includes(ext))
-                    return "n64"
+                    if (["pce"].includes(ext))
+                        return "pce"
 
-                if (["pce"].includes(ext))
-                    return "pce"
+                    if (["ngp", "ngc"].includes(ext))
+                        return "ngp"
 
-                if (["ngp", "ngc"].includes(ext))
-                    return "ngp"
+                    if (["ws", "wsc"].includes(ext))
+                        return "ws"
 
-                if (["ws", "wsc"].includes(ext))
-                    return "ws"
+                    if (["col", "cv"].includes(ext))
+                        return "coleco"
 
-                if (["col", "cv"].includes(ext))
-                    return "coleco"
+                    if (["d64"].includes(ext))
+                        return "vice_x64sc"
 
-                if (["d64"].includes(ext))
-                    return "vice_x64sc"
+                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
+                        return ext
 
-                if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
-                    return ext
+                    return await new Promise(resolve => {
+                        var coreValues = {
+                            "Nintendo 64": "n64",
+                            "Nintendo Game Boy": "gb",
+                            "Nintendo Game Boy Advance": "gba",
+                            "Nintendo DS": "nds",
+                            "Nintendo Entertainment System": "nes",
+                            "Super Nintendo Entertainment System": "snes",
+                            "PlayStation": "psx",
+                            "Virtual Boy": "vb",
+                            "Sega Mega Drive": "segaMD",
+                            "Sega Master System": "segaMS",
+                            "Sega CD": "segaCD",
+                            "Atari Lynx": "lynx",
+                            "Sega 32X": "sega32x",
+                            "Atari Jaguar": "jaguar",
+                            "Sega Game Gear": "segaGG",
+                            "Sega Saturn": "segaSaturn",
+                            "Atari 7800": "atari7800",
+                            "Atari 2600": "atari2600",
+                            "Arcade": "arcade",
+                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
+                            "NEC PC-FX": "pcfx",
+                            "SNK NeoGeo Pocket (Color)": "ngp",
+                            "Bandai WonderSwan (Color)": "ws",
+                            "ColecoVision": "coleco",
+                            "Commodore 64": "vice_x64sc",
+                            "Commodore 128": "vice_x128",
+                            "Commodore VIC20": "vice_xvic",
+                            "Commodore Plus/4": "vice_xplus4",
+                            "Commodore PET": "vice_xpet"
+                        }
 
-                return await new Promise(resolve => {
-                    var coreValues = {
-                        "Nintendo 64": "n64",
-                        "Nintendo Game Boy": "gb",
-                        "Nintendo Game Boy Advance": "gba",
-                        "Nintendo DS": "nds",
-                        "Nintendo Entertainment System": "nes",
-                        "Super Nintendo Entertainment System": "snes",
-                        "PlayStation": "psx",
-                        "Virtual Boy": "vb",
-                        "Sega Mega Drive": "segaMD",
-                        "Sega Master System": "segaMS",
-                        "Sega CD": "segaCD",
-                        "Atari Lynx": "lynx",
-                        "Sega 32X": "sega32x",
-                        "Atari Jaguar": "jaguar",
-                        "Sega Game Gear": "segaGG",
-                        "Sega Saturn": "segaSaturn",
-                        "Atari 7800": "atari7800",
-                        "Atari 2600": "atari2600",
-                        "Arcade": "arcade",
-                        "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
-                        "NEC PC-FX": "pcfx",
-                        "SNK NeoGeo Pocket (Color)": "ngp",
-                        "Bandai WonderSwan (Color)": "ws",
-                        "ColecoVision": "coleco",
-                        "Commodore 64": "vice_x64sc",
-                        "Commodore 128": "vice_x128",
-                        "Commodore VIC20": "vice_xvic",
-                        "Commodore Plus/4": "vice_xplus4",
-                        "Commodore PET": "vice_xpet"
-                    }
+                        const cores = Object.keys(coreValues).sort().reduce(
+                            (obj, key) => { 
+                                obj[key] = coreValues[key]; 
+                                return obj;
+                            }, 
+                            {}
+                        );
 
-                    const cores = Object.keys(coreValues).sort().reduce(
-                        (obj, key) => {
-                            obj[key] = coreValues[key];
-                            return obj;
-                        },
-                        {}
-                    );
+                        const button = document.createElement("button")
+                        const select = document.createElement("select")
 
-                    const button = document.createElement("button")
-                    const select = document.createElement("select")
+                        for (const type in cores) {
+                            const option = document.createElement("option")
 
-                    for (const type in cores) {
-                        const option = document.createElement("option")
+                            option.value = cores[type]
+                            option.textContent = type
+                            select.appendChild(option)
+                        }
 
-                        option.value = cores[type]
-                        option.textContent = type
-                        select.appendChild(option)
-                    }
+                        button.onclick = () => resolve(select[select.selectedIndex].value)
+                        button.textContent = "Load game"
+                        box.innerHTML = ""
 
-                    button.onclick = () => resolve(select[select.selectedIndex].value)
-                    button.textContent = "Load game"
-                    box.innerHTML = ""
+                        box.appendChild(select)
+                        box.appendChild(button)
+                    })
+                })(parts.pop())
 
-                    box.appendChild(select)
-                    box.appendChild(button)
-                })
-            })(parts.pop())
+                const div = document.createElement("div")
+                const sub = document.createElement("div")
+                const script = document.createElement("script")
 
-            const div = document.createElement("div")
-            const sub = document.createElement("div")
-            const script = document.createElement("script")
+                sub.id = "game"
+                div.id = "display"
 
-            sub.id = "game"
-            div.id = "display"
+                const top = document.getElementById("top");
+                top.remove();
+                box.remove()
+                div.appendChild(sub)
+                document.body.appendChild(div)
 
-            const top = document.getElementById("top");
-            top.remove();
-            box.remove()
-            div.appendChild(sub)
-            document.body.appendChild(div)
-
-            window.EJS_player = "#game";
-            window.EJS_gameName = parts.shift();
-            window.EJS_biosUrl = "";
-            window.EJS_gameUrl = url;
-            window.EJS_core = core;
-            window.EJS_pathtodata = "data/";
-            window.EJS_startOnLoaded = true;
-            window.EJS_DEBUG_XX = enableDebug;
-            window.EJS_disableDatabases = true;
-            window.EJS_threads = enableThreads;
-            window.EJS_Buttons = {
-                restart: false,
-                playPause: false,
-                exitEmulation: {
-                    visible: false,
-                    callback: () => {
-                        alert("Exit emulation clicked");
-                    }
-                },
-                screenshot: false,
-                quickLoad: false,
-                quickSave: false,
-                customBtn1: {
-                    visible: true,
-                    displayName: "Custom Button 1",
-                    icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.0656 8.00389L11.25 7.99875H18.75C20.483 7.99875 21.8992 9.3552 21.9949 11.0643L22 11.2487V18.7487C22 20.4818 20.6435 21.898 18.9344 21.9936L18.75 21.9987H11.25C9.51697 21.9987 8.10075 20.6423 8.00515 18.9332L8 18.7487V11.2487C8 9.51571 9.35646 8.0995 11.0656 8.00389ZM18.75 9.49875H11.25C10.3318 9.49875 9.57881 10.2059 9.5058 11.1052L9.5 11.2487V18.7487C9.5 19.6669 10.2071 20.4199 11.1065 20.4929L11.25 20.4987H18.75C19.6682 20.4987 20.4212 19.7916 20.4942 18.8923L20.5 18.7487V11.2487C20.5 10.2822 19.7165 9.49875 18.75 9.49875ZM15 11C15.4142 11 15.75 11.3358 15.75 11.75V14.248L18.25 14.2487C18.6642 14.2487 19 14.5845 19 14.9987C19 15.413 18.6642 15.7487 18.25 15.7487L15.75 15.748V18.25C15.75 18.6642 15.4142 19 15 19C14.5858 19 14.25 18.6642 14.25 18.25V15.748L11.75 15.7487C11.3358 15.7487 11 15.413 11 14.9987C11 14.5845 11.3358 14.2487 11.75 14.2487L14.25 14.248V11.75C14.25 11.3358 14.5858 11 15 11ZM15.5818 4.23284L15.6345 4.40964L16.327 6.998H14.774L14.1856 4.79787C13.9355 3.86431 12.9759 3.31029 12.0423 3.56044L4.79787 5.50158C3.91344 5.73856 3.36966 6.61227 3.52756 7.49737L3.56044 7.64488L5.50158 14.8893C5.69372 15.6064 6.30445 16.0996 7.00045 16.1764L7.00056 17.6816C5.69932 17.6051 4.52962 16.7445 4.10539 15.4544L4.05269 15.2776L2.11155 8.03311C1.66301 6.35913 2.6067 4.6401 4.23284 4.10539L4.40964 4.05269L11.6541 2.11155C13.3281 1.66301 15.0471 2.6067 15.5818 4.23284Z" fill="#FFFFFF"/></svg>',
-                    callback: () => {
-                        console.log("Custom button 1 clicked");
+                window.EJS_player = "#game";
+                window.EJS_gameName = parts.shift();
+                window.EJS_biosUrl = "";
+                window.EJS_gameUrl = url;
+                window.EJS_core = core;
+                window.EJS_pathtodata = "data/";
+                window.EJS_startOnLoaded = true;
+                window.EJS_DEBUG_XX = enableDebug;
+                window.EJS_disableDatabases = true;
+                window.EJS_threads = enableThreads;
+                window.EJS_Buttons = {
+                    restart: false,
+                    playPause: false,
+                    exitEmulation: {
+                        visible: false,
+                        callback: () => {
+                            alert("Exit emulation clicked");
+                        }
+                    },
+                    screenshot: false,
+                    quickLoad: false,
+                    quickSave: false,
+                    customBtn1: {
+                        visible: true,
+                        displayName: "Custom Button 1",
+                        icon: '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.0656 8.00389L11.25 7.99875H18.75C20.483 7.99875 21.8992 9.3552 21.9949 11.0643L22 11.2487V18.7487C22 20.4818 20.6435 21.898 18.9344 21.9936L18.75 21.9987H11.25C9.51697 21.9987 8.10075 20.6423 8.00515 18.9332L8 18.7487V11.2487C8 9.51571 9.35646 8.0995 11.0656 8.00389ZM18.75 9.49875H11.25C10.3318 9.49875 9.57881 10.2059 9.5058 11.1052L9.5 11.2487V18.7487C9.5 19.6669 10.2071 20.4199 11.1065 20.4929L11.25 20.4987H18.75C19.6682 20.4987 20.4212 19.7916 20.4942 18.8923L20.5 18.7487V11.2487C20.5 10.2822 19.7165 9.49875 18.75 9.49875ZM15 11C15.4142 11 15.75 11.3358 15.75 11.75V14.248L18.25 14.2487C18.6642 14.2487 19 14.5845 19 14.9987C19 15.413 18.6642 15.7487 18.25 15.7487L15.75 15.748V18.25C15.75 18.6642 15.4142 19 15 19C14.5858 19 14.25 18.6642 14.25 18.25V15.748L11.75 15.7487C11.3358 15.7487 11 15.413 11 14.9987C11 14.5845 11.3358 14.2487 11.75 14.2487L14.25 14.248V11.75C14.25 11.3358 14.5858 11 15 11ZM15.5818 4.23284L15.6345 4.40964L16.327 6.998H14.774L14.1856 4.79787C13.9355 3.86431 12.9759 3.31029 12.0423 3.56044L4.79787 5.50158C3.91344 5.73856 3.36966 6.61227 3.52756 7.49737L3.56044 7.64488L5.50158 14.8893C5.69372 15.6064 6.30445 16.0996 7.00045 16.1764L7.00056 17.6816C5.69932 17.6051 4.52962 16.7445 4.10539 15.4544L4.05269 15.2776L2.11155 8.03311C1.66301 6.35913 2.6067 4.6401 4.23284 4.10539L4.40964 4.05269L11.6541 2.11155C13.3281 1.66301 15.0471 2.6067 15.5818 4.23284Z" fill="#FFFFFF"/></svg>',
+                        callback: () => {
+                            console.log("Custom button 1 clicked");
+                        }
                     }
                 }
-            }
 
-            script.src = "data/loader.js";
-            document.body.appendChild(script);
-        }
-        box.ondragover = () => box.setAttribute("drag", true);
-        box.ondragleave = () => box.removeAttribute("drag");
-    </script>
-</body>
+                script.src = "data/loader.js";
+                document.body.appendChild(script);
+            }
+            box.ondragover = () => box.setAttribute("drag", true);
+            box.ondragleave = () => box.removeAttribute("drag");
+        </script>
+    </body>
 </html>
