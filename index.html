@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>EmulatorJS</title>
-    <link rel=icon href=docs/favicon.ico sizes="16x16 32x32 48x48 64x64" type=image/vnd.microsoft.icon>
-    <meta name=viewport content="width = device-width, initial-scale = 1">
+        <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
+        <meta name = viewport content = "width = device-width, initial-scale = 1">
     <style>
-        body,
-        html {
+             body, html {
             height: 100%;
             background-color: black;
             color: white;
@@ -18,9 +16,7 @@
             overflow: hidden;
         }
 
-        body,
-        #box,
-        #top {
+            body, #box, #top {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -46,8 +42,7 @@
             margin: 5px;
         }
 
-        #box:hover,
-        #box[drag] {
+            #box:hover, #box[drag] {
             border-color: #38f;
             color: #ddd
         }
@@ -67,8 +62,7 @@
             height: 100%
         }
 
-        select,
-        button {
+            select, button {
             padding: 0.6em 0.4em;
             margin: 0.5em;
             width: 15em;
@@ -84,8 +78,7 @@
             transition-duration: 0.2s
         }
 
-        select:hover,
-        button:hover {
+            select:hover, button:hover {
             background-color: #666;
             color: #ddd
         }
@@ -107,8 +100,8 @@
         <h1>EmulatorJS Demo</h1>
         <img src="docs/Logo-light.png" alt="Logo" class="logo">
     </div>
-    <div id=box>
-        <input type=file id=input>
+        <div id = box>
+            <input type = file id = input>
         Drag ROM file or click here
     </div>
 
@@ -281,5 +274,4 @@
         box.ondragleave = () => box.removeAttribute("drag");
     </script>
 </body>
-
 </html>
