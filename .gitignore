@@ -1,6 +1,5 @@
 **/node_modules/
 *.db
-data/minify/package-lock.json
 package-lock.json
 yarn.lock
 roms/
