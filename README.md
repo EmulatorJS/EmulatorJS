@@ -59,6 +59,14 @@ Or the Matrix server (#emulatorjs:matrix.emulatorjs.org):
 
 <br>
 
+### 3rd Party Projects
+
+EmulatorJS itself is built to be a plugin, rather than an entire website. This is why there is no docker container of this project. However, there are several projects you can use that use EmulatorJS!
+
+Looking for projects that integrate EmulatorJS? Check out https://emulatorjs.org/docs/3rd-party
+
+<br>
+
 ### Versioning
 
 There are three different version names that you need to be aware of:
@@ -71,15 +79,7 @@ There are three different version names that you need to be aware of:
 
 ### CDN
 
-There is a CDN that you can use to get any version of the emulator. The CDN is `https://cdn.emulatorjs.org/`. You can get the stable, latest, nightly, and any other main version by setting your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`.
-
-<br>
-
-### 3rd Party Projects
-
-EmulatorJS itself is built to be a plugin, rather than an entire website. This is why there is no docker container of this project. However, there are several projects you can use that use EmulatorJS!
-
-Looking for projects that integrate EmulatorJS? Check out https://emulatorjs.org/docs/3rd-party
+EmulatorJS provides a CDN at `https://cdn.emulatorjs.org/` where you can access any version of the emulator. To use it, set your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`, replacing <version> with stable, latest, nightly, or any other main release you need.
 
 <br>
 

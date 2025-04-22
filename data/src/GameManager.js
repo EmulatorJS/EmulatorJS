@@ -49,7 +49,7 @@ class EJS_GameManager {
             setTimeout(() => {
                 try {
                     this.Module.abort();
-                } catch (e) {
+                } catch(e) {
                     console.warn(e);
                 };
             }, 1000);
@@ -101,7 +101,7 @@ class EJS_GameManager {
                             }
                             try {
                                 this.writeFile(path, res.data);
-                            } catch (e) {
+                            } catch(e) {
                                 if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
                             }
                             done();
@@ -125,7 +125,7 @@ class EJS_GameManager {
     mkdir(path) {
         try {
             this.FS.mkdir(path);
-        } catch (e) {}
+        } catch(e) {}
     }
     getRetroArchCfg() {
         let cfg = "autosave_interval = 60\n" +
@@ -189,27 +189,27 @@ class EJS_GameManager {
     loadState(state) {
         try {
             this.FS.unlink('game.state');
-        } catch (e) {}
+        } catch(e) {}
         this.FS.writeFile('/game.state', state);
         this.clearEJSResetTimer();
         this.functions.loadState("game.state", 0);
         setTimeout(() => {
             try {
                 this.FS.unlink('game.state');
-            } catch (e) {}
+            } catch(e) {}
         }, 5000)
     }
     screenshot() {
         try {
             this.FS.unlink('screenshot.png');
-        } catch (e) {}
+        } catch(e) {}
         this.functions.screenshot();
         return new Promise(async resolve => {
             while (1) {
                 try {
                     this.FS.stat("/screenshot.png");
                     return resolve(this.FS.readFile("/screenshot.png"));
-                } catch (e) {}
+                } catch(e) {}
                 await new Promise(res => setTimeout(res, 50));
             }
         })
@@ -220,7 +220,7 @@ class EJS_GameManager {
             let name = slot + '-quick.state';
             try {
                 this.FS.unlink(name);
-            } catch (e) {}
+            } catch(e) {}
             let data = await this.getState();
             this.FS.writeFile('/' + name, data);
         })();
@@ -253,7 +253,7 @@ class EJS_GameManager {
                 let newSlot;
                 try {
                     newSlot = parseFloat(this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1") + 1;
-                } catch (e) {
+                } catch(e) {
                     newSlot = 1;
                 }
                 if (newSlot > 9) newSlot = 1;
@@ -293,7 +293,7 @@ class EJS_GameManager {
                     return (parseInt(a.charAt()) > parseInt(b.charAt())) ? 1 : -1;
                 })
             }
-        } catch (e) {
+        } catch(e) {
             if (fileNames.length > 1) {
                 console.warn("Could not auto-create cue file(s).");
                 return null;
@@ -431,7 +431,7 @@ class EJS_GameManager {
     setVideoRotation(rotation) {
         try {
             this.functions.setVideoRoation(rotation);
-        } catch (e) {
+        } catch(e) {
             console.warn(e);
         }
     }

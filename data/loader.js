@@ -1,4 +1,4 @@
-(async function() {
+(async function(){
     const scripts = [
         "emulator.js",
         "nipplejs.js",
@@ -17,7 +17,7 @@
     function loadScript(file) {
         return new Promise(function (resolve, reject) {
             let script = document.createElement('script');
-            script.src = function (){
+            script.src = function(){
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
                     return EJS_paths[file];
                 } else if (file.endsWith("emulator.min.js")) {
@@ -35,10 +35,10 @@
     }
 
     function loadStyle(file) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve) {
             let css = document.createElement('link');
             css.rel = 'stylesheet';
-            css.href = function () {
+            css.href = function(){
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
                     return EJS_paths[file];
                 } else {
@@ -127,7 +127,7 @@
     let systemLang;
     try {
         systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
-    } catch (e) { } //Ignore
+    } catch(e) {} //Ignore
     if ((typeof window.EJS_language === "string" && window.EJS_language !== "en-US") || (systemLang && window.EJS_disableAutoLang !== false)) {
         const language = window.EJS_language || systemLang;
         try {
@@ -140,7 +140,7 @@
             }
             config.language = language;
             config.langJson = JSON.parse(await (await fetch(path)).text());
-        } catch (e) {
+        } catch(e) {
             console.log("Missing language", language, "!!");
             delete config.language;
             delete config.langJson;
