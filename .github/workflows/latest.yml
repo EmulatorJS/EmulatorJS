@@ -34,5 +34,5 @@ jobs:
       - name: Clean Up Minify
         run: |
           cd /mnt/HDD/public/.EmulatorJS/
-          rm "minify/package-lock.json"
+          rm -f "minify/package-lock.json"
           rm -rf "minify/node_modules/"
