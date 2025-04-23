@@ -48,11 +48,13 @@ Translated for `hi-HI`, `ar-AR`, `jv-JV`, `ben-BEN`, `ru-RU`, `de-GER`, `ko-KO` 
 
 ## Contributing
 
-Download the default `en-US.json` file and simply translate all the words then perform a pull request or open an issue with the file uploaded and we will add your work.
+To contribute, please download the default `en-US.json` language file to use as a template, translate the strings and then submit the file with a Pull Request or Issue.
+
+The EmulatorJS team will review and add your changes.
 
 The `retroarch.json` are all the setting names for the menu. They will default to english if not found. You can set `EJS_settingsLanguage` to `true` to see the missing retroarch settings names for the current language. You can translate them and add the to the language file.
 
-The control maping traslations for controllers are diffrent for each controller. They will need to be added to the language file if they are not in the default `en-US.json` file.
+The control mapping translations for controllers are diffrent for each controller. They will need to be added to the language file if they are not in the default `en-US.json` file.
 
 You can also use the [Translation Helper](https://emulatorjs.org/translate) tool to help you translate the file.
 
