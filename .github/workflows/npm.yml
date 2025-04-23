@@ -24,6 +24,7 @@ jobs:
         run: |
           TAG_NAME=${{ github.event.release.tag_name || env.LATEST_TAG }}
           TRIMMED_TAG=${TAG_NAME#v}
+          echo "TRIMMED_TAG=$TRIMMED_TAG" >> $GITHUB_ENV
           gh release download "$TAG_NAME" \
             --repo ${{ github.repository }} \
             --pattern "$TRIMMED_TAG.7z"
