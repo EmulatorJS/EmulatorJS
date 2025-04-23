@@ -1,6 +1,6 @@
 {
     "name": "@emulatorjs/emulatorjs",
-    "version": "4.2.1-beta.1",
+    "version": "4.2.1-beta.2",
     "type": "module",
     "description": "EmulatorJS is a frontend for RetroArch in the web browser.",
     "homepage": "https://emulatorjs.org",
