@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 jobs:
   build:
-    if: github.repository == 'EmulatorJS/EmulatorJS'
+    # if: github.repository == 'EmulatorJS/EmulatorJS'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
