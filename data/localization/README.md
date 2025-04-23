@@ -54,7 +54,7 @@ The `retroarch.json` are all the setting names for the menu. They will default t
 
 The control maping traslations for controllers are diffrent for each controller. They will need to be added to the language file if they are not in the default `en-US.json` file.
 
-You can also use the [Translation Helper](https://emulatorjs.github.io/EmulatorJS/data/localization/translate.html) tool to help you translate the file.
+You can also use the [Translation Helper](https://emulatorjs.org/translate) tool to help you translate the file.
 
 Please contribute!!
 
