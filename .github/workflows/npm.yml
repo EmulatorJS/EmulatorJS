@@ -24,10 +24,9 @@ jobs:
         run: |
           TAG_NAME=${{ github.event.release.tag_name || env.LATEST_TAG }}
           TRIMMED_TAG=${TAG_NAME#v}
-          echo TRIMMED_TAG
           gh release download "$TAG_NAME" \
             --repo ${{ github.repository }} \
-            --pattern "TRIMMED_TAG.7z"
+            --pattern "$TRIMMED_TAG.7z"
       - name: Extract cores
         run: |
           7z x -y "$TRIMMED_TAG.7z" "data/cores/*" -o./
