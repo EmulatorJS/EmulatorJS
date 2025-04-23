@@ -40,15 +40,6 @@ jobs:
           npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Make @emulatorjs/cores
-        run: |
-          node build.js --npm=cores
-          cd data/cores
-          npm i
-          npm ci
-          npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Get cores list
         run: |
           echo "CORES=$(node build.js --npm=get-cores | jq -r '. | join(" ")')" >> $GITHUB_ENV
@@ -61,5 +52,14 @@ jobs:
             npm publish --access public
             cd ..
           done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Make @emulatorjs/cores
+        run: |
+          node build.js --npm=cores
+          cd data/cores
+          npm i
+          npm ci
+          npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
