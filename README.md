@@ -79,7 +79,12 @@ There are three different version names that you need to be aware of:
 
 ### CDN
 
-EmulatorJS provides a CDN at `https://cdn.emulatorjs.org/` where you can access any version of the emulator. To use it, set your `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`, replacing <version> with stable, latest, nightly, or any other main release you need.
+**EmulatorJS provides a CDN** at `https://cdn.emulatorjs.org/`, allowing access to any version of the emulator.
+
+To use it, set `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`, replacing `<version>` with `stable`, `latest`, `nightly`, or another main release.
+
+Be sure to also update the `loader.js` path to:
+`https://cdn.emulatorjs.org/<version>/data/loader.js`
 
 <br>
 
