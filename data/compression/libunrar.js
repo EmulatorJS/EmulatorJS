@@ -510,7 +510,7 @@ function ShowArcInfo(Flags) {
 if (typeof process === 'object' && typeof require === 'function') { // NODE
   module.exports = readRARContent
 } else if (typeof define === 'function' && define.amd) { // AMD
-  define('readRARContent', [], function () { return readRARContent })
+  define('readRARContent', [], function() { return readRARContent })
 } else if (typeof window === 'object') { // WEB
   window['readRARContent'] = readRARContent
 } else if (typeof importScripts === 'function') { // WORKER

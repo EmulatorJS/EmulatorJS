@@ -108,7 +108,7 @@ class EmulatorJS {
                 path = this.config.filePaths[path.split('/').pop()];
             }
             let url;
-            try { url = new URL(path) } catch (e) {};
+            try { url = new URL(path) } catch(e) {};
             if (url && !['http:', 'https:'].includes(url.protocol)) {
                 //Most commonly blob: urls. Not sure what else it could be
                 if (opts.method === 'HEAD') {
@@ -121,11 +121,11 @@ class EmulatorJS {
                         res = await res.arrayBuffer();
                     } else {
                         res = await res.text();
-                        try { res = JSON.parse(res) } catch (e) {}
+                        try { res = JSON.parse(res) } catch(e) {}
                     }
                     if (path.startsWith('blob:')) URL.revokeObjectURL(path);
                     cb({ data: res, headers: {} });
-                } catch (e) {
+                } catch(e) {
                     cb(-1);
                 }
                 return;
@@ -137,14 +137,14 @@ class EmulatorJS {
                     progressCB(progress);
                 });
             }
-            xhr.onload = function () {
+            xhr.onload = function() {
                 if (xhr.readyState === xhr.DONE) {
                     let data = xhr.response;
                     if (xhr.status.toString().startsWith("4") || xhr.status.toString().startsWith("5")) {
                         cb(-1);
                         return;
                     }
-                    try { data = JSON.parse(data) } catch (e) {}
+                    try { data = JSON.parse(data) } catch(e) {}
                     cb({
                         data: data,
                         headers: {
@@ -374,7 +374,7 @@ class EmulatorJS {
         } else {
             try {
                 document.querySelector('div[class="ejs_ad_iframe"]').remove();
-            } catch (e) {}
+            } catch(e) {}
             this.config.adUrl = url;
             this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
         }
@@ -990,7 +990,7 @@ class EmulatorJS {
             if (this.config.fullscreenOnLoad) {
                 try {
                     this.toggleFullscreen(true);
-                } catch (e) {
+                } catch(e) {
                     if (this.debug) console.warn("Could not fullscreen on load");
                 }
             }
@@ -999,7 +999,7 @@ class EmulatorJS {
                 //Safari is --- funny
                 this.checkStarted();
             }
-        } catch (e) {
+        } catch(e) {
             console.warn("Failed to start game", e);
             this.startGameError(this.localization("Failed to start game"));
             this.callEvent("exit");
@@ -1392,7 +1392,7 @@ class EmulatorJS {
         if (this.currentPopup !== null) {
             try {
                 this.currentPopup.remove();
-            } catch (e) {}
+            } catch(e) {}
             this.currentPopup = null;
         }
     }
@@ -1857,7 +1857,7 @@ class EmulatorJS {
                 if (this.isMobile) {
                     try {
                         screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});
-                    } catch (e) {}
+                    } catch(e) {}
                 }
             } else {
                 if (document.exitFullscreen) {
@@ -1874,7 +1874,7 @@ class EmulatorJS {
                 if (this.isMobile) {
                     try {
                         screen.orientation.unlock();
-                    } catch (e) {}
+                    } catch(e) {}
                 }
             }
         }
@@ -3176,7 +3176,7 @@ class EmulatorJS {
                         console.warn("Missing input_value for button " + set[i].text + "! Using default gamepad settings");
                         return false;
                     }
-                } catch (e) {
+                } catch(e) {
                     console.warn("Error checking values! Using default gamepad settings");
                     return false;
                 }
@@ -3854,7 +3854,7 @@ class EmulatorJS {
                 if (coreSpecific && coreSpecific.settings) {
                     return coreSpecific.settings[setting];
                 }
-            } catch (e) {
+            } catch(e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -3891,7 +3891,7 @@ class EmulatorJS {
                     this.cheats.push(cheat);
                 }
 
-            } catch (e) {
+            } catch(e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -3902,7 +3902,7 @@ class EmulatorJS {
                 this.volume = ejs_settings.volume;
                 this.muted = ejs_settings.muted;
                 this.setVolume(this.muted ? 0 : this.volume);
-            } catch (e) {
+            } catch(e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -4242,11 +4242,10 @@ class EmulatorJS {
                 pageTitle.innerText = title;
                 pageTitle.classList.add("ejs_menu_text_a");
                 button.appendChild(pageTitle);
-                /*
-                    const optionsMenu = this.createElement("div");
-                    optionsMenu.classList.add("ejs_setting_menu");
-                    menu.appendChild(optionsMenu);
-                */
+                
+                // const optionsMenu = this.createElement("div");
+                // optionsMenu.classList.add("ejs_setting_menu");
+                // menu.appendChild(optionsMenu);
 
                 menu.appendChild(rv);
                 nested.appendChild(menu);
@@ -4546,7 +4545,7 @@ class EmulatorJS {
         let coreOpts;
         try {
             coreOpts = this.gameManager.getCoreOptions();
-        } catch (e) {}
+        } catch(e) {}
         if (coreOpts) {
             const coreOptions = createSettingParent(true, "Core Options", home);
             coreOpts.split('\n').forEach((line, index) => {
@@ -4766,7 +4765,7 @@ class EmulatorJS {
     }
     defineNetplayFunctions() {
         function guidGenerator() {
-            const S4 = function () {
+            const S4 = function() {
                 return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
             };
             return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
@@ -5414,7 +5413,7 @@ class EmulatorJS {
         if (!this.gameManager) return;
         try {
             this.Module.FS.unlink("/shader/shader.glslp");
-        } catch (e) {}
+        } catch(e) {}
 
         if (name === "disabled" || !this.config.shaders[name]) {
             this.gameManager.toggleShader(0);
