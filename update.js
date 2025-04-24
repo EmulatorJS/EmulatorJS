@@ -13,7 +13,7 @@ try {
     const packageJsonPath = path.resolve('package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     version = packageJson.version;
-} catch (error) {
+} catch(error) {
     console.error("Error reading version from package.json:", error.message);
     process.exit(1);
 }
@@ -26,13 +26,13 @@ const updateDependencies = async () => {
 
     try {
         fs.copyFileSync(socket_io, ejs_socket_io);
-    } catch (error) {
+    } catch(error) {
         console.error("Error updating socket.io:", error.message);
     }
 
     try {
         fs.copyFileSync(nipplejs, ejs_nipplejs);
-    } catch (error) {
+    } catch(error) {
         console.error("Error updating nipplejs:", error.message);
     }
     console.log("Updated socket.io and nipplejs.");
@@ -77,7 +77,7 @@ const fetchContributors = async () => {
             throw new Error(`Failed to fetch contributors: ${response.statusText}`);
         }
         return await response.json();
-    } catch (error) {
+    } catch(error) {
         console.error("Error fetching contributors:", error.message);
     }
 };
