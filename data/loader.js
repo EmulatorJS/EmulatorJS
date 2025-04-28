@@ -1,4 +1,4 @@
-(async function(){
+(async function() {
     const scripts = [
         "emulator.js",
         "nipplejs.js",
@@ -15,9 +15,9 @@
     if (!scriptPath.endsWith('/')) scriptPath += '/';
     //console.log(scriptPath);
     function loadScript(file) {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve) {
             let script = document.createElement('script');
-            script.src = function(){
+            script.src = function() {
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
                     return EJS_paths[file];
                 } else if (file.endsWith("emulator.min.js")) {
@@ -38,7 +38,7 @@
         return new Promise(function(resolve) {
             let css = document.createElement('link');
             css.rel = 'stylesheet';
-            css.href = function(){
+            css.href = function() {
                 if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
                     return EJS_paths[file];
                 } else {
