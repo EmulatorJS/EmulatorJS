@@ -1289,24 +1289,6 @@ class EmulatorJS {
             visible: true,
             displayName: "Context Menu",
             icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>'
-        },
-        customBtn1: {
-            visible: false,
-            icon: null,
-            displayName: undefined,
-            callback: undefined
-        },
-        customBtn2: {
-            visible: false,
-            icon: null,
-            displayName: undefined,
-            callback: undefined
-        },
-        customBtn3: {
-            visible: false,
-            icon: null,
-            displayName: undefined,
-            callback: undefined
         }
     };
     buildButtonOptions(buttonUserOpts) {
@@ -1321,29 +1303,30 @@ class EmulatorJS {
                     mergedButtonOptions[key].visible = buttonUserOpts[key];
                 } else if (typeof buttonUserOpts[key] === "object") {
                     // If the value is an object, merge it with the default button properties
-                    // check if the value is a custom button, if so, visible, icon, and callback are required
-                    if (key === "customBtn1" || key === "customBtn2" || key === "customBtn3") {
-                        if (buttonUserOpts[key].visible === undefined) {
-                            buttonUserOpts[key].visible = true;
-                        }
-                        if (buttonUserOpts[key].icon === undefined) {
-                            console.error("Custom button " + key + " is missing icon");
-                            continue;
-                        }
-                        if (buttonUserOpts[key].callback === undefined) {
-                            console.error("Custom button " + key + " is missing callback");
-                            continue;
-                        }
-                    }
     
-                    // copy properties from the button definition if they aren't null
-                    for (const prop in buttonUserOpts[key]) {
-                        if (buttonUserOpts[key][prop] !== null) {
-                            mergedButtonOptions[key][prop] = buttonUserOpts[key][prop];
+                    if (this.defaultButtonOptions[key]) {
+                        // copy properties from the button definition if they aren't null
+                        for (const prop in buttonUserOpts[key]) {
+                            if (buttonUserOpts[key][prop] !== null) {
+                                mergedButtonOptions[key][prop] = buttonUserOpts[key][prop];
+                            }
+                        }
+                    } else {
+                        // button was not in the default buttons list and is therefore a custom button
+                        // verify that the value has a displayName, icon, and callback property
+                        if (buttonUserOpts[key].displayName && buttonUserOpts[key].icon && buttonUserOpts[key].callback) {
+                            mergedButtonOptions[key] = {
+                                visible: true,
+                                displayName: buttonUserOpts[key].displayName,
+                                icon: buttonUserOpts[key].icon,
+                                callback: buttonUserOpts[key].callback,
+                                custom: true
+                            };
+                        } else {
+                            console.warn(`Custom button "${key}" is missing required properties`);
                         }
                     }
                 }
-                // If the button is not in the default buttons, ignore it
     
                 // behaviour exceptions
                 switch (key) {
@@ -1893,14 +1876,15 @@ class EmulatorJS {
         const netplay = addButton(this.config.buttonOpts.netplay, async () => {
             this.openNetplayMenu();
         });
-        if (this.config.buttonOpts.customBtn1 && this.config.buttonOpts.customBtn1.visible === true && this.config.buttonOpts.customBtn1.icon !== undefined && this.config.buttonOpts.customBtn1.callback !== undefined) {
-            const customBtn1 = addButton(this.config.buttonOpts.customBtn1);
-        }
-        if (this.config.buttonOpts.customBtn2 && this.config.buttonOpts.customBtn2.visible === true && this.config.buttonOpts.customBtn2.icon !== undefined && this.config.buttonOpts.customBtn2.callback !== undefined) {
-            const customBtn2 = addButton(this.config.buttonOpts.customBtn2);
-        }
-        if (this.config.buttonOpts.customBtn3 && this.config.buttonOpts.customBtn3.visible === true && this.config.buttonOpts.customBtn3.icon !== undefined && this.config.buttonOpts.customBtn3.callback !== undefined) {
-            const customBtn3 = addButton(this.config.buttonOpts.customBtn3);
+        
+        // add custom buttons
+        // get all elements from this.config.buttonOpts with custom: true
+        if (this.config.buttonOpts) {
+            for (const [key, value] of Object.entries(this.config.buttonOpts)) {
+                if (value.custom === true) {
+                    const customBtn = addButton(value);
+                }
+            }
         }
 
         const spacer = this.createElement("span");
