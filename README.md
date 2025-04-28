@@ -55,7 +55,6 @@ Or the Matrix server (#emulatorjs:matrix.emulatorjs.org):
 
 <br>
 
-
 ### Issues
 
 *If something doesn't work, please consider opening an* ***[Issue]*** <br>
@@ -88,11 +87,19 @@ npm i
 npm start
 ```
 
+<br>
+
 #### Minifying
 
 Before pushing the script files onto your production server it is recommended to minify them to save on load times as well as bandwidth.
 
 Read the [minifying](minify/README.md) documentation for more info.
+
+<br>
+
+#### Localization
+
+If you want to help with localization, please check out the [localization](data/localization/README.md) documentation.
 
 <br>
 
