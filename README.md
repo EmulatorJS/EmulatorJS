@@ -110,11 +110,19 @@ Be sure to also update the `loader.js` path to:
 
 <br>
 
+<br>
+
 #### Minifying
 
 Before pushing the script files onto your production server it is recommended to minify them to save on load times as well as bandwidth.
 
 Read the [minifying](minify/README.md) documentation for more info.
+
+<br>
+
+#### Localization
+
+If you want to help with localization, please check out the [localization](data/localization/README.md) documentation.
 
 <br>
 
