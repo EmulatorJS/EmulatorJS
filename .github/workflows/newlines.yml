@@ -23,14 +23,14 @@ jobs:
           # Check each file for missing newlines at the end
           for file in $files; do
             # Skip binary files
-            if [[ "$file_type" == *"binary"* ]]; then
+            if [[ file --mime "$file" | grep -q "binary"; ]]; then
               echo "Skipping binary file: $file"
               continue
             fi
 
             # Check if the file ends with a newline
-            last_char=$(tail -c 1 "$file")
-            if [[ "$last_char" != $'\n' ]]; then
+            last_char=$(tail -c 1 "$file" | xxd -p)
+            if [[ "$last_char" != "0a" ]]; then
               echo "File $file does not end with a newline."
               newline_error=1
             fi
