@@ -15,8 +15,8 @@ jobs:
 
       - name: Check for missing newlines
         run: |
-          # Find all the files that have been modified in the push
-          files=$(git diff --name-only ${{ github.sha }} $(git merge-base ${{ github.sha }} ${{ github.event.before }}))
+          # Get all files in repo
+          files=$(git ls-files)
 
           # Check each file for missing newlines at the end
           for file in $files; do
