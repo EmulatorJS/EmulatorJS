@@ -16,7 +16,7 @@ jobs:
         run: |
           cd /mnt/HDD/public
           chmod -R 755 .EmulatorJS/
-      - name: Update Stable
+      - name: Update Latest
         run: |
           cd /mnt/HDD/public/.EmulatorJS/
           git fetch --all

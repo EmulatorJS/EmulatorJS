@@ -222,7 +222,7 @@ If you want to help with localization, please check out the [localization](data/
 <!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
 
 [Configurator]: https://emulatorjs.org/editor
-[Contributors]: docs/Contributors.md
+[Contributors]: docs/contributors.md
 [Website]: https://emulatorjs.org/
 [Usage]: https://emulatorjs.org/docs/
 [Demo]: https://demo.emulatorjs.org/

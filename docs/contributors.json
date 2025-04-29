@@ -1,0 +1,46 @@
+{
+    "ignore": [
+        "ethanaobrien",
+        "allancoding",
+        "michael-j-green",
+        "ElectronicsArchiver"
+    ],
+    "missing": [
+        {
+            "login": "jurcaalexandrucristian",
+            "contributions": 1,
+            "avatar_url": "https://avatars.githubusercontent.com/u/74395896?v=4",
+            "html_url": "https://github.com/jurcaalexandrucristian"
+        },
+        {
+            "login": "Grey41",
+            "contributions": 2,
+            "avatar_url": "https://avatars.githubusercontent.com/u/85015029?v=4",
+            "html_url": "https://github.com/Grey41"
+        },
+        {
+            "login": "eric183",
+            "contributions": 1,
+            "avatar_url": "https://avatars.githubusercontent.com/u/10773980?v=4",
+            "html_url": "https://github.com/eric183"
+        },
+        {
+            "login": "Protektor-Desura",
+            "contributions": 1,
+            "avatar_url": "https://avatars.githubusercontent.com/u/1195496?v=4",
+            "html_url": "https://github.com/Protektor-Desura"
+        },
+        {
+            "login": "cheesykyle",
+            "contributions": 1,
+            "avatar_url": "https://avatars.githubusercontent.com/u/17484761?v=4",
+            "html_url": "https://github.com/cheesykyle"
+        },
+        {
+            "login": "imneckro",
+            "contributions": 1,
+            "avatar_url": "https://avatars.githubusercontent.com/u/42493772?v=4",
+            "html_url": "https://github.com/imneckro"
+        }
+    ]
+}
