@@ -23,7 +23,7 @@ jobs:
           # Check each file for missing newlines at the end
           for file in $files; do
             # Skip binary files
-            if [[ file --mime "$file" | grep -q "binary" ]]; then
+            if file --mime "$file" | grep -q "binary"; then
               echo "Skipping binary file: $file"
               continue
             fi
