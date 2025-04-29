@@ -18,6 +18,8 @@ jobs:
           # Get all files in repo
           files=$(git ls-files)
 
+          newline_error=0
+
           # Check each file for missing newlines at the end
           for file in $files; do
             # Skip binary files
@@ -30,6 +32,13 @@ jobs:
             last_char=$(tail -c 1 "$file")
             if [[ "$last_char" != $'\n' ]]; then
               echo "File $file does not end with a newline."
-              exit 1
+              newline_error=1
             fi
           done
+
+          if [[ $newline_error -eq 1 ]]; then
+            echo "One or more files do not end with a newline."
+            exit 1
+          else
+            echo "All files end with a newline."
+          fi
