@@ -21,7 +21,7 @@ jobs:
           # Check each file for missing newlines at the end
           for file in $files; do
             # Skip binary files
-            if file -b "$file" &>/dev/null; then
+            if [[ "$file_type" == *"binary"* ]]; then
               echo "Skipping binary file: $file"
               continue
             fi
