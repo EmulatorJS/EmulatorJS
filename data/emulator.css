@@ -1337,8 +1337,8 @@
 
 .ejs_virtualGamepad_open {
     display: inline-block;
-    width: 25px;
-    height: 25px;
+    width: 1.5em;
+    height: 1.5em;
     color: #fff;
     position: absolute;
     top: 5px;
