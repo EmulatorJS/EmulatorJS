@@ -333,5 +333,7 @@
     "Video Rotation": "Video Rotation",
     "Rewind Enabled (Requires restart)": "Rewind Enabled (Requires restart)",
     "System Save interval": "System Save interval",
-    "Menu Bar Button": "Menu Bar Button"
+    "Menu Bar Button": "Menu Bar Button",
+    "visible": "visible",
+    "hidden": "hidden"
 }

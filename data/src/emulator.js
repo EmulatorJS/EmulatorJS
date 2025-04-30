@@ -3977,7 +3977,7 @@ class EmulatorJS {
             menuButton.style.display = "none";
             this.on("start", () => {
                 menuButton.style.display = "";
-                if (matchMedia('(pointer:fine)').matches && this.preGetSetting("menu-bar-button") !== "show") {
+                if (matchMedia('(pointer:fine)').matches && this.preGetSetting("menu-bar-button") !== "visible") {
                     menuButton.style.opacity = 0;
                 }
             });
@@ -4134,7 +4134,7 @@ class EmulatorJS {
             this.toggleVirtualGamepad(value !== "disabled");
         } else if (option === "menu-bar-button") {
             this.elements.menuToggle.style.display = "";
-            this.elements.menuToggle.style.opacity = value === "show" ? 0.5 : 0;
+            this.elements.menuToggle.style.opacity = value === "visible" ? 0.5 : 0;
         } else if (option === "virtual-gamepad-left-handed-mode") {
             this.toggleVirtualGamepadLeftHanded(value !== "disabled");
         } else if (option === "ff-ratio") {
@@ -4758,9 +4758,9 @@ class EmulatorJS {
                 'disabled': this.localization("Disabled")
             }, this.isMobile ? 'enabled' : 'disabled', virtualGamepad, true);
             addToMenu(this.localization('Menu Bar Button'), 'menu-bar-button', {
-                'show': this.localization("show"),
-                'hide': this.localization("hide")
-            }, (this.isMobile || !matchMedia('(pointer:fine)').matches) ? 'show' : 'hide', virtualGamepad, true);
+                'visible': this.localization("visible"),
+                'hidden': this.localization("hidden")
+            }, (this.isMobile || !matchMedia('(pointer:fine)').matches) ? 'visible' : 'hidden', virtualGamepad, true);
             addToMenu(this.localization('Left Handed Mode'), 'virtual-gamepad-left-handed-mode', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
