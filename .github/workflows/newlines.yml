@@ -3,9 +3,9 @@ name: Check for Newline at End of Files
 on:
   pull_request:
     types:
-      - opened      # Runs on PR creation
-      - synchronize # Runs on commits pushed to the PR
-      - reopened    # Runs when a PR is reopened
+      - opened
+      - synchronize
+      - reopened
 
 jobs:
   check-newlines:
