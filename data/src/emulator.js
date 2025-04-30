@@ -237,19 +237,18 @@ class EmulatorJS {
             return check;
         })();
         this.hasTouchScreen = (function() {
-            var result = false;
             if (window.PointerEvent && ('maxTouchPoints' in navigator)) {
                 if (navigator.maxTouchPoints > 0) {
-                    result = true;
+                    return true;
                 }
             } else {
                 if (window.matchMedia && window.matchMedia("(any-pointer:coarse)").matches) {
-                    result = true;
+                    return true;
                 } else if (window.TouchEvent || ('ontouchstart' in window)) {
-                    result = true;
+                    return true;
                 }
             }
-            return result;
+            return false;
         })();
         this.canvas = this.createElement('canvas');
         this.canvas.classList.add('ejs_canvas');
@@ -3977,8 +3976,9 @@ class EmulatorJS {
             menuButton.classList.add("ejs_virtualGamepad_open");
             menuButton.style.display = "none";
             this.on("start", () => {
-                if (this.isMobile || !matchMedia('(pointer:fine)').matches) {
-                    menuButton.style.display = ""
+                menuButton.style.display = "";
+                if (matchMedia('(pointer:fine)').matches && this.preGetSetting("menu-bar-button") !== "show") {
+                    menuButton.style.opacity = 0;
                 }
             });
             this.elements.parent.appendChild(menuButton);
