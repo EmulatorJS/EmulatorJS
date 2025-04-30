@@ -1,12 +1,14 @@
 name: Check for Newline at End of Files
 
 on:
-  push:
-    branches:
-      - main
+  pull_request:
+    types:
+      - opened      # Runs on PR creation
+      - synchronize # Runs on commits pushed to the PR
+      - reopened    # Runs when a PR is reopened
 
 jobs:
-  check-newline:
+  check-newlines:
     runs-on: ubuntu-latest
 
     steps:
@@ -15,23 +17,19 @@ jobs:
 
       - name: Check for missing newlines
         run: |
-          # Get all files in repo
           files=$(git ls-files)
 
           newline_error=0
 
-          # Check each file for missing newlines at the end
           for file in $files; do
-            # Skip binary files
             if file --mime "$file" | grep -q "binary"; then
-              echo "Skipping binary file: $file"
+              #echo "Skipping binary file: $file"
               continue
             fi
 
-            # Check if the file ends with a newline
             last_char=$(tail -c 1 "$file" | xxd -p)
             if [[ "$last_char" != "0a" ]]; then
-              echo "File $file does not end with a newline."
+              echo "File $file does not end with a newline!"
               newline_error=1
             fi
           done
