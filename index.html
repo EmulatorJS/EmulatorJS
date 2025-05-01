@@ -113,14 +113,14 @@
             let enableThreads = false;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (urlParams.get('debug') == 1 || urlParams.get('debug') == "true") {
+            if (parseInt(urlParams.get('debug')) === 1 || urlParams.get('debug') === "true") {
                 enableDebug = true;
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
             }
 
-            if (urlParams.get('threads') == 1 || urlParams.get('threads') == "true") {
+            if (parseInt(urlParams.get('threads')) === 1 || urlParams.get('threads') === "true") {
                 if (window.SharedArrayBuffer) {
                     enableThreads = true;
                     console.log("Threads are enabled");
