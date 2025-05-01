@@ -3979,6 +3979,7 @@ class EmulatorJS {
                 menuButton.style.display = "";
                 if (matchMedia('(pointer:fine)').matches && this.preGetSetting("menu-bar-button") !== "visible") {
                     menuButton.style.opacity = 0;
+                    this.changeSettingOption('menu-bar-button', 'hidden');
                 }
             });
             this.elements.parent.appendChild(menuButton);
@@ -4760,7 +4761,7 @@ class EmulatorJS {
             addToMenu(this.localization('Menu Bar Button'), 'menu-bar-button', {
                 'visible': this.localization("visible"),
                 'hidden': this.localization("hidden")
-            }, (this.isMobile || !matchMedia('(pointer:fine)').matches) ? 'visible' : 'hidden', virtualGamepad, true);
+            }, 'visible', virtualGamepad, true);
             addToMenu(this.localization('Left Handed Mode'), 'virtual-gamepad-left-handed-mode', {
                 'enabled': this.localization("Enabled"),
                 'disabled': this.localization("Disabled")
