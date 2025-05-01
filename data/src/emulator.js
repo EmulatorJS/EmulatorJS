@@ -2222,6 +2222,8 @@ class EmulatorJS {
             exitEmulation.style.display = "none";
 
             this.elements.menu.style.opacity = "";
+            this.elements.menu.style.background = "transparent";
+            this.virtualGamepad.style.display = "none";
             this.menu.open(true);
         }
     }
