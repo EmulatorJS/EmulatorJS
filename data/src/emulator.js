@@ -1392,16 +1392,56 @@ class EmulatorJS {
         let screenshotUrl;
         const screenshot = addButton("Take Screenshot", false, () => {
             if (screenshotUrl) URL.revokeObjectURL(screenshotUrl);
-            this.gameManager.screenshot().then(screenshot => {
-                const blob = new Blob([screenshot]);
-                screenshotUrl = URL.createObjectURL(blob);
-                const a = this.createElement("a");
-                a.href = screenshotUrl;
-                const date = new Date();
-                a.download = this.getBaseFileName()+"-"+date.getMonth()+"-"+date.getDate()+"-"+date.getFullYear()+".png";
-                a.click();
+            const date = new Date();
+            const fileName = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear();
+            const imageFormat = this.preGetSetting("screenshotFormat");
+            const imageQuality = parseInt(this.preGetSetting("screenshotQuality"));
+            if (this.preGetSetting("screenshotSource") === "retroarch") {
+                this.gameManager.screenshot().then(screenshot => {
+                    const blob = new Blob([screenshot], { type: 'image/png' });
+                    const img = new Image();
+                    screenshotUrl = URL.createObjectURL(blob);
+                    img.src = screenshotUrl;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width * imageQuality;
+                        canvas.height = img.height * imageQuality;
+                        const ctx = canvas.getContext('2d', { alpha: false });
+                        ctx.imageSmoothingEnabled = false;
+                        ctx.scale(imageQuality, imageQuality);
+                        ctx.drawImage(img, 0, 0, img.width, img.height);
+                        canvas.toBlob((blob) => {
+                            screenshotUrl = URL.createObjectURL(blob);
+                            const a = this.createElement("a");
+                            a.href = screenshotUrl;
+                            a.download = fileName + "." + imageFormat;
+                            a.click();
+                            hideMenu();
+                        }, 'image/' + imageFormat, 1);
+                    }
+                });
+            } else if (this.preGetSetting("screenshotSource") === "canvas") {
+                const captureCanvas = document.createElement('canvas');
+                captureCanvas.width = this.canvas.width * imageQuality;
+                captureCanvas.height = this.canvas.height * imageQuality;
+                captureCanvas.style.display = "none";
+                const captureCtx = captureCanvas.getContext('2d', { alpha: false });
+                captureCtx.imageSmoothingEnabled = false;
+                captureCtx.scale(imageQuality, imageQuality);
+                const drawNextFrame = () => {
+                    captureCtx.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height);
+                    captureCanvas.toBlob((blob) => {
+                        screenshotUrl = URL.createObjectURL(blob);
+                        const a = this.createElement("a");
+                        a.href = screenshotUrl;
+                        a.download = fileName + "." + imageFormat;
+                        a.click();
+                        captureCanvas.remove();
+                    }, 'image/' + imageFormat, 1);
+                };
+                requestAnimationFrame(drawNextFrame);
                 hideMenu();
-            });
+            }            
         });
 
         let screenMediaRecorder = null;
@@ -4679,6 +4719,32 @@ class EmulatorJS {
             '3': "270 deg"
         }, this.videoRotation.toString(), graphicsOptions, true);
 
+        const screenCaptureOptions = createSettingParent(true, "Screen Capture", home);
+
+        addToMenu(this.localization('Screenshot Source'), 'screenshotSource', {
+            'canvas': "canvas",
+            'retroarch': "retroarch"
+        }, 'retroarch', screenCaptureOptions, true);
+
+        let screenshotFormats = {
+            'png': "png",
+            'jpeg': "jpeg"
+        }
+
+        if (!this.isSafari) {
+            screenshotFormats['webp'] = "webp";
+        }
+
+        addToMenu(this.localization('Screenshot Format'), 'screenshotFormat', screenshotFormats, 'png', screenCaptureOptions, true);
+
+        addToMenu(this.localization('Screenshot Quality'), 'screenshotQuality', {
+            '1': "1x",
+            '2': "2x",
+            '4': "4x",
+            '8': "8x",
+            '16': "16x",
+        }, '2', screenCaptureOptions, true);
+
         const speedOptions = createSettingParent(true, "Speed Options", home);
 
         addToMenu(this.localization('Fast Forward'), 'fastForward', {
@@ -5690,7 +5756,7 @@ class EmulatorJS {
         const captureScreenWidth= (this.config.screenRecording && (typeof this.config.screenRecording.width == "number")) ? this.config.screenRecording.width : 800;
         const captureScreenHeight = (this.config.screenRecording && (typeof this.config.screenRecording.height == "number")) ? this.config.screenRecording.height : 600;
         const captureFps = (this.config.screenRecording && (typeof this.config.screenRecording.fps == "number")) ? this.config.screenRecording.fps : 30;
-        const captureVideoBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.videoBitrate == "number")) ? this.config.screenRecording.videoBitrate : 2 * 1024 * 1014;
+        const captureVideoBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.videoBitrate == "number")) ? this.config.screenRecording.videoBitrate : 2 * 1024 * 1024;
         const captureAudioBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.audioBitrate == "number")) ? this.config.screenRecording.audioBitrate : 256 * 1024;
 
         const captureCanvas = document.createElement('canvas');
@@ -5746,6 +5812,5 @@ class EmulatorJS {
 
         return recorder;
     }
-
 }
 window.EmulatorJS = EmulatorJS;
