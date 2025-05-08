@@ -17,7 +17,7 @@ async function doMinify() {
         .catch(function (err) {
             console.error(err);
         })
-        .then(function () {
+        .then(function() {
             console.log("Minified JS");
         });
     await minify({
@@ -28,7 +28,7 @@ async function doMinify() {
         .catch(function (err) {
             console.error(err);
         })
-        .then(function () {
+        .then(function() {
             console.log("Minified CSS");
         });
 }
