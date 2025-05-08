@@ -34,7 +34,7 @@ class EJS_STORAGE {
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
-                if (! db.objectStoreNames.contains(this.storeName)) {
+                if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 };
             };
@@ -58,7 +58,7 @@ class EJS_STORAGE {
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
-                if (! db.objectStoreNames.contains(this.storeName)) {
+                if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 };
             };
@@ -80,7 +80,7 @@ class EJS_STORAGE {
             };
             openRequest.onupgradeneeded = () => {
                 let db = openRequest.result;
-                if (! db.objectStoreNames.contains(this.storeName)) {
+                if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 };
             };
@@ -92,7 +92,7 @@ class EJS_STORAGE {
             const keys = await this.get("?EJS_KEYS!");
             if (!keys) return resolve({});
             let rv = {};
-            for (let i=0; i<keys.length; i++) {
+            for (let i = 0; i < keys.length; i++) {
                 const result = await this.get(keys[i]);
                 if (!result || !result.data || typeof result.data.byteLength !== "number") continue;
                 rv[keys[i]] = result.data.byteLength;
