@@ -7,7 +7,7 @@ try {
     const packageJsonPath = path.resolve('package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     version = packageJson.version;
-} catch (error) {
+} catch(error) {
     console.error("Error reading version from package.json:", error.message);
     process.exit(1);
 }
@@ -63,7 +63,7 @@ if (!build_type) {
         $progress: true
     }).on('progress', function (progress) {
         progressData['7z'] = progress.percent;
-    }).on('end', function () {
+    }).on('end', function() {
         progressData['7z'] = 100;
 
     });
@@ -73,7 +73,7 @@ if (!build_type) {
         $progress: true
     }).on('progress', function (progress) {
         progressData['zip'] = progress.percent;
-    }).on('end', function () {
+    }).on('end', function() {
         progressData['zip'] = 100;
     });
 } else if (build_type !== "emulatorjs" && build_type !== "cores" && build_type !== "get-cores") {

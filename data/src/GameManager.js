@@ -32,9 +32,9 @@ class EJS_GameManager {
             setVSync: this.Module.cwrap('set_vsync', 'null', ['number']),
             setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number'])
         }
-        
+
         this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
-        
+
         this.writeConfigFile();
         this.initShaders();
 
@@ -59,7 +59,7 @@ class EJS_GameManager {
         return new Promise(async resolve => {
             this.mkdir("/data");
             this.mkdir("/data/saves");
-            this.FS.mount(this.FS.filesystems.IDBFS, {autoPersist: true}, '/data/saves');
+            this.FS.mount(this.FS.filesystems.IDBFS, { autoPersist: true }, '/data/saves');
             this.FS.syncfs(true, resolve);
         });
     }
@@ -69,7 +69,7 @@ class EJS_GameManager {
         }
         let output = "";
         for (const k in this.EJS.defaultCoreOpts.settings) {
-            output += k + ' = "' + this.EJS.defaultCoreOpts.settings[k] +'"\n';
+            output += k + ' = "' + this.EJS.defaultCoreOpts.settings[k] + '"\n';
         }
 
         this.writeFile("/home/web_user/retroarch/userdata/config/" + this.EJS.defaultCoreOpts.file, output);
@@ -79,7 +79,7 @@ class EJS_GameManager {
             if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
                 for (const key in this.EJS.config.externalFiles) {
                     await new Promise(done => {
-                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], null, true, {responseType: "arraybuffer", method: "GET"}).then(async (res) => {
+                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], null, true, { responseType: "arraybuffer", method: "GET" }).then(async (res) => {
                             if (res === -1) {
                                 if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
                                 return done();
@@ -94,7 +94,7 @@ class EJS_GameManager {
                                     path += name;
                                 } else {
                                     for (const k in files) {
-                                        this.writeFile(path+k, files[k]);
+                                        this.writeFile(path + k, files[k]);
                                     }
                                     return done();
                                 }
@@ -115,7 +115,7 @@ class EJS_GameManager {
     writeFile(path, data) {
         const parts = path.split("/");
         let current = "/";
-        for (let i=0; i<parts.length-1; i++) {
+        for (let i = 0; i < parts.length - 1; i++) {
             if (!parts[i].trim()) continue;
             current += parts[i] + "/";
             this.mkdir(current);
@@ -129,18 +129,18 @@ class EJS_GameManager {
     }
     getRetroArchCfg() {
         let cfg = "autosave_interval = 60\n" +
-                  "screenshot_directory = \"/\"\n" +
-                  "block_sram_overwrite = false\n" +
-                  "video_gpu_screenshot = false\n" +
-                  "audio_latency = 64\n" +
-                  "video_top_portrait_viewport = true\n" +
-                  "video_vsync = true\n" +
-                  "video_smooth = false\n" +
-                  "fastforward_ratio = 3.0\n" +
-                  "slowmotion_ratio = 3.0\n" +
-                   (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
-                   (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
-                  "savefile_directory = \"/data/saves\"\n";
+            "screenshot_directory = \"/\"\n" +
+            "block_sram_overwrite = false\n" +
+            "video_gpu_screenshot = false\n" +
+            "audio_latency = 64\n" +
+            "video_top_portrait_viewport = true\n" +
+            "video_vsync = true\n" +
+            "video_smooth = false\n" +
+            "fastforward_ratio = 3.0\n" +
+            "slowmotion_ratio = 3.0\n" +
+            (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
+            (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
+            "savefile_directory = \"/data/saves\"\n";
 
         if (this.EJS.retroarchOpts && Array.isArray(this.EJS.retroarchOpts)) {
             this.EJS.retroarchOpts.forEach(option => {
@@ -189,20 +189,20 @@ class EJS_GameManager {
     loadState(state) {
         try {
             this.FS.unlink('game.state');
-        } catch(e){}
+        } catch(e) {}
         this.FS.writeFile('/game.state', state);
         this.clearEJSResetTimer();
         this.functions.loadState("game.state", 0);
         setTimeout(() => {
             try {
                 this.FS.unlink('game.state');
-            } catch(e){}
+            } catch(e) {}
         }, 5000)
     }
     screenshot() {
         try {
             this.FS.unlink('screenshot.png');
-        } catch(e){}
+        } catch(e) {}
         this.functions.screenshot();
         return new Promise(async resolve => {
             while (1) {
@@ -210,7 +210,6 @@ class EJS_GameManager {
                     this.FS.stat("/screenshot.png");
                     return resolve(this.FS.readFile("/screenshot.png"));
                 } catch(e) {}
-                
                 await new Promise(res => setTimeout(res, 50));
             }
         })
@@ -221,9 +220,9 @@ class EJS_GameManager {
             let name = slot + '-quick.state';
             try {
                 this.FS.unlink(name);
-            } catch (e) {}
+            } catch(e) {}
             let data = await this.getState();
-            this.FS.writeFile('/'+name, data);
+            this.FS.writeFile('/' + name, data);
         })();
     }
     quickLoad(slot) {
@@ -243,12 +242,12 @@ class EJS_GameManager {
             if (index === 24 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
                 this.quickSave(slot);
-                this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT")+" "+slot);
+                this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
             }
             if (index === 25 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
                 this.quickLoad(slot);
-                this.EJS.displayMessage(this.EJS.localization("LOADED STATE FROM SLOT")+" "+slot);
+                this.EJS.displayMessage(this.EJS.localization("LOADED STATE FROM SLOT") + " " + slot);
             }
             if (index === 26 && value === 1) {
                 let newSlot;
@@ -258,7 +257,7 @@ class EJS_GameManager {
                     newSlot = 1;
                 }
                 if (newSlot > 9) newSlot = 1;
-                this.EJS.displayMessage(this.EJS.localization("SET SAVE STATE SLOT TO")+" "+newSlot);
+                this.EJS.displayMessage(this.EJS.localization("SET SAVE STATE SLOT TO") + " " + newSlot);
                 this.EJS.changeSettingOption('save-state-slot', newSlot.toString());
             }
             if (index === 27) {
@@ -300,7 +299,7 @@ class EJS_GameManager {
                 return null;
             }
         }
-        for (let i=0; i<fileNames.length; i++) {
+        for (let i = 0; i < fileNames.length; i++) {
             if (fileNames[i].split(".").pop().toLowerCase() === "ccd") {
                 console.warn("Did not auto-create cue file(s). Found a ccd.");
                 return null;
@@ -314,22 +313,22 @@ class EJS_GameManager {
         if (baseFileName.includes(".")) {
             baseFileName = baseFileName.substring(0, baseFileName.length - baseFileName.split(".").pop().length - 1);
         }
-        for (let i=0; i<fileNames.length; i++) {
-            const contents = " FILE \""+fileNames[i]+"\" BINARY\n  TRACK 01 MODE1/2352\n   INDEX 01 00:00:00";
-            this.FS.writeFile("/"+baseFileName+"-"+i+".cue", contents);
+        for (let i = 0; i < fileNames.length; i++) {
+            const contents = " FILE \"" + fileNames[i] + "\" BINARY\n  TRACK 01 MODE1/2352\n   INDEX 01 00:00:00";
+            this.FS.writeFile("/" + baseFileName + "-" + i + ".cue", contents);
         }
         if (fileNames.length > 1) {
             let contents = "";
-            for (let i=0; i<fileNames.length; i++) {
-                contents += "/"+baseFileName+"-"+i+".cue\n";
+            for (let i = 0; i < fileNames.length; i++) {
+                contents += "/" + baseFileName + "-" + i + ".cue\n";
             }
-            this.FS.writeFile("/"+baseFileName+".m3u", contents);
+            this.FS.writeFile("/" + baseFileName + ".m3u", contents);
         }
-        return (fileNames.length === 1) ? baseFileName+"-0.cue" : baseFileName+".m3u";
+        return (fileNames.length === 1) ? baseFileName + "-0.cue" : baseFileName + ".m3u";
     }
     loadPpssppAssets() {
         return new Promise(resolve => {
-            this.EJS.downloadFile('cores/ppsspp-assets.zip', null, false, {responseType: "arraybuffer", method: "GET"}).then((res) => {
+            this.EJS.downloadFile('cores/ppsspp-assets.zip', null, false, { responseType: "arraybuffer", method: "GET" }).then((res) => {
                 this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
                     if (pspassets === -1) {
                         this.EJS.textElem.innerText = this.localization('Network Error');
@@ -340,12 +339,12 @@ class EJS_GameManager {
 
                     for (const file in pspassets) {
                         const data = pspassets[file];
-                        const path = "/PPSSPP/"+file;
+                        const path = "/PPSSPP/" + file;
                         const paths = path.split("/");
                         let cp = "";
-                        for (let i=0; i<paths.length-1; i++) {
+                        for (let i = 0; i < paths.length - 1; i++) {
                             if (paths[i] === "") continue;
-                            cp += "/"+paths[i];
+                            cp += "/" + paths[i];
                             if (!this.FS.analyzePath(cp).exists) {
                                 this.FS.mkdir(cp);
                             }
@@ -430,7 +429,7 @@ class EJS_GameManager {
         return this.functions.getFrameNum();
     }
     setVideoRotation(rotation) {
-        try { 
+        try {
             this.functions.setVideoRoation(rotation);
         } catch(e) {
             console.warn(e);

@@ -40,6 +40,8 @@
                 font-weight: bold;
                 font-size: 20px;
                 margin: 5px;
+                text-align: center;
+                padding: 10px;
             }
 
             #box:hover, #box[drag] {
@@ -54,7 +56,7 @@
                 top: 0;
                 width: 100%;
                 height: 100%;
-                opacity: 0
+                opacity: 0;
             }
 
             #display {
@@ -99,8 +101,9 @@
         <div id="top">
             <h1>EmulatorJS Demo</h1>
             <img src="docs/Logo-light.png" alt="Logo" class="logo">
+            <br>
         </div>
-        <div id = box>
+        <div id="box">
             <input type = file id = input>
             Drag ROM file or click here
         </div>
@@ -110,14 +113,14 @@
             let enableThreads = false;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (urlParams.get('debug') == 1) {
+            if (parseInt(urlParams.get('debug')) === 1 || urlParams.get('debug') === "true") {
                 enableDebug = true;
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
             }
 
-            if (urlParams.get('threads') == 1) {
+            if (parseInt(urlParams.get('threads')) === 1 || urlParams.get('threads') === "true") {
                 if (window.SharedArrayBuffer) {
                     enableThreads = true;
                     console.log("Threads are enabled");
@@ -128,10 +131,15 @@
             } else {
                 console.log("Threads are disabled");
             }
-            
-            input.onchange = async () => {
-                const url = input.files[0]
-                const parts = input.files[0].name.split(".")
+
+            if (urlParams.get('rom')) {
+                console.log("Loading ROM from URL: roms/" + urlParams.get('rom'));
+                run(false, urlParams.get('rom'));
+            }
+
+            async function run(upload, file) {
+                const url = upload ? input.files[0] : "roms/" + file;
+                const parts = upload ? input.files[0].name.split(".") : file.split(".");
 
                 const core = await (async (ext) => {
                     if (["fds", "nes", "unif", "unf"].includes(ext))
@@ -249,6 +257,11 @@
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
             }
+            
+            input.onchange = async () => {
+                run(true);
+            }
+            
             box.ondragover = () => box.setAttribute("drag", true);
             box.ondragleave = () => box.removeAttribute("drag");
         </script>
