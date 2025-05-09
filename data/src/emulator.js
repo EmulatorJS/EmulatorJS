@@ -949,7 +949,7 @@ class EmulatorJS {
             this.downloadFiles();
         }).catch(e => {
             console.warn(e);
-            this.startGameError(this.localization("Failed to start game")+"\n"+this.localization("Check console"));
+            this.startGameError(this.localization("Failed to start game"));
         });
     }
     startGame() {
@@ -1002,7 +1002,7 @@ class EmulatorJS {
             }
         } catch(e) {
             console.warn("Failed to start game", e);
-            this.startGameError(this.localization("Failed to start game")+"\n"+this.localization("Check console"));
+            this.startGameError(this.localization("Failed to start game"));
             this.callEvent("exit");
             return;
         }
