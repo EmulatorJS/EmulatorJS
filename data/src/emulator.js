@@ -597,9 +597,9 @@ class EmulatorJS {
                 }, true, { responseType: "arraybuffer", method: "GET" });
                 if (res === -1) {
                     if (!this.supportsWebgl2) {
-                        this.startGameError(this.localization('Outdated graphics driver'));
+                        this.startGameError(this.localization("Outdated graphics driver"));
                     } else {
-                        this.startGameError(this.localization('Error downloading core') + ' (' + filename + ')');
+                        this.startGameError(this.localization("Error downloading core") + " (" + filename + ")");
                     }
                     return;
                 }
@@ -711,7 +711,7 @@ class EmulatorJS {
                 this.textElem.innerText = progressMessage + progress;
             }, true, { responseType: "arraybuffer", method: "GET" });
             if (res === -1) {
-                this.startGameError(this.localization('Network Error')+"\n"+this.localization("Check console"));
+                this.startGameError(this.localization("Network Error"));
                 resolve(assetUrl);
                 return;
             }
@@ -856,7 +856,7 @@ class EmulatorJS {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;
                 }, true, { responseType: "arraybuffer", method: "GET" });
                 if (res === -1) {
-                    this.startGameError(this.localization('Network Error')+"\n"+this.localization("Check console"));
+                    this.startGameError(this.localization("Network Error"));
                     return;
                 }
                 if (this.config.gameUrl instanceof File) {
