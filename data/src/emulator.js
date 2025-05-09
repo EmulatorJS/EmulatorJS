@@ -1681,6 +1681,7 @@ class EmulatorJS {
 
             if (mouseY >= window.innerHeight - threshold) {
                 show();
+                return;
             }
             let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
             if (angle < 0) angle += 360;
