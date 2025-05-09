@@ -195,6 +195,7 @@
     box-sizing: inherit;
     font-size: 12px;
     color: #bcbcbc;
+    text-align: center;
 }
 
 .ejs_loading_text_glow {
