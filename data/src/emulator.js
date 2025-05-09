@@ -1658,14 +1658,36 @@ class EmulatorJS {
             this.elements.menu.classList.add("ejs_menu_bar_hidden");
         }
 
-        this.addEventListener(this.elements.parent, 'mousemove click', (e) => {
-            if (e.pointerType === "touch") return;
-            if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
-            if (this.isPopupOpen()) return;
+        const show = () => {
             clearTimeout(timeout);
             timeout = setTimeout(hide, 3000);
             this.elements.menu.classList.remove("ejs_menu_bar_hidden");
-        })
+        }
+
+        this.addEventListener(this.elements.parent, 'click', (e) => {
+            if (e.pointerType === "touch") return;
+            if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
+            if (this.isPopupOpen()) return;
+            show();
+        });
+
+        this.addEventListener(this.elements.parent, 'mousemove', (e) => {
+            if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
+            if (this.isPopupOpen()) return;
+            const deltaX = e.movementX;
+            const deltaY = e.movementY;
+            const threshold = this.elements.menu.offsetHeight + 30;
+            const mouseY = e.clientY;
+
+            if (mouseY >= window.innerHeight - threshold) {
+                show();
+            }
+            let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+            if (angle < 0) angle += 360;
+            if (angle < 85 || angle > 95) return;
+            show();
+        });
+
         this.menu = {
             close: () => {
                 clearTimeout(timeout);
