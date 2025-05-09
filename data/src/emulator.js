@@ -599,7 +599,7 @@ class EmulatorJS {
                     if (!this.supportsWebgl2) {
                         this.startGameError(this.localization('Outdated graphics driver'));
                     } else {
-                        this.startGameError(this.localization('Network Error') + ": " + this.localization("While Downloading Core") + "(" + filename + ")");
+                        this.startGameError(this.localization('Error downloading core') + ' (' + filename + ')');
                     }
                     return;
                 }
@@ -663,7 +663,7 @@ class EmulatorJS {
                 this.textElem.innerText = this.localization("Download Game State") + progress;
             }, true, { responseType: "arraybuffer", method: "GET" }).then((res) => {
                 if (res === -1) {
-                    this.startGameError(this.localization('Network Error') + ":" + this.localization("When Downloading Game State"));
+                    this.startGameError(this.localization("Error downloading game state"));
                     return;
                 }
                 this.on("start", () => {
@@ -909,7 +909,7 @@ class EmulatorJS {
     initModule(wasmData, threadData) {
         if (typeof window.EJS_Runtime !== "function") {
             console.warn("EJS_Runtime is not defined!");
-            this.startGameError(this.localization("Failed to start game")+"\n"+this.localization("Runtime not defined"));
+            this.startGameError(this.localization("Error loading EmulatorJS runtime"));
             throw new Error("EJS_Runtime is not defined!");
         }
         window.EJS_Runtime({
