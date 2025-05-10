@@ -30,7 +30,8 @@ class EJS_GameManager {
             setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
             setVSync: this.Module.cwrap('set_vsync', 'null', ['number']),
-            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number'])
+            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number']),
+            getVideoDimensions: this.Module.cwrap('get_video_dimensions', 'number', ['string'])
         }
 
         this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
@@ -429,8 +430,11 @@ class EJS_GameManager {
         return this.functions.getFrameNum();
     }
     setVideoRotation(rotation) {
+        this.functions.setVideoRoation(rotation);
+    }
+    getVideoDimensions(type) {
         try {
-            this.functions.setVideoRoation(rotation);
+            return this.functions.getVideoDimensions(type);
         } catch(e) {
             console.warn(e);
         }

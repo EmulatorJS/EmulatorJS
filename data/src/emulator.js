@@ -1393,9 +1393,34 @@ class EmulatorJS {
             if (screenshotUrl) URL.revokeObjectURL(screenshotUrl);
             const date = new Date();
             const fileName = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear();
-            const imageFormat = this.preGetSetting("screenshotFormat");
-            const imageQuality = parseInt(this.preGetSetting("screenshotQuality"));
-            if (this.preGetSetting("screenshotSource") === "retroarch") {
+            const imageFormat = this.preGetSetting("screenshotFormat") || "png";
+            const imageQuality = parseInt(this.preGetSetting("screenshotQuality") || 1);
+            const screenshotSource = this.preGetSetting("screenshotSource") || "canvas";
+            const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
+            const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
+            const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
+            const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
+            const videoTurned = (videoRotation === 1 || videoRotation === 3);
+            let width = this.canvas.width;
+            let height = this.canvas.height;
+            let scaleHeight = imageQuality;
+            let scaleWidth = imageQuality;
+            let scale = 1;
+           
+            if (screenshotSource === "retroarch") {
+                 if (width >= height) {
+                    width = height * aspectRatio;
+                } else if (width < height) {
+                    height = width / aspectRatio;
+                }
+                if (imageQuality === 0) {
+                    scaleHeight = 1;
+                    scaleWidth = 1;
+                    height = gameHeight;
+                    width = gameWidth;
+                } else if (imageQuality > 1) {
+                    scale = imageQuality;
+                }
                 this.gameManager.screenshot().then(screenshot => {
                     const blob = new Blob([screenshot], { type: 'image/png' });
                     const img = new Image();
@@ -1403,12 +1428,12 @@ class EmulatorJS {
                     img.src = screenshotUrl;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        canvas.width = img.width * imageQuality;
-                        canvas.height = img.height * imageQuality;
+                        canvas.width = width * scale;
+                        canvas.height = height * scale;
                         const ctx = canvas.getContext('2d', { alpha: false });
                         ctx.imageSmoothingEnabled = false;
-                        ctx.scale(imageQuality, imageQuality);
-                        ctx.drawImage(img, 0, 0, img.width, img.height);
+                        ctx.scale(scaleWidth, scaleHeight);
+                        ctx.drawImage(img, 0, 0, width, height);
                         canvas.toBlob((blob) => {
                             screenshotUrl = URL.createObjectURL(blob);
                             const a = this.createElement("a");
@@ -1419,16 +1444,41 @@ class EmulatorJS {
                         }, 'image/' + imageFormat, 1);
                     }
                 });
-            } else if (this.preGetSetting("screenshotSource") === "canvas") {
+            } else if (screenshotSource === "canvas") {
+                if (width >= height && !videoTurned) {
+                    width = height * aspectRatio;
+                } else if (width < height && !videoTurned) {
+                    height = width / aspectRatio;
+                } else if (width >= height && videoTurned) {
+                    width = height * (1/aspectRatio);
+                } else if (width < height && videoTurned) {
+                    width = height / (1/aspectRatio);
+                }
+                if (imageQuality === 0) {
+                    scaleHeight = 1;
+                    scaleWidth = 1;
+                } else if (imageQuality > 1) {
+                    scale = imageQuality;
+                }
                 const captureCanvas = document.createElement('canvas');
-                captureCanvas.width = this.canvas.width * imageQuality;
-                captureCanvas.height = this.canvas.height * imageQuality;
+                captureCanvas.width = width * scale;
+                captureCanvas.height = height * scale;
                 captureCanvas.style.display = "none";
                 const captureCtx = captureCanvas.getContext('2d', { alpha: false });
                 captureCtx.imageSmoothingEnabled = false;
-                captureCtx.scale(imageQuality, imageQuality);
+                captureCtx.scale(scale, scale);
+                const imageAspect = this.canvas.width / this.canvas.height;
+                const canvasAspect = width / height;
+                let offsetX = 0;
+                let offsetY = 0;
+
+                if (imageAspect > canvasAspect) {
+                    offsetX = (this.canvas.width - width) / -2;
+                } else if (imageAspect < canvasAspect) {
+                    offsetY = (this.canvas.height - height) / -2;
+                }
                 const drawNextFrame = () => {
-                    captureCtx.drawImage(this.canvas, 0, 0, this.canvas.width, this.canvas.height);
+                    captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
                     captureCanvas.toBlob((blob) => {
                         screenshotUrl = URL.createObjectURL(blob);
                         const a = this.createElement("a");
@@ -4715,7 +4765,7 @@ class EmulatorJS {
         addToMenu(this.localization('Screenshot Source'), 'screenshotSource', {
             'canvas': "canvas",
             'retroarch': "retroarch"
-        }, 'retroarch', screenCaptureOptions, true);
+        }, 'canvas', screenCaptureOptions, true);
 
         let screenshotFormats = {
             'png': "png",
@@ -4729,12 +4779,11 @@ class EmulatorJS {
         addToMenu(this.localization('Screenshot Format'), 'screenshotFormat', screenshotFormats, 'png', screenCaptureOptions, true);
 
         addToMenu(this.localization('Screenshot Quality'), 'screenshotQuality', {
+            '0': "native",
             '1': "1x",
             '2': "2x",
-            '4': "4x",
-            '8': "8x",
-            '16': "16x",
-        }, '2', screenCaptureOptions, true);
+            '4': "4x"
+        }, '1', screenCaptureOptions, true);
 
         const speedOptions = createSettingParent(true, "Speed Options", home);
 
