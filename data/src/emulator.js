@@ -1393,104 +1393,14 @@ class EmulatorJS {
             if (screenshotUrl) URL.revokeObjectURL(screenshotUrl);
             const date = new Date();
             const fileName = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear();
-            const imageFormat = this.preGetSetting("screenshotFormat") || "png";
-            const imageQuality = parseInt(this.preGetSetting("screenshotQuality") || 1);
-            const screenshotSource = this.preGetSetting("screenshotSource") || "canvas";
-            const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
-            const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
-            const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
-            const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
-            const videoTurned = (videoRotation === 1 || videoRotation === 3);
-            let width = this.canvas.width;
-            let height = this.canvas.height;
-            let scaleHeight = imageQuality;
-            let scaleWidth = imageQuality;
-            let scale = 1;
-           
-            if (screenshotSource === "retroarch") {
-                 if (width >= height) {
-                    width = height * aspectRatio;
-                } else if (width < height) {
-                    height = width / aspectRatio;
-                }
-                if (imageQuality === 0) {
-                    scaleHeight = 1;
-                    scaleWidth = 1;
-                    height = gameHeight;
-                    width = gameWidth;
-                } else if (imageQuality > 1) {
-                    scale = imageQuality;
-                }
-                this.gameManager.screenshot().then(screenshot => {
-                    const blob = new Blob([screenshot], { type: 'image/png' });
-                    const img = new Image();
-                    screenshotUrl = URL.createObjectURL(blob);
-                    img.src = screenshotUrl;
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width * scale;
-                        canvas.height = height * scale;
-                        const ctx = canvas.getContext('2d', { alpha: false });
-                        ctx.imageSmoothingEnabled = false;
-                        ctx.scale(scaleWidth, scaleHeight);
-                        ctx.drawImage(img, 0, 0, width, height);
-                        canvas.toBlob((blob) => {
-                            screenshotUrl = URL.createObjectURL(blob);
-                            const a = this.createElement("a");
-                            a.href = screenshotUrl;
-                            a.download = fileName + "." + imageFormat;
-                            a.click();
-                            hideMenu();
-                        }, 'image/' + imageFormat, 1);
-                    }
-                });
-            } else if (screenshotSource === "canvas") {
-                if (width >= height && !videoTurned) {
-                    width = height * aspectRatio;
-                } else if (width < height && !videoTurned) {
-                    height = width / aspectRatio;
-                } else if (width >= height && videoTurned) {
-                    width = height * (1/aspectRatio);
-                } else if (width < height && videoTurned) {
-                    width = height / (1/aspectRatio);
-                }
-                if (imageQuality === 0) {
-                    scaleHeight = 1;
-                    scaleWidth = 1;
-                } else if (imageQuality > 1) {
-                    scale = imageQuality;
-                }
-                const captureCanvas = document.createElement('canvas');
-                captureCanvas.width = width * scale;
-                captureCanvas.height = height * scale;
-                captureCanvas.style.display = "none";
-                const captureCtx = captureCanvas.getContext('2d', { alpha: false });
-                captureCtx.imageSmoothingEnabled = false;
-                captureCtx.scale(scale, scale);
-                const imageAspect = this.canvas.width / this.canvas.height;
-                const canvasAspect = width / height;
-                let offsetX = 0;
-                let offsetY = 0;
-
-                if (imageAspect > canvasAspect) {
-                    offsetX = (this.canvas.width - width) / -2;
-                } else if (imageAspect < canvasAspect) {
-                    offsetY = (this.canvas.height - height) / -2;
-                }
-                const drawNextFrame = () => {
-                    captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
-                    captureCanvas.toBlob((blob) => {
-                        screenshotUrl = URL.createObjectURL(blob);
-                        const a = this.createElement("a");
-                        a.href = screenshotUrl;
-                        a.download = fileName + "." + imageFormat;
-                        a.click();
-                        captureCanvas.remove();
-                    }, 'image/' + imageFormat, 1);
-                };
-                requestAnimationFrame(drawNextFrame);
+            this.screenShot((blob, format) => {
+                screenshotUrl = URL.createObjectURL(blob);
+                const a = this.createElement("a");
+                a.href = screenshotUrl;
+                a.download = fileName + "." + format;
+                a.click();
                 hideMenu();
-            }            
+            });
         });
 
         let screenMediaRecorder = null;
@@ -5741,6 +5651,101 @@ class EmulatorJS {
         }
 
         this.gameManager.toggleShader(1);
+    }
+
+    screenShot(callback, type, format, quality) {
+        const imageFormat = format || this.preGetSetting("screenshotFormat") || "png";
+        const imageQuality = quality || parseInt(this.preGetSetting("screenshotQuality") || 1);
+        const screenshotSource = type || this.preGetSetting("screenshotSource") || "canvas";
+        const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
+        const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
+        const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
+        const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
+        const videoTurned = (videoRotation === 1 || videoRotation === 3);
+        let width = this.canvas.width;
+        let height = this.canvas.height;
+        let scaleHeight = imageQuality;
+        let scaleWidth = imageQuality;
+        let scale = 1;
+        
+        if (screenshotSource === "retroarch") {
+                if (width >= height) {
+                width = height * aspectRatio;
+            } else if (width < height) {
+                height = width / aspectRatio;
+            }
+            if (imageQuality === 0) {
+                scaleHeight = 1;
+                scaleWidth = 1;
+                height = gameHeight;
+                width = gameWidth;
+            } else if (imageQuality > 1) {
+                scale = imageQuality;
+            }
+            this.gameManager.screenshot().then(screenshot => {
+                const blob = new Blob([screenshot], { type: 'image/png' });
+                const img = new Image();
+                const screenshotUrl = URL.createObjectURL(blob);
+                img.src = screenshotUrl;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width * scale;
+                    canvas.height = height * scale;
+                    const ctx = canvas.getContext('2d', { alpha: false });
+                    ctx.imageSmoothingEnabled = false;
+                    ctx.scale(scaleWidth, scaleHeight);
+                    ctx.drawImage(img, 0, 0, width, height);
+                    canvas.toBlob((blob) => {
+                        callback(blob, imageFormat);
+                        img.remove();
+                        URL.revokeObjectURL(screenshotUrl);
+                        canvas.remove();
+                    }, 'image/' + imageFormat, 1);
+                }
+            });
+        } else if (screenshotSource === "canvas") {
+            if (width >= height && !videoTurned) {
+                width = height * aspectRatio;
+            } else if (width < height && !videoTurned) {
+                height = width / aspectRatio;
+            } else if (width >= height && videoTurned) {
+                width = height * (1/aspectRatio);
+            } else if (width < height && videoTurned) {
+                width = height / (1/aspectRatio);
+            }
+            if (imageQuality === 0) {
+                scale = gameHeight / height;
+                scaleHeight = scale;
+                scaleWidth = scale;
+            } else if (imageQuality > 1) {
+                scale = imageQuality;
+            }
+            const captureCanvas = document.createElement('canvas');
+            captureCanvas.width = width * scale;
+            captureCanvas.height = height * scale;
+            captureCanvas.style.display = "none";
+            const captureCtx = captureCanvas.getContext('2d', { alpha: false });
+            captureCtx.imageSmoothingEnabled = false;
+            captureCtx.scale(scale, scale);
+            const imageAspect = this.canvas.width / this.canvas.height;
+            const canvasAspect = width / height;
+            let offsetX = 0;
+            let offsetY = 0;
+
+            if (imageAspect > canvasAspect) {
+                offsetX = (this.canvas.width - width) / -2;
+            } else if (imageAspect < canvasAspect) {
+                offsetY = (this.canvas.height - height) / -2;
+            }
+            const drawNextFrame = () => {
+                captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
+                captureCanvas.toBlob((blob) => {
+                    callback(blob, imageFormat);
+                    captureCanvas.remove();
+                }, 'image/' + imageFormat, 1);
+            };
+            requestAnimationFrame(drawNextFrame);
+        }
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {
