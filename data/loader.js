@@ -114,6 +114,7 @@
     config.startBtnName = window.EJS_startButtonName;
     config.softLoad = window.EJS_softLoad;
     config.screenRecording = window.EJS_screenRecording;
+    config.screenshot = window.EJS_screenshot;
     config.externalFiles = window.EJS_externalFiles;
     config.dontExtractBIOS = window.EJS_dontExtractBIOS;
     config.disableDatabases = window.EJS_disableDatabases;

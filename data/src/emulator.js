@@ -240,6 +240,16 @@ class EmulatorJS {
         this.canvas.classList.add('ejs_canvas');
         this.videoRotation = ([0, 1, 2, 3].includes(this.config.videoRotation)) ? this.config.videoRotation : this.preGetSetting("videoRotation") || 0;
         this.videoRotationChanged = false;
+        this.config.screenshot = this.config.screenshot || {};
+        this.config.screenshot.source = (this.config.screenshot.source === "canvas" || this.config.screenshot.source === "retroarch") ? this.config.screenshot.source : "canvas";
+        this.config.screenshot.format = (typeof this.config.screenshot.format === "string") ? this.config.screenshot.format : "png";
+        this.config.screenshot.quality = (typeof this.config.screenshot.quality === "number") ? this.config.screenshot.quality : 1;
+        this.config.screenRecording = this.config.screenRecording || {};
+        this.config.screenRecording.format = (typeof this.config.screenRecording.format === "string") ? this.config.screenRecording.format : "detect";
+        this.config.screenRecording.quality = (typeof this.config.screenRecording.quality === "number") ? this.config.screenRecording.quality : 1;
+        this.config.screenRecording.fps = (typeof this.config.screenRecording.fps === "number") ? this.config.screenRecording.fps : 30;
+        this.config.screenRecording.videoBitrate = (typeof this.config.screenRecording.videoBitrate === "number") ? this.config.screenRecording.videoBitrate : 2.5 * 1024 * 1024;
+        this.config.screenRecording.audioBitrate = (typeof this.config.screenRecording.audioBitrate === "number") ? this.config.screenRecording.audioBitrate : 192 * 1024;
         this.bindListeners();
         this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
         this.fullscreen = false;
@@ -1393,7 +1403,7 @@ class EmulatorJS {
             if (screenshotUrl) URL.revokeObjectURL(screenshotUrl);
             const date = new Date();
             const fileName = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear();
-            this.screenShot((blob, format) => {
+            this.screenshot((blob, format) => {
                 screenshotUrl = URL.createObjectURL(blob);
                 const a = this.createElement("a");
                 a.href = screenshotUrl;
@@ -1404,7 +1414,7 @@ class EmulatorJS {
         });
 
         let screenMediaRecorder = null;
-        const startScreenRecording = addButton("Start screen recording", false, () => {
+        const startScreenRecording = addButton("Start Screen Recording", false, () => {
             if (screenMediaRecorder !== null) {
                 screenMediaRecorder.stop();
             }
@@ -1413,7 +1423,7 @@ class EmulatorJS {
             stopScreenRecording.removeAttribute("hidden");
             hideMenu();
         });
-        const stopScreenRecording = addButton("Stop screen recording", true, () => {
+        const stopScreenRecording = addButton("Stop Screen Recording", true, () => {
             if (screenMediaRecorder !== null) {
                 screenMediaRecorder.stop();
                 screenMediaRecorder = null;
@@ -4675,25 +4685,93 @@ class EmulatorJS {
         addToMenu(this.localization('Screenshot Source'), 'screenshotSource', {
             'canvas': "canvas",
             'retroarch': "retroarch"
-        }, 'canvas', screenCaptureOptions, true);
+        }, this.config.screenshot.source, screenCaptureOptions, true);
 
         let screenshotFormats = {
             'png': "png",
             'jpeg': "jpeg"
         }
-
         if (!this.isSafari) {
             screenshotFormats['webp'] = "webp";
         }
+        if (!(this.config.screenshot.format in screenshotFormats)) {
+            this.config.screenshot.format = "png";
+        }
+        addToMenu(this.localization('Screenshot Format'), 'screenshotFormat', screenshotFormats, this.config.screenshot.format, screenCaptureOptions, true);
 
-        addToMenu(this.localization('Screenshot Format'), 'screenshotFormat', screenshotFormats, 'png', screenCaptureOptions, true);
-
-        addToMenu(this.localization('Screenshot Quality'), 'screenshotQuality', {
+        const screenshotQuality = this.config.screenshot.quality.toString();
+        let screenshotQualitys = {
             '0': "native",
             '1': "1x",
             '2': "2x",
+            '3': "3x"
+        }
+        if (!(screenshotQuality in screenshotQualitys)) {
+            screenshotQualitys[screenshotQuality] = screenshotQuality + "x";
+        }
+        addToMenu(this.localization('Screenshot Quality'), 'screenshotQuality', screenshotQualitys, screenshotQuality, screenCaptureOptions, true);
+
+        const screenRecordFPS = this.config.screenRecording.fps.toString();
+        let screenRecordFPSs = {
+            '30': "30",
+            '60': "60"
+        }
+        if (!(screenRecordFPS in screenRecordFPSs)) {
+            screenRecordFPSs[screenRecordFPS] = screenRecordFPS;
+        }
+        addToMenu(this.localization('Screen Recording FPS'), 'screenRecordFPS', screenRecordFPSs, screenRecordFPS, screenCaptureOptions, true);
+
+        let screenRecordFormats = {
+            'mp4': "mp4",
+            'webm': "webm"
+        }
+        for (const format in screenRecordFormats) {
+            if (!MediaRecorder.isTypeSupported("video/" + format)) {
+                delete screenRecordFormats[format];
+            }
+        }
+        if (!(this.config.screenRecording.format in screenRecordFormats)) {
+            this.config.screenRecording.format = Object.keys(screenRecordFormats)[0];
+        }
+        addToMenu(this.localization('Screen Recording Format'), 'screenRecordFormat', screenRecordFormats, this.config.screenRecording.format, screenCaptureOptions, true);
+
+        const screenRecordQuality = this.config.screenRecording.quality.toString();
+        let screenRecordQualitys = {
+            '1': "1x",
+            '2': "2x",
+            '3': "3x",
             '4': "4x"
-        }, '1', screenCaptureOptions, true);
+        }
+        if (!(screenRecordQuality in screenRecordQualitys)) {
+            screenRecordQualitys[screenRecordQuality] = screenRecordQuality + "x";
+        }
+        addToMenu(this.localization('Screen Recording Quality'), 'screenRecordQuality', screenRecordQualitys, screenRecordQuality, screenCaptureOptions, true);
+
+        const screenRecordVideoBitrate = this.config.screenRecording.videoBitrate.toString();
+        let screenRecordVideoBitrates = {
+            '1048576': "1 Mbit/sec",
+            '2097152': "2 Mbit/sec",
+            '2621440': "2.5 Mbit/sec",
+            '3145728': "3 Mbit/sec",
+            '4194304': "4 Mbit/sec"
+        }
+        if (!(screenRecordVideoBitrate in screenRecordVideoBitrates)) {
+            screenRecordVideoBitrates[screenRecordVideoBitrate] = screenRecordVideoBitrate + " Bits/sec";
+        }
+        addToMenu(this.localization('Screen Recording Video Bitrate'), 'screenRecordVideoBitrate', screenRecordVideoBitrates, screenRecordVideoBitrate, screenCaptureOptions, true);
+
+        const screenRecordAudioBitrate = this.config.screenRecording.audioBitrate.toString();
+        let screenRecordAudioBitrates = {
+            '65536': "64 Kbit/sec",
+            '131072': "128 Kbit/sec",
+            '196608': "192 Kbit/sec",
+            '262144': "256 Kbit/sec",
+            '327680': "320 Kbit/sec"
+        }
+        if (!(screenRecordAudioBitrate in screenRecordAudioBitrates)) {
+            screenRecordAudioBitrates[screenRecordAudioBitrate] = screenRecordAudioBitrate + " Bits/sec";
+        }
+        addToMenu(this.localization('Screen Recording Audio Bitrate'), 'screenRecordAudioBitrate', screenRecordAudioBitrates, screenRecordAudioBitrate, screenCaptureOptions, true);
 
         const speedOptions = createSettingParent(true, "Speed Options", home);
 
@@ -5653,10 +5731,10 @@ class EmulatorJS {
         this.gameManager.toggleShader(1);
     }
 
-    screenShot(callback, type, format, quality) {
-        const imageFormat = format || this.preGetSetting("screenshotFormat") || "png";
-        const imageQuality = quality || parseInt(this.preGetSetting("screenshotQuality") || 1);
-        const screenshotSource = type || this.preGetSetting("screenshotSource") || "canvas";
+    screenshot(callback, type, format, quality) {
+        const imageFormat = format || this.preGetSetting("screenshotFormat") || this.config.screenshot.format;
+        const imageQuality = quality || parseInt(this.preGetSetting("screenshotQuality") || this.config.screenshot.quality);
+        const screenshotSource = type || this.preGetSetting("screenshotSource") || this.config.screenshot.source;
         const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
         const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
@@ -5669,7 +5747,7 @@ class EmulatorJS {
         let scale = 1;
         
         if (screenshotSource === "retroarch") {
-                if (width >= height) {
+            if (width >= height) {
                 width = height * aspectRatio;
             } else if (width < height) {
                 height = width / aspectRatio;
@@ -5791,34 +5869,57 @@ class EmulatorJS {
     }
 
     screenRecord() {
-        const captureScreenWidth = (this.config.screenRecording && (typeof this.config.screenRecording.width == "number")) ? this.config.screenRecording.width : 800;
-        const captureScreenHeight = (this.config.screenRecording && (typeof this.config.screenRecording.height == "number")) ? this.config.screenRecording.height : 600;
-        const captureFps = (this.config.screenRecording && (typeof this.config.screenRecording.fps == "number")) ? this.config.screenRecording.fps : 30;
-        const captureVideoBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.videoBitrate == "number")) ? this.config.screenRecording.videoBitrate : 2 * 1024 * 1024;
-        const captureAudioBitrate = (this.config.screenRecording && (typeof this.config.screenRecording.audioBitrate == "number")) ? this.config.screenRecording.audioBitrate : 256 * 1024;
+        const captureFps = this.preGetSetting("screenRecordingFPS") || this.config.screenRecording.fps;
+        const captureFormat = this.preGetSetting("screenRecordFormat") || this.config.screenRecording.format;
+        const captureQuality = this.preGetSetting("screenRecordQuality") || this.config.screenRecording.quality;
+        const captureVideoBitrate = this.preGetSetting("screenRecordVideoBitrate") || this.config.screenRecording.videoBitrate;
+        const captureAudioBitrate = this.preGetSetting("screenRecordAudioBitrate") || this.config.screenRecording.audioBitrate;
+        const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
+        const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
+        const videoTurned = (videoRotation === 1 || videoRotation === 3);
+        let width = 800;
+        let height = 600;
+        let frameAspect = this.canvas.width / this.canvas.height;
+        let canvasAspect = width / height;
+        let offsetX = 0;
+        let offsetY = 0;
 
         const captureCanvas = document.createElement('canvas');
-        captureCanvas.width = captureScreenWidth;
-        captureCanvas.height = captureScreenHeight;
-        captureCanvas.style.position = 'absolute';
-        captureCanvas.style.top = '-999px';
-        captureCanvas.style.bottom = '-999px';
-        document.getElementsByTagName('body')[0].append(captureCanvas);
-
         const captureCtx = captureCanvas.getContext('2d', { alpha: false });
         captureCtx.fillStyle = '#000';
+        captureCtx.imageSmoothingEnabled = false;
+        const updateSize = () => {
+            width = this.canvas.width;
+            height = this.canvas.height;
+            frameAspect = width / height
+            if (width >= height && !videoTurned) {
+                width = height * aspectRatio;
+            } else if (width < height && !videoTurned) {
+                height = width / aspectRatio;
+            } else if (width >= height && videoTurned) {
+                width = height * (1/aspectRatio);
+            } else if (width < height && videoTurned) {
+                width = height / (1/aspectRatio);
+            }
+            canvasAspect = width / height;
+            captureCanvas.width = width * captureQuality;
+            captureCanvas.height = height * captureQuality;
+            captureCtx.scale(captureQuality, captureQuality);
+            if (frameAspect > canvasAspect) {
+                offsetX = (this.canvas.width - width) / -2;
+            } else if (frameAspect < canvasAspect) {
+                offsetY = (this.canvas.height - height) / -2;
+            }
+        }
+        updateSize();
+        this.addEventListener(this.canvas, "resize", () => {
+            updateSize();
+        });
 
         let animation = true;
 
         const drawNextFrame = () => {
-            const scaleX = captureScreenWidth / this.canvas.width;
-            const scaleY = captureScreenHeight / this.canvas.height;
-            const scale = Math.max(scaleY, scaleX);
-            const width = this.canvas.width * scale;
-            const height = this.canvas.height * scale;
-            const startX = (captureScreenWidth - width) / 2;
-            const startY = (captureScreenHeight - height) / 2;
-            captureCtx.drawImage(this.canvas, Math.round(startX), Math.round(startY), Math.round(width), Math.round(height));
+            captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
             if (animation) {
                 requestAnimationFrame(drawNextFrame);
             }
@@ -5830,6 +5931,7 @@ class EmulatorJS {
         const recorder = new MediaRecorder(tracks, {
             videoBitsPerSecond: captureVideoBitrate,
             audioBitsPerSecond: captureAudioBitrate,
+            mimeType: 'video/' + captureFormat
         });
         recorder.addEventListener('dataavailable', e => {
             chunks.push(e.data);
@@ -5840,7 +5942,7 @@ class EmulatorJS {
             const date = new Date();
             const a = document.createElement('a');
             a.href = url;
-            a.download = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() + ".webm";
+            a.download = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() + "." + captureFormat;
             a.click();
 
             animation = false;
