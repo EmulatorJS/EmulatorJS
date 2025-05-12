@@ -3409,15 +3409,15 @@ class EmulatorJS {
                 { "type": "button", "text": "B", "id": "b", "location": "right", "left": -10, "top": 95, "input_value": 1, "bold": true },
                 { "type": "button", "text": "A", "id": "a", "location": "right", "left": 40, "top": 150, "input_value": 0, "bold": true },
                 { "type": "zone", "id": "stick", "location": "left", "left": "50%", "top": "100%", "joystickInput": true, "inputValues": [16, 17, 18, 19] },
-                { "type": "zone", "id": "dpad", "location": "left", "left": "50%", "top": "0%", "joystickInput": true, "inputValues": [20, 21, 22, 23] },
+                { "type": "zone", "id": "dpad", "location": "left", "left": "50%", "top": "0%", "joystickInput": false, "inputValues": [4, 5, 6, 7] },
                 { "type": "button", "text": "Start", "id": "start", "location": "center", "left": 30, "top": -10, "fontSize": 15, "block": true, "input_value": 3 },
                 { "type": "button", "text": "L", "id": "l", "block": true, "location": "top", "left": 10, "top": -40, "bold": true, "input_value": 10 },
                 { "type": "button", "text": "R", "id": "r", "block": true, "location": "top", "right": 10, "top": -40, "bold": true, "input_value": 11 },
                 { "type": "button", "text": "Z", "id": "z", "block": true, "location": "top", "left": 10, "bold": true, "input_value": 12 },
-                { "fontSize": 20, "type": "button", "text": "CU", "id": "cu", "location": "right", "left": 25, "top": -65, "input_value": 23 },
-                { "fontSize": 20, "type": "button", "text": "CD", "id": "cd", "location": "right", "left": 25, "top": 15, "input_value": 22 },
-                { "fontSize": 20, "type": "button", "text": "CL", "id": "cl", "location": "right", "left": -15, "top": -25, "input_value": 21 },
-                { "fontSize": 20, "type": "button", "text": "CR", "id": "cr", "location": "right", "left": 65, "top": -25, "input_value": 20 }
+                { "fontSize": 20, "type": "button", "text": "CU", "id": "cu", "joystickInput": true, "location": "right", "left": 25, "top": -65, "input_value": 23 },
+                { "fontSize": 20, "type": "button", "text": "CD", "id": "cd", "joystickInput": true, "location": "right", "left": 25, "top": 15, "input_value": 22 },
+                { "fontSize": 20, "type": "button", "text": "CL", "id": "cl", "joystickInput": true, "location": "right", "left": -15, "top": -25, "input_value": 21 },
+                { "fontSize": 20, "type": "button", "text": "CR", "id": "cr", "joystickInput": true, "location": "right", "left": 65, "top": -25, "input_value": 20 }
             ];
             info.push(...speedControlButtons);
         } else if ("nds" === this.getControlScheme()) {
@@ -3683,6 +3683,7 @@ class EmulatorJS {
                 }
                 elems[info[i].location].appendChild(button);
                 const value = info[i].input_new_cores || info[i].input_value;
+                let downValue = info[i].joystickInput === true ? 0x7fff : 1;
                 this.addEventListener(button, "touchstart touchend touchcancel", (e) => {
                     e.preventDefault();
                     if (e.type === 'touchend' || e.type === 'touchcancel') {
@@ -3692,7 +3693,7 @@ class EmulatorJS {
                         })
                     } else {
                         e.target.classList.add("ejs_virtualGamepad_button_down");
-                        this.gameManager.simulateInput(0, value, 1);
+                        this.gameManager.simulateInput(0, value, downValue);
                     }
                 })
             }
