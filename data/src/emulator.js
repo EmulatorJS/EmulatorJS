@@ -5756,33 +5756,30 @@ class EmulatorJS {
             } else if (width < height) {
                 height = width / aspectRatio;
             }
-            if (imageQuality === 0) {
-                scaleHeight = 1;
-                scaleWidth = 1;
-                height = gameHeight;
-                width = gameWidth;
-            } else if (imageQuality > 1) {
-                scale = imageQuality;
-            }
             this.gameManager.screenshot().then(screenshot => {
                 const blob = new Blob([screenshot], { type: 'image/png' });
-                const img = new Image();
-                const screenshotUrl = URL.createObjectURL(blob);
-                img.src = screenshotUrl;
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = width * scale;
-                    canvas.height = height * scale;
-                    const ctx = canvas.getContext('2d', { alpha: false });
-                    ctx.imageSmoothingEnabled = false;
-                    ctx.scale(scaleWidth, scaleHeight);
-                    ctx.drawImage(img, 0, 0, width, height);
-                    canvas.toBlob((blob) => {
-                        callback(blob, imageFormat);
-                        img.remove();
-                        URL.revokeObjectURL(screenshotUrl);
-                        canvas.remove();
-                    }, 'image/' + imageFormat, 1);
+                if (imageQuality === 0) {
+                    callback(blob, "png");
+                } else if (imageQuality > 1) {
+                    scale = imageQuality;
+                    const img = new Image();
+                    const screenshotUrl = URL.createObjectURL(blob);
+                    img.src = screenshotUrl;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width * scale;
+                        canvas.height = height * scale;
+                        const ctx = canvas.getContext('2d', { alpha: false });
+                        ctx.imageSmoothingEnabled = false;
+                        ctx.scale(scaleWidth, scaleHeight);
+                        ctx.drawImage(img, 0, 0, width, height);
+                        canvas.toBlob((blob) => {
+                            callback(blob, imageFormat);
+                            img.remove();
+                            URL.revokeObjectURL(screenshotUrl);
+                            canvas.remove();
+                        }, 'image/' + imageFormat, 1);
+                    }
                 }
             });
         } else if (screenshotSource === "canvas") {
