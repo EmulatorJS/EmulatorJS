@@ -1804,8 +1804,10 @@ class EmulatorJS {
         let stateUrl;
         const saveState = addButton(this.config.buttonOpts.saveState, async () => {
             const state = this.gameManager.getState();
+            const { screenshot, format } = await this.takeScreenshot(this.config.screenshot.source, this.config.screenshot.format, this.config.screenshot.quality);
             const called = this.callEvent("saveState", {
-                screenshot: await this.gameManager.screenshot(),
+                screenshot: screenshot,
+                format: format,
                 state: state
             });
             if (called > 0) return;
@@ -1853,8 +1855,10 @@ class EmulatorJS {
 
         const saveSavFiles = addButton(this.config.buttonOpts.saveSavFiles, async () => {
             const file = await this.gameManager.getSaveFile();
+            const { screenshot, format } = await this.takeScreenshot(this.config.screenshot.source, this.config.screenshot.format, this.config.screenshot.quality);
             const called = this.callEvent("saveSave", {
-                screenshot: await this.gameManager.screenshot(),
+                screenshot: screenshot,
+                format: format,
                 save: file
             });
             if (called > 0) return;
@@ -5731,10 +5735,10 @@ class EmulatorJS {
         this.gameManager.toggleShader(1);
     }
 
-    screenshot(callback, type, format, quality) {
+    screenshot(callback, source, format, quality) {
         const imageFormat = format || this.preGetSetting("screenshotFormat") || this.config.screenshot.format;
         const imageQuality = quality || parseInt(this.preGetSetting("screenshotQuality") || this.config.screenshot.quality);
-        const screenshotSource = type || this.preGetSetting("screenshotSource") || this.config.screenshot.source;
+        const screenshotSource = source || this.preGetSetting("screenshotSource") || this.config.screenshot.source;
         const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
         const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
@@ -5824,6 +5828,18 @@ class EmulatorJS {
             };
             requestAnimationFrame(drawNextFrame);
         }
+    }
+
+    async takeScreenshot(source, format, quality) {
+        return new Promise((resolve, reject) => {
+            this.screenshot((blob, format) => {
+                if (blob) {
+                    resolve({ blob, format });
+                } else {
+                    reject(new Error("Failed to take screenshot"));
+                }
+            }, source, format, quality);
+        });
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {
