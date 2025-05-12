@@ -1121,7 +1121,8 @@ class EmulatorJS {
             this.updateGamepadLabels();
         })
         this.gamepad.on('disconnected', (e) => {
-            const gamepadSelection = this.gamepad.gamepads[e.gamepadIndex].id + "_" + this.gamepad.gamepads[e.gamepadIndex].index;
+            const gamepadIndex = this.gamepad.gamepads.indexOf(this.gamepad.gamepads.find(f => f.index == e.gamepadIndex));
+            const gamepadSelection = this.gamepad.gamepads[gamepadIndex].id + "_" + this.gamepad.gamepads[gamepadIndex].index;
             for (let i = 0; i < this.gamepadSelection.length; i++) {
                 if (this.gamepadSelection[i] === gamepadSelection) {
                     this.gamepadSelection[i] = "";
