@@ -80,7 +80,6 @@ class EmulatorJS {
             element.addEventListener(listeners[i], callback);
             const data = { cb: callback, elem: element, listener: listeners[i] };
             rv.push(data);
-            this.listeners.push(data);
         }
         return rv;
     }
@@ -221,7 +220,6 @@ class EmulatorJS {
         if (this.config.defaultControllers) this.defaultControllers = this.config.defaultControllers;
         this.muted = false;
         this.paused = true;
-        this.listeners = [];
         this.missingLang = [];
         this.setElements(element);
         this.setColor(this.config.color || "");
