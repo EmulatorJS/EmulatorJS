@@ -34,7 +34,7 @@ class EJS_GameManager {
             getVideoDimensions: this.Module.cwrap("get_video_dimensions", "number", ["string"])
         }
 
-        this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        this.writeFile("/home/web_user/.config/retroarch/retroarch.cfg", this.getRetroArchCfg());
 
         this.writeConfigFile();
         this.initShaders();
