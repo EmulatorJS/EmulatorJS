@@ -87,7 +87,7 @@ class EJS_GameManager {
                             }
                             let path = key;
                             if (key.trim().endsWith("/")) {
-                                const invalidCharacters = /[#<$+%>!`&*"|{}/\\?"=@:^\r\n]/ig;
+                                const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
                                 let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
                                 if (!name) return done();
                                 const files = await this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Assets"));

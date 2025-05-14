@@ -1320,7 +1320,7 @@ class EmulatorJS {
                     // If the value is an object, merge it with the default button properties
     
                     if (this.defaultButtonOptions[key]) {
-                        // copy properties from the button definition if they aren"t null
+                        // copy properties from the button definition if they aren't null
                         for (const prop in buttonUserOpts[key]) {
                             if (buttonUserOpts[key][prop] !== null) {
                                 mergedButtonOptions[key][prop] = buttonUserOpts[key][prop];
@@ -1386,7 +1386,7 @@ class EmulatorJS {
         this.addEventListener(this.game, "mousedown", hideMenu);
         const parent = this.createElement("ul");
         const addButton = (title, hidden, functi0n) => {
-            //<li><a href="#" onclick="return false">"+title+"</a></li>
+            //<li><a href="#" onclick="return false">'+title+'</a></li>
             const li = this.createElement("li");
             if (hidden) li.hidden = true;
             const a = this.createElement("a");
