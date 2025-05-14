@@ -113,8 +113,7 @@
     config.disableCue = window.EJS_disableCue;
     config.startBtnName = window.EJS_startButtonName;
     config.softLoad = window.EJS_softLoad;
-    config.screenRecording = window.EJS_screenRecording;
-    config.screenshot = window.EJS_screenshot;
+    config.capture = window.EJS_screenCapture;
     config.externalFiles = window.EJS_externalFiles;
     config.dontExtractBIOS = window.EJS_dontExtractBIOS;
     config.disableDatabases = window.EJS_disableDatabases;
