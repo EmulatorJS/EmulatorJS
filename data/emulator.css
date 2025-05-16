@@ -195,6 +195,7 @@
     box-sizing: inherit;
     font-size: 12px;
     color: #bcbcbc;
+    text-align: center;
 }
 
 .ejs_loading_text_glow {
@@ -342,6 +343,7 @@
     z-index: 9999;
     left: 50%;
     bottom: 0;
+    color: #fff;
 }
 
 .ejs_small_screen .ejs_menu_bar_hidden {
