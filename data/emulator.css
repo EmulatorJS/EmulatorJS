@@ -343,6 +343,7 @@
     z-index: 9999;
     left: 50%;
     bottom: 0;
+    color: #fff;
 }
 
 .ejs_small_screen .ejs_menu_bar_hidden {
