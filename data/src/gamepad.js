@@ -100,6 +100,12 @@ class GamepadHandler {
             })
             if (!hasGamepad) {
                 this.gamepads.push(gamepads[index]);
+                this.gamepads.sort((a, b) => {
+                    if (a == null && b == null) return 0;
+                    if (a == null) return 1;
+                    if (b == null) return -1;
+                    return a.index - b.index;
+                });
                 this.dispatchEvent('connected', {gamepadIndex: gamepad.index});
             }
         });
