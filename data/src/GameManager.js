@@ -33,7 +33,7 @@ class EJS_GameManager {
             setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number'])
         }
 
-        this.writeFile("/home/web_user/retroarch/userdata/retroarch.cfg", this.getRetroArchCfg());
+        this.writeFile("/home/web_user/.config/retroarch/retroarch.cfg", this.getRetroArchCfg());
 
         this.writeConfigFile();
         this.initShaders();
