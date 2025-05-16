@@ -10,15 +10,15 @@
         "compression.js"
     ];
 
-    const folderPath = (path) => path.substring(0, path.length - path.split('/').pop().length);
+    const folderPath = (path) => path.substring(0, path.length - path.split("/").pop().length);
     let scriptPath = (typeof window.EJS_pathtodata === "string") ? window.EJS_pathtodata : folderPath((new URL(document.currentScript.src)).pathname);
-    if (!scriptPath.endsWith('/')) scriptPath += '/';
+    if (!scriptPath.endsWith("/")) scriptPath += "/";
     //console.log(scriptPath);
     function loadScript(file) {
         return new Promise(function(resolve) {
-            let script = document.createElement('script');
+            let script = document.createElement("script");
             script.src = function() {
-                if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
+                if ("undefined" != typeof EJS_paths && typeof EJS_paths[file] === "string") {
                     return EJS_paths[file];
                 } else if (file.endsWith("emulator.min.js")) {
                     return scriptPath + file;
@@ -36,10 +36,10 @@
 
     function loadStyle(file) {
         return new Promise(function(resolve) {
-            let css = document.createElement('link');
-            css.rel = 'stylesheet';
+            let css = document.createElement("link");
+            css.rel = "stylesheet";
             css.href = function() {
-                if ('undefined' != typeof EJS_paths && typeof EJS_paths[file] === 'string') {
+                if ("undefined" != typeof EJS_paths && typeof EJS_paths[file] === "string") {
                     return EJS_paths[file];
                 } else {
                     return scriptPath + file;
@@ -64,19 +64,19 @@
                     await loadScript(scripts[i]);
                 }
             } else {
-                await loadStyle('emulator.css');
+                await loadStyle("emulator.css");
             }
         }
     }
 
-    if (('undefined' != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
+    if (("undefined" != typeof EJS_DEBUG_XX && true === EJS_DEBUG_XX)) {
         for (let i = 0; i < scripts.length; i++) {
             await loadScript(scripts[i]);
         }
-        await loadStyle('emulator.css');
+        await loadStyle("emulator.css");
     } else {
-        await loadScript('emulator.min.js');
-        await loadStyle('emulator.min.css');
+        await loadScript("emulator.min.js");
+        await loadStyle("emulator.min.css");
     }
     const config = {};
     config.gameUrl = window.EJS_gameUrl;
@@ -113,7 +113,7 @@
     config.disableCue = window.EJS_disableCue;
     config.startBtnName = window.EJS_startButtonName;
     config.softLoad = window.EJS_softLoad;
-    config.screenRecording = window.EJS_screenRecording;
+    config.capture = window.EJS_screenCapture;
     config.externalFiles = window.EJS_externalFiles;
     config.dontExtractBIOS = window.EJS_dontExtractBIOS;
     config.disableDatabases = window.EJS_disableDatabases;
@@ -133,7 +133,7 @@
         try {
             let path;
             console.log("Loading language", language);
-            if ('undefined' != typeof EJS_paths && typeof EJS_paths[language] === 'string') {
+            if ("undefined" != typeof EJS_paths && typeof EJS_paths[language] === "string") {
                 path = EJS_paths[language];
             } else {
                 path = scriptPath + "localization/" + language + ".json";
