@@ -616,6 +616,11 @@
     cursor: pointer;
 }
 
+.ejs_control_player_bar li:hover:not(.ejs_control_selected) {
+    background-color: #333;
+    border-bottom: 1px solid #333;
+}
+
 .ejs_control_selected {
     border-bottom: 1px solid #fff;
     background-color: #fff;
@@ -1541,8 +1546,10 @@
     font-family: inherit;
     outline: none;
     cursor: pointer;
+    font-size: inherit;
 }
 
-.ejs_gamepad_dropdown:focus {
+.ejs_gamepad_dropdown:focus, .ejs_gamepad_dropdown:active, .ejs_gamepad_dropdown:hover {
     box-shadow: 0 0 0 2px rgba(51, 153, 255, 0.6);
+    background-color: var(--ejs-background-color);
 }
