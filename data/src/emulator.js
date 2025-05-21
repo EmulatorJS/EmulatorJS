@@ -636,7 +636,7 @@ class EmulatorJS {
             return this.config.gameUrl.split("/").pop().split("#")[0].split("?")[0];
         }
         if (typeof this.config.gameName === "string") {
-            const invalidCharacters = /[#<$+%>!`&*"|{}/\\?"=@:^\r\n]/ig;
+            const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
             const name = this.config.gameName.replace(invalidCharacters, "").trim();
             if (name) return name;
         }
