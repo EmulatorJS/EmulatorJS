@@ -1677,14 +1677,12 @@ class EmulatorJS {
             this.elements.menu.classList.add("ejs_menu_bar_hidden");
         }
 
-        this.addEventListener(this.elements.parent, 'mousemove click', (e) => {
-            if (e.pointerType === "touch") return;
-            if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
-            if (this.isPopupOpen()) return;
+        const show = () => {
             clearTimeout(timeout);
             timeout = setTimeout(hide, 3000);
             this.elements.menu.classList.remove("ejs_menu_bar_hidden");
-        })
+        }
+
         this.menu = {
             close: () => {
                 clearTimeout(timeout);
@@ -1705,6 +1703,43 @@ class EmulatorJS {
                 this.elements.menu.classList.toggle("ejs_menu_bar_hidden");
             }
         }
+
+        this.createBottomMenuBarListeners = () => {
+            const clickListener = (e) => {
+                if (e.pointerType === "touch") return;
+                if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
+                if (this.isPopupOpen()) return;
+                show();
+            }
+            const mouseListener = (e) => {
+                if (!this.started || ignoreEvents || document.pointerLockElement === this.canvas) return;
+                if (this.isPopupOpen()) return;
+                const deltaX = e.movementX;
+                const deltaY = e.movementY;
+                const threshold = this.elements.menu.offsetHeight + 30;
+                const mouseY = e.clientY;
+
+                if (mouseY >= window.innerHeight - threshold) {
+                    show();
+                    return;
+                }
+                let angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+                if (angle < 0) angle += 360;
+                if (angle < 85 || angle > 95) return;
+                show();
+            }
+            if (this.menu.mousemoveListener) this.removeEventListener(this.menu.mousemoveListener);
+            
+            if ((this.preGetSetting("menubarBehavior") || "downward") === "downward") {
+                this.menu.mousemoveListener = this.addEventListener(this.elements.parent, "mousemove", mouseListener);
+            } else {
+                this.menu.mousemoveListener = this.addEventListener(this.elements.parent, "mousemove", clickListener);
+            }
+
+            this.addEventListener(this.elements.parent, "click", clickListener);
+        }
+        this.createBottomMenuBarListeners();
+
         this.elements.parent.appendChild(this.elements.menu);
 
         let tmout;
@@ -4196,6 +4231,8 @@ class EmulatorJS {
             this.saveSaveInterval = setInterval(() => {
                 if (this.started) this.gameManager.saveSaveFiles();
             }, value * 1000);
+        } else if (option === "menubarBehavior") {
+            this.createBottomMenuBarListeners();
         }
     }
     menuOptionChanged(option, value) {
@@ -4729,6 +4766,13 @@ class EmulatorJS {
                 '1', '3', '6', '12', '25', '50', '100'
             ], '6', speedOptions, true);
         }
+
+        const mouseOptions = createSettingParent(true, "Mouse Options", home);
+
+        addToMenu(this.localization("Menubar Visibility Behavior"), "menubarBehavior", {
+            "downward": this.localization("Downward Movment"),
+            "anywhere": this.localization("Movment Anywhere"),
+        }, "downward", mouseOptions, true);
 
         if (this.saveInBrowserSupported()) {
             const saveStateOpts = createSettingParent(true, "Save States", home);
