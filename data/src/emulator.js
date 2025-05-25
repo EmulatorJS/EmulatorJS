@@ -931,6 +931,7 @@ class EmulatorJS {
             preRun: [],
             postRun: [],
             canvas: this.canvas,
+            parent: this.elements.parent,
             print: (msg) => {
                 if (this.debug) {
                     console.log(msg);
