@@ -5816,10 +5816,10 @@ class EmulatorJS {
     }
 
     screenshot(callback, source, format, quality) {
-        const imageFormat = format || this.preGetSetting("screenshotFormat") || this.capture.photo.format;
-        const imageQuality = quality || parseInt(this.preGetSetting("screenshotQuality") || this.capture.photo.quality);
-        const screenshotSource = source || this.preGetSetting("screenshotSource") || this.capture.photo.source;
-        const videoRotation = parseInt(this.preGetSetting("videoRotation") || 0);
+        const imageFormat = format || this.settings["screenshotFormat"] || this.capture.photo.format;
+        const imageQuality = quality || parseInt(this.settings["screenshotQuality"] || this.capture.photo.quality);
+        const screenshotSource = source || this.settings["screenshotSource"] || this.capture.photo.source;
+        const videoRotation = parseInt(this.settings["videoRotation"] || 0);
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
         const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
         const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
