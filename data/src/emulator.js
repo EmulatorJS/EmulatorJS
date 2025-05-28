@@ -2226,8 +2226,7 @@ class EmulatorJS {
             this.elements.menu.style.opacity = "";
             this.elements.menu.style.background = "transparent";
             this.virtualGamepad.style.display = "none";
-            settingButton[0].style.filter = "drop-shadow(0 0 15px rgba(0, 0, 0, 1))";
-            settingButton[0].style.textShadow = "0 0 15px #000";
+            settingButton[0].classList.add("shadow");
             this.menu.open(true);
         }
     }
