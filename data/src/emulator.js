@@ -35,7 +35,8 @@ class EmulatorJS {
             "c128": ["vice_x128"],
             "pet": ["vice_xpet"],
             "plus4": ["vice_xplus4"],
-            "vic20": ["vice_xvic"]
+            "vic20": ["vice_xvic"],
+            "dos": ["dosbox_pure"]
         };
         if (this.isSafari && this.isMobile) {
             rv.n64 = rv.n64.reverse();
