@@ -4791,7 +4791,7 @@ class EmulatorJS {
         addToMenu(this.localization("Direct Keyboard Input"), "keyboardInput", {
             "disabled": this.localization("Disabled"),
             "enabled": this.localization("Enabled"),
-        }, ((this.defaultCoreOpts && this.defaultCoreOpts.keyboardInput === true) ? "enabled" : "disabled"), inputOptions, true);
+        }, ((this.defaultCoreOpts && this.defaultCoreOpts.useKeyboard === true) ? "enabled" : "disabled"), inputOptions, true);
 
         checkForEmptyMenu(inputOptions);
 
