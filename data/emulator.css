@@ -252,6 +252,12 @@
     color: #fff;
 }
 
+.ejs_context_menu_tab {
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+}
+
 .ejs_list_selector {
     background: rgba(0, 0, 0, 0.5);
     border-radius: 3px;
@@ -259,14 +265,13 @@
     min-width: 140px;
     padding: 8px;
     box-sizing: inherit;
-    float: left;
-    position: absolute;
     width: 10%;
     max-width: 15%;
     top: 10%;
     left: 0px;
     height: 80%;
     overflow: auto;
+    position: sticky;
 }
 
 .ejs_list_selector li {
@@ -580,6 +585,7 @@
 .ejs_popup_body {
     height: calc(100% - 130px);
     overflow: auto;
+    display: flex;
 }
 
 .ejs_control_body {
