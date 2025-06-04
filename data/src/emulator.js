@@ -605,7 +605,8 @@ class EmulatorJS {
             if (res === -1) {
                 console.log("File not found, attemping to fetch from emulatorjs cdn.");
                 console.error("**THIS METHOD IS A FAILSAFE, AND NOT OFFICIALLY SUPPORTED. USE AT YOUR OWN RISK**");
-                res = await this.downloadFile(`https://cdn.emulatorjs.org/${this.ejs_version}/data/${corePath}`, (progress) => {
+                let version = this.ejs_version.endsWith("-beta") ? "nightly" : this.ejs_version;
+                res = await this.downloadFile(`https://cdn.emulatorjs.org/${version}/data/${corePath}`, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Core") + progress;
                 }, true, { responseType: "arraybuffer", method: "GET" });
                 if (res === -1) {
