@@ -44,7 +44,7 @@ class EmulatorJS {
         return rv;
     }
     requiresThreads(core) {
-        const requiresThreads = ["ppsspp"];
+        const requiresThreads = ["ppsspp", "dosbox_pure"];
         return requiresThreads.includes(core);
     }
     requiresWebGL2(core) {
@@ -4235,6 +4235,8 @@ class EmulatorJS {
             }, value * 1000);
         } else if (option === "menubarBehavior") {
             this.createBottomMenuBarListeners();
+        } else if (option === "keyboardInput") {
+            this.gameManager.setKeyboardEnabled(value === "enabled");
         }
     }
     menuOptionChanged(option, value) {
@@ -4769,14 +4771,19 @@ class EmulatorJS {
             ], '6', speedOptions, true);
         }
 
-        const mouseOptions = createSettingParent(true, "Input Options", home);
+        const inputOptions = createSettingParent(true, "Input Options", home);
 
-        addToMenu(this.localization("Menubar mouse trigger"), "menubarBehavior", {
+        addToMenu(this.localization("Menubar Mouse Trigger"), "menubarBehavior", {
             "downward": this.localization("Downward Movement"),
             "anywhere": this.localization("Movement Anywhere"),
-        }, "downward", mouseOptions, true);
+        }, "downward", inputOptions, true);
 
-        checkForEmptyMenu(mouseOptions);
+        addToMenu(this.localization("Direct Keyboard Input"), "keyboardInput", {
+            "disabled": this.localization("Disabled"),
+            "enabled": this.localization("Enabled"),
+        }, (this.defaultCoreOpts.useKeyboard === true ? "enabled" : "disabled"), inputOptions, true);
+
+        checkForEmptyMenu(inputOptions);
 
         if (this.saveInBrowserSupported()) {
             const saveStateOpts = createSettingParent(true, "Save States", home);

@@ -30,7 +30,8 @@ class EJS_GameManager {
             setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
             getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
             setVSync: this.Module.cwrap('set_vsync', 'null', ['number']),
-            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number'])
+            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number']),
+            setKeyboardEnabled: this.Module.cwrap('ejs_set_keyboard_enabled', 'null', ['number'])
         }
 
         this.writeFile("/home/web_user/.config/retroarch/retroarch.cfg", this.getRetroArchCfg());
@@ -434,6 +435,9 @@ class EJS_GameManager {
         } catch(e) {
             console.warn(e);
         }
+    }
+    setKeyboardEnabled(enabled) {
+        this.functions.setKeyboardEnabled(enabled === true ? 1 : 0);
     }
 }
 
