@@ -4769,12 +4769,14 @@ class EmulatorJS {
             ], '6', speedOptions, true);
         }
 
-        const mouseOptions = createSettingParent(true, "Mouse Options", home);
+        const mouseOptions = createSettingParent(true, "Input Options", home);
 
-        addToMenu(this.localization("Menubar Visibility Behavior"), "menubarBehavior", {
-            "downward": this.localization("Downward Movment"),
-            "anywhere": this.localization("Movment Anywhere"),
+        addToMenu(this.localization("Menubar mouse trigger"), "menubarBehavior", {
+            "downward": this.localization("Downward Movement"),
+            "anywhere": this.localization("Movement Anywhere"),
         }, "downward", mouseOptions, true);
+
+        checkForEmptyMenu(mouseOptions);
 
         if (this.saveInBrowserSupported()) {
             const saveStateOpts = createSettingParent(true, "Save States", home);
@@ -4817,7 +4819,7 @@ class EmulatorJS {
             coreOpts = this.gameManager.getCoreOptions();
         } catch(e) {}
         if (coreOpts) {
-            const coreOptions = createSettingParent(true, "Core Options", home);
+            const coreOptions = createSettingParent(true, "Backend Core Options", home);
             coreOpts.split('\n').forEach((line, index) => {
                 let option = line.split('; ');
                 let name = option[0];
