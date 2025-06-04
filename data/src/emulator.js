@@ -549,6 +549,7 @@ class EmulatorJS {
                         this.enableMouseLock = core.options.supportsMouse;
                         this.retroarchOpts = core.retroarchOpts;
                         this.saveFileExt = core.save;
+                        this.changeSettingOption("keyboardInput", (this.defaultCoreOpts.useKeyboard === true ? "enabled" : "disabled"), true);
                     } else if (k === "license.txt") {
                         this.license = new TextDecoder().decode(data[k]);
                     }
@@ -4791,7 +4792,7 @@ class EmulatorJS {
         addToMenu(this.localization("Direct Keyboard Input"), "keyboardInput", {
             "disabled": this.localization("Disabled"),
             "enabled": this.localization("Enabled"),
-        }, (this.defaultCoreOpts.useKeyboard === true ? "enabled" : "disabled"), inputOptions, true);
+        }, "disabled", inputOptions, true);
 
         checkForEmptyMenu(inputOptions);
 
