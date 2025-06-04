@@ -952,6 +952,15 @@
 
 .ejs_setting_menu {
     padding: 7px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.ejs_parent_option_div {
+    display: flex;
+    flex-direction: column;
+    max-height: 100%;
+    overflow: hidden;
 }
 
 .ejs_back_button {
