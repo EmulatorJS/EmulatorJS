@@ -4579,7 +4579,7 @@ class EmulatorJS {
                 return;
             }
             parentElement = parentElement || home;
-            const transitionElement = useParentParent ? parentElement.parentElement.parentElement : parentElement.parentElement;
+            const transitionElement = useParentParent ? parentElement.parentElement.parentElement : parentElement;
             const menuOption = this.createElement("div");
             menuOption.classList.add("ejs_settings_main_bar");
             const span = this.createElement("span");
@@ -4604,7 +4604,7 @@ class EmulatorJS {
 
             const button = this.createElement("button");
             const goToHome = () => {
-                parentElement.parentElement.parentElement.removeAttribute("hidden");
+                transitionElement.removeAttribute("hidden");
                 menu.setAttribute("hidden", "");
                 const homeSize = this.getElementSize(transitionElement);
                 nested.style.width = (homeSize.width + 20) + "px";
@@ -4617,7 +4617,7 @@ class EmulatorJS {
                 nested.style.height = targetSize.height + "px";
                 menu.removeAttribute("hidden");
                 optionsMenu.scrollTo(0, 0);
-                parentElement.parentElement.parentElement.setAttribute("hidden", "");
+                transitionElement.setAttribute("hidden", "");
                 transitionElement.setAttribute("hidden", "");
             })
             this.addEventListener(button, "click", goToHome);
