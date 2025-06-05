@@ -1485,7 +1485,7 @@ class EmulatorJS {
                 if (functi0n instanceof Function) {
                     this.addEventListener(li, 'click', (e) => {
                         e.preventDefault();
-                        functi0n();
+                        functi0n(li);
                     });
                 }
                 a.href = "#";
@@ -1509,7 +1509,6 @@ class EmulatorJS {
             body.appendChild(retroarch);
             body.appendChild(coreLicense);
 
-            let current = home;
             home.innerText = "EmulatorJS v" + this.ejs_version;
             home.appendChild(this.createElement("br"));
             home.appendChild(this.createElement("br"));
@@ -1517,6 +1516,7 @@ class EmulatorJS {
             home.classList.add("ejs_context_menu_tab");
             license.classList.add("ejs_context_menu_tab");
             retroarch.classList.add("ejs_context_menu_tab");
+            coreLicense.classList.add("ejs_context_menu_tab");
 
             this.createLink(home, "https://github.com/EmulatorJS/EmulatorJS", "View on GitHub", true);
 
@@ -1540,29 +1540,33 @@ class EmulatorJS {
 
             home.appendChild(this.createElement("br"));
             menu.appendChild(parent);
-            const setElem = (element) => {
+            let current = home;
+            const setElem = (element, li) => {
                 if (current === element) return;
                 if (current) {
                     current.style.display = "none";
                 }
+                let activeLi = li.parentElement.querySelector(".ejs_active_list_element");
+                if (activeLi) {
+                    activeLi.classList.remove("ejs_active_list_element");
+                }
+                li.classList.add("ejs_active_list_element");
                 current = element;
                 element.style.display = "";
             }
-            addButton("Home", false, () => {
-                setElem(home);
-            })
-            addButton("EmulatorJS License", false, () => {
-                setElem(license);
-            })
-            addButton("RetroArch License", false, () => {
-                setElem(retroarch);
-            })
+            addButton("Home", false, (li) => {
+                setElem(home, li);
+            }).classList.add("ejs_active_list_element");
+            addButton("EmulatorJS License", false, (li) => {
+                setElem(license, li);
+            });
+            addButton("RetroArch License", false, (li) => {
+                setElem(retroarch, li);
+            });
             if (this.coreName && this.license) {
-                addButton(this.coreName + " License", false, () => {
-                    setElem(coreLicense);
+                addButton(this.coreName + " License", false, (li) => {
+                    setElem(coreLicense, li);
                 })
-                coreLicense.style['text-align'] = "center";
-                coreLicense.style['padding'] = "10px";
                 coreLicense.innerText = this.license;
             }
             //Todo - Contributors.

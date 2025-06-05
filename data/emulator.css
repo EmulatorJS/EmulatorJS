@@ -256,6 +256,7 @@
     text-align: center;
     width: 100%;
     padding: 10px;
+    overflow-wrap: anywhere;
 }
 
 .ejs_list_selector {
@@ -280,7 +281,7 @@
 }
 
 .ejs_list_selector li a {
-    color: #999 !important;
+    color: #999;
     display: block;
     font-size: 13px;
 }
@@ -302,6 +303,18 @@
 }
 
 .ejs_list_selector li:hover a {
+    color: #fff !important;
+}
+
+.ejs_active_list_element {
+    background: rgba(var(--ejs-primary-color), 1);
+    border-radius: 4px;
+    box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color), 0.25);
+    outline: 0;
+    color: #fff !important;
+}
+
+.ejs_active_list_element a {
     color: #fff !important;
 }
 
@@ -552,7 +565,7 @@
 .ejs_popup_container *::after,
 .ejs_popup_container *::before {
     box-sizing: border-box;
-    color: #bcbcbc !important;
+    color: #bcbcbc;
 
     -webkit-user-select: none;
     -moz-user-select: none;
