@@ -611,9 +611,9 @@ class EmulatorJS {
                 }, true, { responseType: "arraybuffer", method: "GET" });
                 if (res === -1) {
                     if (!this.supportsWebgl2) {
-                        this.startGameError(this.localization('Outdated graphics driver'));
+                        this.startGameError(this.localization("Outdated graphics driver"));
                     } else {
-                        this.startGameError(this.localization('Network Error'));
+                        this.startGameError(this.localization("Error downloading core") + " (" + filename + ")");
                     }
                     return;
                 }
@@ -677,7 +677,7 @@ class EmulatorJS {
                 this.textElem.innerText = this.localization("Download Game State") + progress;
             }, true, { responseType: "arraybuffer", method: "GET" }).then((res) => {
                 if (res === -1) {
-                    this.startGameError(this.localization('Network Error'));
+                    this.startGameError(this.localization("Error downloading game state"));
                     return;
                 }
                 this.on("start", () => {
@@ -870,7 +870,7 @@ class EmulatorJS {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;
                 }, true, { responseType: "arraybuffer", method: "GET" });
                 if (res === -1) {
-                    this.startGameError(this.localization('Network Error'));
+                    this.startGameError(this.localization("Network Error"));
                     return;
                 }
                 if (this.config.gameUrl instanceof File) {
@@ -923,7 +923,7 @@ class EmulatorJS {
     initModule(wasmData, threadData) {
         if (typeof window.EJS_Runtime !== "function") {
             console.warn("EJS_Runtime is not defined!");
-            this.startGameError(this.localization("Failed to start game"));
+            this.startGameError(this.localization("Error loading EmulatorJS runtime"));
             throw new Error("EJS_Runtime is not defined!");
         }
         window.EJS_Runtime({
@@ -2279,6 +2279,9 @@ class EmulatorJS {
             exitEmulation.style.display = "none";
 
             this.elements.menu.style.opacity = "";
+            this.elements.menu.style.background = "transparent";
+            this.virtualGamepad.style.display = "none";
+            settingButton[0].classList.add("shadow");
             this.menu.open(true);
         }
     }

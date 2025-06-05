@@ -195,6 +195,7 @@
     box-sizing: inherit;
     font-size: 12px;
     color: #bcbcbc;
+    text-align: center;
 }
 
 .ejs_loading_text_glow {
@@ -347,6 +348,7 @@
     z-index: 9999;
     left: 50%;
     bottom: 0;
+    color: #fff;
 }
 
 .ejs_small_screen .ejs_menu_bar_hidden {
@@ -376,6 +378,7 @@
 .ejs_small_screen .ejs_menu_button:hover {
     background: rgba(var(--ejs-primary-color), 1);
     color: #fff;
+    box-shadow: none;
 }
 
 .ejs_small_screen .ejs_menu_button svg {
@@ -455,6 +458,7 @@
 .ejs_big_screen .ejs_menu_button:hover {
     background: rgba(var(--ejs-primary-color), 1);
     color: #fff;
+    box-shadow: none;
 }
 
 .ejs_big_screen .ejs_menu_button:hover .ejs_menu_text {
@@ -527,6 +531,10 @@
     text-align: center;
 }
 
+.ejs_menu_button.shadow {
+    background: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.7);
+}
 
 .ejs_menu_bar svg {
     display: block;
