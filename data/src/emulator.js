@@ -1472,6 +1472,8 @@ class EmulatorJS {
                 }
             });
 
+            body.style.display = "flex";
+
             const menu = this.createElement('div');
             body.appendChild(menu);
             menu.classList.add("ejs_list_selector");

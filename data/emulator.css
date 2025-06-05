@@ -585,7 +585,6 @@
 .ejs_popup_body {
     height: calc(100% - 130px);
     overflow: auto;
-    display: flex;
 }
 
 .ejs_control_body {
