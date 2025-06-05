@@ -2790,7 +2790,6 @@ class EmulatorJS {
             const playerTitle = this.createElement("div");
 
             const gamepadTitle = this.createElement("div");
-            gamepadTitle.style = "font-size:12px;";
             gamepadTitle.innerText = this.localization("Connected Gamepad") + ": ";
 
             const gamepadName = this.createElement("select");
@@ -2820,6 +2819,7 @@ class EmulatorJS {
             def.innerText = "Not Connected";
             gamepadName.appendChild(def);
             gamepadTitle.appendChild(gamepadName);
+            gamepadTitle.classList.add("ejs_gamepad_section");
 
             const leftPadding = this.createElement("div");
             leftPadding.style = "width:25%;float:left;";

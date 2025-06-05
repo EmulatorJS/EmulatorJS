@@ -1581,3 +1581,10 @@
     box-shadow: 0 0 0 2px rgba(51, 153, 255, 0.6);
     background-color: var(--ejs-background-color);
 }
+
+.ejs_gamepad_section {
+    font-size: 12px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+}
