@@ -1447,8 +1447,11 @@ class EmulatorJS {
 
         const qSave = addButton("Quick Save", false, () => {
             const slot = this.settings['save-state-slot'] ? this.settings['save-state-slot'] : "1";
-            this.gameManager.quickSave(slot);
-            this.displayMessage(this.localization("SAVED STATE TO SLOT") + " " + slot);
+            if (this.gameManager.quickSave(slot)) {
+                this.displayMessage(this.localization("SAVED STATE TO SLOT") + " " + slot);
+            } else {
+                this.displayMessage(this.localization("FAILED TO SAVE STATE"));
+            }
             hideMenu();
         });
         const qLoad = addButton("Quick Load", false, () => {
@@ -1857,7 +1860,13 @@ class EmulatorJS {
 
         let stateUrl;
         const saveState = addButton(this.config.buttonOpts.saveState, async () => {
-            const state = this.gameManager.getState();
+            let state;
+            try {
+                state = this.gameManager.getState();
+            } catch(e) {
+                this.displayMessage(this.localization("FAILED TO SAVE STATE"));
+                return;
+            }
             const called = this.callEvent("saveState", {
                 screenshot: await this.gameManager.screenshot(),
                 state: state

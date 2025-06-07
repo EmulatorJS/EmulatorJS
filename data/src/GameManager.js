@@ -180,7 +180,7 @@ class EJS_GameManager {
         const state = this.functions.saveStateInfo().split("|");
         if (state[2] !== "1") {
             console.error(state[0]);
-            return state[0];
+            throw new Error(state[0]);
         }
         const size = parseInt(state[0]);
         const dataStart = parseInt(state[1]);
@@ -217,14 +217,17 @@ class EJS_GameManager {
     }
     quickSave(slot) {
         if (!slot) slot = 1;
-        (async () => {
-            let name = slot + '-quick.state';
-            try {
-                this.FS.unlink(name);
-            } catch(e) {}
-            let data = await this.getState();
+        let name = slot + '-quick.state';
+        try {
+            this.FS.unlink(name);
+        } catch(e) {}
+        try {
+            let data = this.getState();
             this.FS.writeFile('/' + name, data);
-        })();
+        } catch(e) {
+            return false;
+        }
+        return true;
     }
     quickLoad(slot) {
         if (!slot) slot = 1;
@@ -242,8 +245,11 @@ class EJS_GameManager {
         if ([24, 25, 26, 27, 28, 29].includes(index)) {
             if (index === 24 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
-                this.quickSave(slot);
-                this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
+                if (this.quickSave(slot)) {
+                    this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
+                } else {
+                    this.EJS.displayMessage(this.EJS.localization("FAILED TO SAVE STATE"));
+                }
             }
             if (index === 25 && value === 1) {
                 const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
