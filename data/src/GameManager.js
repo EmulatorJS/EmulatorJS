@@ -38,6 +38,7 @@ class EJS_GameManager {
 
         this.writeConfigFile();
         this.initShaders();
+        this.setupPreLoadSettings();
 
         this.EJS.on("exit", () => {
             if (!this.EJS.failedToStart) {
@@ -55,6 +56,12 @@ class EJS_GameManager {
                 };
             }, 1000);
         })
+    }
+    setupPreLoadSettings() {
+        this.Module.callbacks.setupCoreSettingFile = (filePath) => {
+            if (this.EJS.debug) console.log("Setting up core settings with path:", filePath);
+            this.writeFile(filePath, this.EJS.getCoreSettings());
+        }
     }
     mountFileSystems() {
         return new Promise(async resolve => {

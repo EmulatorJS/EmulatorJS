@@ -933,6 +933,7 @@ class EmulatorJS {
             preRun: [],
             postRun: [],
             canvas: this.canvas,
+            callbacks: {},
             parent: this.elements.parent,
             print: (msg) => {
                 if (this.debug) {
@@ -4133,6 +4134,25 @@ class EmulatorJS {
             return this.config.defaultOptions[setting];
         }
         return null;
+    }
+    getCoreSettings() {
+        if (!window.localStorage || this.config.disableLocalStorage) return;
+        let coreSpecific = localStorage.getItem(this.getLocalStorageKey());
+        if (coreSpecific) {
+            try {
+                coreSpecific = JSON.parse(coreSpecific);
+                if (!(coreSpecific.settings instanceof Object)) throw new Error("Not a JSON object");
+                let rv = "";
+                for (const k in coreSpecific.settings) {
+                    let value = isNaN(coreSpecific.settings[k]) ? `"${coreSpecific.settings[k]}"` : coreSpecific.settings[k];
+                    rv += `${k} = ${value}\n`;
+                }
+                return rv;
+            } catch(e) {
+                console.warn("Could not load previous settings", e);
+                return "";
+            }
+        }
     }
     loadSettings() {
         if (!window.localStorage || this.config.disableLocalStorage) return;
