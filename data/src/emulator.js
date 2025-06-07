@@ -4150,9 +4150,9 @@ class EmulatorJS {
                 return rv;
             } catch(e) {
                 console.warn("Could not load previous settings", e);
-                return "";
             }
         }
+        return "";
     }
     loadSettings() {
         if (!window.localStorage || this.config.disableLocalStorage) return;
