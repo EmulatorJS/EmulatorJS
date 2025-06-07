@@ -65,7 +65,9 @@ class GamepadHandler {
                     const newVal = (gamepad.axes[axisIndex] < 0.01 && gamepad.axes[axisIndex] > -0.01) ? 0 : gamepad.axes[axisIndex];
                     if (newVal !== val) {
                         const axis = ['LEFT_STICK_X', 'LEFT_STICK_Y', 'RIGHT_STICK_X', 'RIGHT_STICK_Y'][axisIndex];
-                        if (!axis) return;
+                        if (!axis) {
+                            axis = "EXTRA_STICK_" + axisIndex;
+                        }
                         this.dispatchEvent('axischanged', {
                             axis: axis,
                             value: newVal,
