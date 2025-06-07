@@ -4274,6 +4274,8 @@ class EmulatorJS {
             this.createBottomMenuBarListeners();
         } else if (option === "keyboardInput") {
             this.gameManager.setKeyboardEnabled(value === "enabled");
+        } else if (option === "altKeyboardInput") {
+            this.gameManager.setAltKeyEnabled(value === "enabled");
         } else if (option === "lockMouse") {
             this.enableMouseLock = (value === "enabled");
         }
@@ -4829,6 +4831,11 @@ class EmulatorJS {
             "disabled": this.localization("Disabled"),
             "enabled": this.localization("Enabled"),
         }, ((this.defaultCoreOpts && this.defaultCoreOpts.useKeyboard === true) ? "enabled" : "disabled"), inputOptions, true);
+
+        addToMenu(this.localization("Forward Alt key"), "altKeyboardInput", {
+            "disabled": this.localization("Disabled"),
+            "enabled": this.localization("Enabled"),
+        }, "disabled", inputOptions, true);
 
         addToMenu(this.localization("Lock Mouse"), "lockMouse", {
             "disabled": this.localization("Disabled"),

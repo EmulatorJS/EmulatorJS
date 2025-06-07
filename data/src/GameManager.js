@@ -452,6 +452,9 @@ class EJS_GameManager {
     setKeyboardEnabled(enabled) {
         this.functions.setKeyboardEnabled(enabled === true ? 1 : 0);
     }
+    setAltKeyEnabled(enabled) {
+        this.functions.setKeyboardEnabled(enabled === true ? 3 : 2);
+    }
 }
 
 window.EJS_GameManager = EJS_GameManager;
