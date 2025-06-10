@@ -3352,7 +3352,7 @@ class EmulatorJS {
                 } else if (e.type === "axischanged") {
                     if (typeof controlValue === 'string' && controlValue.split(":")[0] === e.axis) {
                         if (special.includes(j)) {
-                            if (e.axis === 'LEFT_STICK_X') {
+                            if (j === 16 || j === 17) {
                                 if (e.value > 0) {
                                     this.gameManager.simulateInput(i, 16, 0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 17, 0);
@@ -3360,7 +3360,7 @@ class EmulatorJS {
                                     this.gameManager.simulateInput(i, 17, -0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 16, 0);
                                 }
-                            } else if (e.axis === 'LEFT_STICK_Y') {
+                            } else if (j === 18 || j === 19) {
                                 if (e.value > 0) {
                                     this.gameManager.simulateInput(i, 18, 0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 19, 0);
@@ -3368,7 +3368,7 @@ class EmulatorJS {
                                     this.gameManager.simulateInput(i, 19, -0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 18, 0);
                                 }
-                            } else if (e.axis === 'RIGHT_STICK_X') {
+                            } else if (j === 20 || j === 21) {
                                 if (e.value > 0) {
                                     this.gameManager.simulateInput(i, 20, 0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 21, 0);
@@ -3376,7 +3376,7 @@ class EmulatorJS {
                                     this.gameManager.simulateInput(i, 21, -0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 20, 0);
                                 }
-                            } else if (e.axis === 'RIGHT_STICK_Y') {
+                            } else if (j === 22 || j === 23) {
                                 if (e.value > 0) {
                                     this.gameManager.simulateInput(i, 22, 0x7fff * e.value);
                                     this.gameManager.simulateInput(i, 23, 0);
