@@ -1,6 +1,43 @@
 # Changes
 
-# 4.2.1
+# 4.2.2
+
+- Prioritize gameName over gameUrl for the local storage identifier
+- Fix CSS parsing when setting a background image (Thanks to [@kellenmace](https://github.com/kellenmace))
+- Add `EJS_dontExtractBIOS` option (Thanks to [@pjft](https://github.com/pjft))
+- Delete old screenshot file before saving a new one (Thanks to [@gantoine](https://github.com/gantoine))
+- Add `saveSaveFiles` event for when save files are updated
+- Add `saveDatabaseLoaded` event, for when the `/data/saves` directory has been mounted
+- Add ability to set a system save interval
+- Add the ability to hide settings from the settings menu with the `EJS_hideSettings` option
+- Attempt to auto-detect system language and attempt to load that file.
+- Add `EJS_disableAutoLang` option to disable auto language detection in `loader.js`
+- Update Japanese translation file (Thanks to [@noel-forester](https://github.com/noel-forester))
+- Add dropdown selection for gamepads
+- Correct N64 virtual gamepad inputs
+- Change path to `retroarch.cfg`
+- Add `joystickInput` property for virtual gamepad buttons
+- Removed `this.listeners`
+- Update Korean translation file (Thanks to [@SooHyuck](https://github.com/SooHyuck))
+- Redo touchscreen detection (Thanks to [@allancoding](https://github.com/allancoding))
+- Redo toolbar visibility method (Thanks to [@allancoding](https://github.com/allancoding))
+- Add `dosbox_pure` core (requires threading)
+- Add toggle for direct keyboard input
+- Redo scrolling in settings menu
+- Redo about menu CSS
+- Add setting to enable/disable mouse lock
+- Properly handle failed save states
+- Fix unknown axis events being discarded
+- Write core settings file before loading the core (Some core settings are required to be loaded from here on startup)
+- Add option to disable `alt` key when using direct keyboard input
+- Cleanup famicom controls
+- Fix setting gamepad axis to input values 16 to 23
+- Rework internal method of getting user settings, add `this.getSettingValue` function
+- Add Romanian translation file (Thanks to [@jurcaalexandrucristian](https://github.com/jurcaalexandrucristian))
+- Fix build stack size when building cores
+- Fix CHD support
+
+# 4.2.1 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/13362ef0786990e93462f06505de772031cfc4c2)
 
 This was a bug-fix only release.
 
