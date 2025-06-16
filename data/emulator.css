@@ -253,6 +253,13 @@
     color: #fff;
 }
 
+.ejs_context_menu_tab {
+    text-align: center;
+    width: 100%;
+    padding: 10px;
+    overflow-wrap: anywhere;
+}
+
 .ejs_list_selector {
     background: rgba(0, 0, 0, 0.5);
     border-radius: 3px;
@@ -260,14 +267,13 @@
     min-width: 140px;
     padding: 8px;
     box-sizing: inherit;
-    float: left;
-    position: absolute;
     width: 10%;
     max-width: 15%;
     top: 10%;
     left: 0px;
     height: 80%;
     overflow: auto;
+    position: sticky;
 }
 
 .ejs_list_selector li {
@@ -276,7 +282,7 @@
 }
 
 .ejs_list_selector li a {
-    color: #999 !important;
+    color: #999;
     display: block;
     font-size: 13px;
 }
@@ -298,6 +304,18 @@
 }
 
 .ejs_list_selector li:hover a {
+    color: #fff !important;
+}
+
+.ejs_active_list_element {
+    background: rgba(var(--ejs-primary-color), 1);
+    border-radius: 4px;
+    box-shadow: 0 0 0 5px rgba(var(--ejs-primary-color), 0.25);
+    outline: 0;
+    color: #fff !important;
+}
+
+.ejs_active_list_element a {
     color: #fff !important;
 }
 
@@ -555,7 +573,7 @@
 .ejs_popup_container *::after,
 .ejs_popup_container *::before {
     box-sizing: border-box;
-    color: #bcbcbc !important;
+    color: #bcbcbc;
 
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -622,6 +640,11 @@
     color: #bcbcbc !important;
     font-size: 14px;
     cursor: pointer;
+}
+
+.ejs_control_player_bar li:hover:not(.ejs_control_selected) {
+    background-color: #333;
+    border-bottom: 1px solid #333;
 }
 
 .ejs_control_selected {
@@ -955,6 +978,15 @@
 
 .ejs_setting_menu {
     padding: 7px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.ejs_parent_option_div {
+    display: flex;
+    flex-direction: column;
+    max-height: inherit;
+    overflow: hidden;
 }
 
 .ejs_back_button {
@@ -1473,14 +1505,15 @@
 
 .ejs_virtualGamepad_open {
     display: inline-block;
-    width: 30px;
-    height: 30px;
+    width: 24px;
+    height: 24px;
     color: #fff;
     position: absolute;
     top: 5px;
     right: 5px;
     opacity: .5;
     z-index: 999;
+    cursor: pointer;
 }
 
 .ejs_virtualGamepad_open svg {
@@ -1549,8 +1582,17 @@
     font-family: inherit;
     outline: none;
     cursor: pointer;
+    font-size: inherit;
 }
 
-.ejs_gamepad_dropdown:focus {
+.ejs_gamepad_dropdown:focus, .ejs_gamepad_dropdown:active, .ejs_gamepad_dropdown:hover {
     box-shadow: 0 0 0 2px rgba(51, 153, 255, 0.6);
+    background-color: var(--ejs-background-color);
+}
+
+.ejs_gamepad_section {
+    font-size: 12px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }
