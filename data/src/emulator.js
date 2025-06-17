@@ -257,10 +257,10 @@ class EmulatorJS {
         this.capture.photo = this.capture.photo || {};
         this.capture.photo.source = ["canvas", "retroarch"].includes(this.capture.photo.source) ? this.capture.photo.source : "canvas";
         this.capture.photo.format = (typeof this.capture.photo.format === "string") ? this.capture.photo.format : "png";
-        this.capture.photo.quality = (typeof this.capture.photo.quality === "number") ? this.capture.photo.quality : 1;
+        this.capture.photo.upscale = (typeof this.capture.photo.upscale === "number") ? this.capture.photo.upscale : 1;
         this.capture.video = this.capture.video || {};
         this.capture.video.format = (typeof this.capture.video.format === "string") ? this.capture.video.format : "detect";
-        this.capture.video.quality = (typeof this.capture.video.quality === "number") ? this.capture.video.quality : 1;
+        this.capture.video.upscale = (typeof this.capture.video.upscale === "number") ? this.capture.video.upscale : 1;
         this.capture.video.fps = (typeof this.capture.video.fps === "number") ? this.capture.video.fps : 30;
         this.capture.video.videoBitrate = (typeof this.capture.video.videoBitrate === "number") ? this.capture.video.videoBitrate : 2.5 * 1024 * 1024;
         this.capture.video.audioBitrate = (typeof this.capture.video.audioBitrate === "number") ? this.capture.video.audioBitrate : 192 * 1024;
@@ -1879,7 +1879,7 @@ class EmulatorJS {
                 this.displayMessage(this.localization("FAILED TO SAVE STATE"));
                 return;
             }
-            const { screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.quality);
+            const { screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale);
             const called = this.callEvent("saveState", {
                 screenshot: screenshot,
                 format: format,
@@ -1930,7 +1930,7 @@ class EmulatorJS {
 
         const saveSavFiles = addButton(this.config.buttonOpts.saveSavFiles, async () => {
             const file = await this.gameManager.getSaveFile();
-            const { screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.quality);
+            const { screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale);
             const called = this.callEvent("saveSave", {
                 screenshot: screenshot,
                 format: format,
@@ -4849,17 +4849,17 @@ class EmulatorJS {
         }
         addToMenu(this.localization("Screenshot Format"), "screenshotFormat", screenshotFormats, this.capture.photo.format, screenCaptureOptions, true);
 
-        const screenshotQuality = this.capture.photo.quality.toString();
-        let screenshotQualitys = {
+        const screenshotUpscale = this.capture.photo.upscale.toString();
+        let screenshotUpscales = {
             "0": "native",
             "1": "1x",
             "2": "2x",
             "3": "3x"
         }
-        if (!(screenshotQuality in screenshotQualitys)) {
-            screenshotQualitys[screenshotQuality] = screenshotQuality + "x";
+        if (!(screenshotUpscale in screenshotUpscales)) {
+            screenshotUpscales[screenshotUpscale] = screenshotUpscale + "x";
         }
-        addToMenu(this.localization("Screenshot Quality"), "screenshotQuality", screenshotQualitys, screenshotQuality, screenCaptureOptions, true);
+        addToMenu(this.localization("Screenshot Upscale"), "screenshotUpscale", screenshotUpscales, screenshotUpscale, screenCaptureOptions, true);
 
         const screenRecordFPS = this.capture.video.fps.toString();
         let screenRecordFPSs = {
@@ -4885,17 +4885,17 @@ class EmulatorJS {
         }
         addToMenu(this.localization("Screen Recording Format"), "screenRecordFormat", screenRecordFormats, this.capture.video.format, screenCaptureOptions, true);
 
-        const screenRecordQuality = this.capture.video.quality.toString();
-        let screenRecordQualitys = {
+        const screenRecordUpscale = this.capture.video.upscale.toString();
+        let screenRecordUpscales = {
             "1": "1x",
             "2": "2x",
             "3": "3x",
             "4": "4x"
         }
-        if (!(screenRecordQuality in screenRecordQualitys)) {
-            screenRecordQualitys[screenRecordQuality] = screenRecordQuality + "x";
+        if (!(screenRecordUpscale in screenRecordUpscales)) {
+            screenRecordUpscales[screenRecordUpscale] = screenRecordUpscale + "x";
         }
-        addToMenu(this.localization("Screen Recording Quality"), "screenRecordQuality", screenRecordQualitys, screenRecordQuality, screenCaptureOptions, true);
+        addToMenu(this.localization("Screen Recording Upscale"), "screenRecordUpscale", screenRecordUpscales, screenRecordUpscale, screenCaptureOptions, true);
 
         const screenRecordVideoBitrate = this.capture.video.videoBitrate.toString();
         let screenRecordVideoBitrates = {
@@ -5909,9 +5909,9 @@ class EmulatorJS {
         this.gameManager.toggleShader(1);
     }
 
-    screenshot(callback, source, format, quality) {
+    screenshot(callback, source, format, upscale) {
         const imageFormat = format || this.settings["screenshotFormat"] || this.capture.photo.format;
-        const imageQuality = quality || parseInt(this.settings["screenshotQuality"] || this.capture.photo.quality);
+        const imageUpscale = upscale || parseInt(this.settings["screenshotUpscale"] || this.capture.photo.upscale);
         const screenshotSource = source || this.settings["screenshotSource"] || this.capture.photo.source;
         const videoRotation = parseInt(this.settings["videoRotation"] || 0);
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
@@ -5920,8 +5920,8 @@ class EmulatorJS {
         const videoTurned = (videoRotation === 1 || videoRotation === 3);
         let width = this.canvas.width;
         let height = this.canvas.height;
-        let scaleHeight = imageQuality;
-        let scaleWidth = imageQuality;
+        let scaleHeight = imageUpscale;
+        let scaleWidth = imageUpscale;
         let scale = 1;
         
         if (screenshotSource === "retroarch") {
@@ -5932,10 +5932,10 @@ class EmulatorJS {
             }
             this.gameManager.screenshot().then(screenshot => {
                 const blob = new Blob([screenshot], { type: "image/png" });
-                if (imageQuality === 0) {
+                if (imageUpscale === 0) {
                     callback(blob, "png");
-                } else if (imageQuality > 1) {
-                    scale = imageQuality;
+                } else if (imageUpscale > 1) {
+                    scale = imageUpscale;
                     const img = new Image();
                     const screenshotUrl = URL.createObjectURL(blob);
                     img.src = screenshotUrl;
@@ -5966,12 +5966,12 @@ class EmulatorJS {
             } else if (width < height && videoTurned) {
                 width = height / (1/aspectRatio);
             }
-            if (imageQuality === 0) {
+            if (imageUpscale === 0) {
                 scale = gameHeight / height;
                 scaleHeight = scale;
                 scaleWidth = scale;
-            } else if (imageQuality > 1) {
-                scale = imageQuality;
+            } else if (imageUpscale > 1) {
+                scale = imageUpscale;
             }
             const captureCanvas = document.createElement("canvas");
             captureCanvas.width = width * scale;
@@ -6001,11 +6001,11 @@ class EmulatorJS {
         }
     }
 
-    async takeScreenshot(source, format, quality) {
+    async takeScreenshot(source, format, upscale) {
         return new Promise((resolve) => {
             this.screenshot((blob, format) => {
                 resolve({ blob, format });
-            }, source, format, quality);
+            }, source, format, upscale);
         });
     }
 
@@ -6054,7 +6054,7 @@ class EmulatorJS {
     screenRecord() {
         const captureFps = this.settings["screenRecordingFPS"] || this.capture.video.fps;
         const captureFormat = this.settings["screenRecordFormat"] || this.capture.video.format;
-        const captureQuality = this.settings["screenRecordQuality"] || this.capture.video.quality;
+        const captureUpscale = this.settings["screenRecordUpscale"] || this.capture.video.upscale;
         const captureVideoBitrate = this.settings["screenRecordVideoBitrate"] || this.capture.video.videoBitrate;
         const captureAudioBitrate = this.settings["screenRecordAudioBitrate"] || this.capture.video.audioBitrate;
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
@@ -6085,9 +6085,9 @@ class EmulatorJS {
                 width = height / (1/aspectRatio);
             }
             canvasAspect = width / height;
-            captureCanvas.width = width * captureQuality;
-            captureCanvas.height = height * captureQuality;
-            captureCtx.scale(captureQuality, captureQuality);
+            captureCanvas.width = width * captureUpscale;
+            captureCanvas.height = height * captureUpscale;
+            captureCtx.scale(captureUpscale, captureUpscale);
             if (frameAspect > canvasAspect) {
                 offsetX = (this.canvas.width - width) / -2;
             } else if (frameAspect < canvasAspect) {
