@@ -4923,6 +4923,8 @@ class EmulatorJS {
         }
         addToMenu(this.localization("Screen Recording Audio Bitrate"), "screenRecordAudioBitrate", screenRecordAudioBitrates, screenRecordAudioBitrate, screenCaptureOptions, true);
 
+        checkForEmptyMenu(screenCaptureOptions);
+
         const speedOptions = createSettingParent(true, "Speed Options", home);
 
         addToMenu(this.localization("Fast Forward"), "fastForward", {
