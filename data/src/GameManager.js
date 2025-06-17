@@ -4,6 +4,34 @@ class EJS_GameManager {
         this.Module = Module;
         this.FS = this.Module.FS;
         this.functions = {
+            restart: this.Module.cwrap('system_restart', '', []),
+            saveStateInfo: this.Module.cwrap('save_state_info', 'string', []),
+            loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
+            screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
+            simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
+            toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number']),
+            getCoreOptions: this.Module.cwrap('get_core_options', 'string', []),
+            setVariable: this.Module.cwrap('ejs_set_variable', 'null', ['string', 'string']),
+            setCheat: this.Module.cwrap('set_cheat', 'null', ['number', 'number', 'string']),
+            resetCheat: this.Module.cwrap('reset_cheat', 'null', []),
+            toggleShader: this.Module.cwrap('shader_enable', 'null', ['number']),
+            getDiskCount: this.Module.cwrap('get_disk_count', 'number', []),
+            getCurrentDisk: this.Module.cwrap('get_current_disk', 'number', []),
+            setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number']),
+            getSaveFilePath: this.Module.cwrap('save_file_path', 'string', []),
+            saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
+            supportsStates: this.Module.cwrap('supports_states', 'number', []),
+            loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', []),
+            toggleFastForward: this.Module.cwrap('toggle_fastforward', 'null', ['number']),
+            setFastForwardRatio: this.Module.cwrap('set_ff_ratio', 'null', ['number']),
+            toggleRewind: this.Module.cwrap('toggle_rewind', 'null', ['number']),
+            setRewindGranularity: this.Module.cwrap('set_rewind_granularity', 'null', ['number']),
+            toggleSlowMotion: this.Module.cwrap('toggle_slow_motion', 'null', ['number']),
+            setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
+            getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
+            setVSync: this.Module.cwrap('set_vsync', 'null', ['number']),
+            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number']),
+            setKeyboardEnabled: this.Module.cwrap('ejs_set_keyboard_enabled', 'null', ['number'])
             restart: this.Module.cwrap("system_restart", "", []),
             saveStateInfo: this.Module.cwrap("save_state_info", "string", []),
             loadState: this.Module.cwrap("load_state", "number", ["string", "number"]),
@@ -31,13 +59,15 @@ class EJS_GameManager {
             getFrameNum: this.Module.cwrap("get_current_frame_count", "number", [""]),
             setVSync: this.Module.cwrap("set_vsync", "null", ["number"]),
             setVideoRoation: this.Module.cwrap("set_video_rotation", "null", ["number"]),
-            getVideoDimensions: this.Module.cwrap("get_video_dimensions", "number", ["string"])
+            getVideoDimensions: this.Module.cwrap("get_video_dimensions", "number", ["string"]),
+            setKeyboardEnabled: this.Module.cwrap("ejs_set_keyboard_enabled", "null", ["number"])
         }
 
         this.writeFile("/home/web_user/.config/retroarch/retroarch.cfg", this.getRetroArchCfg());
 
         this.writeConfigFile();
         this.initShaders();
+        this.setupPreLoadSettings();
 
         this.EJS.on("exit", () => {
             if (!this.EJS.failedToStart) {
@@ -55,6 +85,12 @@ class EJS_GameManager {
                 };
             }, 1000);
         })
+    }
+    setupPreLoadSettings() {
+        this.Module.callbacks.setupCoreSettingFile = (filePath) => {
+            if (this.EJS.debug) console.log("Setting up core settings with path:", filePath);
+            this.writeFile(filePath, this.EJS.getCoreSettings());
+        }
     }
     mountFileSystems() {
         return new Promise(async resolve => {
@@ -180,7 +216,7 @@ class EJS_GameManager {
         const state = this.functions.saveStateInfo().split("|");
         if (state[2] !== "1") {
             console.error(state[0]);
-            return state[0];
+            throw new Error(state[0]);
         }
         const size = parseInt(state[0]);
         const dataStart = parseInt(state[1]);
@@ -217,14 +253,17 @@ class EJS_GameManager {
     }
     quickSave(slot) {
         if (!slot) slot = 1;
-        (async () => {
-            let name = slot + "-quick.state";
-            try {
-                this.FS.unlink(name);
-            } catch(e) {}
-            let data = await this.getState();
+        let name = slot + "-quick.state";
+        try {
+            this.FS.unlink(name);
+        } catch(e) {}
+        try {
+            let data = this.getState();
             this.FS.writeFile("/" + name, data);
-        })();
+        } catch(e) {
+            return false;
+        }
+        return true;
     }
     quickLoad(slot) {
         if (!slot) slot = 1;
@@ -242,8 +281,11 @@ class EJS_GameManager {
         if ([24, 25, 26, 27, 28, 29].includes(index)) {
             if (index === 24 && value === 1) {
                 const slot = this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1";
-                this.quickSave(slot);
-                this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
+                if (this.quickSave(slot)) {
+                    this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
+                } else {
+                    this.EJS.displayMessage(this.EJS.localization("FAILED TO SAVE STATE"));
+                }
             }
             if (index === 25 && value === 1) {
                 const slot = this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1";
@@ -438,6 +480,12 @@ class EJS_GameManager {
         } catch(e) {
             console.warn(e);
         }
+    }
+    setKeyboardEnabled(enabled) {
+        this.functions.setKeyboardEnabled(enabled === true ? 1 : 0);
+    }
+    setAltKeyEnabled(enabled) {
+        this.functions.setKeyboardEnabled(enabled === true ? 3 : 2);
     }
 }
 
