@@ -5910,10 +5910,10 @@ class EmulatorJS {
     }
 
     screenshot(callback, source, format, upscale) {
-        const imageFormat = format || this.settings["screenshotFormat"] || this.capture.photo.format;
-        const imageUpscale = upscale || parseInt(this.settings["screenshotUpscale"] || this.capture.photo.upscale);
-        const screenshotSource = source || this.settings["screenshotSource"] || this.capture.photo.source;
-        const videoRotation = parseInt(this.settings["videoRotation"] || 0);
+        const imageFormat = format || this.getSettingValue("screenshotFormat") || this.capture.photo.format;
+        const imageUpscale = upscale || parseInt(this.getSettingValue("screenshotUpscale") || this.capture.photo.upscale);
+        const screenshotSource = source || this.getSettingValue("screenshotSource") || this.capture.photo.source;
+        const videoRotation = parseInt(this.getSettingValue("videoRotation") || 0);
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
         const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
         const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
@@ -6052,13 +6052,13 @@ class EmulatorJS {
     }
 
     screenRecord() {
-        const captureFps = this.settings["screenRecordingFPS"] || this.capture.video.fps;
-        const captureFormat = this.settings["screenRecordFormat"] || this.capture.video.format;
-        const captureUpscale = this.settings["screenRecordUpscale"] || this.capture.video.upscale;
-        const captureVideoBitrate = this.settings["screenRecordVideoBitrate"] || this.capture.video.videoBitrate;
-        const captureAudioBitrate = this.settings["screenRecordAudioBitrate"] || this.capture.video.audioBitrate;
+        const captureFps = this.getSettingValue("screenRecordingFPS") || this.capture.video.fps;
+        const captureFormat = this.getSettingValue("screenRecordFormat") || this.capture.video.format;
+        const captureUpscale = this.getSettingValue("screenRecordUpscale") || this.capture.video.upscale;
+        const captureVideoBitrate = this.getSettingValue("screenRecordVideoBitrate") || this.capture.video.videoBitrate;
+        const captureAudioBitrate = this.getSettingValue("screenRecordAudioBitrate") || this.capture.video.audioBitrate;
         const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
-        const videoRotation = parseInt(this.settings["videoRotation"] || 0);
+        const videoRotation = parseInt(this.getSettingValue("videoRotation") || 0);
         const videoTurned = (videoRotation === 1 || videoRotation === 3);
         let width = 800;
         let height = 600;
