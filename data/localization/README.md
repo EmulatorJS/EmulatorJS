@@ -35,17 +35,17 @@ If the language file is not found or there was an error fetching the file, the e
 ## Credits
 
 Translated for `es-419` originally by [@cesarcristianodeoliveira](https://github.com/cesarcristianodeoliveira) and updated by [@angelmarfil](https://github.com/angelmarfil) <br>
-Translated for `el-EL` by [@imneckro](https://github.com/imneckro) <br>
+Translated for `el-GR` by [@imneckro](https://github.com/imneckro) <br>
 Translated for `pt-BR` by [@zmarteline](https://github.com/zmarteline)<br>
 Translated for `zh-CN` by [@eric183](https://github.com/eric183)<br>
 Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
 Translated for `tr-TR` by [@iGoodie](https://github.com/iGoodie) <br>
-Translated for `fa-FA` by [@rezamohdev](https://github.com/rezamohdev) <br>
+Translated for `fa-AF` by [@rezamohdev](https://github.com/rezamohdev) <br>
 Translated for `af-FR` by [@t3chnob0y](https://github.com/t3chnob0y) <br>
 Translated for `ro-RO` by [@jurcaalexandrucristian](https://github.com/jurcaalexandrucristian) <br>
-Translated for `ja-JA` by [@noel-forester](https://github.com/noel-forester) <br>
-Translated for `vi-VI` by [@TimKieu](https://github.com/TimKieu) <br>
-Translated for `hi-HI`, `ar-SA`, `jv-JV`, `bn-BN`, `ru-RU`, `de-DE`, `ko-KR` by [@allancoding](https://github.com/allancoding), using a translate application <br>
+Translated for `ja-JP` by [@noel-forester](https://github.com/noel-forester) <br>
+Translated for `vi-VN` by [@TimKieu](https://github.com/TimKieu) <br>
+Translated for `hi-IN`, `ar-SA`, `jv-iD`, `bn-BD`, `ru-RU`, `de-DE`, `ko-KR` by [@allancoding](https://github.com/allancoding), using a translate application <br>
 
 ## Contributing
 
