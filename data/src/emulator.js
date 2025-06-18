@@ -512,8 +512,7 @@ class EmulatorJS {
     startGameError(message) {
         console.log(message);
         this.textElem.innerText = message;
-        this.textElem.style.color = "red";
-        this.textElem.style.bottom = "10%";
+        this.textElem.classList.add("ejs_error_text");
 
         this.setupSettingsMenu();
         this.loadSettings();
