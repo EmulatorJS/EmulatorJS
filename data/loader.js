@@ -132,14 +132,29 @@
         const language = window.EJS_language || systemLang;
         try {
             let path;
+            let backupPath;
             console.log("Loading language", language);
             if ('undefined' != typeof EJS_paths && typeof EJS_paths[language] === 'string') {
                 path = EJS_paths[language];
+                backupPath = false;
             } else {
                 path = scriptPath + "localization/" + language + ".json";
+                if (language.includes("-")) {
+                    backupPath = scriptPath + "localization/" + language.split('-')[0] + ".json";
+                }
             }
             config.language = language;
-            config.langJson = JSON.parse(await (await fetch(path)).text());
+            let langJson = {};
+            try {
+                langJson = JSON.parse(await (await fetch(path)).text());
+                if (backupPath && language !== "en-US") {
+                    langJson = {...JSON.parse(await (await fetch(backupPath)).text()), ...langJson};
+                }
+            } catch(e) {
+                if (!backupPath) throw e;
+                langJson = JSON.parse(await (await fetch(backupPath)).text());
+            }
+            config.langJson = langJson;
         } catch(e) {
             console.log("Missing language", language, "!!");
             delete config.language;
