@@ -4,34 +4,35 @@ class EJS_GameManager {
         this.Module = Module;
         this.FS = this.Module.FS;
         this.functions = {
-            restart: this.Module.cwrap('system_restart', '', []),
-            saveStateInfo: this.Module.cwrap('save_state_info', 'string', []),
-            loadState: this.Module.cwrap('load_state', 'number', ['string', 'number']),
-            screenshot: this.Module.cwrap('cmd_take_screenshot', '', []),
-            simulateInput: this.Module.cwrap('simulate_input', 'null', ['number', 'number', 'number']),
-            toggleMainLoop: this.Module.cwrap('toggleMainLoop', 'null', ['number']),
-            getCoreOptions: this.Module.cwrap('get_core_options', 'string', []),
-            setVariable: this.Module.cwrap('ejs_set_variable', 'null', ['string', 'string']),
-            setCheat: this.Module.cwrap('set_cheat', 'null', ['number', 'number', 'string']),
-            resetCheat: this.Module.cwrap('reset_cheat', 'null', []),
-            toggleShader: this.Module.cwrap('shader_enable', 'null', ['number']),
-            getDiskCount: this.Module.cwrap('get_disk_count', 'number', []),
-            getCurrentDisk: this.Module.cwrap('get_current_disk', 'number', []),
-            setCurrentDisk: this.Module.cwrap('set_current_disk', 'null', ['number']),
-            getSaveFilePath: this.Module.cwrap('save_file_path', 'string', []),
-            saveSaveFiles: this.Module.cwrap('cmd_savefiles', '', []),
-            supportsStates: this.Module.cwrap('supports_states', 'number', []),
-            loadSaveFiles: this.Module.cwrap('refresh_save_files', 'null', []),
-            toggleFastForward: this.Module.cwrap('toggle_fastforward', 'null', ['number']),
-            setFastForwardRatio: this.Module.cwrap('set_ff_ratio', 'null', ['number']),
-            toggleRewind: this.Module.cwrap('toggle_rewind', 'null', ['number']),
-            setRewindGranularity: this.Module.cwrap('set_rewind_granularity', 'null', ['number']),
-            toggleSlowMotion: this.Module.cwrap('toggle_slow_motion', 'null', ['number']),
-            setSlowMotionRatio: this.Module.cwrap('set_sm_ratio', 'null', ['number']),
-            getFrameNum: this.Module.cwrap('get_current_frame_count', 'number', ['']),
-            setVSync: this.Module.cwrap('set_vsync', 'null', ['number']),
-            setVideoRoation: this.Module.cwrap('set_video_rotation', 'null', ['number']),
-            setKeyboardEnabled: this.Module.cwrap('ejs_set_keyboard_enabled', 'null', ['number'])
+            restart: this.Module.cwrap("system_restart", "", []),
+            saveStateInfo: this.Module.cwrap("save_state_info", "string", []),
+            loadState: this.Module.cwrap("load_state", "number", ["string", "number"]),
+            screenshot: this.Module.cwrap("cmd_take_screenshot", "", []),
+            simulateInput: this.Module.cwrap("simulate_input", "null", ["number", "number", "number"]),
+            toggleMainLoop: this.Module.cwrap("toggleMainLoop", "null", ["number"]),
+            getCoreOptions: this.Module.cwrap("get_core_options", "string", []),
+            setVariable: this.Module.cwrap("ejs_set_variable", "null", ["string", "string"]),
+            setCheat: this.Module.cwrap("set_cheat", "null", ["number", "number", "string"]),
+            resetCheat: this.Module.cwrap("reset_cheat", "null", []),
+            toggleShader: this.Module.cwrap("shader_enable", "null", ["number"]),
+            getDiskCount: this.Module.cwrap("get_disk_count", "number", []),
+            getCurrentDisk: this.Module.cwrap("get_current_disk", "number", []),
+            setCurrentDisk: this.Module.cwrap("set_current_disk", "null", ["number"]),
+            getSaveFilePath: this.Module.cwrap("save_file_path", "string", []),
+            saveSaveFiles: this.Module.cwrap("cmd_savefiles", "", []),
+            supportsStates: this.Module.cwrap("supports_states", "number", []),
+            loadSaveFiles: this.Module.cwrap("refresh_save_files", "null", []),
+            toggleFastForward: this.Module.cwrap("toggle_fastforward", "null", ["number"]),
+            setFastForwardRatio: this.Module.cwrap("set_ff_ratio", "null", ["number"]),
+            toggleRewind: this.Module.cwrap("toggle_rewind", "null", ["number"]),
+            setRewindGranularity: this.Module.cwrap("set_rewind_granularity", "null", ["number"]),
+            toggleSlowMotion: this.Module.cwrap("toggle_slow_motion", "null", ["number"]),
+            setSlowMotionRatio: this.Module.cwrap("set_sm_ratio", "null", ["number"]),
+            getFrameNum: this.Module.cwrap("get_current_frame_count", "number", [""]),
+            setVSync: this.Module.cwrap("set_vsync", "null", ["number"]),
+            setVideoRoation: this.Module.cwrap("set_video_rotation", "null", ["number"]),
+            getVideoDimensions: this.Module.cwrap("get_video_dimensions", "number", ["string"]),
+            setKeyboardEnabled: this.Module.cwrap("ejs_set_keyboard_enabled", "null", ["number"])
         }
 
         this.writeFile("/home/web_user/.config/retroarch/retroarch.cfg", this.getRetroArchCfg());
@@ -47,7 +48,7 @@ class EJS_GameManager {
                 this.saveSaveFiles();
             }
             this.toggleMainLoop(0);
-            this.FS.unmount('/data/saves');
+            this.FS.unmount("/data/saves");
             setTimeout(() => {
                 try {
                     this.Module.abort();
@@ -67,7 +68,7 @@ class EJS_GameManager {
         return new Promise(async resolve => {
             this.mkdir("/data");
             this.mkdir("/data/saves");
-            this.FS.mount(this.FS.filesystems.IDBFS, { autoPersist: true }, '/data/saves');
+            this.FS.mount(this.FS.filesystems.IDBFS, { autoPersist: true }, "/data/saves");
             this.FS.syncfs(true, resolve);
         });
     }
@@ -84,7 +85,7 @@ class EJS_GameManager {
     }
     loadExternalFiles() {
         return new Promise(async (resolve, reject) => {
-            if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === 'Object') {
+            if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === "Object") {
                 for (const key in this.EJS.config.externalFiles) {
                     await new Promise(done => {
                         this.EJS.downloadFile(this.EJS.config.externalFiles[key], null, true, { responseType: "arraybuffer", method: "GET" }).then(async (res) => {
@@ -168,7 +169,7 @@ class EJS_GameManager {
         this.mkdir("/shader");
         for (const shaderFileName in this.EJS.config.shaders) {
             const shader = this.EJS.config.shaders[shaderFileName];
-            if (typeof shader === 'string') {
+            if (typeof shader === "string") {
                 this.FS.writeFile(`/shader/${shaderFileName}`, shader);
             }
         }
@@ -196,20 +197,20 @@ class EJS_GameManager {
     }
     loadState(state) {
         try {
-            this.FS.unlink('game.state');
+            this.FS.unlink("game.state");
         } catch(e) {}
-        this.FS.writeFile('/game.state', state);
+        this.FS.writeFile("/game.state", state);
         this.clearEJSResetTimer();
         this.functions.loadState("game.state", 0);
         setTimeout(() => {
             try {
-                this.FS.unlink('game.state');
+                this.FS.unlink("game.state");
             } catch(e) {}
         }, 5000)
     }
     screenshot() {
         try {
-            this.FS.unlink('screenshot.png');
+            this.FS.unlink("screenshot.png");
         } catch(e) {}
         this.functions.screenshot();
         return new Promise(async resolve => {
@@ -224,13 +225,13 @@ class EJS_GameManager {
     }
     quickSave(slot) {
         if (!slot) slot = 1;
-        let name = slot + '-quick.state';
+        let name = slot + "-quick.state";
         try {
             this.FS.unlink(name);
         } catch(e) {}
         try {
             let data = this.getState();
-            this.FS.writeFile('/' + name, data);
+            this.FS.writeFile("/" + name, data);
         } catch(e) {
             return false;
         }
@@ -239,7 +240,7 @@ class EJS_GameManager {
     quickLoad(slot) {
         if (!slot) slot = 1;
         (async () => {
-            let name = slot + '-quick.state';
+            let name = slot + "-quick.state";
             this.clearEJSResetTimer();
             this.functions.loadState(name, 0);
         })();
@@ -251,7 +252,7 @@ class EJS_GameManager {
         }
         if ([24, 25, 26, 27, 28, 29].includes(index)) {
             if (index === 24 && value === 1) {
-                const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
+                const slot = this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1";
                 if (this.quickSave(slot)) {
                     this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
                 } else {
@@ -259,20 +260,20 @@ class EJS_GameManager {
                 }
             }
             if (index === 25 && value === 1) {
-                const slot = this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1";
+                const slot = this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1";
                 this.quickLoad(slot);
                 this.EJS.displayMessage(this.EJS.localization("LOADED STATE FROM SLOT") + " " + slot);
             }
             if (index === 26 && value === 1) {
                 let newSlot;
                 try {
-                    newSlot = parseFloat(this.EJS.settings['save-state-slot'] ? this.EJS.settings['save-state-slot'] : "1") + 1;
+                    newSlot = parseFloat(this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1") + 1;
                 } catch(e) {
                     newSlot = 1;
                 }
                 if (newSlot > 9) newSlot = 1;
                 this.EJS.displayMessage(this.EJS.localization("SET SAVE STATE SLOT TO") + " " + newSlot);
-                this.EJS.changeSettingOption('save-state-slot', newSlot.toString());
+                this.EJS.changeSettingOption("save-state-slot", newSlot.toString());
             }
             if (index === 27) {
                 this.functions.toggleFastForward(this.EJS.isFastForward ? !value : value);
@@ -342,10 +343,10 @@ class EJS_GameManager {
     }
     loadPpssppAssets() {
         return new Promise(resolve => {
-            this.EJS.downloadFile('cores/ppsspp-assets.zip', null, false, { responseType: "arraybuffer", method: "GET" }).then((res) => {
+            this.EJS.downloadFile("cores/ppsspp-assets.zip", null, false, { responseType: "arraybuffer", method: "GET" }).then((res) => {
                 this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
                     if (pspassets === -1) {
-                        this.EJS.textElem.innerText = this.localization('Network Error');
+                        this.EJS.textElem.innerText = this.localization("Network Error");
                         this.EJS.textElem.style.color = "red";
                         return;
                     }
@@ -443,8 +444,11 @@ class EJS_GameManager {
         return this.functions.getFrameNum();
     }
     setVideoRotation(rotation) {
+        this.functions.setVideoRoation(rotation);
+    }
+    getVideoDimensions(type) {
         try {
-            this.functions.setVideoRoation(rotation);
+            return this.functions.getVideoDimensions(type);
         } catch(e) {
             console.warn(e);
         }

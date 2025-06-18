@@ -5,11 +5,11 @@ class EJS_COMPRESSION {
     isCompressed(data) { //https://www.garykessler.net/library/file_sigs.html
         //todo. Use hex instead of numbers
         if ((data[0] === 80 && data[1] === 75) && ((data[2] === 3 && data[3] === 4) || (data[2] === 5 && data[3] === 6) || (data[2] === 7 && data[3] === 8))) {
-            return 'zip';
+            return "zip";
         } else if (data[0] === 55 && data[1] === 122 && data[2] === 188 && data[3] === 175 && data[4] === 39 && data[5] === 28) {
-            return '7z';
+            return "7z";
         } else if ((data[0] === 82 && data[1] === 97 && data[2] === 114 && data[3] === 33 && data[4] === 26 && data[5] === 7) && ((data[6] === 0) || (data[6] === 1 && data[7] == 0))) {
-            return 'rar';
+            return "rar";
         }
         return null;
     }
@@ -38,13 +38,13 @@ class EJS_COMPRESSION {
             }
             const res = await this.EJS.downloadFile(path, null, false, { responseType: "text", method: "GET" });
             if (res === -1) {
-                this.EJS.startGameError(this.EJS.localization('Network Error'));
+                this.EJS.startGameError(this.EJS.localization("Network Error"));
                 return;
             }
             if (method === "rar") {
                 const res2 = await this.EJS.downloadFile("compression/libunrar.wasm", null, false, { responseType: "arraybuffer", method: "GET" });
                 if (res2 === -1) {
-                    this.EJS.startGameError(this.EJS.localization('Network Error'));
+                    this.EJS.startGameError(this.EJS.localization("Network Error"));
                     return;
                 }
                 const path = URL.createObjectURL(new Blob([res2.data], { type: "application/wasm" }));
@@ -61,7 +61,7 @@ class EJS_COMPRESSION {
                         onRuntimeInitialized: function() {},
                         locateFile: function(file) {
                             console.log("locateFile");
-                            return '` + path + `';
+                            return "` + path + `";
                         }
                     };
                     ` + res.data + `
@@ -77,9 +77,9 @@ class EJS_COMPRESSION {
                         }), password, cb)
                         let rec = function(entry) {
                             if (!entry) return;
-                            if (entry.type === 'file') {
+                            if (entry.type === "file") {
                                 postMessage({ "t": 2, "file": entry.fullFileName, "size": entry.fileSize, "data": entry.fileContent });
-                            } else if (entry.type === 'dir') {
+                            } else if (entry.type === "dir") {
                                 Object.keys(entry.ls).forEach(function(k) {
                                     rec(entry.ls[k]);
                                 });
@@ -92,16 +92,16 @@ class EJS_COMPRESSION {
                         return rarContent;
                     };
                     onmessage = function(data) {
-                        dataToPass.push({ name: 'test.rar', content: data.data });
+                        dataToPass.push({ name: "test.rar", content: data.data });
                     };
                 `;
                 const blob = new Blob([script], {
-                    type: 'application/javascript'
+                    type: "application/javascript"
                 })
                 resolve(blob);
             } else {
                 const blob = new Blob([res.data], {
-                    type: 'application/javascript'
+                    type: "application/javascript"
                 })
                 resolve(blob);
             }
@@ -119,7 +119,7 @@ class EJS_COMPRESSION {
                     const pg = data.data;
                     const num = Math.floor(pg.current / pg.total * 100);
                     if (isNaN(num)) return;
-                    const progress = ' ' + num.toString() + '%';
+                    const progress = " " + num.toString() + "%";
                     updateMsg(progress, true);
                 }
                 if (data.data.t === 2) {
