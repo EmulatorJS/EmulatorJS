@@ -131,6 +131,7 @@
     if ((typeof window.EJS_language === "string" && window.EJS_language !== "en-US" && window.EJS_language !== "en") || (systemLang && window.EJS_disableAutoLang !== false)) {
         const language = window.EJS_language || systemLang;
         const autoLang = !window.EJS_language && typeof systemLang === "string";
+        const defaultLang = (language === "en-US" || language === "en");
         try {
             let languagePath;
             let countryPath = false;
@@ -139,23 +140,39 @@
                 languagePath = EJS_paths[language];
             } else {
                 languagePath = scriptPath + "localization/" + language + ".json";
-                countryPath = scriptPath + "localization/" + language.split(/[-_]/)[0] + ".json";
+                if (language.includes("-") || language.includes("_")) {
+                    countryPath = scriptPath + "localization/" + language.split(/[-_]/)[0] + ".json";
+                }
             }
             config.language = language;
             let langJson = {};
-            if (autoLang && language !== "en-US" && language !== "en") {
+            let missingLang = false;
+            if (autoLang && !defaultLang) {
                 try {
-                    langJson = JSON.parse(await (await fetch(languagePath)).text());
-                    langJson = {...JSON.parse(await (await fetch(countryPath)).text()), ...langJson};
+                    let languageJson = await fetch(languagePath);
+                    if (!languageJson.ok) throw new Error(`Missing language file: ${languageJson.status}`);
+                    langJson = JSON.parse(await languageJson.text());
+                    if (countryPath) {
+                        let countryJson = await fetch(countryPath);
+                        missingLang = !countryJson.ok;
+                        if (!countryJson.ok) throw new Error(`Missing language file: ${countryJson.status}`);
+                        langJson = {...JSON.parse(await countryJson.text()), ...langJson};
+                    }
                 } catch(e) {
-                    langJson = JSON.parse(await (await fetch(countryPath)).text());
+                    config.language = language.split(/[-_]/)[0];
+                    console.warn("Failed to load language:", language + ",", "trying default language:", config.language);
+                    if (!missingLang) {
+                        langJson = JSON.parse(await (await fetch(countryPath)).text());
+                    }
                 }
-            } else {
+            } else if (!defaultLang) {
                 langJson = JSON.parse(await (await fetch(languagePath)).text());
             }
-            config.langJson = langJson;
+            if (!defaultLang) {
+                config.langJson = langJson;
+            }
         } catch(e) {
-            console.log("Missing language", language, "!!");
+            console.log("Missing language:", language, "!!");
             delete config.language;
             delete config.langJson;
         }

@@ -15,7 +15,7 @@ Supported languages
 `ru.json`: `ru-RU` - Russian (Russia)<br>
 `de.json`: `de-DE` - German (Germany)<br>
 `ko.json`: `ko-KR` - Korean (South Korea)<br>
-`af.json`: `af-FR` - French (France)<br>
+`fr.json`: `fr-FR` - French (France)<br>
 `it.json`: `it-IT` - Italian (Italy)<br>
 `tr.json`: `tr-TR` - Turkish (Turkey)<br>
 `fa.json`: `fa-AF` - Persian (Afghanistan)<br>
@@ -41,7 +41,7 @@ Translated for `zh-CN` by [@eric183](https://github.com/eric183)<br>
 Translated for `it-IT` by [@IvanMazzoli](https://github.com/IvanMazzoli) <br>
 Translated for `tr-TR` by [@iGoodie](https://github.com/iGoodie) <br>
 Translated for `fa-AF` by [@rezamohdev](https://github.com/rezamohdev) <br>
-Translated for `af-FR` by [@t3chnob0y](https://github.com/t3chnob0y) <br>
+Translated for `fr-FR` by [@t3chnob0y](https://github.com/t3chnob0y) <br>
 Translated for `ro-RO` by [@jurcaalexandrucristian](https://github.com/jurcaalexandrucristian) <br>
 Translated for `ja-JP` by [@noel-forester](https://github.com/noel-forester) <br>
 Translated for `vi-VN` by [@TimKieu](https://github.com/TimKieu) <br>
