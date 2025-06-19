@@ -128,36 +128,30 @@
     try {
         systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
     } catch(e) {} //Ignore
-    if ((typeof window.EJS_language === "string" && window.EJS_language !== "en") || (systemLang && window.EJS_disableAutoLang !== false)) {
+    if ((typeof window.EJS_language === "string" && window.EJS_language !== "en-US" && window.EJS_language !== "en") || (systemLang && window.EJS_disableAutoLang !== false)) {
         const language = window.EJS_language || systemLang;
+        const autoLang = !window.EJS_language && typeof systemLang === "string";
         try {
             let languagePath;
-            let countryPath;
+            let countryPath = false;
             console.log("Loading language", language);
             if ('undefined' != typeof EJS_paths && typeof EJS_paths[language] === 'string') {
                 languagePath = EJS_paths[language];
-                countryPath = false;
             } else {
                 languagePath = scriptPath + "localization/" + language + ".json";
-                if (language.includes("-")) {
-                    countryPath = scriptPath + "localization/" + language.split('-')[0] + ".json";
-                }
+                countryPath = scriptPath + "localization/" + language.split(/[-_]/)[0] + ".json";
             }
             config.language = language;
             let langJson = {};
-            if (countryPath) {
-
+            if (autoLang && language !== "en-US" && language !== "en") {
+                try {
+                    langJson = JSON.parse(await (await fetch(languagePath)).text());
+                    langJson = {...JSON.parse(await (await fetch(countryPath)).text()), ...langJson};
+                } catch(e) {
+                    langJson = JSON.parse(await (await fetch(countryPath)).text());
+                }
             } else {
                 langJson = JSON.parse(await (await fetch(languagePath)).text());
-            }
-            try {
-                langJson = JSON.parse(await (await fetch(languagePath)).text());
-                if (countryPath && language !== "en") {
-                    langJson = {...JSON.parse(await (await fetch(countryPath)).text()), ...langJson};
-                }
-            } catch(e) {
-                if (!countryPath) throw e;
-                langJson = JSON.parse(await (await fetch(countryPath)).text());
             }
             config.langJson = langJson;
         } catch(e) {

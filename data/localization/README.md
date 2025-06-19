@@ -2,25 +2,25 @@
 
 Supported languages
 
-`en-US` - English (US)<br>
-`pt-BR` - Portuguese (Brazil)<br>
-`es-419` - Spanish (Latin America)<br>
-`el-GR` - Greek (Modern Greek)<br>
-`ja-JP` - Japanese (Japan)<br>
-`zh-CN` - Chinese (Simplified)<br>
-`hi-IN` - Hindi (India)<br>
-`ar-SA` - Arabic (Saudi Arabia)<br>
-`jv-ID` - Javanese (Indonesia)<br>
-`bn-BD` - Bengali (Bangladesh)<br>
-`ru-RU` - Russian (Russia)<br>
-`de-DE` - German (Germany)<br>
-`ko-KR` - Korean (South Korea)<br>
-`af-FR` - French (France)<br>
-`it-IT` - Italian (Italy)<br>
-`tr-TR` - Turkish (Turkey)<br>
-`fa-AF` - Persian (Afghanistan)<br>
-`ro-RO` - Romanian (Romania)<br>
-`vi-VN` - Vietnamese (Vietnam)<br>
+`en.json`: `en-US` - English (US)<br>
+`pt.json`: `pt-BR` - Portuguese (Brazil)<br>
+`es.json`: `es-419` - Spanish (Latin America)<br>
+`el.json`: `el-GR` - Greek (Modern Greek)<br>
+`ja.json`: `ja-JP` - Japanese (Japan)<br>
+`zh.json`: `zh-CN` - Chinese (Simplified)<br>
+`hi.json`: `hi-IN` - Hindi (India)<br>
+`ar.json`: `ar-SA` - Arabic (Saudi Arabia)<br>
+`jv.json`: `jv-ID` - Javanese (Indonesia)<br>
+`bn.json`: `bn-BD` - Bengali (Bangladesh)<br>
+`ru.json`: `ru-RU` - Russian (Russia)<br>
+`de.json`: `de-DE` - German (Germany)<br>
+`ko.json`: `ko-KR` - Korean (South Korea)<br>
+`af.json`: `af-FR` - French (France)<br>
+`it.json`: `it-IT` - Italian (Italy)<br>
+`tr.json`: `tr-TR` - Turkish (Turkey)<br>
+`fa.json`: `fa-AF` - Persian (Afghanistan)<br>
+`ro.json`: `ro-RO` - Romanian (Romania)<br>
+`vi.json`: `vi-VN` - Vietnamese (Vietnam)<br>
 
 default: `en-US`
 
