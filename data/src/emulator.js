@@ -1324,45 +1324,65 @@ class EmulatorJS {
             displayName: "Context Menu"
         }
     };
+    defaultButtonAliases = {
+        volume: "volumeSlider"
+    };
     buildButtonOptions(buttonUserOpts) {
         let mergedButtonOptions = this.defaultButtonOptions;
 
         // merge buttonUserOpts with mergedButtonOptions
         if (buttonUserOpts) {
             for (const key in buttonUserOpts) {
+                let searchKey = key;
+                // If the key is an alias, find the actual key in the default buttons
+                if (this.defaultButtonAliases[key]) {
+                    // Use the alias to find the actual key
+                    // and update the searchKey to the actual key
+                    searchKey = this.defaultButtonAliases[key];
+                }
+
+                // prevent the contextMenu button from being overridden
+                if (searchKey === "contextMenu")
+                    continue;
+
                 // Check if the button exists in the default buttons, and update its properties
+                if (!mergedButtonOptions[searchKey]) {
+                    console.warn(`Button "${searchKey}" is not a valid button.`);
+                    continue;
+                }
+
                 // if the value is a boolean, set the visible property to the value
-                if (typeof buttonUserOpts[key] === "boolean") {
-                    mergedButtonOptions[key].visible = buttonUserOpts[key];
-                } else if (typeof buttonUserOpts[key] === "object") {
+                if (typeof buttonUserOpts[searchKey] === "boolean") {
+                    mergedButtonOptions[searchKey].visible = buttonUserOpts[searchKey];
+                } else if (typeof buttonUserOpts[searchKey] === "object") {
                     // If the value is an object, merge it with the default button properties
     
-                    if (this.defaultButtonOptions[key]) {
+                    if (this.defaultButtonOptions[searchKey]) {
                         // copy properties from the button definition if they aren't null
-                        for (const prop in buttonUserOpts[key]) {
-                            if (buttonUserOpts[key][prop] !== null) {
-                                mergedButtonOptions[key][prop] = buttonUserOpts[key][prop];
+                        for (const prop in buttonUserOpts[searchKey]) {
+                            if (buttonUserOpts[searchKey][prop] !== null) {
+                                mergedButtonOptions[searchKey][prop] = buttonUserOpts[searchKey][prop];
                             }
                         }
                     } else {
                         // button was not in the default buttons list and is therefore a custom button
                         // verify that the value has a displayName, icon, and callback property
-                        if (buttonUserOpts[key].displayName && buttonUserOpts[key].icon && buttonUserOpts[key].callback) {
-                            mergedButtonOptions[key] = {
+                        if (buttonUserOpts[searchKey].displayName && buttonUserOpts[searchKey].icon && buttonUserOpts[searchKey].callback) {
+                            mergedButtonOptions[searchKey] = {
                                 visible: true,
-                                displayName: buttonUserOpts[key].displayName,
-                                icon: buttonUserOpts[key].icon,
-                                callback: buttonUserOpts[key].callback,
+                                displayName: buttonUserOpts[searchKey].displayName,
+                                icon: buttonUserOpts[searchKey].icon,
+                                callback: buttonUserOpts[searchKey].callback,
                                 custom: true
                             };
                         } else {
-                            console.warn(`Custom button "${key}" is missing required properties`);
+                            console.warn(`Custom button "${searchKey}" is missing required properties`);
                         }
                     }
                 }
     
                 // behaviour exceptions
-                switch (key) {
+                switch (searchKey) {
                     case "playPause":
                         mergedButtonOptions.play.visible = mergedButtonOptions.playPause.visible;
                         mergedButtonOptions.pause.visible = mergedButtonOptions.playPause.visible;
@@ -2276,7 +2296,6 @@ class EmulatorJS {
             if (this.config.buttonOpts.netplay.visible === false) netplay.style.display = "none";
             if (this.config.buttonOpts.diskButton.visible === false) diskButton[0].style.display = "none";
             if (this.config.buttonOpts.volumeSlider.visible === false) volumeSlider.style.display = "none";
-            if (this.config.buttonOpts.contextMenu.visible === false) contextMenuButton.style.display = "none";
             if (this.config.buttonOpts.exitEmulation.visible === false) exitEmulation.style.display = "none";
         }
 
