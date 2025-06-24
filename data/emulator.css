@@ -209,7 +209,7 @@
 .ejs_error_text {
     bottom: 10%;
     color: #F82300;
-    border-radius: 10px;
+    border-radius: 15px;
     padding: 1.5px 8px 1.5px 8px;
     font-weight: bold;
     background-color: rgba(0, 0, 0, 0.6);
