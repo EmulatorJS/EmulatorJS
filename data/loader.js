@@ -128,20 +128,51 @@
     try {
         systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
     } catch(e) {} //Ignore
-    if ((typeof window.EJS_language === "string" && window.EJS_language !== "en-US") || (systemLang && window.EJS_disableAutoLang !== false)) {
+    if ((typeof window.EJS_language === "string" && window.EJS_language !== "en-US" && window.EJS_language !== "en") || (systemLang && window.EJS_disableAutoLang !== false)) {
         const language = window.EJS_language || systemLang;
+        const autoLang = !window.EJS_language && typeof systemLang === "string";
+        const defaultLang = (language === "en-US" || language === "en");
         try {
-            let path;
+            let languagePath;
+            let countryPath = false;
             console.log("Loading language", language);
             if ("undefined" != typeof EJS_paths && typeof EJS_paths[language] === "string") {
-                path = EJS_paths[language];
+                languagePath = EJS_paths[language];
             } else {
-                path = scriptPath + "localization/" + language + ".json";
+                languagePath = scriptPath + "localization/" + language + ".json";
+                if (language.includes("-") || language.includes("_")) {
+                    countryPath = scriptPath + "localization/" + language.split(/[-_]/)[0] + ".json";
+                }
             }
             config.language = language;
-            config.langJson = JSON.parse(await (await fetch(path)).text());
+            let langJson = {};
+            let missingLang = false;
+            if (autoLang && !defaultLang) {
+                try {
+                    let languageJson = await fetch(languagePath);
+                    if (!languageJson.ok) throw new Error(`Missing language file: ${languageJson.status}`);
+                    langJson = JSON.parse(await languageJson.text());
+                    if (countryPath) {
+                        let countryJson = await fetch(countryPath);
+                        missingLang = !countryJson.ok;
+                        if (!countryJson.ok) throw new Error(`Missing language file: ${countryJson.status}`);
+                        langJson = {...JSON.parse(await countryJson.text()), ...langJson};
+                    }
+                } catch(e) {
+                    config.language = language.split(/[-_]/)[0];
+                    console.warn("Failed to load language:", language + ",", "trying default language:", config.language);
+                    if (!missingLang) {
+                        langJson = JSON.parse(await (await fetch(countryPath)).text());
+                    }
+                }
+            } else if (!defaultLang) {
+                langJson = JSON.parse(await (await fetch(languagePath)).text());
+            }
+            if (!defaultLang) {
+                config.langJson = langJson;
+            }
         } catch(e) {
-            console.log("Missing language", language, "!!");
+            console.log("Missing language:", language, "!!");
             delete config.language;
             delete config.langJson;
         }
