@@ -479,7 +479,7 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text, log) {
-        if (typeof text === "undefined" && text.length === 0) return;
+        if (typeof text === "undefined") return;
         text = text.toString();
         if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
