@@ -479,14 +479,14 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text, log) {
-        if (typeof text === "undefined" && text.length === 0) return;
+        if (typeof text === "undefined" || text.length === 0) return;
         text = text.toString();
         if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
             if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
                 if (!this.missingLang.includes(text)) this.missingLang.push(text);
-                console.log("Translation not found for '" + text + "'. Language set to '" + this.config.language + "'");
+                console.log(`Translation not found for '${text}'. Language set to '${this.config.language}'`);
             }
             return this.config.langJson[text] || text;
         }
