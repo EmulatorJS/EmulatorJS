@@ -479,14 +479,14 @@ class EmulatorJS {
         this.elements.parent.appendChild(this.textElem);
     }
     localization(text, log) {
-        if (typeof text === "undefined") return;
+        if (typeof text === "undefined" || text.length === 0) return;
         text = text.toString();
         if (text.includes("EmulatorJS v")) return text;
         if (this.config.langJson) {
             if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
                 if (!this.missingLang.includes(text)) this.missingLang.push(text);
-                console.log("Translation not found for '" + text + "'. Language set to '" + this.config.language + "'");
+                console.log(`Translation not found for '${text}'. Language set to '${this.config.language}'`);
             }
             return this.config.langJson[text] || text;
         }
@@ -1410,8 +1410,8 @@ class EmulatorJS {
             const parentRect = this.elements.parent.getBoundingClientRect();
             this.elements.contextmenu.style.display = "block";
             const rect = this.elements.contextmenu.getBoundingClientRect();
-            const up = e.offsetY + rect.height > parentRect.bottom - 25;
-            const left = e.offsetX + rect.width > parentRect.right - 5;
+            const up = e.offsetY + rect.height > parentRect.height - 25;
+            const left = e.offsetX + rect.width > parentRect.width - 5;
             this.elements.contextmenu.style.left = (e.offsetX - (left ? rect.width : 0)) + "px";
             this.elements.contextmenu.style.top = (e.offsetY - (up ? rect.height : 0)) + "px";
         })
@@ -4109,11 +4109,6 @@ class EmulatorJS {
         //This wouldnt work using :not()... strange.
         this.game.parentElement.classList.toggle("ejs_big_screen", positionInfo.width > 575);
 
-        if (!this.Module) return;
-        const dpr = window.devicePixelRatio || 1;
-        const width = positionInfo.width * dpr;
-        const height = (positionInfo.height * dpr);
-        this.Module.setCanvasSize(width, height);
         if (!this.handleSettingsResize) return;
         this.handleSettingsResize();
     }
