@@ -1006,6 +1006,7 @@ class EmulatorJS {
             this.textElem.remove();
             this.textElem = null;
             this.game.classList.remove("ejs_game");
+            this.game.classList.add("ejs_canvas_parent");
             this.game.appendChild(this.canvas);
             this.handleResize();
             this.started = true;
@@ -4108,14 +4109,6 @@ class EmulatorJS {
         this.game.parentElement.classList.toggle("ejs_small_screen", positionInfo.width <= 575);
         //This wouldnt work using :not()... strange.
         this.game.parentElement.classList.toggle("ejs_big_screen", positionInfo.width > 575);
-
-        if (!this.Module) return;
-        const dpr = 1; //window.devicePixelRatio || 1;
-        const width = positionInfo.width * dpr;
-        const height = (positionInfo.height * dpr);
-        this.Module.canvas.style.width = width;
-        this.Module.canvas.style.height = height;
-        //this.Module.setCanvasSize(width, height);
 
         if (!this.handleSettingsResize) return;
         this.handleSettingsResize();
