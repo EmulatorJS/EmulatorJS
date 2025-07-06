@@ -132,7 +132,7 @@
     const isDefaultLang = (lang) => defaultLangs.includes(lang);
     if ((typeof window.EJS_language === "string" && !isDefaultLang(window.EJS_language)) || (systemLang && window.EJS_disableAutoLang !== false)) {
         const language = window.EJS_language || systemLang;
-        const autoLang = !window.EJS_language && typeof systemLang === "string";;
+        const autoLang = !window.EJS_language && typeof systemLang === "string";
         try {
             let languagePath;
             let fallbackPath = false;
