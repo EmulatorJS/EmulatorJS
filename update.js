@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 const args = process.argv.slice(2);
 const versionArg = args.find(arg => arg.startsWith('--ejs_v='));
 const devArg = args.find(arg => arg.startsWith('--dev='));
+const depsArg = args.find(arg => arg.startsWith('--deps='));
 const update_version = versionArg ? versionArg.split('=')[1] : process.env.ejs_v;
 const dev = devArg ? devArg.split('=')[1] : null;
 let version;
@@ -117,7 +118,9 @@ if (!update_version) {
 }
 
 console.log("Updating EmulatorJS dependencies...");
-await updateDependencies();
+if (depsArg) {
+    await updateDependencies();
+}
 if (update_version || dev === "false" || dev === "true") {
     console.log("Updating EmulatorJS version...");
     await updateVersion(update_version || version);
