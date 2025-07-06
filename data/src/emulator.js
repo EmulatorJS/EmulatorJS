@@ -1369,7 +1369,7 @@ class EmulatorJS {
                     mergedButtonOptions[searchKey].visible = buttonUserOpts[searchKey];
                 } else if (typeof buttonUserOpts[searchKey] === "object") {
                     // If the value is an object, merge it with the default button properties
-
+    
                     if (this.defaultButtonOptions[searchKey]) {
                         // copy properties from the button definition if they aren't null
                         for (const prop in buttonUserOpts[searchKey]) {
@@ -1393,18 +1393,18 @@ class EmulatorJS {
                         }
                     }
                 }
-
+    
                 // behaviour exceptions
                 switch (searchKey) {
                     case "playPause":
                         mergedButtonOptions.play.visible = mergedButtonOptions.playPause.visible;
                         mergedButtonOptions.pause.visible = mergedButtonOptions.playPause.visible;
                         break;
-
+    
                     case "mute":
                         mergedButtonOptions.unmute.visible = mergedButtonOptions.mute.visible;
                         break;
-
+    
                     case "fullscreen":
                         mergedButtonOptions.enterFullscreen.visible = mergedButtonOptions.fullscreen.visible;
                         mergedButtonOptions.exitFullscreen.visible = mergedButtonOptions.fullscreen.visible;
