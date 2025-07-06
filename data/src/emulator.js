@@ -1787,7 +1787,7 @@ class EmulatorJS {
                 show();
             }
             if (this.menu.mousemoveListener) this.removeEventListener(this.menu.mousemoveListener);
-
+            
             if ((this.preGetSetting("menubarBehavior") || "downward") === "downward") {
                 this.menu.mousemoveListener = this.addEventListener(this.elements.parent, "mousemove", mouseListener);
             } else {
@@ -1845,7 +1845,7 @@ class EmulatorJS {
             }
             return both ? [button, svg, text] : button;
         }
-
+        
         const restartButton = addButton(this.config.buttonOpts.restart, () => {
             if (this.isNetplay && this.netplay.owner) {
                 this.gameManager.restart();
@@ -1997,7 +1997,7 @@ class EmulatorJS {
         const netplay = addButton(this.config.buttonOpts.netplay, async () => {
             this.openNetplayMenu();
         });
-
+        
         // add custom buttons
         // get all elements from this.config.buttonOpts with custom: true
         if (this.config.buttonOpts) {
@@ -4614,7 +4614,7 @@ class EmulatorJS {
                 pageTitle.innerText = title;
                 pageTitle.classList.add("ejs_menu_text_a");
                 button.appendChild(pageTitle);
-
+                
                 // const optionsMenu = this.createElement("div");
                 // optionsMenu.classList.add("ejs_setting_menu");
                 // menu.appendChild(optionsMenu);
@@ -4871,8 +4871,8 @@ class EmulatorJS {
             "jpeg": "jpeg",
             "webp": "webp"
         }
-        if (this.isSafari) {
-            delete screenshotFormats["webp"];
+        if (this.isSafari) {  
+            delete screenshotFormats["webp"]; 
         }
         if (!(this.capture.photo.format in screenshotFormats)) {
             this.capture.photo.format = "png";
@@ -5955,7 +5955,7 @@ class EmulatorJS {
         let scaleHeight = imageUpscale;
         let scaleWidth = imageUpscale;
         let scale = 1;
-
+        
         if (screenshotSource === "retroarch") {
             if (width >= height) {
                 width = height * aspectRatio;
