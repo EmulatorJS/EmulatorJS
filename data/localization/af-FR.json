@@ -308,7 +308,7 @@
     "DPAD_LEFT": "CROIX_GAUCHE",
     "DPAD_RIGHT": "CROIX_DROITE",
     "Disks": "Disques",
-    "Exit Emulation": "Quitter l'émulation",
+    "Exit EmulatorJS": "Quitter EmulatorJS",
     "BUTTON_1": "BOUTON_1",
     "BUTTON_2": "BOUTON_2",
     "BUTTON_3": "BOUTON_3",
