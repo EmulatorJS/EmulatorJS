@@ -306,7 +306,7 @@
     "DPAD_UP": "DPAD_위",
     "DPAD_DOWN": "DPAD_아래",
     "DPAD_LEFT": "DPAD_왼쪽",
-    "DPAD_RIGHT": "DPAD_오른쪽"
+    "DPAD_RIGHT": "DPAD_오른쪽",
     "Disks": "디스크",
     "Exit EmulatorJS": "EmulatorJS 끝내기",
     "BUTTON_1": "버튼_1",
