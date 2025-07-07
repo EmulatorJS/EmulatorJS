@@ -22,4 +22,3 @@ To install all cores, run the following command:
 ```bash
 npm install @emulatorjs/cores
 ```
-

@@ -133,12 +133,12 @@
             }
 
             if (urlParams.get('rom')) {
-                console.log("Loading ROM from URL: roms/" + urlParams.get('rom'));
+                console.log(`Loading ROM from URL: roms/${urlParams.get('rom')}`);
                 run(false, urlParams.get('rom'));
             }
 
             async function run(upload, file) {
-                const url = upload ? input.files[0] : "roms/" + file;
+                const url = upload ? input.files[0] : `roms/${file}`;
                 const parts = upload ? input.files[0].name.split(".") : file.split(".");
 
                 const core = await (async (ext) => {

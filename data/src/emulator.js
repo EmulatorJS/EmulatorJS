@@ -183,7 +183,7 @@ class EmulatorJS {
                 response.text().then(body => {
                     let version = JSON.parse(body);
                     if (this.versionAsInt(this.ejs_version) < this.versionAsInt(version.version)) {
-                        console.log("Using EmulatorJS version " + this.ejs_version + " but the newest version is " + version.current_version + "\nopen https://github.com/EmulatorJS/EmulatorJS to update");
+                        console.log(`Using EmulatorJS version ${this.ejs_version} but the newest version is ${version.current_version}\nopen https://github.com/EmulatorJS/EmulatorJS to update`);
                     }
                 })
             }
@@ -200,7 +200,7 @@ class EmulatorJS {
         return parseInt(rv.join(""));
     }
     constructor(element, config) {
-        this.ejs_version = "4.2.2";
+        this.ejs_version = "4.2.3";
         this.extensions = [];
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
@@ -1006,6 +1006,7 @@ class EmulatorJS {
             this.textElem.remove();
             this.textElem = null;
             this.game.classList.remove("ejs_game");
+            this.game.classList.add("ejs_canvas_parent");
             this.game.appendChild(this.canvas);
             this.handleResize();
             this.started = true;

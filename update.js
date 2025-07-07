@@ -5,6 +5,7 @@ import fetch from 'node-fetch';
 const args = process.argv.slice(2);
 const versionArg = args.find(arg => arg.startsWith('--ejs_v='));
 const devArg = args.find(arg => arg.startsWith('--dev='));
+const depsArg = args.find(arg => arg.startsWith('--deps='));
 const update_version = versionArg ? versionArg.split('=')[1] : process.env.ejs_v;
 const dev = devArg ? devArg.split('=')[1] : null;
 let version;
@@ -26,12 +27,18 @@ const updateDependencies = async () => {
 
     try {
         fs.copyFileSync(socket_io, ejs_socket_io);
+        if (!fs.readFileSync(ejs_socket_io, 'utf8').endsWith('\n')) {
+            fs.appendFileSync(ejs_socket_io, '\n');
+        }
     } catch(error) {
         console.error("Error updating socket.io:", error.message);
     }
 
     try {
         fs.copyFileSync(nipplejs, ejs_nipplejs);
+        if (!fs.readFileSync(ejs_nipplejs, 'utf8').endsWith('\n')) {
+            fs.appendFileSync(ejs_nipplejs, '\n');
+        }
     } catch(error) {
         console.error("Error updating nipplejs:", error.message);
     }
@@ -117,7 +124,9 @@ if (!update_version) {
 }
 
 console.log("Updating EmulatorJS dependencies...");
-await updateDependencies();
+if (depsArg) {
+    await updateDependencies();
+}
 if (update_version || dev === "false" || dev === "true") {
     console.log("Updating EmulatorJS version...");
     await updateVersion(update_version || version);

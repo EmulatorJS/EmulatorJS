@@ -13,3 +13,4 @@ data/cores/*
 minify/
 .npmignore
 .gitignore
+roms/

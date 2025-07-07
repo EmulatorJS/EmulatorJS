@@ -1,6 +1,6 @@
 {
     "name": "@emulatorjs/cores",
-    "version": "4.2.2",
+    "version": "4.2.3",
     "type": "module",
     "description": "EmulatorJS Cores",
     "homepage": "https://emulatorjs.org",

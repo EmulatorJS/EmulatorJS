@@ -1,6 +1,15 @@
 # Changes
 
-# 4.2.2
+# 4.2.3
+
+Bug fix release
+
+- Redo image capture features (Thanks to [@allancoding](https://github.com/allancoding))
+- Fix issue with invalid button names (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Fix issues with canvas size
+- Update zh-CN translations (Thanks to [@incredibleIdea](https://github.com/incredibleIdea))
+
+# 4.2.2 [View Tree](https://github.com/EmulatorJS/EmulatorJS/tree/a796c4a3866652d1b6cb74a2b90e9552955c2b13)
 
 - Prioritize gameName over gameUrl for the local storage identifier
 - Fix CSS parsing when setting a background image (Thanks to [@kellenmace](https://github.com/kellenmace))
