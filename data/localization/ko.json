@@ -331,7 +331,6 @@
     "Requires restart": "재시작 필요함",
     "VSync": "수직동기화",
     "Video Rotation": "화면 회전",
-    "Rewind Enabled (Requires restart)": "되감기 활성화 (재시작 필요함)",
     "System Save interval": "시스템 세이브 간격",
     "Menu Bar Button": "메뉴바 버튼",
     "visible": "보이기",
@@ -346,7 +345,7 @@
     "Mode": "모드",
     "": "",
     "Core (재시작 필요함)": "코어 (재시작 필요함)",
-    "Rewind Enabled (재시작 필요함)": "되감기 활성화됨 (재시작 필요함)",
+    "Rewind Enabled (재시작 필요함)": "되감기 활성화 (재시작 필요함)",
     "Menubar Mouse Trigger": "메뉴바 마우스 활성화",
     "Downward Movement": "아래쪽 이동",
     "Movement Anywhere": "전체 영역 이동",
@@ -366,5 +365,8 @@
     "Screen Recording Format": "화면 녹화 형식",
     "Screen Recording Upscale": "화면 녹화 업스케일",
     "Screen Recording Video Bitrate": "화면 녹화 비디오 비트레이트",
-    "Screen Recording Audio Bitrate": "화면 녹화 오디오 비트레이트"
+    "Screen Recording Audio Bitrate": "화면 녹화 오디오 비트레이트",
+    "customDownload": "상태 파일 다운로드",
+    "customUpload": "상태 파일 업로드",
+    "customScreenshot": "스크린 샷 찍기"
 }
