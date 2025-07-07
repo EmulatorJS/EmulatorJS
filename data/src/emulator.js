@@ -1346,9 +1346,22 @@ class EmulatorJS {
                     continue;
 
                 // Check if the button exists in the default buttons, and update its properties
+                // If the button does not exist, create a custom button
                 if (!mergedButtonOptions[searchKey]) {
-                    console.warn(`Button "${searchKey}" is not a valid button.`);
-                    continue;
+                    // If the button does not exist in the default buttons, create a custom button
+                    // Custom buttons must have a displayName, icon, and callback property
+                    if (!buttonUserOpts[searchKey] || !buttonUserOpts[searchKey].displayName || !buttonUserOpts[searchKey].icon || !buttonUserOpts[searchKey].callback) {
+                        console.warn(`Custom button "${searchKey}" is missing required properties`);
+                        continue;
+                    }
+
+                    mergedButtonOptions[searchKey] = {
+                        visible: true,
+                        displayName: buttonUserOpts[searchKey].displayName || searchKey,
+                        icon: buttonUserOpts[searchKey].icon || "",
+                        callback: buttonUserOpts[searchKey].callback || (() => { }),
+                        custom: true
+                    };
                 }
 
                 // if the value is a boolean, set the visible property to the value
