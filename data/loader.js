@@ -123,8 +123,23 @@
     config.videoRotation = window.EJS_videoRotation;
     config.hideSettings = window.EJS_hideSettings;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
-    if (window.EJS_forceMobile === true) {
-        config.forceMobile = true;
+    if (window.EJS_browserMode) {
+        switch (window.EJS_browserMode) {
+            case 1: // Force mobile
+            case "1":
+            case "mobile":
+                console.log("Force mobile mode is enabled");
+                config.browserMode = 1;
+                break;
+            case 2: // Force desktop
+            case "2":
+            case "desktop":
+                console.log("Force desktop mode is enabled");
+                config.browserMode = 2;
+                break;
+            default: // Auto detect
+                config.browserMode = undefined;
+        }
     }
 
     let systemLang;
