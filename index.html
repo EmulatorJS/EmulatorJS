@@ -111,6 +111,7 @@
         <script>
             let enableDebug = false;
             let enableThreads = false;
+            let forceMobile = false;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
             if (parseInt(urlParams.get('debug')) === 1 || urlParams.get('debug') === "true") {
@@ -130,6 +131,13 @@
                 }
             } else {
                 console.log("Threads are disabled");
+            }
+
+            if (parseInt(urlParams.get('forceMobile')) === 1 || urlParams.get('forceMobile') === "true") {
+                forceMobile = true;
+                console.log("Force mobile mode is enabled");
+            } else {
+                console.log("Force mobile mode is disabled");
             }
 
             if (urlParams.get('rom')) {
@@ -253,6 +261,7 @@
                 window.EJS_DEBUG_XX = enableDebug;
                 window.EJS_disableDatabases = true;
                 window.EJS_threads = enableThreads;
+                window.EJS_forceMobile = forceMobile;
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);

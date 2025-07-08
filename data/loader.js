@@ -123,6 +123,9 @@
     config.videoRotation = window.EJS_videoRotation;
     config.hideSettings = window.EJS_hideSettings;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
+    if (window.EJS_forceMobile === true) {
+        config.forceMobile = true;
+    }
 
     let systemLang;
     try {
