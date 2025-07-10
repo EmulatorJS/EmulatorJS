@@ -123,7 +123,7 @@
     config.videoRotation = window.EJS_videoRotation;
     config.hideSettings = window.EJS_hideSettings;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
-    
+
     let systemLang;
     try {
         systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
