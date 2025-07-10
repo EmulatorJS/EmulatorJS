@@ -209,6 +209,22 @@ class EmulatorJS {
         this.config = config;
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
+        switch (window.EJS_browserMode) {
+            case 1: // Force mobile
+            case "1":
+            case "mobile":
+                console.log("Force mobile mode is enabled");
+                this.config.browserMode = 1;
+                break;
+            case 2: // Force desktop
+            case "2":
+            case "desktop":
+                console.log("Force desktop mode is enabled");
+                this.config.browserMode = 2;
+                break;
+            default: // Auto detect
+                config.browserMode = undefined;
+        }
         this.currentPopup = null;
         this.isFastForward = false;
         this.isSlowMotion = false;
