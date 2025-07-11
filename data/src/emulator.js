@@ -209,7 +209,7 @@ class EmulatorJS {
         this.config = config;
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
-        switch (window.EJS_browserMode) {
+        switch (this.config.browserMode) {
             case 1: // Force mobile
             case "1":
             case "mobile":
