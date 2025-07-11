@@ -1390,7 +1390,10 @@ class EmulatorJS {
                 } else if (typeof buttonUserOpts[searchKey] === "object") {
                     // If the value is an object, merge it with the default button properties
     
-                    if (this.defaultButtonOptions[searchKey]) {
+                    // if the button is the contextMenu, only allow the visible property to be set
+                    if (searchKey === "contextMenu") {
+                        mergedButtonOptions[searchKey].visible = buttonUserOpts[searchKey].visible !== undefined ? buttonUserOpts[searchKey].visible : true;
+                    } else if (this.defaultButtonOptions[searchKey]) {
                         // copy properties from the button definition if they aren't null
                         for (const prop in buttonUserOpts[searchKey]) {
                             if (buttonUserOpts[searchKey][prop] !== null) {
