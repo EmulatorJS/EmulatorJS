@@ -114,14 +114,14 @@
             let browserMode;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (parseInt(urlParams.get('debug')) === 1 || urlParams.get('debug') === "true") {
+            if (parseInt(urlParams.get("debug")) === 1 || urlParams.get("debug") === "true") {
                 enableDebug = true;
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
             }
 
-            if (parseInt(urlParams.get('threads')) === 1 || urlParams.get('threads') === "true") {
+            if (parseInt(urlParams.get("threads")) === 1 || urlParams.get("threads") === "true") {
                 if (window.SharedArrayBuffer) {
                     enableThreads = true;
                     console.log("Threads are enabled");
@@ -133,13 +133,13 @@
                 console.log("Threads are disabled");
             }
 
-            if (urlParams.get('browserMode')) {
-                browserMode = urlParams.get('browserMode');
+            if (urlParams.get("browserMode")) {
+                browserMode = urlParams.get("browserMode");
             }
 
-            if (urlParams.get('rom')) {
-                console.log(`Loading ROM from URL: roms/${urlParams.get('rom')}`);
-                run(false, urlParams.get('rom'));
+            if (urlParams.get("rom")) {
+                console.log(`Loading ROM from URL: roms/${urlParams.get("rom")}`);
+                run(false, urlParams.get("rom"));
             }
 
             async function run(upload, file) {
