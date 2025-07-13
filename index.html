@@ -111,16 +111,17 @@
         <script>
             let enableDebug = false;
             let enableThreads = false;
+            let browserMode;
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
-            if (parseInt(urlParams.get('debug')) === 1 || urlParams.get('debug') === "true") {
+            if (parseInt(urlParams.get("debug")) === 1 || urlParams.get("debug") === "true") {
                 enableDebug = true;
                 console.log("Debug is enabled");
             } else {
                 console.log("Debug is disabled");
             }
 
-            if (parseInt(urlParams.get('threads')) === 1 || urlParams.get('threads') === "true") {
+            if (parseInt(urlParams.get("threads")) === 1 || urlParams.get("threads") === "true") {
                 if (window.SharedArrayBuffer) {
                     enableThreads = true;
                     console.log("Threads are enabled");
@@ -132,9 +133,13 @@
                 console.log("Threads are disabled");
             }
 
-            if (urlParams.get('rom')) {
-                console.log(`Loading ROM from URL: roms/${urlParams.get('rom')}`);
-                run(false, urlParams.get('rom'));
+            if (urlParams.get("browserMode")) {
+                browserMode = urlParams.get("browserMode");
+            }
+
+            if (urlParams.get("rom")) {
+                console.log(`Loading ROM from URL: roms/${urlParams.get("rom")}`);
+                run(false, urlParams.get("rom"));
             }
 
             async function run(upload, file) {
@@ -253,6 +258,9 @@
                 window.EJS_DEBUG_XX = enableDebug;
                 window.EJS_disableDatabases = true;
                 window.EJS_threads = enableThreads;
+                if (browserMode) {
+                    window.EJS_browserMode = browserMode;
+                }
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
