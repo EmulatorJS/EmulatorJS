@@ -104,6 +104,7 @@
     config.gamePatchUrl = window.EJS_gamePatchUrl;
     config.gameParentUrl = window.EJS_gameParentUrl;
     config.netplayUrl = window.EJS_netplayServer;
+    config.netplayIceServers = window.EJS_netplayIceServers; 
     config.gameId = window.EJS_gameID;
     config.backgroundImg = window.EJS_backgroundImage;
     config.backgroundBlur = window.EJS_backgroundBlur;

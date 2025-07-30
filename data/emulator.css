@@ -219,6 +219,13 @@
 .ejs_canvas {
     width: 100%;
     height: 100%;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: none;
+    object-fit: contain;
+    object-position: top;
 }
 
 .ejs_canvas_parent {
@@ -1534,6 +1541,17 @@
 
 .ejs_virtualGamepad_open svg {
     fill: currentColor;
+}
+
+.ejs-vgamepad-active {
+    z-index: 1000;
+    position: absolute;
+    pointer-events: auto;
+    width: 100%;
+}
+
+.ejs-canvas-no-pointer {
+    pointer-events: none;
 }
 
 .ejs_netplay_header {
