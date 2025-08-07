@@ -5,7 +5,7 @@ class EJS_GameManager {
         this.FS = this.Module.FS;
         this.functions = {
             restart: this.Module.cwrap("system_restart", "", []),
-            saveStateInfo: this.Module.cwrap("save_state_info", "string", []),
+            //saveStateInfo: this.Module.cwrap("save_state_info", "string", []),
             loadState: this.Module.cwrap("load_state", "number", ["string", "number"]),
             screenshot: this.Module.cwrap("cmd_take_screenshot", "", []),
             simulateInput: this.Module.cwrap("simulate_input", "null", ["number", "number", "number"]),
@@ -185,15 +185,7 @@ class EJS_GameManager {
         this.functions.restart();
     }
     getState() {
-        const state = this.functions.saveStateInfo().split("|");
-        if (state[2] !== "1") {
-            console.error(state[0]);
-            throw new Error(state[0]);
-        }
-        const size = parseInt(state[0]);
-        const dataStart = parseInt(state[1]);
-        const data = this.Module.HEAPU8.subarray(dataStart, dataStart + size);
-        return new Uint8Array(data);
+        return this.Module.EmulatorJSGetState();
     }
     loadState(state) {
         try {
@@ -210,7 +202,7 @@ class EJS_GameManager {
     }
     screenshot() {
         try {
-            this.FS.unlink("screenshot.png");
+            this.FS.unlink("/screenshot.png");
         } catch(e) {}
         this.functions.screenshot();
         return new Promise(async resolve => {
