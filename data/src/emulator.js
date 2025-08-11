@@ -5317,8 +5317,7 @@ class EmulatorJS {
                 return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
             };
             return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-        }
-
+        } 
         this.getNativeResolution = function () {
             if (this.Module && this.Module.getNativeResolution) {
                 try {
@@ -5614,7 +5613,7 @@ class EmulatorJS {
 
         this.netplayCreatePeerConnection = function (peerId) {
             const pc = new RTCPeerConnection({
-                iceServers: window.EJS_netplayICEServers, // <-- Read directly from the global variable
+                iceServers: this.config.netplayICEServers, // <-- Read directly from the global variable
                 iceCandidatePoolSize: 10
             });
 
@@ -5630,9 +5629,18 @@ class EmulatorJS {
                         this.netplayLeaveRoom();
                         return;
                     }
-                    console.log(`Received input from peer ${peerId}:`, data);
+                    const playerIndex = data.player;
+                    const frame = this.netplay.currentFrame || 0;
+
+                    if (!this.netplay.inputsData[frame]) {
+                        this.netplay.inputsData[frame] = [];
+                    }
+                    this.netplay.inputsData[frame].push({
+                        frame: frame,
+                        connected_input: [playerIndex, data.index, data.value]
+                    });
                     if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                        this.gameManager.functions.simulateInput(data.player, data.index, data.value);
+                        this.gameManager.functions.simulateInput(playerIndex, data.index, data.value);
                     } else {
                         console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
                     }
@@ -5648,7 +5656,7 @@ class EmulatorJS {
                             this.netplayLeaveRoom();
                             return;
                         }
-                        console.log(`Received input from peer ${peerId}:`, data);
+                        console.log(`Received input from host ${peerId}:`, data);
                         if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
                             this.gameManager.functions.simulateInput(data.player, data.index, data.value);
                         } else {
