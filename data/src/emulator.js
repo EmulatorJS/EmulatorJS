@@ -6511,7 +6511,7 @@ class EmulatorJS {
                 this.netplay.playerTable.innerHTML = "";
             }
 
-            if (this.netplay.oldStyles && this.elements.bottomBar.cheat.[0]) {
+            if (this.netplay.oldStyles && this.elements.bottomBar.cheat[0]) {
                 this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0] || "";
             }
 
