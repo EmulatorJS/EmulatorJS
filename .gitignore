@@ -13,3 +13,4 @@ data/cores/*
 .vscode/*
 *.tgz
 dist/
+jsdoc/
