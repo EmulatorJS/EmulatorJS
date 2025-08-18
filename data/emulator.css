@@ -233,6 +233,15 @@
     height: 100%;
 }
 
+.netplay-hidden {
+  display: none !important;
+}
+
+.option-enabled {
+  color: inherit;
+  opacity: 1;
+}
+
 .ejs_context_menu {
     position: absolute;
     display: none;

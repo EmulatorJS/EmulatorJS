@@ -5175,28 +5175,35 @@ class EmulatorJS {
     updateNetplayUI(isJoining) {
         if (!this.elements.bottomBar) return;
 
-        const display = isJoining ? 'none' : '';
         const bar = this.elements.bottomBar;
-
-        // Show/hide all the necessary netplay buttons
-        if (bar.playPause) bar.playPause.forEach(el => el.style.display = isJoining ? 'none' : (el === bar.playPause[0] ? '' : 'none'));
-        if (bar.restart) bar.restart.forEach(el => el.style.display = display);
-        if (bar.saveState) bar.saveState.forEach(el => el.style.display = display);
-        if (bar.loadState) bar.loadState.forEach(el => el.style.display = display);
-        if (bar.cheat) bar.cheat.forEach(el => el.style.display = display);
-        if (bar.saveSavFiles) bar.saveSavFiles.forEach(el => el.style.display = display);
-        if (bar.loadSavFiles) bar.loadSavFiles.forEach(el => el.style.display = display);
-        if (bar.exit) bar.exit.forEach(el => el.style.display = display);
-        if (bar.contextMenu) bar.contextMenu.forEach(el => el.style.display = display);
-        if (bar.cacheManager) bar.cacheManager.forEach(el => el.style.display = display);
-
-        // Show/hide the special parent containers
-        if (bar.settings && bar.settings[0] && bar.settings[0].parentElement) {
-            bar.settings[0].parentElement.style.display = display;
+        const isClient = !this.netplay.owner;
+        const shouldHideButtons = isJoining && isClient;
+        const elementsToToggle = [
+            ...(bar.playPause || []),
+            ...(bar.restart || []),
+            ...(bar.saveState || []),
+            ...(bar.loadState || []),
+            ...(bar.cheat || []),
+            ...(bar.saveSavFiles || []),
+            ...(bar.loadSavFiles || []),
+            ...(bar.exit || []),
+            ...(bar.contextMenu || []),
+            ...(bar.cacheManager || [])
+        ];
+        
+        // Add the parent containers to the same logic
+        if (bar.settings?.[0]?.parentElement) {
+            elementsToToggle.push(bar.settings[0].parentElement);
         }
         if (this.diskParent) {
-            this.diskParent.style.display = display;
+            elementsToToggle.push(this.diskParent);
         }
+
+        elementsToToggle.forEach(el => {
+            if (el) {
+                el.classList.toggle('netplay-hidden', shouldHideButtons);
+            }
+        });
     }
     createNetplayMenu() {
         const body = this.createPopup("Netplay", {
@@ -5375,7 +5382,7 @@ defineNetplayFunctions() {
             return index === -1 ? 0 : index;
         };
 
-        this.netplay.simulateInput = function (player, index, value) {
+        this.netplay.simulateInput = (player, index, value) => {
             console.log("netplay.simulateInput called:", {
                 player,
                 index,
@@ -5410,10 +5417,9 @@ defineNetplayFunctions() {
                     console.error("netplaySendMessage is undefined");
                 }
             }
-        }
-        .bind(this);
+        };
 
-        this.netplayUpdateTableList = async function () {
+        this.netplayUpdateTableList = async () => {
             if (!this.netplay || !this.netplay.table) {
                 console.error("netplay or netplay.table is undefined");
                 return;
@@ -5466,9 +5472,9 @@ defineNetplayFunctions() {
             } catch (e) {
                 console.error("Could not update room list:", e);
             }
-        }.bind(this);
+        };
 
-        this.netplayGetOpenRooms = async function () {
+        this.netplayGetOpenRooms = async () => {
             if (!this.netplay.url) {
                 console.error("netplay.url is undefined");
                 return {};
@@ -5482,21 +5488,21 @@ defineNetplayFunctions() {
                 console.error("Error fetching open rooms:", error);
                 return {};
             }
-        }.bind(this);
+        };
 
-        this.netplayUpdateListStart = function () {
+        this.netplayUpdateListStart = () => {
             if (!this.netplayUpdateTableList) {
                 console.error("netplayUpdateTableList is undefined");
                 return;
             }
             this.netplay.updateListInterval = setInterval(this.netplayUpdateTableList.bind(this), 1000);
-        }.bind(this);
+        };
 
-        this.netplayUpdateListStop = function () {
+        this.netplayUpdateListStop = () => {
             clearInterval(this.netplay.updateListInterval);
-        }.bind(this);
+        };
 
-        this.netplayShowOpenRoomDialog = function () {
+        this.netplayShowOpenRoomDialog = () => {
             if (!this.createSubPopup || !this.createElement || !this.localization || !this.addEventListener) {
                 console.error("Required methods for netplayShowOpenRoomDialog are undefined");
                 return;
@@ -5525,18 +5531,14 @@ defineNetplayFunctions() {
             const maxhead = this.createElement("strong");
             maxhead.innerText = this.localization("Max Players");
             const maxinput = this.createElement("select");
-            const val2 = this.createElement("option");
-            val2.value = "2";
-            val2.innerText = "2";
-            const val3 = this.createElement("option");
-            val3.value = "3";
-            val3.innerText = "3";
-            const val4 = this.createElement("option");
-            val4.value = "4";
-            val4.innerText = "4";
-            maxinput.appendChild(val2);
-            maxinput.appendChild(val3);
-            maxinput.appendChild(val4);
+            const playerCounts = ["2", "3", "4"];
+            playerCounts.forEach(count => {
+                const option = this.createElement("option");
+                option.value = count;
+                option.innerText = count;
+                option.classList.add("option-enabled");
+                maxinput.appendChild(option);
+            });
 
             const pwhead = this.createElement("strong");
             pwhead.innerText = this.localization("Password (optional)");
@@ -5585,9 +5587,9 @@ defineNetplayFunctions() {
             close.innerText = this.localization("Close");
             popup.appendChild(close);
             this.addEventListener(close, "click", () => popups[0].remove());
-        }.bind(this);
+        };
 
-        this.netplayInitWebRTCStream = async function () {
+        this.netplayInitWebRTCStream = async () => {
             if (this.netplay.localStream)
                 return;
             console.log("Initializing WebRTC stream for owner...");
@@ -5636,9 +5638,9 @@ defineNetplayFunctions() {
                 track.onended = () => console.warn("Track ended:", track.id);
             });
             this.netplay.localStream = stream;
-        }.bind(this);
+        };
 
-        this.netplayCreatePeerConnection = function (peerId) {
+        this.netplayCreatePeerConnection = (peerId) => {
             const pc = new RTCPeerConnection({
                 iceServers: this.config.netplayICEServers,
                 iceCandidatePoolSize: 10
@@ -5788,9 +5790,9 @@ defineNetplayFunctions() {
             }
 
             return pc;
-        }.bind(this);
+        };
 
-        this.showVideoOverlay = function () {
+        this.showVideoOverlay = () => {
             const videoElement = this.netplay.video;
             if (!videoElement) {
                 console.error("showVideoOverlay: videoElement is not initialized");
@@ -5849,9 +5851,9 @@ defineNetplayFunctions() {
                 }
             };
             playVideo();
-        }.bind(this);
+        };
 
-        this.drawVideoToCanvas = function () {
+        this.drawVideoToCanvas = () => {
             const videoElement = this.netplay.video;
             const canvas = this.netplayCanvas;
             const ctx = canvas?.getContext('2d', {
@@ -5940,9 +5942,9 @@ defineNetplayFunctions() {
             });
 
             ensureVideoPlaying();
-        }.bind(this);
+        };
 
-        this.netplayStartSocketIO = function (callback) {
+        this.netplayStartSocketIO = (callback) => {
             if (!this.netplay.previousPlayers) {
                 this.netplay.previousPlayers = {};
             }
@@ -6112,9 +6114,9 @@ defineNetplayFunctions() {
                     console.error("WebRTC signaling error:", error);
                 }
             });
-        }.bind(this);
+        };
 
-        this.netplayUpdatePlayersTable = function () {
+        this.netplayUpdatePlayersTable = () => {
             if (!this.netplay.playerTable) {
                 console.error("netplay.playerTable is undefined");
                 return;
@@ -6147,9 +6149,9 @@ defineNetplayFunctions() {
                 addToTable(playerNumber, playerName, statusText);
                 i++;
             }
-        }.bind(this);
+        };
 
-        this.netplayOpenRoom = function (roomName, maxPlayers, password) {
+        this.netplayOpenRoom = (roomName, maxPlayers, password) => {
             const sessionid = guidGenerator();
             this.netplay.playerID = guidGenerator();
             this.netplay.players = {};
@@ -6178,9 +6180,9 @@ defineNetplayFunctions() {
                     this.netplayRoomJoined(true, roomName, password, sessionid);
                 });
             });
-        }.bind(this);
+        };
 
-        this.netplayJoinRoom = function (sessionid, roomName, maxPlayers, password) {
+        this.netplayJoinRoom = (sessionid, roomName, maxPlayers, password) => {
             this.netplay.playerID = guidGenerator();
             this.netplay.players = {};
             this.netplay.maxPlayers = maxPlayers;
@@ -6208,9 +6210,9 @@ defineNetplayFunctions() {
                     this.netplayRoomJoined(false, roomName, password, sessionid);
                 });
             });
-        }.bind(this);
+        };
 
-        this.netplayRoomJoined = function (isOwner, roomName, password, roomId) {
+        this.netplayRoomJoined = (isOwner, roomName, password, roomId) => {
             EJS_INSTANCE.updateNetplayUI(true);
 
             if (!this.netplay || !this.canvas || !this.elements || !this.elements.parent) {
@@ -6481,9 +6483,9 @@ defineNetplayFunctions() {
                 resizeCanvasWithAspect();
                 window.dispatchEvent(new Event('resize'));
             }
-        }.bind(this);
+        };
 
-        this.netplayLeaveRoom = function () {
+        this.netplayLeaveRoom = () => {
             EJS_INSTANCE.updateNetplayUI(false);
 
             console.log("Leaving netplay room...");
@@ -6607,7 +6609,7 @@ defineNetplayFunctions() {
             }
 
             this.displayMessage("Left the room", 3000);
-        }.bind(this);
+        };
 
         this.netplayDataMessage = function (data) {
             if (data["sync-control"]) {
@@ -6651,25 +6653,25 @@ defineNetplayFunctions() {
                     console.log("Frame data indicates content, relying on WebRTC stream");
                 }
             }
-        }.bind(this);
+        };
 
-        this.netplaySendMessage = function (data) {
+        this.netplaySendMessage = (data) => {
             if (this.netplay.socket && this.netplay.socket.connected) {
                 this.netplay.socket.emit("data-message", data);
                 console.log("Sent data message:", data);
             } else {
                 console.error("Cannot send message: Socket is not connected");
             }
-        }.bind(this);
+        };
 
-        this.netplayReset = function () {
+        this.netplayReset = () => {
             this.netplay.init_frame = this.gameManager?.getFrameNum?.() || 0;
             this.netplay.currentFrame = 0;
             this.netplay.inputsData = {};
             this.netplay.syncing = false;
-        }.bind(this);
+        };
 
-        this.netplayInitModulePostMainLoop = function () {
+        this.netplayInitModulePostMainLoop = () => {
             if (this.isNetplay && !this.netplay.owner) {
                 return; 
             }
@@ -6698,21 +6700,21 @@ defineNetplayFunctions() {
                     delete this.netplay.inputsData[i];
                 }
             }
-        }.bind(this);
+        };
 
         this.netplay.updateList = {
-            start: this.netplayUpdateListStart.bind(this),
-            stop: this.netplayUpdateListStop.bind(this)
+            start: this.netplayUpdateListStart,
+            stop: this.netplayUpdateListStop
         };
-        this.netplay.showOpenRoomDialog = this.netplayShowOpenRoomDialog.bind(this);
-        this.netplay.openRoom = this.netplayOpenRoom.bind(this);
-        this.netplay.joinRoom = this.netplayJoinRoom.bind(this);
-        this.netplay.leaveRoom = this.netplayLeaveRoom.bind(this);
-        this.netplay.sendMessage = this.netplaySendMessage.bind(this);
-        this.netplay.updatePlayersTable = this.netplayUpdatePlayersTable.bind(this);
-        this.netplay.createPeerConnection = this.netplayCreatePeerConnection.bind(this);
-        this.netplay.initWebRTCStream = this.netplayInitWebRTCStream.bind(this);
-        this.netplay.roomJoined = this.netplayRoomJoined.bind(this);
+        this.netplay.showOpenRoomDialog = this.netplayShowOpenRoomDialog;
+        this.netplay.openRoom = this.netplayOpenRoom;
+        this.netplay.joinRoom = this.netplayJoinRoom;
+        this.netplay.leaveRoom = this.netplayLeaveRoom;
+        this.netplay.sendMessage = this.netplaySendMessage;
+        this.netplay.updatePlayersTable = this.netplayUpdatePlayersTable;
+        this.netplay.createPeerConnection = this.netplayCreatePeerConnection;
+        this.netplay.initWebRTCStream = this.netplayInitWebRTCStream;
+        this.netplay.roomJoined = this.netplayRoomJoined;
 
         this.netplay = this.netplay || {};
         this.netplay.init_frame = 0;
