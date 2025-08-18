@@ -732,7 +732,7 @@ class EmulatorJS {
                 const coreFilename = "/" + this.fileName;
                 const coreFilePath = coreFilename.substring(0, coreFilename.length - coreFilename.split("/").pop().length);
                 if (this.config.dontExtractBIOS === true) {
-                    this.gameManager.FS.writeFile(coreFilePath + k.split("/").pop(), new Uint8Array(input));
+                    this.gameManager.FS.writeFile(coreFilePath + assetUrl.split("/").pop(), new Uint8Array(input));
                     return resolve(assetUrl);
                 }
                 const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage);
