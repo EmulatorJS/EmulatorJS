@@ -202,6 +202,7 @@ class EmulatorJS {
     constructor(element, config) {
         this.ejs_version = "4.3.0-beta";
         this.extensions = [];
+        this.allSettings = {};
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
         if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname))) this.checkForUpdates();
@@ -809,17 +810,19 @@ class EmulatorJS {
             this.textElem.innerText = this.localization("Download Game Data");
 
             const gotGameData = (data) => {
-                if (["arcade", "mame"].includes(this.getCore(true))) {
-                    this.fileName = this.getBaseFileName(true);
+                const altName = this.getBaseFileName(true);
+
+                let ext = altName.split(".").pop().toLowerCase();
+                const coreName = this.getCore(true);
+                if (["arcade", "mame"].includes(coreName) || (coreName === "dos" && ext === "zip")) {
+                    this.fileName = altName;
                     this.gameManager.FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
                     return;
                 }
 
-                const altName = this.getBaseFileName(true);
-
                 let disableCue = false;
-                if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xplus4", "vice_xpet", "puae"].includes(this.getCore()) && this.config.disableCue === undefined) {
+                if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xplus4", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
                     disableCue = true;
                 } else {
                     disableCue = this.config.disableCue;
@@ -855,7 +858,7 @@ class EmulatorJS {
                     let cueFile = null;
                     let selectedCueExt = null;
                     fileNames.forEach(fileName => {
-                        const ext = fileName.split(".").pop().toLowerCase();
+                        ext = fileName.split(".").pop().toLowerCase();
                         if (supportedFile === null && supportsExt(ext)) {
                             supportedFile = fileName;
                         }
@@ -863,7 +866,7 @@ class EmulatorJS {
                             isoFile = fileName;
                         }
                         if (["cue", "ccd", "toc", "m3u"].includes(ext)) {
-                            if (this.getCore(true) === "psx") {
+                            if (coreName === "psx") {
                                 //always prefer m3u files for psx cores
                                 if (selectedCueExt !== "m3u") {
                                     if (cueFile === null || ext === "m3u") {
