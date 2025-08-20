@@ -4574,7 +4574,6 @@ class EmulatorJS {
         const nested = this.createElement("div");
         nested.classList.add("ejs_settings_transition");
         this.settings = {};
-        this.allSettings = {};
         const menus = [];
         let parentMenuCt = 0;
 
