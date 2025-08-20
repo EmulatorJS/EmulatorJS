@@ -115,6 +115,7 @@
     config.softLoad = window.EJS_softLoad;
     config.capture = window.EJS_screenCapture;
     config.externalFiles = window.EJS_externalFiles;
+    config.dontExtractRom = window.EJS_dontExtractRom;
     config.dontExtractBIOS = window.EJS_dontExtractBIOS;
     config.disableDatabases = window.EJS_disableDatabases;
     config.disableLocalStorage = window.EJS_disableLocalStorage;

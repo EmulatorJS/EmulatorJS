@@ -810,16 +810,15 @@ class EmulatorJS {
             this.textElem.innerText = this.localization("Download Game Data");
 
             const gotGameData = (data) => {
-                const altName = this.getBaseFileName(true);
-
-                let ext = altName.split(".").pop().toLowerCase();
+                
                 const coreName = this.getCore(true);
-                if (["arcade", "mame"].includes(coreName) || (coreName === "dos" && ext === "zip")) {
+                const altName = this.getBaseFileName(true);
+                if (["arcade", "mame"].includes(coreName) || this.config.dontExtractRom === true) {
                     this.fileName = altName;
                     this.gameManager.FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
                     return;
-                }
+                } 
 
                 let disableCue = false;
                 if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xplus4", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
@@ -858,7 +857,7 @@ class EmulatorJS {
                     let cueFile = null;
                     let selectedCueExt = null;
                     fileNames.forEach(fileName => {
-                        ext = fileName.split(".").pop().toLowerCase();
+                        const ext = fileName.split(".").pop().toLowerCase();
                         if (supportedFile === null && supportsExt(ext)) {
                             supportedFile = fileName;
                         }
