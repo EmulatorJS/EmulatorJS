@@ -291,7 +291,19 @@ class EmulatorJS {
         this.capture.video.audioBitrate = (typeof this.capture.video.audioBitrate === "number") ? this.capture.video.audioBitrate : 192 * 1024;
         this.bindListeners();
         // Additions for Netplay
-        this.netplayCanvas = null; // Defer creation
+        this.netplayCanvas = null; 
+        this.netplayShowWarning = false;
+        this.netplayWarningShown = false;
+        if (this.netplayEnabled) {
+            const iceServers = this.config.netplayICEServers || window.EJS_netplayICEServers || [];
+            const hasTurnServer = iceServers.some(server => 
+                server && typeof server.urls === 'string' && server.urls.startsWith('turn:')
+            );
+            if (!hasTurnServer) {
+                this.netplayShowWarning = true;
+            }
+            console.log("Netplay warning flag set to:", this.netplayShowWarning);
+        }
 
         if ((this.isMobile || this.hasTouchScreen) && this.virtualGamepad) {
             this.virtualGamepad.classList.add("ejs-vgamepad-active");
@@ -5286,6 +5298,16 @@ class EmulatorJS {
         body.appendChild(joined);
 
         this.openNetplayMenu = () => {
+            if (this.netplayShowWarning && !this.netplayWarningShown) {
+                const warningDiv = this.createElement("div");
+                warningDiv.className = "ejs_netplay_warning";
+                warningDiv.innerText = "Warning: No TURN server configured. Netplay connections may fail.";
+                const menuBody = this.netplayMenu.querySelector(".ejs_popup_body");
+                if (menuBody) {
+                    menuBody.prepend(warningDiv);
+                    this.netplayWarningShown = true;
+                }
+            }
             this.netplayMenu.style.display = "";
             if (!this.netplay || (this.netplay && !this.netplay.name)) {
                 this.netplay = {
@@ -5343,8 +5365,8 @@ class EmulatorJS {
         };
     }
 
-defineNetplayFunctions() {
-        const EJS_INSTANCE = this; // Reference to the EmulatorJS instance
+    defineNetplayFunctions() {
+        const EJS_INSTANCE = this;
 
         function guidGenerator() {
             const S4 = function () {
@@ -6746,7 +6768,6 @@ defineNetplayFunctions() {
             console.warn("Module is undefined. postMainLoop will not be set.");
         }
     }
-
     createCheatsMenu() {
         const body = this.createPopup("Cheats", {
             "Add Cheat": () => {

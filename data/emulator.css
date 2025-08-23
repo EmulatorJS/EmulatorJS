@@ -242,6 +242,17 @@
   opacity: 1;
 }
 
+.ejs_netplay_warning {
+  padding: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: black !important;
+  background-color: rgba(255, 165, 0, 0.8);
+  border: 1px solid orange;
+  border-radius: 5px;
+  font-size: 0.9em;
+}
+
 .ejs_context_menu {
     position: absolute;
     display: none;
