@@ -219,11 +219,38 @@
 .ejs_canvas {
     width: 100%;
     height: 100%;
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: none;
+    object-fit: contain;
+    object-position: top;
 }
 
 .ejs_canvas_parent {
     width: 100%;
     height: 100%;
+}
+
+.netplay-hidden {
+  display: none !important;
+}
+
+.option-enabled {
+  color: inherit;
+  opacity: 1;
+}
+
+.ejs_netplay_warning {
+  padding: 10px;
+  margin-bottom: 15px;
+  text-align: center;
+  color: black !important;
+  background-color: rgba(255, 165, 0, 0.8);
+  border: 1px solid orange;
+  border-radius: 5px;
+  font-size: 0.9em;
 }
 
 .ejs_context_menu {
@@ -1534,6 +1561,17 @@
 
 .ejs_virtualGamepad_open svg {
     fill: currentColor;
+}
+
+.ejs-vgamepad-active {
+    z-index: 1000;
+    position: absolute;
+    pointer-events: auto;
+    width: 100%;
+}
+
+.ejs-canvas-no-pointer {
+    pointer-events: none;
 }
 
 .ejs_netplay_header {

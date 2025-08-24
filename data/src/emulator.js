@@ -205,8 +205,10 @@ class EmulatorJS {
         this.allSettings = {};
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
-        if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname))) this.checkForUpdates();
-        this.netplayEnabled = (window.EJS_DEBUG_XX === true) && (window.EJS_EXPERIMENTAL_NETPLAY === true);
+        if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname))) {
+            this.checkForUpdates();
+        }
+        this.netplayEnabled = true;
         this.config = config;
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
@@ -290,7 +292,28 @@ class EmulatorJS {
         this.capture.video.videoBitrate = (typeof this.capture.video.videoBitrate === "number") ? this.capture.video.videoBitrate : 2.5 * 1024 * 1024;
         this.capture.video.audioBitrate = (typeof this.capture.video.audioBitrate === "number") ? this.capture.video.audioBitrate : 192 * 1024;
         this.bindListeners();
-        this.config.netplayUrl = this.config.netplayUrl || "https://netplay.emulatorjs.org";
+        // Additions for Netplay
+        this.netplayCanvas = null; 
+        this.netplayShowTurnWarning = false;
+        this.netplayWarningShown = false;
+        if (this.netplayEnabled) {
+            const iceServers = this.config.netplayICEServers || window.EJS_netplayICEServers || [];
+            const hasTurnServer = iceServers.some(server => 
+                server && typeof server.urls === 'string' && server.urls.startsWith('turn:')
+            );
+            if (!hasTurnServer) {
+                this.netplayShowTurnWarning = true;
+            }
+            if (this.netplayShowTurnWarning && this.debug) {
+                console.warn("WARNING: No TURN addresses are configured! Many clients may fail to connect!");
+            }
+        }
+
+        if ((this.isMobile || this.hasTouchScreen) && this.virtualGamepad) {
+            this.virtualGamepad.classList.add("ejs-vgamepad-active");
+            this.canvas.classList.add("ejs-canvas-no-pointer");
+        }
+
         this.fullscreen = false;
         this.enableMouseLock = false;
         this.supportsWebgl2 = !!document.createElement("canvas").getContext("webgl2") && (this.config.forceLegacyCores !== true);
@@ -511,7 +534,7 @@ class EmulatorJS {
             if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
                 if (!this.missingLang.includes(text)) this.missingLang.push(text);
-                console.log(`Translation not found for '${text}'. Language set to '${this.config.language}'`);
+                if (this.debug) console.log(`Translation not found for '${text}'. Language set to '${this.config.language}'`);
             }
             return this.config.langJson[text] || text;
         }
@@ -692,6 +715,7 @@ class EmulatorJS {
         if (!this.msgElem) {
             this.msgElem = this.createElement("div");
             this.msgElem.classList.add("ejs_message");
+            this.msgElem.style.zIndex = "6";
             this.elements.parent.appendChild(this.msgElem);
         }
         clearTimeout(this.msgTimeout);
@@ -1335,7 +1359,7 @@ class EmulatorJS {
             displayName: "Exit Emulation"
         },
         netplay: {
-            visible: false,
+            visible: true,
             icon: '<svg viewBox="0 0 512 512"><path fill="currentColor" d="M364.215 192h131.43c5.439 20.419 8.354 41.868 8.354 64s-2.915 43.581-8.354 64h-131.43c5.154-43.049 4.939-86.746 0-128zM185.214 352c10.678 53.68 33.173 112.514 70.125 151.992.221.001.44.008.661.008s.44-.008.661-.008c37.012-39.543 59.467-98.414 70.125-151.992H185.214zm174.13-192h125.385C452.802 84.024 384.128 27.305 300.95 12.075c30.238 43.12 48.821 96.332 58.394 147.925zm-27.35 32H180.006c-5.339 41.914-5.345 86.037 0 128h151.989c5.339-41.915 5.345-86.037-.001-128zM152.656 352H27.271c31.926 75.976 100.6 132.695 183.778 147.925-30.246-43.136-48.823-96.35-58.393-147.925zm206.688 0c-9.575 51.605-28.163 104.814-58.394 147.925 83.178-15.23 151.852-71.949 183.778-147.925H359.344zm-32.558-192c-10.678-53.68-33.174-112.514-70.125-151.992-.221 0-.44-.008-.661-.008s-.44.008-.661.008C218.327 47.551 195.872 106.422 185.214 160h141.572zM16.355 192C10.915 212.419 8 233.868 8 256s2.915 43.581 8.355 64h131.43c-4.939-41.254-5.154-84.951 0-128H16.355zm136.301-32c9.575-51.602 28.161-104.81 58.394-147.925C127.872 27.305 59.198 84.024 27.271 160h125.385z"/></svg>',
             displayName: "Netplay"
         },
@@ -1373,7 +1397,7 @@ class EmulatorJS {
                     // If the button does not exist in the default buttons, create a custom button
                     // Custom buttons must have a displayName, icon, and callback property
                     if (!buttonUserOpts[searchKey] || !buttonUserOpts[searchKey].displayName || !buttonUserOpts[searchKey].icon || !buttonUserOpts[searchKey].callback) {
-                        console.warn(`Custom button "${searchKey}" is missing required properties`);
+                        if (this.debug) console.warn(`Custom button "${searchKey}" is missing required properties`);
                         continue;
                     }
 
@@ -1413,7 +1437,7 @@ class EmulatorJS {
                                 callback: buttonUserOpts[searchKey].callback,
                                 custom: true
                             };
-                        } else {
+                        } else if (this.debug) {
                             console.warn(`Custom button "${searchKey}" is missing required properties`);
                         }
                     }
@@ -3342,7 +3366,7 @@ class EmulatorJS {
                     this.controls[i][j].value = parseInt(this.keyLookup(this.controls[i][j].value));
                     if (this.controls[i][j].value === -1 && this.debug) {
                         delete this.controls[i][j].value;
-                        console.warn("Invalid key for control " + j + " player " + i);
+                        if (this.debug) console.warn("Invalid key for control " + j + " player " + i);
                     }
                 }
             }
@@ -3487,11 +3511,11 @@ class EmulatorJS {
         let info;
         if (this.config.VirtualGamepadSettings && function (set) {
             if (!Array.isArray(set)) {
-                console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
+                if (this.debug) console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
                 return false;
             }
             if (!set.length) {
-                console.warn("Virtual gamepad settings is empty! Using default gamepad settings");
+                if (this.debug) console.warn("Virtual gamepad settings is empty! Using default gamepad settings");
                 return false;
             }
             for (let i = 0; i < set.length; i++) {
@@ -5163,9 +5187,45 @@ class EmulatorJS {
         popup.appendChild(popupMsg);
         return [popup, popupMsg];
     }
+
+    updateNetplayUI(isJoining) {
+        if (!this.elements.bottomBar) return;
+
+        const bar = this.elements.bottomBar;
+        const isClient = !this.netplay.owner;
+        const shouldHideButtons = isJoining && isClient;
+        const elementsToToggle = [
+            ...(bar.playPause || []),
+            ...(bar.restart || []),
+            ...(bar.saveState || []),
+            ...(bar.loadState || []),
+            ...(bar.cheat || []),
+            ...(bar.saveSavFiles || []),
+            ...(bar.loadSavFiles || []),
+            ...(bar.exit || []),
+            ...(bar.contextMenu || []),
+            ...(bar.cacheManager || [])
+        ];
+        
+        // Add the parent containers to the same logic
+        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
+            elementsToToggle.push(bar.settings[0].parentElement);
+        }
+        if (this.diskParent) {
+            elementsToToggle.push(this.diskParent);
+        }
+
+        elementsToToggle.forEach(el => {
+            if (el) {
+                el.classList.toggle('netplay-hidden', shouldHideButtons);
+            }
+        });
+    }
     createNetplayMenu() {
         const body = this.createPopup("Netplay", {
             "Create a Room": () => {
+                if (typeof this.netplay.updateList !== "function")
+                    this.defineNetplayFunctions();
                 if (this.isNetplay) {
                     this.netplay.leaveRoom();
                 } else {
@@ -5174,7 +5234,9 @@ class EmulatorJS {
             },
             "Close": () => {
                 this.netplayMenu.style.display = "none";
-                this.netplay.updateList.stop();
+                if (this.netplay.updateList) {
+                    this.netplay.updateList.stop();
+                }
             }
         }, true);
         this.netplayMenu = body.parentElement;
@@ -5194,11 +5256,11 @@ class EmulatorJS {
             item.style["text-align"] = "center";
             row.appendChild(item);
             return item;
-        }
+        };
         thead.appendChild(row);
         addToHeader("Room Name").style["text-align"] = "left";
         addToHeader("Players").style.width = "80px";
-        addToHeader("").style.width = "80px"; //"join" button
+        addToHeader("").style.width = "80px";
         table.appendChild(thead);
         const tbody = this.createElement("tbody");
 
@@ -5222,11 +5284,11 @@ class EmulatorJS {
             item.innerText = text;
             row2.appendChild(item);
             return item;
-        }
+        };
         thead2.appendChild(row2);
         addToHeader2("Player").style.width = "80px";
         addToHeader2("Name");
-        addToHeader2("").style.width = "80px"; //"join" button
+        addToHeader2("").style.width = "80px";
         table2.appendChild(thead2);
         const tbody2 = this.createElement("tbody");
 
@@ -5240,19 +5302,30 @@ class EmulatorJS {
         body.appendChild(joined);
 
         this.openNetplayMenu = () => {
+            if (this.netplayShowTurnWarning && !this.netplayWarningShown) {
+                const warningDiv = this.createElement("div");
+                warningDiv.className = "ejs_netplay_warning";
+                warningDiv.innerText = "Warning: No TURN server configured. Netplay connections may fail.";
+                const menuBody = this.netplayMenu.querySelector(".ejs_popup_body");
+                if (menuBody) {
+                    menuBody.prepend(warningDiv);
+                    this.netplayWarningShown = true;
+                }
+            }
             this.netplayMenu.style.display = "";
             if (!this.netplay || (this.netplay && !this.netplay.name)) {
-                this.netplay = {};
-                this.netplay.table = tbody;
-                this.netplay.playerTable = tbody2;
-                this.netplay.passwordElem = password;
-                this.netplay.roomNameElem = title2;
-                this.netplay.createButton = createButton;
-                this.netplay.tabs = [rooms, joined];
-                this.defineNetplayFunctions();
+                this.netplay = {
+                    table: tbody,
+                    playerTable: tbody2,
+                    passwordElem: password,
+                    roomNameElem: title2,
+                    createButton: createButton,
+                    tabs: [rooms, joined],
+                    ...this.netplay 
+                };
                 const popups = this.createSubPopup();
                 this.netplayMenu.appendChild(popups[0]);
-                popups[1].classList.add("ejs_cheat_parent"); //Hehe
+                popups[1].classList.add("ejs_cheat_parent");
                 const popup = popups[1];
 
                 const header = this.createElement("div");
@@ -5283,71 +5356,187 @@ class EmulatorJS {
                 submit.innerText = this.localization("Submit");
                 popup.appendChild(submit);
                 this.addEventListener(submit, "click", (e) => {
-                    if (!input.value.trim()) return;
+                    if (!input.value.trim())
+                        return;
                     this.netplay.name = input.value.trim();
                     popups[0].remove();
-                })
+                });
+            }
+            if (typeof this.netplay.updateList !== "function") {
+                this.defineNetplayFunctions();
             }
             this.netplay.updateList.start();
-        }
+        };
     }
+
     defineNetplayFunctions() {
+        const EJS_INSTANCE = this;
+
         function guidGenerator() {
-            const S4 = function() {
+            const S4 = function () {
                 return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
             };
             return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
         }
-        this.netplay.url = this.config.netplayUrl;
-        while (this.netplay.url.endsWith("/")) {
-            this.netplay.url = this.netplay.url.substring(0, this.netplay.url.length - 1);
-        }
-        this.netplay.current_frame = 0;
-        this.netplay.getOpenRooms = async () => {
-            return JSON.parse(await (await fetch(this.netplay.url + "/list?domain=" + window.location.host + "&game_id=" + this.config.gameId)).text());
-        }
-        this.netplay.updateTableList = async () => {
-            const addToTable = (id, name, current, max) => {
+        this.getNativeResolution = function () {
+            if (this.Module && this.Module.getNativeResolution) {
+                try {
+                    const res = this.Module.getNativeResolution();
+                    console.log("Native resolution from Module:", res);
+                    return res;
+                } catch (error) {
+                    console.error("Failed to get native resolution:", error);
+                    return {
+                        width: 640,
+                        height: 480
+                    };
+                }
+            }
+            return {
+                width: 640,
+                height: 480
+            };
+        };
+
+        this.netplayGetUserIndex = function () {
+            if (!this.isNetplay || !this.netplay.players || !this.netplay.playerID) {
+                console.warn("netplayGetUserIndex: Netplay not active or players/playerID undefined");
+                return 0;
+            }
+            const playerIds = Object.keys(this.netplay.players);
+            const index = playerIds.indexOf(this.netplay.playerID);
+            return index === -1 ? 0 : index;
+        };
+
+        this.netplay.simulateInput = (player, index, value) => {
+            console.log("netplay.simulateInput called:", {
+                player,
+                index,
+                value,
+                playerIndex: this.netplayGetUserIndex()
+            });
+            if (!this.isNetplay || !this.gameManager || !this.gameManager.functions || !this.gameManager.functions.simulateInput) {
+                console.error("Cannot simulate input: Netplay not active or gameManager.functions.simulateInput undefined");
+                return;
+            }
+            const playerIndex = this.netplayGetUserIndex();
+            let frame = this.netplay.currentFrame || 0;
+            if (this.netplay.owner) {
+                if (!this.netplay.inputsData[frame])
+                    this.netplay.inputsData[frame] = [];
+                this.netplay.inputsData[frame].push({
+                    frame: frame,
+                    connected_input: [playerIndex, index, value]
+                });
+                this.gameManager.functions.simulateInput(playerIndex, index, value);
+            } else {
+                this.gameManager.functions.simulateInput(playerIndex, index, value);
+                if (this.netplaySendMessage) {
+                    this.netplaySendMessage({
+                        "sync-control": [{
+                                frame: frame + 20,
+                                connected_input: [playerIndex, index, value]
+                            }
+                        ]
+                    });
+                } else {
+                    console.error("netplaySendMessage is undefined");
+                }
+            }
+        };
+
+        this.netplayUpdateTableList = async () => {
+            if (!this.netplay || !this.netplay.table) {
+                console.error("netplay or netplay.table is undefined");
+                return;
+            }
+
+            const addToTable = (id, name, current, max, hasPassword) => {
                 const row = this.createElement("tr");
                 row.classList.add("ejs_netplay_table_row");
-                const addToHeader = (text) => {
+                const addCell = (text) => {
                     const item = this.createElement("td");
                     item.innerText = text;
                     item.style.padding = "10px 0";
                     item.style["text-align"] = "center";
                     row.appendChild(item);
                     return item;
-                }
-                addToHeader(name).style["text-align"] = "left";
-                addToHeader(current + "/" + max).style.width = "80px";
-
-                const parent = addToHeader("");
+                };
+                addCell(name).style["text-align"] = "left";
+                addCell(current + "/" + max).style.width = "80px";
+                const parent = addCell("");
                 parent.style.width = "80px";
                 this.netplay.table.appendChild(row);
+
                 if (current < max) {
                     const join = this.createElement("button");
-                    join.classList.add("ejs_netplay_join_button");
-                    join.classList.add("ejs_button_button");
+                    join.classList.add("ejs_netplay_join_button", "ejs_button_button");
                     join.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
                     join.innerText = this.localization("Join");
                     parent.appendChild(join);
-                    this.addEventListener(join, "click", (e) => {
-                        this.netplay.joinRoom(id, name);
-                    })
-                    return join;
+
+                    this.addEventListener(join, "click", () => {
+                        if (hasPassword) {
+                            let password = prompt("Please enter the room password:");
+                            if (password !== null) {
+                                password = password.trim();
+                                this.netplayJoinRoom(id, name, max, password);
+                            }
+                        } else {
+                            this.netplayJoinRoom(id, name, max, null);
+                        }
+                    });
                 }
+            };
+
+            try {
+                const open = await this.netplayGetOpenRooms();
+                this.netplay.table.innerHTML = "";
+                for (const k in open) {
+                    addToTable(k, open[k].room_name, open[k].current, open[k].max, open[k].hasPassword);
+                }
+            } catch (e) {
+                console.error("Could not update room list:", e);
             }
-            const open = await this.netplay.getOpenRooms();
-            //console.log(open);
-            this.netplay.table.innerHTML = "";
-            for (const k in open) {
-                addToTable(k, open[k].room_name, open[k].current, open[k].max);//todo: password
+        };
+
+        this.netplayGetOpenRooms = async () => {
+            if (!this.netplay.url) {
+                console.error("netplay.url is undefined");
+                return {};
             }
-        }
-        this.netplay.showOpenRoomDialog = () => {
+            try {
+                const response = await fetch(this.netplay.url + "/list?domain=" + window.location.host + "&game_id=" + this.config.gameId);
+                const data = await response.text();
+                console.log("Fetched open rooms:", data);
+                return JSON.parse(data);
+            } catch (error) {
+                console.error("Error fetching open rooms:", error);
+                return {};
+            }
+        };
+
+        this.netplayUpdateListStart = () => {
+            if (!this.netplayUpdateTableList) {
+                console.error("netplayUpdateTableList is undefined");
+                return;
+            }
+            this.netplay.updateListInterval = setInterval(this.netplayUpdateTableList.bind(this), 1000);
+        };
+
+        this.netplayUpdateListStop = () => {
+            clearInterval(this.netplay.updateListInterval);
+        };
+
+        this.netplayShowOpenRoomDialog = () => {
+            if (!this.createSubPopup || !this.createElement || !this.localization || !this.addEventListener) {
+                console.error("Required methods for netplayShowOpenRoomDialog are undefined");
+                return;
+            }
+            this.originalControls = JSON.parse(JSON.stringify(this.controls));
             const popups = this.createSubPopup();
             this.netplayMenu.appendChild(popups[0]);
-            popups[1].classList.add("ejs_cheat_parent"); //Hehe
+            popups[1].classList.add("ejs_cheat_parent");
             const popup = popups[1];
 
             const header = this.createElement("div");
@@ -5358,93 +5547,644 @@ class EmulatorJS {
             popup.appendChild(header);
 
             const main = this.createElement("div");
-
             main.classList.add("ejs_netplay_header");
             const rnhead = this.createElement("strong");
             rnhead.innerText = this.localization("Room Name");
             const rninput = this.createElement("input");
             rninput.type = "text";
-            rninput.setAttribute("maxlength", 20);
+            rninput.setAttribute("maxlength", "20");
 
             const maxhead = this.createElement("strong");
             maxhead.innerText = this.localization("Max Players");
             const maxinput = this.createElement("select");
-            maxinput.setAttribute("disabled", "disabled");
-            const val2 = this.createElement("option");
-            val2.value = 2;
-            val2.innerText = "2";
-            const val3 = this.createElement("option");
-            val3.value = 3;
-            val3.innerText = "3";
-            const val4 = this.createElement("option");
-            val4.value = 4;
-            val4.innerText = "4";
-            maxinput.appendChild(val2);
-            maxinput.appendChild(val3);
-            maxinput.appendChild(val4);
+            const playerCounts = ["2", "3", "4"];
+            playerCounts.forEach(count => {
+                const option = this.createElement("option");
+                option.value = count;
+                option.innerText = count;
+                option.classList.add("option-enabled");
+                maxinput.appendChild(option);
+            });
 
             const pwhead = this.createElement("strong");
             pwhead.innerText = this.localization("Password (optional)");
             const pwinput = this.createElement("input");
             pwinput.type = "text";
-            pwinput.setAttribute("maxlength", 20);
+            pwinput.setAttribute("maxlength", "20");
 
             main.appendChild(rnhead);
             main.appendChild(this.createElement("br"));
             main.appendChild(rninput);
-
             main.appendChild(maxhead);
             main.appendChild(this.createElement("br"));
             main.appendChild(maxinput);
-
             main.appendChild(pwhead);
             main.appendChild(this.createElement("br"));
             main.appendChild(pwinput);
-
             popup.appendChild(main);
 
             popup.appendChild(this.createElement("br"));
             const submit = this.createElement("button");
-            submit.classList.add("ejs_button_button");
-            submit.classList.add("ejs_popup_submit");
+            submit.classList.add("ejs_button_button", "ejs_popup_submit");
             submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
             submit.style.margin = "0 10px";
             submit.innerText = this.localization("Submit");
             popup.appendChild(submit);
-            this.addEventListener(submit, "click", (e) => {
-                if (!rninput.value.trim()) return;
-                this.netplay.openRoom(rninput.value.trim(), parseInt(maxinput.value), pwinput.value.trim());
+            this.addEventListener(submit, "click", () => {
+                console.log("Submit button clicked");
+                if (!rninput.value.trim()) {
+                    console.log("Room name is empty, aborting");
+                    return;
+                }
+                const roomName = rninput.value.trim();
+                const maxPlayers = parseInt(maxinput.value);
+                const password = pwinput.value.trim();
+                console.log("Creating room with:", {
+                    roomName,
+                    maxPlayers,
+                    password
+                });
+                this.netplayOpenRoom(roomName, maxPlayers, password);
                 popups[0].remove();
-            })
+            });
             const close = this.createElement("button");
-            close.classList.add("ejs_button_button");
-            close.classList.add("ejs_popup_submit");
+            close.classList.add("ejs_button_button", "ejs_popup_submit");
             close.style.margin = "0 10px";
             close.innerText = this.localization("Close");
             popup.appendChild(close);
-            this.addEventListener(close, "click", (e) => {
-                popups[0].remove();
-            })
-        }
-        this.netplay.startSocketIO = (callback) => {
+            this.addEventListener(close, "click", () => popups[0].remove());
+        };
+
+        this.netplayInitWebRTCStream = async () => {
+            if (this.netplay.localStream)
+                return;
+            console.log("Initializing WebRTC stream for owner...");
+            const { width: nativeWidth, height: nativeHeight } = this.getNativeResolution();
+            if (this.canvas) {
+                this.canvas.width = nativeWidth;
+                this.canvas.height = nativeHeight;
+            }
+            if (this.netplay.owner && this.Module && this.Module.setCanvasSize) {
+                this.Module.setCanvasSize(nativeWidth, nativeHeight);
+                console.log("Set emulator canvas size to native:", {
+                    width: nativeWidth,
+                    height: nativeHeight
+                });
+            }
+
+            const stream = this.collectScreenRecordingMediaTracks(this.canvas, 30);
+            if (!stream || !stream.getTracks().length) {
+                console.error("Failed to capture stream:", stream);
+                this.displayMessage("Failed to initialize video stream", 5000);
+                return;
+            }
+            const videoTrack = stream.getVideoTracks()[0];
+            if (videoTrack) {
+                videoTrack.applyConstraints({
+                    width: {
+                        ideal: nativeWidth
+                    },
+                    height: {
+                        ideal: nativeHeight
+                    },
+                    frameRate: {
+                        ideal: 30,
+                        max: 30
+                    }
+                }).catch(err => console.error("Constraint error:", err));
+                console.log("Track settings:", videoTrack.getSettings());
+            }
+            stream.getTracks().forEach(track => {
+                console.log("Track:", {
+                    kind: track.kind,
+                    enabled: track.enabled,
+                    muted: track.muted
+                });
+                track.onmute = () => console.warn("Track muted:", track.id);
+                track.onended = () => console.warn("Track ended:", track.id);
+            });
+            this.netplay.localStream = stream;
+        };
+
+        this.netplayCreatePeerConnection = (peerId) => {
+            const pc = new RTCPeerConnection({
+                iceServers: this.config.netplayICEServers,
+                iceCandidatePoolSize: 10
+            });
+
+            let dataChannel;
+
+            if (this.netplay.owner) {
+                dataChannel = pc.createDataChannel('inputs');
+                dataChannel.onopen = () => console.log(`Data channel opened for peer ${peerId}`);
+                dataChannel.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    if (data.type === "host-left") {
+                        this.displayMessage("Host left. Restarting...", 3000);
+                        this.netplayLeaveRoom();
+                        return;
+                    }
+                    const playerIndex = data.player;
+                    const frame = this.netplay.currentFrame || 0;
+
+                    if (!this.netplay.inputsData[frame]) {
+                        this.netplay.inputsData[frame] = [];
+                    }
+                    this.netplay.inputsData[frame].push({
+                        frame: frame,
+                        connected_input: [playerIndex, data.index, data.value]
+                    });
+                    if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                        this.gameManager.functions.simulateInput(playerIndex, data.index, data.value);
+                    } else {
+                        console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
+                    }
+                };
+            } else {
+                pc.ondatachannel = (event) => {
+                    dataChannel = event.channel;
+                    dataChannel.onopen = () => console.log(`Data channel opened for peer ${peerId}`);
+                    dataChannel.onmessage = (event) => {
+                        const data = JSON.parse(event.data);
+                        if (data.type === "host-left") {
+                            this.displayMessage("Host left. Restarting...", 3000);
+                            this.netplayLeaveRoom();
+                            return;
+                        }
+                        console.log(`Received input from host ${peerId}:`, data);
+                        if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                            this.gameManager.functions.simulateInput(data.player, data.index, data.value);
+                        } else {
+                            console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
+                        }
+                    };
+                };
+            }
+
+            if (this.netplay.owner && this.netplay.localStream) {
+                this.netplay.localStream.getTracks().forEach(track => {
+                    pc.addTrack(track, this.netplay.localStream);
+                });
+
+                const codecs = RTCRtpSender.getCapabilities('video').codecs;
+                const preferredCodecs = codecs.filter(codec => ['video/H264', 'video/VP8'].includes(codec.mimeType));
+                const transceiver = pc.getTransceivers().find(t => t.sender && t.sender.track && t.sender.track.kind === 'video');
+                if (transceiver && preferredCodecs.length) {
+                    try {
+                        transceiver.setCodecPreferences(preferredCodecs);
+                    } catch (error) {
+                        console.error("Failed to set codec preferences:", error);
+                    }
+                }
+            } else {
+                pc.addTransceiver('video', {
+                    direction: 'recvonly'
+                });
+            }
+
+            this.netplay.peerConnections[peerId] = {
+                pc,
+                dataChannel
+            };
+
+            let streamReceived = false;
+            const streamTimeout = setTimeout(() => {
+                if (!streamReceived && !this.netplay.owner) {
+                    this.displayMessage("Failed to receive video stream. Check your network and try again.", 5000);
+                    this.netplayLeaveRoom();
+                }
+            }, 10000);
+
+            pc.onicecandidate = (event) => {
+                if (event.candidate) {
+                    this.netplay.socket.emit("webrtc-signal", {
+                        target: peerId,
+                        candidate: event.candidate
+                    });
+                }
+            };
+
+            pc.onicecandidateerror = (event) => {
+                console.error("ICE candidate error for peer", peerId, ":", event);
+            };
+
+            pc.onconnectionstatechange = () => {
+                if (pc.connectionState === "connected") {
+                    this.netplay.webRtcReady = true;
+                } else if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
+                    this.displayMessage("Connection with player lost. Attempting to reconnect...", 3000);
+                    clearTimeout(streamTimeout);
+                    pc.close();
+                    delete this.netplay.peerConnections[peerId];
+                    setTimeout(() => this.netplayCreatePeerConnection(peerId), 2000);
+                }
+            };
+
+            pc.ontrack = (event) => {
+                if (!this.netplay.owner) {
+                    streamReceived = true;
+                    clearTimeout(streamTimeout);
+                    const stream = event.streams[0];
+                    if (!this.netplay.video) {
+                        this.netplay.video = document.createElement('video');
+                        this.netplay.video.muted = true;
+                        this.netplay.video.playsInline = true;
+                    }
+                    this.netplay.video.srcObject = stream;
+                    this.netplay.video.play().catch(() => {
+                        if (this.isMobile) {
+                            this.promptUserInteraction(this.netplay.video);
+                        }
+                    });
+                    this.drawVideoToCanvas();
+                }
+            };
+
+            if (this.netplay.owner && this.netplay.localStream) {
+                pc.createOffer()
+                .then(offer => {
+                    offer.sdp = offer.sdp.replace(/profile-level-id=[0-9a-fA-F]+/, 'profile-level-id=42e01f');
+                    return pc.setLocalDescription(offer);
+                })
+                .then(() => {
+                    this.netplay.socket.emit("webrtc-signal", {
+                        target: peerId,
+                        offer: pc.localDescription
+                    });
+                })
+                .catch(error => console.error("Error creating offer:", error));
+            }
+
+            return pc;
+        };
+
+        this.showVideoOverlay = () => {
+            const videoElement = this.netplay.video;
+            if (!videoElement) {
+                console.error("showVideoOverlay: videoElement is not initialized");
+                return;
+            }
+            console.log("showVideoOverlay called, videoElement exists:", videoElement);
+
+            if (videoElement.parentElement) {
+                console.log("Removing video element from current parent:", videoElement.parentElement);
+                videoElement.parentElement.removeChild(videoElement);
+            }
+
+            videoElement.style.position = "absolute";
+            if (this.isMobile) {
+                videoElement.style.top = "0";
+                videoElement.style.left = "0";
+                videoElement.style.width = "100vw";
+                videoElement.style.height = "100vh";
+                videoElement.style.maxHeight = "100vh";
+            } else {
+                videoElement.style.top = "0";
+                videoElement.style.left = "0";
+                videoElement.style.width = "100%";
+                videoElement.style.height = "100%";
+            }
+            videoElement.style.border = "1px solid white";
+            videoElement.style.zIndex = "1";
+            videoElement.style.display = "";
+            videoElement.style.objectFit = "contain";
+            document.body.appendChild(videoElement);
+            console.log("Video overlay added to DOM, styles:", videoElement.style.cssText);
+
+            const playVideo = async() => {
+                console.log("Attempting to play video, readyState:", videoElement.readyState, "Paused:", videoElement.paused, "Ended:", videoElement.ended, "Muted:", videoElement.muted);
+                try {
+                    await videoElement.play();
+                    console.log("Video playback started successfully, currentTime:", videoElement.currentTime);
+                } catch (error) {
+                    console.error("Video play error:", error);
+                    if (this.isMobile) {
+                        this.promptUserInteraction(videoElement);
+                    } else {
+                        console.log("Autoplay failed on desktop, but user interaction not required for muted video");
+                    }
+                }
+                if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
+                    console.warn("Video element has zero dimensions, likely no valid frame:", {
+                        videoWidth: videoElement.videoWidth,
+                        videoHeight: videoElement.videoHeight
+                    });
+                } else {
+                    console.log("Video dimensions:", {
+                        videoWidth: videoElement.videoWidth,
+                        videoHeight: videoElement.videoHeight
+                    });
+                }
+            };
+            playVideo();
+        };
+
+        this.drawVideoToCanvas = () => {
+            const videoElement = this.netplay.video;
+            const canvas = this.netplayCanvas;
+            if (!canvas) {
+                console.error("drawVideoToCanvas: Missing canvas!");
+            }
+            const ctx = canvas.getContext('2d', {
+                alpha: false,
+                willReadFrequently: true
+            });
+
+            if (!videoElement || !ctx) {
+                console.error("drawVideoToCanvas: Missing video, or context!");
+                return;
+            }
+
+            const { width: nativeWidth, height: nativeHeight } = this.getNativeResolution() || {
+                width: 720,
+                height: 700
+            };
+            canvas.width = nativeWidth;
+            canvas.height = nativeHeight;
+
+            const ensureVideoPlaying = async() => {
+                let retries = 0;
+                const maxRetries = 5;
+                while (retries < maxRetries) {
+                    if (videoElement.paused || videoElement.ended) {
+                        try {
+                            await videoElement.play();
+                        } catch (error) {
+                            if (this.isMobile)
+                                this.promptUserInteraction(videoElement);
+                        }
+                    }
+                    if (videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
+                        if (!this.netplay.lockedAspectRatio) {
+                            this.netplay.lockedAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
+                            console.log("Locked aspect ratio:", this.netplay.lockedAspectRatio);
+                        }
+                        break;
+                    }
+                    retries++;
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                if (retries >= maxRetries) {
+                    this.displayMessage("Failed to initialize video stream", 5000);
+                    this.netplayLeaveRoom();
+                }
+            };
+
+            const drawFrame = () => {
+                if (!this.isNetplay || this.netplay.owner)
+                    return;
+
+                const aspect = this.netplay.lockedAspectRatio || (videoElement.videoWidth / videoElement.videoHeight) || (nativeWidth / nativeHeight);
+
+                if (videoElement.readyState >= videoElement.HAVE_CURRENT_DATA && videoElement.videoWidth > 0) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                    const canvasAspect = nativeWidth / nativeHeight;
+                    let drawWidth,
+                    drawHeight,
+                    offsetX,
+                    offsetY;
+
+                    if (aspect > canvasAspect) {
+                        drawWidth = nativeWidth;
+                        drawHeight = nativeWidth / aspect;
+                        offsetX = 0;
+                        offsetY = 0;
+                    } else {
+                        drawHeight = nativeHeight;
+                        drawWidth = nativeHeight * aspect;
+                        offsetX = (nativeWidth - drawWidth) / 2;
+                        offsetY = 0;
+                    }
+
+                    ctx.drawImage(videoElement, 0, 0, videoElement.videoWidth, videoElement.videoHeight, offsetX, offsetY, drawWidth, drawHeight);
+                }
+
+                requestAnimationFrame(drawFrame);
+            };
+
+            videoElement.addEventListener('loadeddata', () => {
+                ensureVideoPlaying().then(drawFrame);
+            }, {
+                once: true
+            });
+
+            ensureVideoPlaying();
+        };
+
+        this.netplayStartSocketIO = (callback) => {
+            if (!this.netplay.previousPlayers) {
+                this.netplay.previousPlayers = {};
+            }
+            
+            if (typeof io === "undefined") {
+                console.error("Socket.IO client library not loaded. Please include <script src='https://cdn.socket.io/4.5.0/socket.io.min.js'></script>");
+                this.displayMessage("Socket.IO not available", 5000);
+                return;
+            }
+            if (this.netplay.socket && this.netplay.socket.connected) {
+                console.log("Socket already connected, reusing:", this.netplay.socket.id);
+                callback();
+                return;
+            }
+            if (!this.netplay.url) {
+                console.error("Cannot initialize Socket.IO: netplay.url is undefined");
+                this.displayMessage("Network configuration error", 5000);
+                return;
+            }
+            console.log("Initializing new Socket.IO connection to:", this.netplay.url);
             this.netplay.socket = io(this.netplay.url);
-            this.netplay.socket.on("connect", () => callback());
+            this.netplay.socket.on("connect", () => {
+                console.log("Socket.IO connected:", this.netplay.socket.id);
+                callback();
+            });
+            this.netplay.socket.on("connect_error", (error) => {
+                console.error("Socket.IO connection error:", error.message);
+                this.displayMessage("Failed to connect to server: " + error.message, 5000);
+            });
             this.netplay.socket.on("users-updated", (users) => {
-                this.netplay.reset();
-                if (this.debug) console.log(users);
+                const currentPlayers = users || {};
+                const previousPlayerIds = Object.keys(this.netplay.previousPlayers);
+                const currentPlayerIds = Object.keys(currentPlayers);
+
+                // Find who joined
+                currentPlayerIds.forEach(id => {
+                    if (!previousPlayerIds.includes(id) && id !== this.netplay.playerID) {
+                        const playerName = currentPlayers[id].player_name || 'A player';
+                        this.displayMessage(`${playerName} has joined the room.`);
+                    }
+                });
+
+                // Find who left
+                previousPlayerIds.forEach(id => {
+                    if (!currentPlayerIds.includes(id)) {
+                        const playerName = this.netplay.previousPlayers[id].player_name || 'A player';
+                        this.displayMessage(`${playerName} has left the room.`);
+                    }
+                });
+
+                this.netplay.previousPlayers = currentPlayers;
+                
+                console.log("Users updated:", users);
                 this.netplay.players = users;
-                this.netplay.updatePlayersTable();
-                if (this.netplay.owner) this.netplay.sync();
-            })
-            this.netplay.socket.on("disconnect", () => this.netplay.roomLeft());
-            this.netplay.socket.on("data-message", (data) => {
-                this.netplay.dataMessage(data);
-            })
-        }
-        this.netplay.openRoom = (roomName, maxPlayers, password) => {
+                this.netplayUpdatePlayersTable();
+                if (this.netplay.owner) {
+                    console.log("Owner setting up WebRTC for updated users...");
+                    this.netplayInitWebRTCStream().then(() => {
+                        Object.keys(users).forEach(playerId => {
+                            if (playerId !== this.netplay.playerID) {
+                                const socketId = this.netplay.players[playerId].socketId;
+                                if (!socketId) {
+                                    console.error("No socketId for player", playerId, "- WebRTC may fail");
+                                    return;
+                                }
+                                const peerId = socketId;
+                                if (!this.netplay.peerConnections[peerId]) {
+                                    console.log("Creating peer connection for", peerId);
+                                    this.netplayCreatePeerConnection(peerId);
+                                }
+                            }
+                        });
+                    }).catch(error => console.error("Failed to initialize WebRTC stream in users-updated:", error));
+                }
+            });
+            this.netplay.socket.on("disconnect", () => this.netplayLeaveRoom());
+            this.netplay.socket.on("data-message", (data) => this.netplayDataMessage(data));
+            this.netplay.socket.on("webrtc-signal", async(data) => {
+                const { sender, offer, candidate, answer, requestRenegotiate } = data;
+                console.log(`Received WebRTC signal from ${sender}:`, {
+                    offer: !!offer,
+                    answer: !!answer,
+                    candidate: !!candidate,
+                    requestRenegotiate
+                });
+                if (!sender && !requestRenegotiate) {
+                    console.warn("Ignoring signal with no sender and no renegotiation request", data);
+                    return;
+                }
+                if (requestRenegotiate && !sender) {
+                    console.warn("Ignoring renegotiation request with undefined sender", data);
+                    this.netplay.socket.emit("webrtc-signal-error", {
+                        error: "Renegotiation request missing sender",
+                        data
+                    });
+                    return;
+                }
+                let pcData = sender ? this.netplay.peerConnections[sender] : null;
+
+                if (pcData && !pcData.iceCandidateQueue) {
+                    pcData.iceCandidateQueue = [];
+                }
+
+                if (!pcData && sender) {
+                    console.log("No existing peer connection for", sender, "- creating new one");
+                    pcData = {
+                        pc: this.netplayCreatePeerConnection(sender),
+                        dataChannel: null,
+                        iceCandidateQueue: []
+                    }; 
+                    this.netplay.peerConnections[sender] = pcData;
+                }
+                const pc = pcData.pc;
+                try {
+                    if (offer) {
+                        console.log("Processing offer from", sender);
+                        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+
+                        if (pcData.iceCandidateQueue.length > 0) {
+                            console.log(`Processing ${pcData.iceCandidateQueue.length} queued ICE candidates.`);
+                            for (const queuedCandidate of pcData.iceCandidateQueue) {
+                                await pc.addIceCandidate(new RTCIceCandidate(queuedCandidate));
+                            }
+                            pcData.iceCandidateQueue = []; 
+                        }
+
+                        const answer = await pc.createAnswer();
+                        await pc.setLocalDescription(answer);
+                        console.log("Sending answer to", sender);
+                        this.netplay.socket.emit("webrtc-signal", {
+                            target: sender,
+                            answer: pc.localDescription
+                        });
+                    } else if (answer) {
+                        console.log("Processing answer from", sender);
+                        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+
+                        if (pcData.iceCandidateQueue.length > 0) {
+                            console.log(`Processing ${pcData.iceCandidateQueue.length} queued ICE candidates.`);
+                            for (const queuedCandidate of pcData.iceCandidateQueue) {
+                                await pc.addIceCandidate(new RTCIceCandidate(queuedCandidate));
+                            }
+                            pcData.iceCandidateQueue = []; 
+                        }
+
+                    } else if (candidate) {
+                        if (pc.remoteDescription) {
+                            console.log("Adding ICE candidate from", sender);
+                            await pc.addIceCandidate(new RTCIceCandidate(candidate));
+                        } else {
+                            console.log("Remote description not set. Queueing ICE candidate from", sender);
+                            pcData.iceCandidateQueue.push(candidate);
+                        }
+                    } else if (requestRenegotiate && this.netplay.owner) {
+                        console.log("Owner handling renegotiation request...");
+                        Object.keys(this.netplay.peerConnections).forEach(peerId => {
+                            if (peerId && this.netplay.peerConnections[peerId]) {
+                                const peerConn = this.netplay.peerConnections[peerId].pc;
+                                console.log("Closing and recreating peer connection for", peerId);
+                                peerConn.close();
+                                delete this.netplay.peerConnections[peerId];
+                                this.netplayCreatePeerConnection(peerId);
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error("WebRTC signaling error:", error);
+                }
+            });
+        };
+
+        this.netplayUpdatePlayersTable = () => {
+            if (!this.netplay.playerTable) {
+                console.error("netplay.playerTable is undefined");
+                return;
+            }
+            const table = this.netplay.playerTable;
+            table.innerHTML = "";
+
+            const playerCount = Object.keys(this.netplay.players).length;
+            const maxPlayers = this.netplay.maxPlayers || "?";
+
+            const addToTable = (playerNumber, playerName, statusText) => {
+                const row = this.createElement("tr");
+                const addCell = (text) => {
+                    const item = this.createElement("td");
+                    item.innerText = text;
+                    row.appendChild(item);
+                    return item;
+                };
+                addCell(playerNumber).style.width = "80px";
+                addCell(playerName);
+                addCell(statusText).style.width = "80px";
+                table.appendChild(row);
+            };
+
+            let i = 0;
+            for (const k in this.netplay.players) {
+                const playerNumber = i + 1;
+                const playerName = this.netplay.players[k].player_name || "Unknown";
+                const statusText = (i === 0) ? `${playerCount}/${maxPlayers}` : "";
+                addToTable(playerNumber, playerName, statusText);
+                i++;
+            }
+        };
+
+        this.netplayOpenRoom = (roomName, maxPlayers, password) => {
             const sessionid = guidGenerator();
             this.netplay.playerID = guidGenerator();
             this.netplay.players = {};
+            this.netplay.maxPlayers = maxPlayers;
             this.netplay.extra = {
                 domain: window.location.host,
                 game_id: this.config.gameId,
@@ -5452,31 +6192,29 @@ class EmulatorJS {
                 player_name: this.netplay.name,
                 userid: this.netplay.playerID,
                 sessionid: sessionid
-            }
+            };
             this.netplay.players[this.netplay.playerID] = this.netplay.extra;
-            this.netplay.users = {};
-
-            this.netplay.startSocketIO((error) => {
+            this.netplay.owner = true;
+            this.netplayStartSocketIO(() => {
                 this.netplay.socket.emit("open-room", {
                     extra: this.netplay.extra,
                     maxPlayers: maxPlayers,
                     password: password
                 }, (error) => {
                     if (error) {
-                        if (this.debug) console.log("error: ", error);
+                        console.error("Error opening room:", error);
+                        this.displayMessage("Failed to create room: " + error, 5000);
                         return;
                     }
-                    this.netplay.roomJoined(true, roomName, password, sessionid);
-                })
+                    this.netplayRoomJoined(true, roomName, password, sessionid);
+                });
             });
-        }
-        this.netplay.leaveRoom = () => {
-            if (this.debug) console.log("asd");
-            this.netplay.roomLeft();
-        }
-        this.netplay.joinRoom = (sessionid, roomName) => {
+        };
+
+        this.netplayJoinRoom = (sessionid, roomName, maxPlayers, password) => {
             this.netplay.playerID = guidGenerator();
             this.netplay.players = {};
+            this.netplay.maxPlayers = maxPlayers;
             this.netplay.extra = {
                 domain: window.location.host,
                 game_id: this.config.gameId,
@@ -5484,316 +6222,561 @@ class EmulatorJS {
                 player_name: this.netplay.name,
                 userid: this.netplay.playerID,
                 sessionid: sessionid
-            }
+            };
             this.netplay.players[this.netplay.playerID] = this.netplay.extra;
-
-            this.netplay.startSocketIO((error) => {
+            this.netplay.owner = false;
+            this.netplayStartSocketIO(() => {
                 this.netplay.socket.emit("join-room", {
-                    extra: this.netplay.extra//,
-                    //password: password
+                    extra: this.netplay.extra,
+                    password: password 
                 }, (error, users) => {
                     if (error) {
-                        if (this.debug) console.log("error: ", error);
+                        console.error("Error joining room:", error);
+                        alert("Error joining room: " + error);
                         return;
                     }
                     this.netplay.players = users;
-                    //this.netplay.roomJoined(false, roomName, password, sessionid);
-                    this.netplay.roomJoined(false, roomName, "", sessionid);
-                })
+                    this.netplayRoomJoined(false, roomName, password, sessionid);
+                });
             });
-        }
-        this.netplay.roomJoined = (isOwner, roomName, password, roomId) => {
-            //Will already assume this.netplay.players has been refreshed
+        };
+
+        this.netplayRoomJoined = (isOwner, roomName, password, roomId) => {
+            EJS_INSTANCE.updateNetplayUI(true);
+
+            if (!this.netplay || !this.canvas || !this.elements || !this.elements.parent) {
+                console.error("netplayRoomJoined: Required objects are undefined", {
+                    netplay: !!this.netplay,
+                    canvas: !!this.canvas,
+                    elements: !!this.elements,
+                    parent: !!(this.elements && this.elements.parent)
+                });
+                this.displayMessage("Failed to initialize netplay room", 5000);
+                return;
+            }
+
+            if (!this.netplayCanvas) {
+                this.netplayCanvas = this.createElement("canvas");
+                this.netplayCanvas.classList.add("ejs_canvas");
+                this.netplayCanvas.style.display = "none";
+                this.netplayCanvas.style.position = "absolute";
+                this.netplayCanvas.style.top = "0";
+                this.netplayCanvas.style.left = "0";
+                this.netplayCanvas.style.zIndex = "5";
+                this.netplayCanvas.style.objectFit = "contain";
+                this.netplayCanvas.style.width = "100%";
+                this.netplayCanvas.style.height = "100%";
+                this.netplayCanvas.style.objectPosition = "top";
+            }
+
             this.isNetplay = true;
             this.netplay.inputs = {};
             this.netplay.owner = isOwner;
-            if (this.debug) console.log(this.netplay.extra);
-            this.netplay.roomNameElem.innerText = roomName;
-            this.netplay.tabs[0].style.display = "none";
-            this.netplay.tabs[1].style.display = "";
-            if (password) {
-                this.netplay.passwordElem.style.display = "";
-                this.netplay.passwordElem.innerText = this.localization("Password") + ": " + password
+            console.log("Room joined with extra:", this.netplay.extra);
+
+            if (this.netplay.roomNameElem) {
+                this.netplay.roomNameElem.innerText = roomName;
+            }
+            if (this.netplay.tabs && this.netplay.tabs[0] && this.netplay.tabs[1]) {
+                this.netplay.tabs[0].style.display = "none";
+                this.netplay.tabs[1].style.display = "";
+            }
+            if (this.netplay.passwordElem) {
+                if (password) {
+                    this.netplay.passwordElem.style.display = "";
+                    this.netplay.passwordElem.innerText = this.localization("Password") + ": " + password;
+                } else {
+                    this.netplay.passwordElem.style.display = "none";
+                }
+            }
+            if (this.netplay.createButton) {
+                this.netplay.createButton.innerText = this.localization("Leave Room");
+            }
+            this.netplayUpdatePlayersTable();
+
+            this.elements.parent.style.width = "100vw";
+            this.elements.parent.style.height = "100vh";
+            this.elements.parent.style.position = "relative";
+
+            const { width: nativeWidth, height: nativeHeight } = this.getNativeResolution() || {
+                width: 700,
+                height: 720
+            };
+
+            if (!this.netplay.owner) {
+                this.canvas.style.display = "none";
+                if (!this.netplayCanvas.parentElement) {
+                    this.elements.parent.appendChild(this.netplayCanvas);
+                    console.log("Appended netplayCanvas to this.elements.parent:", this.elements.parent);
+                }
+                this.netplayCanvas.width = nativeWidth;
+                this.netplayCanvas.height = nativeHeight;
+                Object.assign(this.netplayCanvas.style, {
+                    position: 'absolute', 
+                    top: '0',
+                    left: '0',
+                    width: '100%',
+                    height: 'auto',
+                    maxHeight: '100%',
+                    zIndex: '5',
+                    display: 'block',
+                    pointerEvents: 'none'
+                });
+
+                const parentStyles = window.getComputedStyle(this.elements.parent);
+                console.log("Parent container styles:", {
+                    display: parentStyles.display,
+                    visibility: parentStyles.visibility,
+                    opacity: parentStyles.opacity,
+                    position: parentStyles.position,
+                    zIndex: parentStyles.zIndex
+                });
+
+                if (this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
+                    this.netplay.oldStyles = [this.elements.bottomBar.cheat[0].style.display];
+                    this.elements.bottomBar.cheat[0].style.display = "none";
+                }
+                if (this.gameManager && this.gameManager.resetCheat) {
+                    this.gameManager.resetCheat();
+                }
+                console.log("Player 2 joined, awaiting WebRTC stream...");
+                this.elements.parent.focus();
+
+                if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                    const originalSimulateInput = this.gameManager.functions.simulateInput;
+                    this.gameManager.functions.simulateInput = (player, index, value) => {
+                        const playerIndex = this.netplayGetUserIndex();
+                        console.log("Player 2 input:", {
+                            player,
+                            index,
+                            value,
+                            playerIndex
+                        });
+                       Object.values(this.netplay.peerConnections).forEach((pcData) => {
+                        if (
+                            pcData.pc &&
+                            pcData.pc.connectionState === "connected" &&
+                            pcData.dataChannel && 
+                            pcData.dataChannel.readyState === "open"
+                        ) {
+                        pcData.dataChannel.send(
+                        JSON.stringify({
+                            player: playerIndex,
+                            index,
+                            value,
+                                }));
+                            }
+                        });
+                    };
+                    this.netplayLeaveRoom = (originalLeaveRoom => {
+                        return function () {
+                            originalLeaveRoom.call(this);
+                            this.gameManager.functions.simulateInput = originalSimulateInput;
+                            if (this.netplay.video && this.netplay.video.parentElement) {
+                                this.netplay.video.parentElement.removeChild(this.netplay.video);
+                            }
+                        };
+                    })(this.netplayLeaveRoom);
+                } else {
+                    console.error("Cannot override simulateInput: gameManager.functions.simulateInput is undefined");
+                }
+
+                if (this.isMobile && this.gamepadElement) {
+                    const newGamepad = this.gamepadElement.cloneNode(true);
+                    this.gamepadElement.parentNode.replaceChild(newGamepad, this.gamepadElement);
+                    this.gamepadElement = newGamepad;
+                    Object.assign(this.gamepadElement.style, {
+                        zIndex: "1000",
+                        position: "absolute",
+                        pointerEvents: "auto"
+                    });
+
+                    this.gamepadElement.addEventListener("touchstart", (e) => {
+                        e.preventDefault();
+                        const button = e.target.closest('[data-button]');
+                        if (button && this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                            this.gameManager.functions.simulateInput(0, button.dataset.button, 1);
+                        }
+                    }, {
+                        passive: false
+                    });
+
+                    this.gamepadElement.addEventListener("touchend", (e) => {
+                        e.preventDefault();
+                        const button = e.target.closest('[data-button]');
+                        if (button && this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                            this.gameManager.functions.simulateInput(0, button.dataset.button, 0);
+                        }
+                    }, {
+                        passive: false
+                    });
+
+                    this.gamepadElement.focus();
+                }
+                const updateGamepadStyles = () => {
+                    if (this.isMobile && this.gamepadElement) {
+                        Object.assign(this.gamepadElement.style, {
+                            zIndex: "1000",
+                            position: "absolute",
+                            pointerEvents: "auto"
+                        });
+                        this.netplayCanvas.style.pointerEvents = "none";
+                        this.netplayCanvas.width = nativeWidth;
+                        this.netplayCanvas.height = nativeHeight;
+                        this.netplayCanvas.style.width = "100%";
+                        this.netplayCanvas.style.height = "100%";
+                    }
+                };
+                document.addEventListener("fullscreenchange", updateGamepadStyles);
+                document.addEventListener("webkitfullscreenchange", updateGamepadStyles);
+
+                setTimeout(() => {
+                    if (!this.netplay.webRtcReady) {
+                        console.error("WebRTC connection not established after timeout");
+                        this.displayMessage("Failed to connect to Player 1. Please check your network and try again.", 5000);
+                        if (this.interactionOverlay) {
+                            this.interactionOverlay.remove();
+                            this.interactionOverlay = null;
+                        }
+                        this.netplayLeaveRoom();
+                    }
+                }, 10000);
             } else {
+                if (this.canvas) {
+                    this.canvas.width = nativeWidth;
+                    this.canvas.height = nativeHeight;
+                    this.canvas.style.display = "block";
+                    this.canvas.style.objectFit = "contain";
+                }
+                if (this.netplayCanvas) {
+                    this.netplayCanvas.style.display = "none";
+                }
+                if (this.netplay.videoContainer) {
+                    this.netplay.videoContainer.style.display = "none";
+                }
+                if (this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
+                    this.netplay.oldStyles = [this.elements.bottomBar.cheat[0].style.display];
+                }
+
+                if (this.netplay.owner && this.Module && this.Module.setCanvasSize) {
+                    this.Module.setCanvasSize(nativeWidth, nativeHeight);
+                }
+
+                this.netplay.lockedAspectRatio = nativeWidth / nativeHeight;
+                const resizeCanvasWithAspect = () => {
+                    const aspect = this.netplay.lockedAspectRatio;
+                    const vw = window.innerWidth;
+                    const vh = window.innerHeight;
+                    let newWidth,
+                    newHeight;
+
+                    if (vw / vh > aspect) {
+                        newHeight = vh;
+                        newWidth = vh * aspect;
+                    } else {
+                        newWidth = vw;
+                        newHeight = vw / aspect;
+                    }
+
+                    if (this.canvas) {
+                        Object.assign(this.canvas.style, {
+                            width: `${newWidth}px`,
+                            height: `${newHeight}px`,
+                            display: "block",
+                            objectFit: "contain"
+                        });
+
+                        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+
+                        if (isFullscreen) {
+                            Object.assign(this.canvas.style, {
+                                position: "absolute",
+                                top: "0",
+                                left: "50%",
+                                transform: "translateX(-50%)"
+                            });
+                        } else {
+                            Object.assign(this.canvas.style, {
+                                position: "",
+                                left: "",
+                                top: "",
+                                transform: ""
+                            });
+                        }
+                    }
+                };
+                this._netplayResizeCanvas = resizeCanvasWithAspect;
+                window.addEventListener("resize", resizeCanvasWithAspect);
+                document.addEventListener("fullscreenchange", resizeCanvasWithAspect);
+                document.addEventListener("webkitfullscreenchange", resizeCanvasWithAspect);
+                resizeCanvasWithAspect();
+                window.dispatchEvent(new Event('resize'));
+            }
+        };
+
+        this.netplayLeaveRoom = () => {
+            EJS_INSTANCE.updateNetplayUI(false);
+
+            console.log("Leaving netplay room...");
+
+            if (this.netplay.owner && this.netplaySendMessage) {
+                this.netplaySendMessage({
+                    type: "host-left"
+                });
+            }
+
+            if (this.netplay.socket && this.netplay.socket.connected) {
+                this.netplay.socket.emit('leave-room');
+            }
+
+            if (this.netplay.socket) {
+                this.netplay.socket.disconnect();
+                this.netplay.socket = null;
+            }
+
+            if (this.netplay.localStream) {
+                this.netplay.localStream.getTracks().forEach(track => track.stop());
+                this.netplay.localStream = null;
+            }
+
+            if (this.netplay.peerConnections) {
+                Object.values(this.netplay.peerConnections).forEach(pcData => {
+                    if (pcData.pc)
+                        pcData.pc.close();
+                });
+                this.netplay.peerConnections = {};
+            }
+
+            if (this.netplayCanvas && this.netplayCanvas.parentElement) {
+                this.netplayCanvas.parentElement.removeChild(this.netplayCanvas);
+                this.netplayCanvas.style.display = "none";
+            }
+            if (this.netplay.video && this.netplay.video.parentElement) {
+                this.netplay.video.parentElement.removeChild(this.netplay.video);
+                this.netplay.video.srcObject = null;
+                this.netplay.video = null;
+            }
+            if (this.netplay.videoContainer) {
+                this.netplay.videoContainer.style.display = "none";
+            }
+
+            if (this.canvas) {
+                Object.assign(this.canvas.style, {
+                    display: "block",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                    position: "absolute",
+                    top: "0",
+                    left: "0",
+                    transform: "none"
+                });
+            }
+
+            if (this.netplay.createButton) {
+                this.netplay.createButton.innerText = this.localization("Create Room");
+            }
+            if (this.netplay.tabs) {
+                this.netplay.tabs[0].style.display = "";
+                this.netplay.tabs[1].style.display = "none";
+            }
+            if (this.netplay.roomNameElem) {
+                this.netplay.roomNameElem.innerText = "";
+            }
+            if (this.netplay.passwordElem) {
                 this.netplay.passwordElem.style.display = "none";
+                this.netplay.passwordElem.innerText = "";
             }
-            this.netplay.createButton.innerText = this.localization("Leave Room");
-            this.netplay.updatePlayersTable();
-            if (!this.netplay.owner) {
-                this.netplay.oldStyles = [
-                    this.elements.bottomBar.cheat[0].style.display,
-                    this.elements.bottomBar.playPause[0].style.display,
-                    this.elements.bottomBar.playPause[1].style.display,
-                    this.elements.bottomBar.restart[0].style.display,
-                    this.elements.bottomBar.loadState[0].style.display,
-                    this.elements.bottomBar.saveState[0].style.display,
-                    this.elements.bottomBar.saveSavFiles[0].style.display,
-                    this.elements.bottomBar.loadSavFiles[0].style.display,
-                    this.elements.contextMenu.save.style.display,
-                    this.elements.contextMenu.load.style.display
-                ]
-                this.elements.bottomBar.cheat[0].style.display = "none";
-                this.elements.bottomBar.playPause[0].style.display = "none";
-                this.elements.bottomBar.playPause[1].style.display = "none";
-                this.elements.bottomBar.restart[0].style.display = "none";
-                this.elements.bottomBar.loadState[0].style.display = "none";
-                this.elements.bottomBar.saveState[0].style.display = "none";
-                this.elements.bottomBar.saveSavFiles[0].style.display = "none";
-                this.elements.bottomBar.loadSavFiles[0].style.display = "none";
-                this.elements.contextMenu.save.style.display = "none";
-                this.elements.contextMenu.load.style.display = "none";
-                this.gameManager.resetCheat();
-            } else {
-                this.netplay.oldStyles = [
-                    this.elements.bottomBar.cheat[0].style.display
-                ]
+            if (this.netplay.playerTable) {
+                this.netplay.playerTable.innerHTML = "";
             }
-            this.elements.bottomBar.cheat[0].style.display = "none";
-        }
-        this.netplay.updatePlayersTable = () => {
-            const table = this.netplay.playerTable;
-            table.innerHTML = "";
-            const addToTable = (num, playerName) => {
-                const row = this.createElement("tr");
-                const addToHeader = (text) => {
-                    const item = this.createElement("td");
-                    item.innerText = text;
-                    row.appendChild(item);
-                    return item;
-                }
-                addToHeader(num).style.width = "80px";
-                addToHeader(playerName);
-                addToHeader("").style.width = "80px"; //"join" button
-                table.appendChild(row);
+
+            if (this.netplay.oldStyles && this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
+                this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0] || "";
             }
-            let i = 1;
-            for (const k in this.netplay.players) {
-                addToTable(i, this.netplay.players[k].player_name);
-                i++;
+
+            if (this._netplayResizeCanvas) {
+                window.removeEventListener("resize", this._netplayResizeCanvas);
+                document.removeEventListener("fullscreenchange", this._netplayResizeCanvas);
+                document.removeEventListener("webkitfullscreenchange", this._netplayResizeCanvas);
+                this._netplayResizeCanvas = null;
             }
-        }
-        this.netplay.roomLeft = () => {
+
+            // Restore the original input function when leaving the room
+            if (this.netplay.originalSimulateInput && this.gameManager && this.gameManager.functions) {
+                this.gameManager.functions.simulateInput = this.netplay.originalSimulateInput;
+                this.netplay.originalSimulateInput = null;
+            }
+
             this.isNetplay = false;
-            this.netplay.tabs[0].style.display = "";
-            this.netplay.tabs[1].style.display = "none";
-            this.netplay.extra = null;
+            this.netplay.owner = false;
+            this.netplay.players = {};
             this.netplay.playerID = null;
-            this.netplay.createButton.innerText = this.localization("Create a Room");
-            this.netplay.socket.disconnect();
-            this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0];
-            if (!this.netplay.owner) {
-                this.elements.bottomBar.playPause[0].style.display = this.netplay.oldStyles[1];
-                this.elements.bottomBar.playPause[1].style.display = this.netplay.oldStyles[2];
-                this.elements.bottomBar.restart[0].style.display = this.netplay.oldStyles[3];
-                this.elements.bottomBar.loadState[0].style.display = this.netplay.oldStyles[4];
-                this.elements.bottomBar.saveState[0].style.display = this.netplay.oldStyles[5];
-                this.elements.bottomBar.saveSavFiles[0].style.display = this.netplay.oldStyles[6];
-                this.elements.bottomBar.loadSavFiles[0].style.display = this.netplay.oldStyles[7];
-                this.elements.contextMenu.save.style.display = this.netplay.oldStyles[8];
-                this.elements.contextMenu.load.style.display = this.netplay.oldStyles[9];
+            this.netplay.inputs = {};
+            this.netplay.inputsData = {};
+            this.netplay.webRtcReady = false;
+            this.netplay.lockedAspectRatio = null;
+            this.player = 1;
+
+            if (this.originalControls) {
+                this.controls = JSON.parse(JSON.stringify(this.originalControls));
+                this.originalControls = null;
             }
-            this.updateCheatUI();
-        }
-        this.netplay.setLoading = (loading) => {
-            if (this.debug) console.log("loading:", loading);
-        }
-        let syncing = false;
-        this.netplay.sync = async () => {
-            if (syncing) return;
-            syncing = true;
-            if (this.debug) console.log("sync")
-            this.netplay.ready = 0;
-            const state = this.gameManager.getState();
-            this.netplay.sendMessage({
-                state: state
-            });
-            this.netplay.setLoading(true);
-            this.pause(true);
-            this.netplay.ready++;
-            this.netplay.current_frame = 0;
-            if (this.netplay.ready === this.netplay.getUserCount()) {
-                this.play(true);
+
+            if (this.isMobile && this.gamepadElement) {
+                Object.assign(this.gamepadElement.style, {
+                    zIndex: "1000",
+                    position: "absolute",
+                    pointerEvents: "auto"
+                });
             }
-            syncing = false;
-        }
-        this.netplay.getUserIndex = (user) => {
-            let i = 0;
-            for (const k in this.netplay.players) {
-                if (k === user) return i;
-                i++;
+
+            if (this.gameManager && this.gameManager.restart) {
+                this.gameManager.restart();
+            } else if (this.startGame) {
+                this.startGame();
             }
-            return -1;
-        }
-        this.netplay.getUserCount = () => {
-            let i = 0;
-            for (const k in this.netplay.players) i++;
-            return i;
-        }
-        let justReset = false;
-        this.netplay.dataMessage = (data) => {
-            //console.log(data);
-            if (data.sync === true && this.netplay.owner) {
-                this.netplay.sync();
-            }
-            if (data.state) {
-                this.netplay.wait = true;
-                this.netplay.setLoading(true);
-                this.pause(true);
-                this.gameManager.loadState(new Uint8Array(data.state));
-                this.netplay.sendMessage({ ready: true });
-            }
-            if (data.play && !this.owner) {
-                this.play(true);
-            }
-            if (data.pause && !this.owner) {
-                this.pause(true);
-            }
-            if (data.ready && this.netplay.owner) {
-                this.netplay.ready++;
-                if (this.netplay.ready === this.netplay.getUserCount()) {
-                    this.netplay.sendMessage({ readyready: true });
-                    this.netplay.reset();
-                    setTimeout(() => this.play(true), 48);
-                    this.netplay.setLoading(false);
-                }
-            }
-            if (data.readyready) {
-                this.netplay.setLoading(false);
-                this.netplay.reset();
-                this.play(true);
-            }
-            if (data.shortPause) console.log(data.shortPause);
-            if (data.shortPause && data.shortPause !== this.netplay.playerID) {
-                this.pause(true);
-                this.netplay.wait = true;
-                setTimeout(() => this.play(true), 48);
-            }
+
+            this.displayMessage("Left the room", 3000);
+        };
+
+        this.netplayDataMessage = function (data) {
             if (data["sync-control"]) {
                 data["sync-control"].forEach((value) => {
                     let inFrame = parseInt(value.frame);
-                    let frame = this.netplay.currentFrame;
-                    if (!value.connected_input || value.connected_input[0] < 0) return;
-                    //if (value.connected_input[0] === this.netplay.getUserIndex(this.netplay.playerID)) return;
-                    console.log(value, inFrame, frame);
-                    if (inFrame === frame) {
-                        inFrame++;
-                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                    }
-                    this.netplay.inputsData[inFrame] || (this.netplay.inputsData[inFrame] = []);
-                    this.netplay.inputsData[frame] || (this.netplay.inputsData[frame] = []);
+                    if (!value.connected_input || value.connected_input[0] < 0)
+                        return;
+                    this.netplay.inputsData[inFrame] = this.netplay.inputsData[inFrame] || [];
+                    this.netplay.inputsData[inFrame].push(value);
+                    this.netplaySendMessage({
+                        frameAck: inFrame
+                    });
                     if (this.netplay.owner) {
-                        this.netplay.inputsData[frame].push(value);
-                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                        if (frame - 10 >= inFrame) {
-                            this.netplay.wait = true;
-                            this.pause(true);
-                            setTimeout(() => {
-                                this.play(true);
-                                this.netplay.wait = false;
-                            }, 48)
-                        }
-                    } else {
-                        this.netplay.inputsData[inFrame].push(value);
-                        if (this.netplay.inputsData[frame]) {
-                            this.play(true);
-                        }
-                        if (frame + 10 <= inFrame && inFrame > this.netplay.init_frame + 100) {
-                            this.netplay.sendMessage({ shortPause: this.netplay.playerID });
+                        console.log("Owner processing input:", value.connected_input);
+                        if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                            this.gameManager.functions.simulateInput(
+                                value.connected_input[0],
+                                value.connected_input[1],
+                                value.connected_input[2]);
+                        } else {
+                            console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
                         }
                     }
                 });
             }
-            if (data.restart) {
-                this.gameManager.restart();
-                this.netplay.reset();
-                this.play(true);
-            }
-        }
-        this.netplay.simulateInput = (player, index, value, resp) => {
-            if (!this.isNetplay) return;
-            if (player !== 0 && !resp) return;
-            player = this.netplay.getUserIndex(this.netplay.playerID);
-            let frame = this.netplay.currentFrame;
-            if (this.netplay.owner) {
-                if (!this.netplay.inputsData[frame]) {
-                    this.netplay.inputsData[frame] = [];
+            if (data.frameData) {
+                console.log("Received frame data on Player 2:", data.frameData);
+                if (!this.canvas) {
+                    console.error("Canvas unavailable for frame data processing");
+                    return;
                 }
-                this.netplay.inputsData[frame].push({
-                    frame: frame,
-                    connected_input: [player, index, value]
-                })
-                this.gameManager.functions.simulateInput(player, index, value);
-            } else {
-                this.netplay.sendMessage({
-                    "sync-control": [{
-                        frame: frame + 10,
-                        connected_input: [player, index, value]
-                    }]
-                })
+                const ctx = this.canvas.getContext('2d');
+                if (!ctx) {
+                    console.error("Canvas context unavailable for frame data processing");
+                    return;
+                }
+                if (data.frameData.pixelSample.every(v => v === 0)) {
+                    console.warn("Frame data indicates black screen, attempting reconstruction");
+                    if (this.reconstructFrame) {
+                        this.reconstructFrame(data.frameData.inputs);
+                    } else {
+                        console.error("reconstructFrame is undefined");
+                    }
+                } else {
+                    console.log("Frame data indicates content, relying on WebRTC stream");
+                }
             }
-        }
-        this.netplay.sendMessage = (data) => {
-            this.netplay.socket.emit("data-message", data);
-        }
-        this.netplay.reset = () => {
-            this.netplay.init_frame = this.netplay.currentFrame;
+        };
+
+        this.netplaySendMessage = (data) => {
+            if (this.netplay.socket && this.netplay.socket.connected) {
+                this.netplay.socket.emit("data-message", data);
+                console.log("Sent data message:", data);
+            } else {
+                console.error("Cannot send message: Socket is not connected");
+            }
+        };
+
+        this.netplayReset = () => {
+            this.netplay.init_frame = this.gameManager ? this.gameManager.getFrameNum() : 0;
+            this.netplay.currentFrame = 0;
             this.netplay.inputsData = {};
-        }
-        //let fps;
-        //let lastTime;
+            this.netplay.syncing = false;
+        };
+
+        this.netplayInitModulePostMainLoop = () => {
+            if (this.isNetplay && !this.netplay.owner) {
+                return; 
+            }
+
+            this.netplay.currentFrame = parseInt(this.gameManager ? this.gameManager.getFrameNum() : 0) - (this.netplay.init_frame || 0);
+            if (!this.isNetplay)
+                return;
+
+            if (this.netplay.owner) {
+                let to_send = [];
+                let i = this.netplay.currentFrame;
+                if (this.netplay.inputsData[i]) {
+                    this.netplay.inputsData[i].forEach((value) => {
+                        if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
+                            this.gameManager.functions.simulateInput(
+                                value.connected_input[0],
+                                value.connected_input[1],
+                                value.connected_input[2]);
+                        }
+                        value.frame = this.netplay.currentFrame + 20;
+                        to_send.push(value);
+                    });
+                    this.netplaySendMessage({
+                        "sync-control": to_send
+                    });
+                    delete this.netplay.inputsData[i];
+                }
+            }
+        };
+
+        this.netplay.updateList = {
+            start: this.netplayUpdateListStart,
+            stop: this.netplayUpdateListStop
+        };
+        this.netplay.showOpenRoomDialog = this.netplayShowOpenRoomDialog;
+        this.netplay.openRoom = this.netplayOpenRoom;
+        this.netplay.joinRoom = this.netplayJoinRoom;
+        this.netplay.leaveRoom = this.netplayLeaveRoom;
+        this.netplay.sendMessage = this.netplaySendMessage;
+        this.netplay.updatePlayersTable = this.netplayUpdatePlayersTable;
+        this.netplay.createPeerConnection = this.netplayCreatePeerConnection;
+        this.netplay.initWebRTCStream = this.netplayInitWebRTCStream;
+        this.netplay.roomJoined = this.netplayRoomJoined;
+
+        this.netplay = this.netplay || {};
         this.netplay.init_frame = 0;
         this.netplay.currentFrame = 0;
         this.netplay.inputsData = {};
-        this.Module.postMainLoop = () => {
-            //const newTime = window.performance.now();
-            //fps = 1000 / (newTime - lastTime);
-            //console.log(fps);
-            //lastTime = newTime;
-            //frame syncing - working
-            //control syncing - broken
-            this.netplay.currentFrame = parseInt(this.gameManager.getFrameNum()) - this.netplay.init_frame;
-            if (!this.isNetplay) return;
-            if (this.netplay.owner) {
-                let to_send = [];
-                let i = this.netplay.currentFrame - 1;
-                this.netplay.inputsData[i] ? this.netplay.inputsData[i].forEach((value) => {
-                    value.frame += 10;
-                    to_send.push(value);
-                }) : to_send.push({ frame: i + 10 });
-                this.netplay.sendMessage({ "sync-control": to_send });
-            } else {
-                if (this.netplay.currentFrame <= 0 || this.netplay.inputsData[this.netplay.currentFrame]) {
-                    this.netplay.wait = false;
-                    this.play();
-                    this.netplay.inputsData[this.netplay.currentFrame].forEach((value) => {
-                        if (!value.connected_input) return;
-                        console.log(value.connected_input);
-                        this.gameManager.functions.simulateInput(value.connected_input[0], value.connected_input[1], value.connected_input[2]);
-                    })
-                } else if (!this.netplay.syncing) {
-                    console.log("sync");
-                    this.pause(true);
-                    this.netplay.sendMessage({ sync: true });
-                    this.netplay.syncing = true;
-                }
-            }
-            if (this.netplay.currentFrame % 100 === 0) {
-                Object.keys(this.netplay.inputsData).forEach(value => {
-                    if (value < this.netplay.currentFrame - 50) {
-                        this.netplay.inputsData[value] = null;
-                        delete this.netplay.inputsData[value];
-                    }
-                })
-            }
+        this.netplay.syncing = false;
+        this.netplay.ready = 0;
+        this.netplay.webRtcReady = false;
+        this.netplay.peerConnections = this.netplay.peerConnections || {};
+
+        this.netplay.url = this.config.netplayUrl || window.EJS_netplayUrl;
+
+        if (!this.netplay.url) {
+            if (this.debug) console.error("netplayUrl is not defined. Please set it in EJS_config or as a global EJS_netplayUrl variable.");
+            this.displayMessage("Network configuration error: netplay URL is not set.", 5000);
+            return; 
         }
 
-        this.netplay.updateList = {
-            start: () => {
-                this.netplay.updateList.interval = setInterval(this.netplay.updateTableList.bind(this), 1000);
-            },
-            stop: () => {
-                clearInterval(this.netplay.updateList.interval);
-            }
+        while (this.netplay.url.endsWith("/")) {
+            this.netplay.url = this.netplay.url.substring(0, this.netplay.url.length - 1);
+        }
+        this.netplay.current_frame = 0;
+
+        if (this.gameManager && this.gameManager.Module) {
+            this.gameManager.Module.postMainLoop = this.netplayInitModulePostMainLoop.bind(this);
+        } else if (this.Module) {
+            this.Module.postMainLoop = this.netplayInitModulePostMainLoop.bind(this);
+        } else if (this.debug) {
+            console.warn("Module is undefined. postMainLoop will not be set.");
         }
     }
     createCheatsMenu() {
@@ -6071,7 +7054,7 @@ class EmulatorJS {
         if (videoTracks.length !== 0) {
             videoTrack = videoTracks[0];
         } else {
-            console.error("Unable to capture video stream");
+            if (this.debug) console.error("Unable to capture video stream");
             return null;
         }
 
