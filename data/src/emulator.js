@@ -204,8 +204,9 @@ class EmulatorJS {
         this.extensions = [];
         this.initControlVars();
         this.debug = (window.EJS_DEBUG_XX === true);
-        if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname)))
-        this.checkForUpdates();
+        if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname))) {
+            this.checkForUpdates();
+        }
         this.netplayEnabled = true;
         this.config = config;
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
@@ -255,7 +256,7 @@ class EmulatorJS {
                 case 2:
                     return false;
             }
-            
+
             let check = false;
             (function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true; })(navigator.userAgent || navigator.vendor || window.opera);
             return check;
@@ -292,7 +293,7 @@ class EmulatorJS {
         this.bindListeners();
         // Additions for Netplay
         this.netplayCanvas = null; 
-        this.netplayShowWarning = false;
+        this.netplayShowTurnWarning = false;
         this.netplayWarningShown = false;
         if (this.netplayEnabled) {
             const iceServers = this.config.netplayICEServers || window.EJS_netplayICEServers || [];
@@ -300,9 +301,11 @@ class EmulatorJS {
                 server && typeof server.urls === 'string' && server.urls.startsWith('turn:')
             );
             if (!hasTurnServer) {
-                this.netplayShowWarning = true;
+                this.netplayShowTurnWarning = true;
             }
-            console.log("Netplay warning flag set to:", this.netplayShowWarning);
+            if (this.netplayShowTurnWarning && this.debug) {
+                console.warn("WARNING: No TURN addresses are configured! Many clients may fail to connect!");
+            }
         }
 
         if ((this.isMobile || this.hasTouchScreen) && this.virtualGamepad) {
@@ -338,7 +341,7 @@ class EmulatorJS {
         }
         // This is not cache. This is save data
         this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
-        
+
         this.game.classList.add("ejs_game");
         if (typeof this.config.backgroundImg === "string") {
             this.game.classList.add("ejs_game_background");
@@ -351,7 +354,7 @@ class EmulatorJS {
         } else {
             this.game.setAttribute("style", "--ejs-background-color: " + this.config.backgroundColor + ";");
         }
-        
+
         if (Array.isArray(this.config.cheats)) {
             for (let i = 0; i < this.config.cheats.length; i++) {
                 const cheat = this.config.cheats[i];
@@ -365,7 +368,7 @@ class EmulatorJS {
                 }
             }
         }
-        
+
         this.createStartButton();
         this.handleResize();
     }
@@ -530,7 +533,7 @@ class EmulatorJS {
             if (typeof log === "undefined") log = true;
             if (!this.config.langJson[text] && log) {
                 if (!this.missingLang.includes(text)) this.missingLang.push(text);
-                console.log(`Translation not found for '${text}'. Language set to '${this.config.language}'`);
+                if (this.debug) console.log(`Translation not found for '${text}'. Language set to '${this.config.language}'`);
             }
             return this.config.langJson[text] || text;
         }
@@ -1392,7 +1395,7 @@ class EmulatorJS {
                     // If the button does not exist in the default buttons, create a custom button
                     // Custom buttons must have a displayName, icon, and callback property
                     if (!buttonUserOpts[searchKey] || !buttonUserOpts[searchKey].displayName || !buttonUserOpts[searchKey].icon || !buttonUserOpts[searchKey].callback) {
-                        console.warn(`Custom button "${searchKey}" is missing required properties`);
+                        if (this.debug) console.warn(`Custom button "${searchKey}" is missing required properties`);
                         continue;
                     }
 
@@ -1432,7 +1435,7 @@ class EmulatorJS {
                                 callback: buttonUserOpts[searchKey].callback,
                                 custom: true
                             };
-                        } else {
+                        } else if (this.debug) {
                             console.warn(`Custom button "${searchKey}" is missing required properties`);
                         }
                     }
@@ -3361,7 +3364,7 @@ class EmulatorJS {
                     this.controls[i][j].value = parseInt(this.keyLookup(this.controls[i][j].value));
                     if (this.controls[i][j].value === -1 && this.debug) {
                         delete this.controls[i][j].value;
-                        console.warn("Invalid key for control " + j + " player " + i);
+                        if (this.debug) console.warn("Invalid key for control " + j + " player " + i);
                     }
                 }
             }
@@ -3506,11 +3509,11 @@ class EmulatorJS {
         let info;
         if (this.config.VirtualGamepadSettings && function (set) {
             if (!Array.isArray(set)) {
-                console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
+                if (this.debug) console.warn("Virtual gamepad settings is not array! Using default gamepad settings");
                 return false;
             }
             if (!set.length) {
-                console.warn("Virtual gamepad settings is empty! Using default gamepad settings");
+                if (this.debug) console.warn("Virtual gamepad settings is empty! Using default gamepad settings");
                 return false;
             }
             for (let i = 0; i < set.length; i++) {
@@ -5204,7 +5207,7 @@ class EmulatorJS {
         ];
         
         // Add the parent containers to the same logic
-        if (bar.settings?.[0]?.parentElement) {
+        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
             elementsToToggle.push(bar.settings[0].parentElement);
         }
         if (this.diskParent) {
@@ -5298,7 +5301,7 @@ class EmulatorJS {
         body.appendChild(joined);
 
         this.openNetplayMenu = () => {
-            if (this.netplayShowWarning && !this.netplayWarningShown) {
+            if (this.netplayShowTurnWarning && !this.netplayWarningShown) {
                 const warningDiv = this.createElement("div");
                 warningDiv.className = "ejs_netplay_warning";
                 warningDiv.innerText = "Warning: No TURN server configured. Netplay connections may fail.";
@@ -5878,13 +5881,16 @@ class EmulatorJS {
         this.drawVideoToCanvas = () => {
             const videoElement = this.netplay.video;
             const canvas = this.netplayCanvas;
-            const ctx = canvas?.getContext('2d', {
+            if (!canvas) {
+                console.error("drawVideoToCanvas: Missing canvas!");
+            }
+            const ctx = canvas.getContext('2d', {
                 alpha: false,
                 willReadFrequently: true
             });
 
-            if (!videoElement || !canvas || !ctx) {
-                console.error("drawVideoToCanvas: Missing video, canvas, or context");
+            if (!videoElement || !ctx) {
+                console.error("drawVideoToCanvas: Missing video, or context!");
                 return;
             }
 
@@ -6242,7 +6248,7 @@ class EmulatorJS {
                     netplay: !!this.netplay,
                     canvas: !!this.canvas,
                     elements: !!this.elements,
-                    parent: !!this.elements?.parent
+                    parent: !!(this.elements && this.elements.parent)
                 });
                 this.displayMessage("Failed to initialize netplay room", 5000);
                 return;
@@ -6540,11 +6546,11 @@ class EmulatorJS {
                 this.netplay.peerConnections = {};
             }
 
-            if (this.netplayCanvas?.parentElement) {
+            if (this.netplayCanvas && this.netplayCanvas.parentElement) {
                 this.netplayCanvas.parentElement.removeChild(this.netplayCanvas);
                 this.netplayCanvas.style.display = "none";
             }
-            if (this.netplay.video?.parentElement) {
+            if (this.netplay.video && this.netplay.video.parentElement) {
                 this.netplay.video.parentElement.removeChild(this.netplay.video);
                 this.netplay.video.srcObject = null;
                 this.netplay.video = null;
@@ -6584,7 +6590,7 @@ class EmulatorJS {
                 this.netplay.playerTable.innerHTML = "";
             }
 
-            if (this.netplay.oldStyles && this.elements.bottomBar?.cheat?.[0]) {
+            if (this.netplay.oldStyles && this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
                 this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0] || "";
             }
 
@@ -6596,7 +6602,7 @@ class EmulatorJS {
             }
 
             // Restore the original input function when leaving the room
-            if (this.netplay.originalSimulateInput && this.gameManager?.functions) {
+            if (this.netplay.originalSimulateInput && this.gameManager && this.gameManager.functions) {
                 this.gameManager.functions.simulateInput = this.netplay.originalSimulateInput;
                 this.netplay.originalSimulateInput = null;
             }
@@ -6624,7 +6630,7 @@ class EmulatorJS {
                 });
             }
 
-            if (this.gameManager?.restart) {
+            if (this.gameManager && this.gameManager.restart) {
                 this.gameManager.restart();
             } else if (this.startGame) {
                 this.startGame();
@@ -6659,7 +6665,11 @@ class EmulatorJS {
             }
             if (data.frameData) {
                 console.log("Received frame data on Player 2:", data.frameData);
-                const ctx = this.canvas?.getContext('2d');
+                if (!this.canvas) {
+                    console.error("Canvas unavailable for frame data processing");
+                    return;
+                }
+                const ctx = this.canvas.getContext('2d');
                 if (!ctx) {
                     console.error("Canvas context unavailable for frame data processing");
                     return;
@@ -6687,7 +6697,7 @@ class EmulatorJS {
         };
 
         this.netplayReset = () => {
-            this.netplay.init_frame = this.gameManager?.getFrameNum?.() || 0;
+            this.netplay.init_frame = this.gameManager ? this.gameManager.getFrameNum() : 0;
             this.netplay.currentFrame = 0;
             this.netplay.inputsData = {};
             this.netplay.syncing = false;
@@ -6698,7 +6708,7 @@ class EmulatorJS {
                 return; 
             }
 
-            this.netplay.currentFrame = parseInt(this.gameManager?.getFrameNum?.() || 0) - (this.netplay.init_frame || 0);
+            this.netplay.currentFrame = parseInt(this.gameManager ? this.gameManager.getFrameNum() : 0) - (this.netplay.init_frame || 0);
             if (!this.isNetplay)
                 return;
 
@@ -6750,7 +6760,7 @@ class EmulatorJS {
         this.netplay.url = this.config.netplayUrl || window.EJS_netplayUrl;
 
         if (!this.netplay.url) {
-            console.error("netplayUrl is not defined. Please set it in EJS_config or as a global EJS_netplayUrl variable.");
+            if (this.debug) console.error("netplayUrl is not defined. Please set it in EJS_config or as a global EJS_netplayUrl variable.");
             this.displayMessage("Network configuration error: netplay URL is not set.", 5000);
             return; 
         }
@@ -6764,7 +6774,7 @@ class EmulatorJS {
             this.gameManager.Module.postMainLoop = this.netplayInitModulePostMainLoop.bind(this);
         } else if (this.Module) {
             this.Module.postMainLoop = this.netplayInitModulePostMainLoop.bind(this);
-        } else {
+        } else if (this.debug) {
             console.warn("Module is undefined. postMainLoop will not be set.");
         }
     }
@@ -7043,7 +7053,7 @@ class EmulatorJS {
         if (videoTracks.length !== 0) {
             videoTrack = videoTracks[0];
         } else {
-            console.error("Unable to capture video stream");
+            if (this.debug) console.error("Unable to capture video stream");
             return null;
         }
 
