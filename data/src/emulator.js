@@ -785,7 +785,7 @@ class EmulatorJS {
             }, true, { responseType: "arraybuffer", method: "GET" });
             if (res === -1) {
                 this.startGameError(this.localization("Network Error"));
-                resolve(assetUrl);
+                reject();
                 return;
             }
             if (assetUrl instanceof File) {
