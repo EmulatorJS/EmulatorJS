@@ -15,7 +15,7 @@ jobs:
       - name: Set Permissions
         run: |
           cd /mnt/HDD/public
-          chmod -R 755 .EmulatorJS/
+          chmod -R 775 .EmulatorJS/
       - name: Update Latest
         run: |
           cd /mnt/HDD/public/.EmulatorJS/

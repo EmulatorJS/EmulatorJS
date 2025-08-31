@@ -50,7 +50,7 @@ jobs:
       - name: Set Permissions
         run: |
           cd /mnt/HDD/public
-          chmod -R 755 stable/
+          chmod -R 775 stable/
       - name: Update Stable Cores
         run: |
           rsync -a --delete /mnt/HDD/public/stable/data/cores/ /mnt/HDD/public/.EmulatorJS/data/cores/
