@@ -7174,5 +7174,51 @@ class EmulatorJS {
 
         return recorder;
     }
+
+    enableSaveUpdateEvent() {
+        if (!window.crypto.subtle) {
+            console.error("Attempt to compare save files without subtle crypto (maybe you are running in an insecure context?");
+            return;
+        }
+
+        // https://stackoverflow.com/questions/9267899/
+        function transformDigestToBase64(buffer) {
+            var binary = '';
+            var bytes = new Uint8Array( buffer );
+            var len = bytes.byteLength;
+            for (var i = 0; i < len; i++) {
+                binary += String.fromCharCode( bytes[ i ] );
+            }
+            return window.btoa( binary );
+        }
+
+        function withGameSaveHash(saveFile, callback) {
+            if (saveFile) {
+                window.crypto.subtle.digest("SHA-256", saveFile).then(digest => callback(transformDigestToBase64(digest), saveFile));
+            } else {
+                console.warn("Save file not found when attempting to hash");
+                callback(null, null)
+            }
+        }
+
+        var recentHash = null;
+        if (this.gameManager) { withGameSaveHash(this.gameManager.getSaveFile(false), (hash, _) => { recentHash = hash }) }
+
+        this.on("saveSaveFiles", saveFile => {
+            withGameSaveHash(saveFile, (newHash, fileContents) => {
+                if (newHash && fileContents && newHash != recentHash) {
+                    recentHash = newHash;
+                    this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale).then(({ screenshot, format }) => {
+                        this.callEvent("saveUpdate", {
+                            hash: newHash,
+                            save: fileContents,
+                            screenshot: screenshot,
+                            format: format
+                        });
+                    })
+                }
+            })
+        })
+    }
 }
 window.EmulatorJS = EmulatorJS;
