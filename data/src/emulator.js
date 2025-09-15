@@ -7176,28 +7176,31 @@ class EmulatorJS {
     }
 
     enableSaveUpdateEvent() {
-        if (!window.crypto.subtle) {
-            console.error("Attempt to compare save files without subtle crypto (maybe you are running in an insecure context?");
-            return;
-        }
-
-        // https://stackoverflow.com/questions/9267899/
-        function transformDigestToBase64(buffer) {
-            var binary = '';
-            var bytes = new Uint8Array( buffer );
-            var len = bytes.byteLength;
-            for (var i = 0; i < len; i++) {
-                binary += String.fromCharCode( bytes[ i ] );
+        // https://stackoverflow.com/questions/7616461
+        // Modified to accept a buffer instead of a string and return hex instead of an int
+        async function cyrb53(charBuffer, seed = 0) {
+            let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
+            for(let i = 0, ch; i < charBuffer.length; i++) {
+                ch = charBuffer[i];
+                h1 = Math.imul(h1 ^ ch, 2654435761);
+                h2 = Math.imul(h2 ^ ch, 1597334677);
             }
-            return window.btoa( binary );
-        }
+            h1  = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+            h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+            h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+            h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+
+            // Cyrb53 is a 53-bit hash; we need 14 hex characters to represent it, and the first char will
+            // always be 0 or 1 (since it is only 1 bit)
+            return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, "0");
+        };
 
         function withGameSaveHash(saveFile, callback) {
             if (saveFile) {
-                window.crypto.subtle.digest("SHA-256", saveFile).then(digest => callback(transformDigestToBase64(digest), saveFile));
+                cyrb53(saveFile).then(digest => callback(digest, saveFile));
             } else {
                 console.warn("Save file not found when attempting to hash");
-                callback(null, null)
+                callback(null, null);
             }
         }
 
@@ -7206,7 +7209,7 @@ class EmulatorJS {
 
         this.on("saveSaveFiles", saveFile => {
             withGameSaveHash(saveFile, (newHash, fileContents) => {
-                if (newHash && fileContents && newHash != recentHash) {
+                if (newHash && fileContents && newHash !== recentHash) {
                     recentHash = newHash;
                     this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale).then(({ screenshot, format }) => {
                         this.callEvent("saveUpdate", {
