@@ -7040,16 +7040,14 @@ class EmulatorJS {
         }
     }
 
-    async takeScreenshot(source, format, upscale) {
-        let blob = await new Promise((resolve) => {
-            this.screenshot((blob, format) => {
-                resolve(blob, format);
+    takeScreenshot(source, format, upscale) {
+        return new Promise((resolve) => {
+            this.screenshot(async (blob, returnFormat) => {
+                const arrayBuffer = await blob.arrayBuffer();
+                const uint8 = new Uint8Array(arrayBuffer);
+                resolve({ screenshot: uint8, format: returnFormat });
             }, source, format, upscale);
         });
-
-        const arrayBuffer = await blob.arrayBuffer();
-        const uint8 = new Uint8Array(arrayBuffer);
-        return { screenshot: uint8, format: format };
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {
