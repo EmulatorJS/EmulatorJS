@@ -372,7 +372,26 @@ class EmulatorJS {
 
         this.createStartButton();
         this.handleResize();
+
+        if (this.config.fixedSaveInterval) {
+            this.startSaveInterval(this.config.fixedSaveInterval);
+        }
     }
+
+    startSaveInterval(period) {
+        if (this.saveSaveInterval) {
+            clearInterval(this.saveSaveInterval);
+            this.saveSaveInterval = null;
+        }
+        // Disabled
+        if (period === 0 || isNaN(period)) return;
+        if (this.started) this.gameManager.saveSaveFiles();
+        if (this.debug) console.log("Saving every", period, "miliseconds");
+        this.saveSaveInterval = setInterval(() => {
+            if (this.started) this.gameManager.saveSaveFiles();
+        }, period);
+    }
+
     setColor(color) {
         if (typeof color !== "string") color = "";
         let getColor = function(color) {
@@ -4370,19 +4389,9 @@ class EmulatorJS {
                 this.gameManager.setVideoRotation(0);
                 this.videoRotationChanged = true;
             }
-        } else if (option === "save-save-interval") {
+        } else if (option === "save-save-interval" && !this.config.fixedSaveInterval) {
             value = parseInt(value);
-            if (this.saveSaveInterval && this.saveSaveInterval !== null) {
-                clearInterval(this.saveSaveInterval);
-                this.saveSaveInterval = null;
-            }
-            // Disabled
-            if (value === 0 || isNaN(value)) return;
-            if (this.started) this.gameManager.saveSaveFiles();
-            if (this.debug) console.log("Saving every", value * 1000, "miliseconds");
-            this.saveSaveInterval = setInterval(() => {
-                if (this.started) this.gameManager.saveSaveFiles();
-            }, value * 1000);
+            this.startSaveInterval(value * 1000);
         } else if (option === "menubarBehavior") {
             this.createBottomMenuBarListeners();
         } else if (option === "keyboardInput") {
@@ -5065,15 +5074,17 @@ class EmulatorJS {
                 "download": this.localization("Download"),
                 "browser": this.localization("Keep in Browser")
             }, "download", saveStateOpts, true);
-            addToMenu(this.localization("System Save interval"), "save-save-interval", {
-                "0": "Disabled",
-                "30": "30 seconds",
-                "60": "1 minute",
-                "300": "5 minutes",
-                "600": "10 minutes",
-                "900": "15 minutes",
-                "1800": "30 minutes"
-            }, "300", saveStateOpts, true);
+            if (!this.config.fixedSaveInterval) {
+                addToMenu(this.localization("System Save interval"), "save-save-interval", {
+                    "0": "Disabled",
+                    "30": "30 seconds",
+                    "60": "1 minute",
+                    "300": "5 minutes",
+                    "600": "10 minutes",
+                    "900": "15 minutes",
+                    "1800": "30 minutes"
+                }, "300", saveStateOpts, true);
+            }
             checkForEmptyMenu(saveStateOpts);
         }
 

@@ -126,6 +126,7 @@
     config.hideSettings = window.EJS_hideSettings;
     config.browserMode = window.EJS_browserMode;
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
+    config.fixedSaveInterval = window.EJS_fixedSaveInterval;
 
     let systemLang;
     try {
