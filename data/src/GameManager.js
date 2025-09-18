@@ -109,7 +109,7 @@ class EJS_GameManager {
                                 }
                             }
                             try {
-                                this.writeFile(path, res.data);
+                                this.writeFile(path, new Uint8Array(res.data));
                             } catch(e) {
                                 if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
                             }
