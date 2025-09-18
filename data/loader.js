@@ -202,4 +202,8 @@
     if (typeof window.EJS_onSaveSave === "function") {
         window.EJS_emulator.on("saveSave", window.EJS_onSaveSave);
     }
+    if (typeof window.EJS_onSaveUpdate === "function") {
+        window.EJS_emulator.on("saveUpdate", window.EJS_onSaveUpdate);
+        window.EJS_emulator.enableSaveUpdateEvent();
+    }
 })();
