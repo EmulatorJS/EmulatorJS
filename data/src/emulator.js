@@ -560,15 +560,133 @@ class EmulatorJS {
         return text;
     }
     checkCompression(data, msg, fileCbFunc) {
-        if (!this.compression) {
-            this.compression = new window.EJS_COMPRESSION(this);
-        }
-        if (msg) {
-            this.textElem.innerText = msg;
-        }
-        return this.compression.decompress(data, (m, appendMsg) => {
-            this.textElem.innerText = appendMsg ? (msg + m) : m;
-        }, fileCbFunc);
+        if (!this.compression) this.compression = new window.EJS_COMPRESSION(this);
+        if (msg) this.textElem.innerText = msg;
+
+        // Wrap logic in a Promise so we can perform async hashing + IndexedDB operations
+        return new Promise((resolve, reject) => {
+            const input = (data instanceof Uint8Array) ? data : new Uint8Array(data);
+            const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+            const hashData = async (bytes) => {
+                try {
+                    if (crypto && crypto.subtle && crypto.subtle.digest) {
+                        const digest = await crypto.subtle.digest('SHA-256', bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+                        const arr = new Uint8Array(digest);
+                        let hex = '';
+                        for (let i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0');
+                        return hex;
+                    }
+                } catch (e) {
+                    if (this.debug) console.warn('Hash failed, skipping cache', e);
+                }
+                return null; // fallback disables caching
+            };
+
+            const openDB = () => new Promise((res) => {
+                if (!('indexedDB' in window)) { res(null); return; }
+                const req = indexedDB.open('EJSDecompressCache', 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains('archives')) {
+                        const store = db.createObjectStore('archives', { keyPath: 'hash' });
+                        store.createIndex('lastUsed', 'lastUsed');
+                    }
+                };
+                req.onsuccess = () => res(req.result);
+                req.onerror = () => res(null);
+            });
+
+            const getRecord = (db, hash) => new Promise((res) => {
+                if (!db || !hash) { res(null); return; }
+                const tx = db.transaction('archives', 'readwrite'); // readwrite so we can update lastUsed or delete expired immediately
+                const store = tx.objectStore('archives');
+                const getReq = store.get(hash);
+                getReq.onsuccess = () => {
+                    const record = getReq.result;
+                    if (!record) { res(null); return; }
+                    const now = Date.now();
+                    if ((now - record.lastUsed) > THIRTY_DAYS_MS) {
+                        // expired – remove
+                        store.delete(hash);
+                        res(null);
+                        return;
+                    }
+                    // update lastUsed before returning
+                    record.lastUsed = now;
+                    store.put(record);
+                    res(record);
+                };
+                getReq.onerror = () => res(null);
+            });
+
+            const putRecord = (db, hash, filesArray) => new Promise((res) => {
+                if (!db || !hash) { res(); return; }
+                try {
+                    const now = Date.now();
+                    const tx = db.transaction('archives', 'readwrite');
+                    tx.objectStore('archives').put({ hash, created: now, lastUsed: now, files: filesArray });
+                    tx.oncomplete = () => res();
+                    tx.onerror = () => res();
+                } catch (_) { res(); }
+            });
+
+            const proceed = async () => {
+                const hash = await hashData(input);
+                let db = null;
+                if (hash) db = await openDB();
+                if (hash && db) {
+                    const cached = await getRecord(db, hash);
+                    if (cached) {
+                        // Replay file callbacks if provided
+                        if (typeof fileCbFunc === 'function') {
+                            for (const f of cached.files) {
+                                fileCbFunc(f.name, new Uint8Array(f.data));
+                            }
+                        }
+                        if (msg) this.textElem.innerText = msg + ' (cached)';
+                        // Build return object consistent with original behavior
+                        let ret = {};
+                        if (typeof fileCbFunc === 'function') {
+                            for (const f of cached.files) ret[f.name] = true; // original decompress gives true when callback is used
+                        } else {
+                            for (const f of cached.files) ret[f.name] = new Uint8Array(f.data);
+                        }
+                        resolve(ret);
+                        return;
+                    }
+                }
+
+                // Cache miss or hashing disabled: decompress and capture
+                // Always decompress WITHOUT passing fileCbFunc so we get actual file bytes to cache.
+                let progressCb = (m, appendMsg) => { this.textElem.innerText = appendMsg ? (msg + m) : m; };
+                this.compression.decompress(input, progressCb, undefined).then(async (resultObj) => {
+                    // Replay original callback if present
+                    if (typeof fileCbFunc === 'function') {
+                        Object.keys(resultObj).forEach(name => {
+                            fileCbFunc(name, resultObj[name]);
+                        });
+                    }
+                    // Persist to cache
+                    if (hash && db) {
+                        try {
+                            const filesArray = Object.keys(resultObj).map(name => ({ name, data: resultObj[name].buffer ? resultObj[name].buffer.slice(0) : resultObj[name] }));
+                            await putRecord(db, hash, filesArray);
+                        } catch (e) { if (this.debug) console.warn('Failed to store decompression cache', e); }
+                    }
+                    // Conform return shape to original behavior when fileCbFunc exists
+                    if (typeof fileCbFunc === 'function') {
+                        const transformed = {};
+                        Object.keys(resultObj).forEach(k => { transformed[k] = true; });
+                        resolve(transformed);
+                    } else {
+                        resolve(resultObj);
+                    }
+                }).catch(err => reject(err));
+            };
+
+            proceed();
+        });
     }
     checkCoreCompatibility(version) {
         if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
