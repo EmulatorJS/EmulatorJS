@@ -632,7 +632,13 @@ class EmulatorJS {
             });
 
             const proceed = async () => {
-                const hash = await hashData(input);
+                let hash = null;
+                try {
+                    hash = await hashData(input);
+                } catch (e) {
+                    if (this.debug) console.warn('Hashing threw unexpectedly, disabling cache for this run', e);
+                    hash = null; // disable caching this invocation
+                }
                 let db = null;
                 if (hash) db = await openDB();
                 if (hash && db) {
