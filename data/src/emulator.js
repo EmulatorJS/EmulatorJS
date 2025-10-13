@@ -1159,9 +1159,9 @@ class EmulatorJS {
             }, 0);
         });
         this.addEventListener(window, "beforeunload", (e) => {
-            if (window.EJS_askBeforeUnload) {
+            if (this.config.disableAutoUnload) {
                 e.preventDefault();
-                e.returnValue = '';
+                e.returnValue = "";
                 return
             } 
             if (!this.started) return;
