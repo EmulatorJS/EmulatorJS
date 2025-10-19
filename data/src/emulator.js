@@ -853,7 +853,6 @@ class EmulatorJS {
             this.textElem.innerText = this.localization("Download Game Data");
 
             const gotGameData = (data) => {
-                
                 const coreName = this.getCore(true);
                 const altName = this.getBaseFileName(true);
                 if (["arcade", "mame"].includes(coreName) || this.config.dontExtractRom === true) {
@@ -863,11 +862,13 @@ class EmulatorJS {
                     return;
                 } 
 
-                let disableCue = false;
-                if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xplus4", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
-                    disableCue = true;
-                } else {
-                    disableCue = this.config.disableCue;
+                // List of cores to generate a CUE file for, if it doesn't exist.
+                const cueGeneration = ["mednafen_psx_hw"];
+                const prioritizeExtensions = ["cue", "ccd", "toc", "m3u"];
+
+                let createCueFile = cueGeneration.includes(this.getCore());
+                if (this.config.disableCue === true) {
+                    createCueFile = false;
                 }
 
                 let fileNames = [];
@@ -898,7 +899,6 @@ class EmulatorJS {
                     let isoFile = null;
                     let supportedFile = null;
                     let cueFile = null;
-                    let selectedCueExt = null;
                     fileNames.forEach(fileName => {
                         const ext = fileName.split(".").pop().toLowerCase();
                         if (supportedFile === null && supportsExt(ext)) {
@@ -907,21 +907,21 @@ class EmulatorJS {
                         if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
                             isoFile = fileName;
                         }
-                        if (["cue", "ccd", "toc", "m3u"].includes(ext)) {
+                        if (prioritizeExtensions.includes(ext)) {
+                            const currentCueExt = (cueFile === null) ? null : cueFile.split(".").pop().toLowerCase();
                             if (coreName === "psx") {
-                                //always prefer m3u files for psx cores
-                                if (selectedCueExt !== "m3u") {
+                                // Always prefer m3u files for psx cores
+                                if (currentCueExt !== "m3u") {
                                     if (cueFile === null || ext === "m3u") {
                                         cueFile = fileName;
-                                        selectedCueExt = ext;
                                     }
                                 }
                             } else {
-                                //prefer cue or ccd files over toc or m3u
-                                if (!["cue", "ccd"].includes(selectedCueExt)) {
-                                    if (cueFile === null || ["cue", "ccd"].includes(ext)) {
+                                const priority = ["cue", "ccd"]
+                                // Prefer cue or ccd files over toc or m3u
+                                if (!priority.includes(currentCueExt)) {
+                                    if (cueFile === null || priority.includes(ext)) {
                                         cueFile = fileName;
-                                        selectedCueExt = ext;
                                     }
                                 }
                             }
@@ -932,14 +932,13 @@ class EmulatorJS {
                     } else {
                         this.fileName = fileNames[0];
                     }
-                    if (isoFile !== null && (supportsExt("iso") || supportsExt("cso") || supportsExt("chd") || supportsExt("elf"))) {
+                    if (isoFile !== null && supportsExt(isoFile.split(".").pop().toLowerCase())) {
                         this.fileName = isoFile;
-                    } else if (supportsExt("cue") || supportsExt("ccd") || supportsExt("toc") || supportsExt("m3u")) {
-                        if (cueFile !== null) {
-                            this.fileName = cueFile;
-                        } else if (!disableCue) {
-                            this.fileName = this.gameManager.createCueFile(fileNames);
-                        }
+                    }
+                    if (cueFile !== null && supportsExt(cueFile.split(".").pop().toLowerCase())) {
+                        this.fileName = cueFile;
+                    } else if (createCueFile && supportsExt("m3u") && supportsExt("cue")) {
+                        this.fileName = this.gameManager.createCueFile(fileNames);
                     }
                     resolve();
                 });
