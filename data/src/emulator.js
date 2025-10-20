@@ -2848,7 +2848,7 @@ class EmulatorJS {
                 { id: 22, label: this.localization("R STICK DOWN") },
                 { id: 21, label: this.localization("R STICK LEFT") },
                 { id: 20, label: this.localization("R STICK RIGHT") },
-            ];    
+            ];
         } else {
             buttons = [
                 { id: 0, label: this.localization("B") },
