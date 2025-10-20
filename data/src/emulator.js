@@ -2827,6 +2827,31 @@ class EmulatorJS {
                 { id: 17, label: this.localization("STICK LEFT") },
                 { id: 16, label: this.localization("STICK RIGHT") },
             ];
+        } else if ("psx" === this.getControlScheme()) {
+            buttons = [
+                { id: 9, label: this.localization("\u25B3") }, // △
+                { id: 1, label: this.localization("\u25A1") }, // □
+                { id: 0, label: this.localization("\uFF58") }, // ｘ
+                { id: 8, label: this.localization("\u25CB") }, // ○
+                { id: 2, label: this.localization("SELECT") },
+                { id: 3, label: this.localization("START") },
+                { id: 4, label: this.localization("UP") },
+                { id: 5, label: this.localization("DOWN") },
+                { id: 6, label: this.localization("LEFT") },
+                { id: 7, label: this.localization("RIGHT") },
+                { id: 10, label: this.localization("L1") },
+                { id: 11, label: this.localization("R1") },
+                { id: 12, label: this.localization("L2") },
+                { id: 13, label: this.localization("R2") },
+                { id: 19, label: this.localization("L STICK UP") },
+                { id: 18, label: this.localization("L STICK DOWN") },
+                { id: 17, label: this.localization("L STICK LEFT") },
+                { id: 16, label: this.localization("L STICK RIGHT") },
+                { id: 23, label: this.localization("R STICK UP") },
+                { id: 22, label: this.localization("R STICK DOWN") },
+                { id: 21, label: this.localization("R STICK LEFT") },
+                { id: 20, label: this.localization("R STICK RIGHT") },
+            ];
         } else {
             buttons = [
                 { id: 0, label: this.localization("B") },
