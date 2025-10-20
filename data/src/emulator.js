@@ -1997,7 +1997,7 @@ class EmulatorJS {
             if (stateUrl) URL.revokeObjectURL(stateUrl);
             if (this.getSettingValue("save-state-location") === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.put(this.getBaseFileName() + ".state", state);
-                this.displayMessage(this.localization("SAVE SAVED TO BROWSER"));
+                this.displayMessage(this.localization("SAVED STATE TO BROWSER"));
             } else {
                 const blob = new Blob([state]);
                 stateUrl = URL.createObjectURL(blob);
@@ -2013,7 +2013,7 @@ class EmulatorJS {
             if (this.getSettingValue("save-state-location") === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.get(this.getBaseFileName() + ".state").then(e => {
                     this.gameManager.loadState(e);
-                    this.displayMessage(this.localization("SAVE LOADED FROM BROWSER"));
+                    this.displayMessage(this.localization("LOADED STATE FROM BROWSER"));
                 })
             } else {
                 const file = await this.selectFile();
