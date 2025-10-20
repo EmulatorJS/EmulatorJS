@@ -128,6 +128,7 @@
     config.shaders = Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {});
     config.fixedSaveInterval = window.EJS_fixedSaveInterval;
     config.disableAutoUnload = window.EJS_disableAutoUnload;
+    config.disableBatchBootup = window.EJS_disableBatchBootup;
 
     let systemLang;
     try {

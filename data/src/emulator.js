@@ -4,7 +4,7 @@ class EmulatorJS {
             "atari5200": ["a5200"],
             "vb": ["beetle_vb"],
             "nds": ["melonds", "desmume", "desmume2015"],
-            "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2"],
+            "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi"],
             "nes": ["fceumm", "nestopia"],
             "gb": ["gambatte"],
             "coleco": ["gearcoleco"],
@@ -939,6 +939,9 @@ class EmulatorJS {
                         this.fileName = cueFile;
                     } else if (createCueFile && supportsExt("m3u") && supportsExt("cue")) {
                         this.fileName = this.gameManager.createCueFile(fileNames);
+                    }
+                    if (this.getCore(true) === "dos" && !this.config.disableBatchBootup) {
+                        this.fileName = this.gameManager.writeBootupBatchFile();
                     }
                     resolve();
                 });
