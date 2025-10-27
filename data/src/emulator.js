@@ -22,7 +22,7 @@ class EmulatorJS {
             "psx": ["pcsx_rearmed", "mednafen_psx_hw"],
             "ws": ["mednafen_wswan"],
             "gba": ["mgba"],
-            "n64": ["mupen64plus_next", "parallel_n64"],
+            "n64": ["parallel_n64", "mupen64plus_next"],
             "3do": ["opera"],
             "psp": ["ppsspp"],
             "atari7800": ["prosystem"],
@@ -6843,11 +6843,187 @@ class EmulatorJS {
                 this.addEventListener(close, "click", (e) => {
                     popups[0].remove();
                 })
+                
+                // This object will hold the fetched cheat data
+                let cheatDB = {};
+
+                const systemKey = this.getCore(true);
+                const normalizeName = (name) => {
+                    return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                };
+                const createSelect = (labelText) => {
+                    const div = this.createElement("div");
+                    const label = this.createElement("strong");
+                    label.innerText = this.localization(labelText);
+                    div.appendChild(label);
+                    div.appendChild(this.createElement("br"));
+                    const select = this.createElement("select");
+                    select.style.width = "100%";
+                    select.classList.add("ejs_cheat_code");
+                    div.appendChild(select);
+                    return { container: div, select: select };
+                };
+
+                const importDiv = this.createElement("div");
+                importDiv.classList.add("ejs_cheat_main");
+                importDiv.style.borderBottom = "1px solid #555";
+                importDiv.style.paddingBottom = "10px";
+
+                const importTitle = this.createElement("h3");
+                importTitle.innerText = this.localization("Import from Database") + ` (${systemKey.toUpperCase()})`;
+                importTitle.style.marginTop = "0px";
+                importDiv.appendChild(importTitle);
+
+                const gameSelectUI = createSelect("Game");
+                const cheatSelectUI = createSelect("Cheat");
+                const errorMessage = this.createElement("div");
+                errorMessage.style.color = 'red';
+                errorMessage.style.marginTop = '5px';
+                errorMessage.style.display = 'none';
+
+                importDiv.appendChild(gameSelectUI.container);
+                importDiv.appendChild(cheatSelectUI.container);
+                importDiv.appendChild(errorMessage);
+
+                popup.appendChild(importDiv);
+
+                const loadCheatList = (gameName) => {
+                    cheatSelectUI.select.innerHTML = ""; 
+                    
+                    const defaultOpt = this.createElement("option");
+                    defaultOpt.value = "";
+                    defaultOpt.innerText = "--- " + this.localization("Select a Cheat") + " ---";
+                    cheatSelectUI.select.appendChild(defaultOpt);
+                    mainText.value = "";
+                    mainText2.value = "";
+                    
+                    if (!gameName || !cheatDB[gameName]) return; 
+
+                    const cheats = cheatDB[gameName];
+                    cheats.forEach(cheat => {
+                        const opt = this.createElement("option");
+                        opt.value = cheat.desc;
+                        opt.innerText = cheat.desc;
+                        cheatSelectUI.select.appendChild(opt);
+                    });
+                    
+                    if (cheats.length > 0) {
+                        cheatSelectUI.select.value = cheats[0].desc;
+                        mainText.value = cheats[0].code;
+                        mainText2.value = cheats[0].desc;
+                    }
+                };
+
+                const loadCheatDatabase = async (system) => {
+                    gameSelectUI.select.innerHTML = ""; 
+                    cheatSelectUI.select.innerHTML = ""; 
+                    errorMessage.style.display = 'none';
+                    
+                    const defaultGameOpt = this.createElement("option");
+                    defaultGameOpt.value = "";
+                    defaultGameOpt.innerText = "--- " + this.localization("Select a Game") + " ---";
+                    gameSelectUI.select.appendChild(defaultGameOpt);
+                    
+                    if (!this.config.cheatPath) {
+                        errorMessage.innerText = this.localization("Error: EJS_cheatPath is not configured.");
+                        errorMessage.style.display = 'block';
+                        return;
+                    }
+
+                    const url = this.config.cheatPath + system + ".json";
+                    
+                    try {
+                        const res = await this.downloadFile(url, null, true, { responseType: "text", method: "GET" });
+                        
+                        let data;
+                        if (res === -1) {
+                            throw new Error("Cheat JSON not found. Create a file at: " + url);
+                        } else if (typeof res.data === "string") {
+                            try {
+                                data = JSON.parse(res.data);
+                            } catch (e) {
+                                throw new Error("Failed to parse cheat JSON: " + e.message);
+                            }
+                        } else {
+                            data = res.data;
+                        }
+                        
+                        cheatDB = data;
+                        errorMessage.style.display = 'none';
+
+                        const gameNames = Object.keys(cheatDB).sort();
+                        gameNames.forEach(name => {
+                            const opt = this.createElement("option");
+                            opt.value = name;
+                            opt.innerText = name;
+                            gameSelectUI.select.appendChild(opt);
+                        });
+
+                        const currentFileBaseName = this.getBaseFileName(true); 
+                        const normalizedFile = normalizeName(currentFileBaseName);
+                        let matchedGameName = null;
+                        if (gameNames.includes(this.config.gameName)) {
+                            matchedGameName = this.config.gameName;
+                        }
+
+                        if (!matchedGameName) {
+                            for (const name of gameNames) {
+                                if (normalizeName(name) === normalizedFile) {
+                                    matchedGameName = name;
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (matchedGameName) {
+                            gameSelectUI.select.value = matchedGameName;
+                        }
+
+                        loadCheatList(gameSelectUI.select.value);
+
+                    } catch (e) {
+                        console.error("Cheat file load error:", e.message);
+                        errorMessage.innerText = this.localization("No cheat database found for ") + system.toUpperCase() + ". " + this.localization("Please use the manual entry below.");
+                        errorMessage.style.display = 'block';
+                        cheatDB = {};
+                        loadCheatList(null);
+                    }
+                };
+
+                gameSelectUI.select.addEventListener("change", () => {
+                    loadCheatList(gameSelectUI.select.value);
+                });
+
+                cheatSelectUI.select.addEventListener("change", () => {
+                    const game = gameSelectUI.select.value;
+                    const cheatDesc = cheatSelectUI.select.value;
+
+                    if (!game || !cheatDesc) {
+                         mainText.value = "";
+                         mainText2.value = "";
+                         return;
+                    }
+                    
+                    const cheat = cheatDB[game].find(c => c.desc === cheatDesc);
+                    if (cheat) {
+                        mainText.value = cheat.code;
+                        mainText2.value = cheat.desc;
+                    }
+                });
+
+                (async () => {
+                    if (systemKey) {
+                        await loadCheatDatabase(systemKey);
+                    } else {
+                        errorMessage.innerText = this.localization("Error: Unable to determine emulator system.");
+                        errorMessage.style.display = 'block';
+                    }
+                })();
 
                 const main = this.createElement("div");
                 main.classList.add("ejs_cheat_main");
                 const header3 = this.createElement("strong");
-                header3.innerText = this.localization("Code");
+                header3.innerText = this.localization("Manual Entry - Code");
                 main.appendChild(header3);
                 main.appendChild(this.createElement("br"));
                 const mainText = this.createElement("textarea");
@@ -6857,12 +7033,13 @@ class EmulatorJS {
                 main.appendChild(mainText);
                 main.appendChild(this.createElement("br"));
                 const header2 = this.createElement("strong");
-                header2.innerText = this.localization("Description");
+                header2.innerText = this.localization("Manual Entry - Description");
                 main.appendChild(header2);
                 main.appendChild(this.createElement("br"));
                 const mainText2 = this.createElement("input");
                 mainText2.type = "text";
                 mainText2.classList.add("ejs_cheat_code");
+                mainText2.style.width = "100%";
                 main.appendChild(mainText2);
                 main.appendChild(this.createElement("br"));
                 popup.appendChild(main);
