@@ -6843,14 +6843,24 @@ class EmulatorJS {
                 this.addEventListener(close, "click", (e) => {
                     popups[0].remove();
                 })
-                
-                // This object will hold the fetched cheat data
-                let cheatDB = {};
 
+                let cheatDB = {};
                 const systemKey = this.getCore(true);
-                const normalizeName = (name) => {
-                    return name.toLowerCase().replace(/[^a-z0-9]/g, '');
+                const cleanRomTags = (name) => {
+                    return name.replace(/\([^)]+\)/g, '').replace(/\[[^\]]+\]/g, '').trim();
                 };
+
+                const normalizeAndConvertNumerals = (name) => {
+                    let normalized = name.toLowerCase();
+                    normalized = normalized.replace(/ iv/g, ' 4'); 
+                    normalized = normalized.replace(/ iii/g, ' 3');
+                    normalized = normalized.replace(/ ii/g, ' 2');
+                    normalized = normalized.replace(/ v/g, ' 5');
+                    normalized = normalized.replace(/ i/g, ' 1'); 
+
+                    return normalized.replace(/[^a-z0-9]/g, '');
+                };
+
                 const createSelect = (labelText) => {
                     const div = this.createElement("div");
                     const label = this.createElement("strong");
@@ -6870,7 +6880,7 @@ class EmulatorJS {
                 importDiv.style.paddingBottom = "10px";
 
                 const importTitle = this.createElement("h3");
-                importTitle.innerText = this.localization("Import from Database") + ` (${systemKey.toUpperCase()})`;
+                importTitle.innerText = this.localization("Import from Database") + (systemKey ? ` (${systemKey.toUpperCase()})` : "");
                 importTitle.style.marginTop = "0px";
                 importDiv.appendChild(importTitle);
 
@@ -6888,12 +6898,13 @@ class EmulatorJS {
                 popup.appendChild(importDiv);
 
                 const loadCheatList = (gameName) => {
-                    cheatSelectUI.select.innerHTML = ""; 
+                    cheatSelectUI.select.innerHTML = "";
                     
                     const defaultOpt = this.createElement("option");
                     defaultOpt.value = "";
                     defaultOpt.innerText = "--- " + this.localization("Select a Cheat") + " ---";
                     cheatSelectUI.select.appendChild(defaultOpt);
+
                     mainText.value = "";
                     mainText2.value = "";
                     
@@ -6915,8 +6926,8 @@ class EmulatorJS {
                 };
 
                 const loadCheatDatabase = async (system) => {
-                    gameSelectUI.select.innerHTML = ""; 
-                    cheatSelectUI.select.innerHTML = ""; 
+                    gameSelectUI.select.innerHTML = "";
+                    cheatSelectUI.select.innerHTML = "";
                     errorMessage.style.display = 'none';
                     
                     const defaultGameOpt = this.createElement("option");
@@ -6958,17 +6969,19 @@ class EmulatorJS {
                             opt.innerText = name;
                             gameSelectUI.select.appendChild(opt);
                         });
-
-                        const currentFileBaseName = this.getBaseFileName(true); 
-                        const normalizedFile = normalizeName(currentFileBaseName);
+ 
+                        let currentFileBaseName = this.getBaseFileName(true);
+                        currentFileBaseName = currentFileBaseName.replace(/\.[^/.]+$/, "");
+                        const cleanedFileName = cleanRomTags(currentFileBaseName);
+                        const normalizedFile = normalizeAndConvertNumerals(cleanedFileName); 
                         let matchedGameName = null;
-                        if (gameNames.includes(this.config.gameName)) {
+                        if (this.config.gameName && gameNames.includes(this.config.gameName)) {
                             matchedGameName = this.config.gameName;
                         }
 
                         if (!matchedGameName) {
                             for (const name of gameNames) {
-                                if (normalizeName(name) === normalizedFile) {
+                                if (normalizeAndConvertNumerals(name) === normalizedFile) {
                                     matchedGameName = name;
                                     break;
                                 }
