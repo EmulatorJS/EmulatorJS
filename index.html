@@ -170,6 +170,9 @@
 
                     if (["d64"].includes(ext))
                         return "vice_x64sc"
+                    
+                    if (["md", "sg", "smd", "gen"].includes(ext))
+                        return "segaMD"
 
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
