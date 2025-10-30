@@ -98,7 +98,7 @@ class EJS_GameManager {
                                 const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
                                 let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
                                 if (!name) return done();
-                                const files = await this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Assets"));
+                                const files = await this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Assets"), null, "asset", name);
                                 if (files["!!notCompressedData"]) {
                                     path += name;
                                 } else {
@@ -336,7 +336,7 @@ class EJS_GameManager {
     loadPpssppAssets() {
         return new Promise(resolve => {
             this.EJS.downloadFile("cores/ppsspp-assets.zip", null, false, { responseType: "arraybuffer", method: "GET" }).then((res) => {
-                this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
+                this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data"), null, "asset", "ppsspp-assets.zip").then((pspassets) => {
                     if (pspassets === -1) {
                         this.EJS.textElem.innerText = this.localization("Network Error");
                         this.EJS.textElem.style.color = "red";

@@ -329,16 +329,23 @@ class EmulatorJS {
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
         if (this.config.disableDatabases) {
             this.storage = {
-                rom: new window.EJS_DUMMYSTORAGE(),
-                bios: new window.EJS_DUMMYSTORAGE(),
-                core: new window.EJS_DUMMYSTORAGE()
+                // Remove rom and bios storage - rely on browser cache for files and checkCompression for decompression
             }
+            this.storageCache = new window.EJS_Cache(false, new window.EJS_DUMMYSTORAGE(), 1, 1);
         } else {
             this.storage = {
-                rom: new window.EJS_STORAGE("EmulatorJS-roms", "rom"),
-                bios: new window.EJS_STORAGE("EmulatorJS-bios", "bios"),
-                core: new window.EJS_STORAGE("EmulatorJS-core", "core")
+                // Remove rom and bios storage - rely on browser cache for files and checkCompression for decompression
             }
+            this.storageCache = new window.EJS_Cache(true, new window.EJS_STORAGE("EmulatorJS-cache", "cache"), this.config.cacheMaxSizeMB || 4096, this.config.cacheMaxAgeMins || 7200);
+            
+            // Run initial cleanup after cache initialization (non-blocking)
+            setTimeout(async () => {
+                try {
+                    await this.storageCache.cleanup();
+                } catch (error) {
+                    console.error('[EJS Cache] Error during startup cleanup:', error);
+                }
+            }, 5000); // 5 second delay to avoid blocking startup
         }
         // This is not cache. This is save data
         this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
@@ -559,139 +566,127 @@ class EmulatorJS {
         }
         return text;
     }
-    checkCompression(data, msg, fileCbFunc) {
-        if (!this.compression) this.compression = new window.EJS_COMPRESSION(this);
-        if (msg) this.textElem.innerText = msg;
-
-        // Wrap logic in a Promise so we can perform async hashing + IndexedDB operations
-        return new Promise((resolve, reject) => {
-            const input = (data instanceof Uint8Array) ? data : new Uint8Array(data);
-            const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
-            const hashData = async (bytes) => {
-                try {
-                    if (crypto && crypto.subtle && crypto.subtle.digest) {
-                        const digest = await crypto.subtle.digest('SHA-256', bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
-                        const arr = new Uint8Array(digest);
-                        let hex = '';
-                        for (let i = 0; i < arr.length; i++) hex += arr[i].toString(16).padStart(2, '0');
-                        return hex;
-                    }
-                } catch (e) {
-                    if (this.debug) console.warn('Hash failed, skipping cache', e);
+    checkCompression(data, msg, fileCbFunc, type = 'decompressed', filename = null) {
+        return new Promise(async (resolve, reject) => {
+            const startTime = performance.now();
+            const dataSizeMB = (data.byteLength / (1024 * 1024)).toFixed(2);
+            
+            try {
+                if (!this.compression) {
+                    this.compression = new window.EJS_COMPRESSION(this);
                 }
-                return null; // fallback disables caching
-            };
-
-            const openDB = () => new Promise((res) => {
-                if (!('indexedDB' in window)) { res(null); return; }
-                const req = indexedDB.open('EJSDecompressCache', 1);
-                req.onupgradeneeded = () => {
-                    const db = req.result;
-                    if (!db.objectStoreNames.contains('archives')) {
-                        const store = db.createObjectStore('archives', { keyPath: 'hash' });
-                        store.createIndex('lastUsed', 'lastUsed');
-                    }
-                };
-                req.onsuccess = () => res(req.result);
-                req.onerror = () => res(null);
-            });
-
-            const getRecord = (db, hash) => new Promise((res) => {
-                if (!db || !hash) { res(null); return; }
-                const tx = db.transaction('archives', 'readwrite'); // readwrite so we can update lastUsed or delete expired immediately
-                const store = tx.objectStore('archives');
-                const getReq = store.get(hash);
-                getReq.onsuccess = () => {
-                    const record = getReq.result;
-                    if (!record) { res(null); return; }
-                    const now = Date.now();
-                    if ((now - record.lastUsed) > THIRTY_DAYS_MS) {
-                        // expired – remove
-                        store.delete(hash);
-                        res(null);
-                        return;
-                    }
-                    // update lastUsed before returning
-                    record.lastUsed = now;
-                    store.put(record);
-                    res(record);
-                };
-                getReq.onerror = () => res(null);
-            });
-
-            const putRecord = (db, hash, filesArray) => new Promise((res) => {
-                if (!db || !hash) { res(); return; }
-                try {
-                    const now = Date.now();
-                    const tx = db.transaction('archives', 'readwrite');
-                    tx.objectStore('archives').put({ hash, created: now, lastUsed: now, files: filesArray });
-                    tx.oncomplete = () => res();
-                    tx.onerror = () => res();
-                } catch (_) { res(); }
-            });
-
-            const proceed = async () => {
-                let hash = null;
-                try {
-                    hash = await hashData(input);
-                } catch (e) {
-                    if (this.debug) console.warn('Hashing threw unexpectedly, disabling cache for this run', e);
-                    hash = null; // disable caching this invocation
+                
+                // Generate cache key based on data hash
+                const hashStartTime = performance.now();
+                const dataArray = new Uint8Array(data);
+                let hash = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
                 }
-                let db = null;
-                if (hash) db = await openDB();
-                if (hash && db) {
-                    const cached = await getRecord(db, hash);
-                    if (cached) {
-                        // Replay file callbacks if provided
-                        if (typeof fileCbFunc === 'function') {
-                            for (const f of cached.files) {
-                                fileCbFunc(f.name, new Uint8Array(f.data));
-                            }
-                        }
-                        if (msg) this.textElem.innerText = msg + ' (cached)';
-                        // Build return object consistent with original behavior
-                        let ret = {};
-                        if (typeof fileCbFunc === 'function') {
-                            for (const f of cached.files) ret[f.name] = true; // original decompress gives true when callback is used
+                const cacheKey = `compression_${hash}_${dataArray.length}`;
+                const hashTime = performance.now() - hashStartTime;
+                
+                // Check if decompressed content is in cache
+                const cacheCheckStartTime = performance.now();
+                const cachedItem = await this.storageCache.get(cacheKey);
+                const cacheCheckTime = performance.now() - cacheCheckStartTime;
+                
+                if (cachedItem && cachedItem.files && cachedItem.files.length > 0) {
+                    const totalTime = performance.now() - startTime;
+                    console.log(`[EJS Cache] Cache HIT for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
+                    
+                    if (msg) {
+                        this.textElem.innerText = msg + " (cached)";
+                    }
+                    
+                    // Convert cached files back to expected format
+                    const files = {};
+                    for (let i = 0; i < cachedItem.files.length; i++) {
+                        const file = cachedItem.files[i];
+                        if (typeof fileCbFunc === "function") {
+                            fileCbFunc(file.filename, file.bytes);
+                            files[file.filename] = true;
                         } else {
-                            for (const f of cached.files) ret[f.name] = new Uint8Array(f.data);
+                            files[file.filename] = file.bytes;
                         }
-                        resolve(ret);
-                        return;
+                    }
+                    resolve(files);
+                    return;
+                }
+                
+                console.log(`[EJS Cache] Cache MISS for ${dataSizeMB}MB data - Starting decompression (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
+                
+                // Not in cache, decompress and store result
+                if (msg) {
+                    this.textElem.innerText = msg;
+                }
+                
+                const decompressionStartTime = performance.now();
+                
+                // If callback is provided, we need to collect files for caching while still calling the callback
+                const collectedFiles = {};
+                let callbackWrapper = null;
+                
+                if (typeof fileCbFunc === "function") {
+                    callbackWrapper = (filename, fileData) => {
+                        // Call the original callback
+                        fileCbFunc(filename, fileData);
+                        // Also collect the data for caching
+                        collectedFiles[filename] = fileData;
+                        console.log(`[EJS Cache] Collected file for caching: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
+                    };
+                }
+                
+                const decompressedFiles = await this.compression.decompress(data, (m, appendMsg) => {
+                    this.textElem.innerText = appendMsg ? (msg + m) : m;
+                }, callbackWrapper);
+                const decompressionTime = performance.now() - decompressionStartTime;
+                
+                // Store decompressed content in cache
+                const cacheStoreStartTime = performance.now();
+                const fileItems = [];
+                
+                // Use collected files if callback was used, otherwise use returned files
+                const filesToCache = callbackWrapper ? collectedFiles : decompressedFiles;
+                
+                for (const [filename, fileData] of Object.entries(filesToCache)) {
+                    if (fileData && fileData !== true) {
+                        fileItems.push(new window.EJS_FileItem(filename, fileData));
+                        console.log(`[EJS Cache] Adding file to cache: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
+                    } else {
+                        console.log(`[EJS Cache] Skipping file (invalid data): ${filename} (${typeof fileData})`);
                     }
                 }
-
-                // Cache miss or hashing disabled: decompress and capture
-                // Always decompress WITHOUT passing fileCbFunc so we get actual file bytes to cache.
-                let progressCb = (m, appendMsg) => { this.textElem.innerText = appendMsg ? (msg + m) : m; };
-                this.compression.decompress(input, progressCb, undefined).then(async (resultObj) => {
-                    // Replay original callback if present
-                    if (typeof fileCbFunc === 'function') {
-                        Object.keys(resultObj).forEach(name => {
-                            fileCbFunc(name, resultObj[name]);
-                        });
+                
+                if (fileItems.length > 0) {
+                    const cacheItem = new window.EJS_CacheItem(cacheKey, fileItems, Date.now(), type, filename);
+                    await this.storageCache.put(cacheItem);
+                    console.log(`[EJS Cache] Stored ${fileItems.length} files in cache with key: ${cacheKey}, type: ${type}, filename: ${filename || 'N/A'}`);
+                } else {
+                    console.log(`[EJS Cache] No files to cache (fileItems.length = 0)`);
+                }
+                const cacheStoreTime = performance.now() - cacheStoreStartTime;
+                
+                const totalTime = performance.now() - startTime;
+                console.log(`[EJS Cache] Decompression complete for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (decompression: ${decompressionTime.toFixed(2)}ms, cache store: ${cacheStoreTime.toFixed(2)}ms)`);
+                
+                // Return appropriate structure based on whether callback was used
+                if (callbackWrapper) {
+                    // For callback-based calls, return a structure indicating completion
+                    const result = {};
+                    for (const filename of Object.keys(collectedFiles)) {
+                        result[filename] = true;
                     }
-                    // Persist to cache
-                    if (hash && db) {
-                        try {
-                            const filesArray = Object.keys(resultObj).map(name => ({ name, data: resultObj[name].buffer ? resultObj[name].buffer.slice(0) : resultObj[name] }));
-                            await putRecord(db, hash, filesArray);
-                        } catch (e) { if (this.debug) console.warn('Failed to store decompression cache', e); }
-                    }
-                    // Conform return shape to original behavior when fileCbFunc exists
-                    if (typeof fileCbFunc === 'function') {
-                        const transformed = {};
-                        Object.keys(resultObj).forEach(k => { transformed[k] = true; });
-                        resolve(transformed);
-                    } else {
-                        resolve(resultObj);
-                    }
-                }).catch(err => reject(err));
-            };
-
-            proceed();
+                    resolve(result);
+                } else {
+                    // For promise-based calls, return the actual file data
+                    resolve(decompressedFiles);
+                }
+            } catch (error) {
+                const totalTime = performance.now() - startTime;
+                console.error(`[EJS Cache] Error processing ${dataSizeMB}MB data after ${totalTime.toFixed(2)}ms:`, error);
+                reject(error);
+            }
         });
     }
     checkCoreCompatibility(version) {
@@ -728,21 +723,21 @@ class EmulatorJS {
             console.warn("Threads is set to true, but the SharedArrayBuffer function is not exposed. Threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
             return;
         }
-        const gotCore = (data) => {
+        const gotCore = (data, shouldCacheDecompressed = false, baseCoreId = null) => {
             this.defaultCoreOpts = {};
-            this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core")).then((data) => {
+            this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core"), null, "core", this.getCore()).then(async (decompressedData) => {
                 let js, thread, wasm;
-                for (let k in data) {
+                for (let k in decompressedData) {
                     if (k.endsWith(".wasm")) {
-                        wasm = data[k];
+                        wasm = decompressedData[k];
                     } else if (k.endsWith(".worker.js")) {
-                        thread = data[k];
+                        thread = decompressedData[k];
                     } else if (k.endsWith(".js")) {
-                        js = data[k];
+                        js = decompressedData[k];
                     } else if (k === "build.json") {
-                        this.checkCoreCompatibility(JSON.parse(new TextDecoder().decode(data[k])));
+                        this.checkCoreCompatibility(JSON.parse(new TextDecoder().decode(decompressedData[k])));
                     } else if (k === "core.json") {
-                        let core = JSON.parse(new TextDecoder().decode(data[k]));
+                        let core = JSON.parse(new TextDecoder().decode(decompressedData[k]));
                         this.extensions = core.extensions;
                         this.coreName = core.name;
                         this.repository = core.repo;
@@ -751,7 +746,7 @@ class EmulatorJS {
                         this.retroarchOpts = core.retroarchOpts;
                         this.saveFileExt = core.save;
                     } else if (k === "license.txt") {
-                        this.license = new TextDecoder().decode(data[k]);
+                        this.license = new TextDecoder().decode(decompressedData[k]);
                     }
                 }
 
@@ -760,11 +755,41 @@ class EmulatorJS {
                     this.elements.bottomBar.loadSavFiles[0].style.display = "none";
                 }
 
+                // The core decompression is now handled by checkCompression which already caches the result
+                // No need for additional core-specific caching - this would create duplicates
+                console.log(`[EJS Core] Core decompression complete (cached by checkCompression)`);
+
                 this.initGameCore(js, wasm, thread);
             });
         }
+
+        // Helper function to generate cache key for core data
+        const generateCoreDataCacheKey = (data) => {
+            const dataArray = new Uint8Array(data);
+            let hash = 0;
+            for (let i = 0; i < dataArray.length; i++) {
+                hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
+            }
+            return `compression_${hash}_${dataArray.length}`;
+        };
+
+        // Helper function to check if cached core is expired
+        const isCoreExpired = (cachedItem) => {
+            if (!cachedItem) return true;
+            const now = Date.now();
+            const ageMins = (now - cachedItem.lastAccessed) / (1000 * 60);
+            // Use the same expiration logic as the cache (7200 minutes = 5 days)
+            const maxAgeMins = this.storageCache.minAgeMins || 7200;
+            return ageMins > maxAgeMins;
+        };
         const report = "cores/reports/" + this.getCore() + ".json";
-        this.downloadFile(report, null, false, { responseType: "text", method: "GET" }).then(async rep => {
+        // Add cache-busting parameter periodically to ensure we get updated build versions
+        // This ensures that when cores are updated, we'll eventually get the new buildStart value
+        const cacheBustInterval = 1000 * 60 * 60; // 1 hour
+        const cacheBustParam = Math.floor(Date.now() / cacheBustInterval);
+        const reportUrl = `${report}?v=${cacheBustParam}`;
+        
+        this.downloadFile(reportUrl, null, false, { responseType: "text", method: "GET" }).then(async rep => {
             if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
                 rep = {};
             } else {
@@ -792,13 +817,56 @@ class EmulatorJS {
 
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore() + (threads ? "-thread" : "") + legacy + "-wasm.data";
-            if (!this.debug) {
-                const result = await this.storage.core.get(filename);
-                if (result && result.version === rep.buildStart) {
-                    gotCore(result.data);
-                    return;
+            
+            // Check if we have the core cached in the compression cache to skip download entirely
+            // This leverages the existing checkCompression cache mechanism
+            try {
+                console.log(`[EJS Core] Checking for cached core...`);
+                
+                // Try to download and check if it's in browser cache first
+                const corePath = "cores/" + filename;
+                const headResponse = await fetch(this.config.dataPath ? this.config.dataPath + corePath : corePath, {
+                    method: 'HEAD',
+                    cache: 'default'
+                }).catch(() => null);
+                
+                if (headResponse && headResponse.status === 304) {
+                    console.log("[EJS Core] Browser cache indicates file hasn't changed - proceeding to check decompression cache");
+                    
+                    // File hasn't changed according to browser cache, so try a minimal download to check our cache
+                    const quickDownload = await this.downloadFile(corePath, null, false, { 
+                        responseType: "arraybuffer", 
+                        method: "GET" 
+                    }).catch(() => null);
+                    
+                    if (quickDownload && quickDownload.data) {
+                        // Generate cache key the same way checkCompression does
+                        const dataArray = new Uint8Array(quickDownload.data);
+                        let hash = 0;
+                        for (let i = 0; i < dataArray.length; i++) {
+                            hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
+                        }
+                        const compressionCacheKey = `compression_${hash}_${dataArray.length}`;
+                        const cachedDecompression = await this.storageCache.get(compressionCacheKey);
+                        
+                        if (cachedDecompression && cachedDecompression.files && cachedDecompression.files.length > 0) {
+                            console.log(`[EJS Core] Found cached decompression (${compressionCacheKey}) - using cached core`);
+                            this.textElem.innerText = this.localization("Loading cached core...");
+                            
+                            // Use the cached data directly without re-downloading
+                            gotCore(quickDownload.data, false);
+                            return;
+                        }
+                    }
                 }
+                
+                console.log(`[EJS Core] No valid cache found or file has changed - proceeding with fresh download`);
+            } catch (error) {
+                console.warn("[EJS Core] Error checking cache, proceeding with download:", error);
             }
+            
+            // No valid decompressed cache found, download and rely on browser cache for the file
+            console.log("[EJS Core] Downloading core (browser cache will handle file-level caching)");
             const corePath = "cores/" + filename;
             let res = await this.downloadFile(corePath, (progress) => {
                 this.textElem.innerText = this.localization("Download Game Core") + progress;
@@ -820,11 +888,10 @@ class EmulatorJS {
                 }
                 console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
             }
+            
+            // No need for extra core-specific caching - checkCompression handles it
             gotCore(res.data);
-            this.storage.core.put(filename, {
-                version: rep.buildStart,
-                data: res.data
-            });
+            // Note: We no longer store the compressed core in IndexedDB - relying on browser cache instead
         });
     }
     initGameCore(js, wasm, thread) {
@@ -903,7 +970,8 @@ class EmulatorJS {
                     this.gameManager.FS.writeFile(coreFilePath + assetUrl.split("/").pop(), new Uint8Array(input));
                     return resolve(assetUrl);
                 }
-                const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage);
+                const assetFilename = assetUrl.split("/").pop().split("#")[0].split("?")[0];
+                const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage, null, "BIOS", assetFilename);
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
                         this.gameManager.FS.writeFile(coreFilePath + assetUrl.split("/").pop().split("#")[0].split("?")[0], data[k]);
@@ -914,15 +982,10 @@ class EmulatorJS {
                 }
             }
 
+            console.log(`[EJS ${type.toUpperCase()}] Downloading ${assetUrl} (browser cache will handle file-level caching)`);
             this.textElem.innerText = progressMessage;
-            if (!this.debug) {
-                const res = await this.downloadFile(assetUrl, null, true, { method: "HEAD" });
-                const result = await this.storage.rom.get(assetUrl.split("/").pop());
-                if (result && result["content-length"] === res.headers["content-length"] && result.type === type) {
-                    await gotData(result.data);
-                    return resolve(assetUrl);
-                }
-            }
+            
+            // No longer check our own storage - rely on browser cache and checkCompression cache
             const res = await this.downloadFile(assetUrl, (progress) => {
                 this.textElem.innerText = progressMessage + progress;
             }, true, { responseType: "arraybuffer", method: "GET" });
@@ -938,14 +1001,8 @@ class EmulatorJS {
             }
             await gotData(res.data);
             resolve(assetUrl);
-            const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-            if (parseFloat(res.headers["content-length"]) < limit && this.saveInBrowserSupported() && assetUrl !== "game") {
-                this.storage.rom.put(assetUrl.split("/").pop(), {
-                    "content-length": res.headers["content-length"],
-                    data: res.data,
-                    type: type
-                })
-            }
+            // No longer store in ROM storage - browser cache handles file caching, checkCompression handles decompression caching
+            console.log(`[EJS ${type.toUpperCase()}] Download and decompression complete (cached by checkCompression)`);
         });
     }
     downloadGamePatch() {
@@ -995,6 +1052,7 @@ class EmulatorJS {
                 }
 
                 let fileNames = [];
+                const romFilename = this.getBaseFileName(true);
                 this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
                     if (fileName.includes("/")) {
                         const paths = fileName.split("/");
@@ -1018,7 +1076,7 @@ class EmulatorJS {
                         this.gameManager.FS.writeFile(`/${fileName}`, fileData);
                         fileNames.push(fileName);
                     }
-                }).then(() => {
+                }, "ROM", romFilename).then(() => {
                     let isoFile = null;
                     let supportedFile = null;
                     let cueFile = null;
@@ -1069,6 +1127,7 @@ class EmulatorJS {
                 });
             }
             const downloadFile = async () => {
+                console.log("[EJS ROM] Downloading ROM (browser cache will handle file-level caching)");
                 const res = await this.downloadFile(this.config.gameUrl, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;
                 }, true, { responseType: "arraybuffer", method: "GET" });
@@ -1082,28 +1141,12 @@ class EmulatorJS {
                     this.config.gameUrl = "game";
                 }
                 gotGameData(res.data);
-                const limit = (typeof this.config.cacheLimit === "number") ? this.config.cacheLimit : 1073741824;
-                if (parseFloat(res.headers["content-length"]) < limit && this.saveInBrowserSupported() && this.config.gameUrl !== "game") {
-                    this.storage.rom.put(this.config.gameUrl.split("/").pop(), {
-                        "content-length": res.headers["content-length"],
-                        data: res.data
-                    })
-                }
+                // No longer store in ROM storage - browser cache handles file caching, checkCompression handles decompression caching
+                console.log("[EJS ROM] Download and decompression complete (cached by checkCompression)");
             }
 
-            if (!this.debug) {
-                this.downloadFile(this.config.gameUrl, null, true, { method: "HEAD" }).then(async (res) => {
-                    const name = (typeof this.config.gameUrl === "string") ? this.config.gameUrl.split("/").pop() : "game";
-                    const result = await this.storage.rom.get(name);
-                    if (result && result["content-length"] === res.headers["content-length"] && name !== "game") {
-                        gotGameData(result.data);
-                        return;
-                    }
-                    downloadFile();
-                })
-            } else {
-                downloadFile();
-            }
+            // No longer check ROM storage - rely on browser cache and checkCompression cache
+            downloadFile();
         })
     }
     downloadFiles() {
@@ -2540,26 +2583,66 @@ class EmulatorJS {
     }
     openCacheMenu() {
         (async () => {
+            // Run cleanup before showing cache contents
+            await this.storageCache.cleanup();
+            
             const list = this.createElement("table");
+            const thead = this.createElement("thead");
             const tbody = this.createElement("tbody");
+            
+            // Create header row
+            const headerRow = this.createElement("tr");
+            const nameHeader = this.createElement("th");
+            const typeHeader = this.createElement("th");
+            const sizeHeader = this.createElement("th");
+            const lastUsedHeader = this.createElement("th");
+            const actionHeader = this.createElement("th");
+            
+            nameHeader.innerText = "Filename";
+            typeHeader.innerText = "Type";
+            sizeHeader.innerText = "Size";
+            lastUsedHeader.innerText = "Last Used";
+            actionHeader.innerText = "Action";
+            
+            nameHeader.style.textAlign = "left";
+            typeHeader.style.textAlign = "left";
+            sizeHeader.style.textAlign = "left";
+            lastUsedHeader.style.textAlign = "left";
+            actionHeader.style.textAlign = "left";
+            
+            headerRow.appendChild(nameHeader);
+            headerRow.appendChild(typeHeader);
+            headerRow.appendChild(sizeHeader);
+            headerRow.appendChild(lastUsedHeader);
+            headerRow.appendChild(actionHeader);
+            thead.appendChild(headerRow);
+            
             const body = this.createPopup("Cache Manager", {
+                "Cleanup Now": async () => {
+                    const cleanupBtn = document.querySelector('.ejs_popup_button');
+                    if (cleanupBtn) cleanupBtn.textContent = 'Cleaning...';
+                    await this.storageCache.cleanup();
+                    tbody.innerHTML = "";
+                    // Refresh the cache list
+                    await this.populateCacheList(tbody, getSize, getTypeName);
+                    if (cleanupBtn) cleanupBtn.textContent = 'Cleanup Now';
+                },
                 "Clear All": async () => {
-                    const roms = await this.storage.rom.getSizes();
-                    for (const k in roms) {
-                        await this.storage.rom.remove(k);
-                    }
+                    await this.storageCache.clear();
                     tbody.innerHTML = "";
                 },
                 "Close": () => {
                     this.closePopup();
                 }
             });
-            const roms = await this.storage.rom.getSizes();
+            
             list.style.width = "100%";
             list.style["padding-left"] = "10px";
             list.style["text-align"] = "left";
             body.appendChild(list);
+            list.appendChild(thead);
             list.appendChild(tbody);
+            
             const getSize = function (size) {
                 let i = -1;
                 do {
@@ -2567,30 +2650,91 @@ class EmulatorJS {
                 } while (size > 1024);
                 return Math.max(size, 0.1).toFixed(1) + [" kB", " MB", " GB", " TB", "PB", "EB", "ZB", "YB"][i];
             }
-            for (const k in roms) {
-                const line = this.createElement("tr");
-                const name = this.createElement("td");
-                const size = this.createElement("td");
-                const remove = this.createElement("td");
-                remove.style.cursor = "pointer";
-                name.innerText = k;
-                size.innerText = getSize(roms[k]);
-
-                const a = this.createElement("a");
-                a.innerText = this.localization("Remove");
-                this.addEventListener(remove, "click", () => {
-                    this.storage.rom.remove(k);
-                    line.remove();
-                })
-                remove.appendChild(a);
-
-                line.appendChild(name);
-                line.appendChild(size);
-                line.appendChild(remove);
-                tbody.appendChild(line);
+            
+            const getTypeName = function(key) {
+                if (key.startsWith('compression_')) return 'Decompressed Content';
+                if (key.startsWith('core_decompressed_')) return 'Core';
+                // Additional fallback logic for other types
+                if (key.includes('core')) return 'Core';
+                if (key.includes('bios')) return 'BIOS';
+                if (key.includes('rom')) return 'ROM';
+                if (key.includes('asset')) return 'Asset';
+                return 'Unknown';
             }
+            
+            await this.populateCacheList(tbody, getSize, getTypeName);
         })();
     }
+    
+    async populateCacheList(tbody, getSize, getTypeName) {
+        // Get all cache items from the compression cache
+        const allCacheItems = await this.storageCache.storage.getAll();
+        
+        for (const item of allCacheItems) {
+            if (!item.key || !item.files) continue;
+            
+            const line = this.createElement("tr");
+            const name = this.createElement("td");
+            const type = this.createElement("td");
+            const size = this.createElement("td");
+            const lastUsed = this.createElement("td");
+            const remove = this.createElement("td");
+            remove.style.cursor = "pointer";
+            
+            // Calculate total size of all files in this cache item
+            let totalSize = 0;
+            for (const file of item.files) {
+                if (file.bytes && file.bytes.byteLength) {
+                    totalSize += file.bytes.byteLength;
+                }
+            }
+            
+            // Use filename if available, otherwise fall back to key
+            const displayName = item.filename || item.key;
+            name.innerText = displayName.substring(0, 50) + (displayName.length > 50 ? '...' : '');
+            
+            // Use the stored type if available, otherwise fall back to getTypeName
+            const itemType = item.type || getTypeName(item.key);
+            type.innerText = itemType;
+            size.innerText = getSize(totalSize);
+
+            // Format last accessed time
+            const lastAccessedTime = item.lastAccessed || item.added || Date.now();
+            const formatDate = (timestamp) => {
+                const date = new Date(timestamp);
+                const now = new Date();
+                const diffMs = now - date;
+                const diffMins = Math.floor(diffMs / (1000 * 60));
+                const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+                
+                if (diffMins < 1) return 'Just now';
+                if (diffMins < 60) return `${diffMins}m ago`;
+                if (diffHours < 24) return `${diffHours}h ago`;
+                if (diffDays < 7) return `${diffDays}d ago`;
+                
+                // For older items, show the actual date
+                return date.toLocaleDateString();
+            };
+            lastUsed.innerText = formatDate(lastAccessedTime);
+
+            const a = this.createElement("a");
+            a.innerText = this.localization("Remove");
+            this.addEventListener(remove, "click", async () => {
+                await this.storageCache.delete(item.key);
+                line.remove();
+            })
+            remove.appendChild(a);
+
+            line.appendChild(name);
+            line.appendChild(type);
+            line.appendChild(size);
+            line.appendChild(lastUsed);
+            line.appendChild(remove);
+            tbody.appendChild(line);
+        }
+    }
+    
     getControlScheme() {
         if (this.config.controlScheme && typeof this.config.controlScheme === "string") {
             return this.config.controlScheme;
