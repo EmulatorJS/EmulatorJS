@@ -100,6 +100,20 @@ class EJS_STORAGE {
             resolve(rv);
         })
     }
+    getAll() {
+        return new Promise(async (resolve, reject) => {
+            if (!window.indexedDB) return resolve([]);
+            const keys = await this.get("?EJS_KEYS!");
+            if (!keys) return resolve([]);
+            let rv = [];
+            for (let i = 0; i < keys.length; i++) {
+                const result = await this.get(keys[i]);
+                if (!result) continue;
+                rv.push(result);
+            }
+            resolve(rv);
+        });
+    }
 }
 
 class EJS_DUMMYSTORAGE {
