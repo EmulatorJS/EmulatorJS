@@ -2619,7 +2619,7 @@ class EmulatorJS {
                 { id: 17, label: this.localization("RIGHT D-PAD LEFT") },
                 { id: 16, label: this.localization("RIGHT D-PAD RIGHT") },
             ];
-        } else if (["segaCD", "sega32x"].includes(this.getControlScheme())) {
+        } else if (["segaMD", "segaCD", "sega32x"].includes(this.getControlScheme())) {
             buttons = [
                 { id: 1, label: this.localization("A") },
                 { id: 0, label: this.localization("B") },
