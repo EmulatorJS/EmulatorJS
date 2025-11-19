@@ -17,14 +17,16 @@ class EJS_Cache {
         this.maxAgeMins = maxAgeMins;
         this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
 
-        console.log('Initialized EJS_Cache with settings:', {
-            enabled: this.enabled,
-            storage: this.storage,
-            enabledValue: enabled,
-            maxSizeMB: this.maxSizeMB,
-            maxAgeMins: this.maxAgeMins,
-            minAgeMins: this.minAgeMins
-        });
+        if (window.EJS_emulator.debug) {
+            console.log('Initialized EJS_Cache with settings:', {
+                enabled: this.enabled,
+                storage: this.storage,
+                enabledValue: enabled,
+                maxSizeMB: this.maxSizeMB,
+                maxAgeMins: this.maxAgeMins,
+                minAgeMins: this.minAgeMins
+            });
+        }
     }
 
     /**

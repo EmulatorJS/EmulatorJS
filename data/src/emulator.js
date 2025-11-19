@@ -593,7 +593,7 @@ class EmulatorJS {
                 
                 if (cachedItem && cachedItem.files && cachedItem.files.length > 0) {
                     const totalTime = performance.now() - startTime;
-                    console.log(`[EJS Cache] Cache HIT for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
+                    if (this.debug) console.log(`[EJS Cache] Cache HIT for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
                     
                     if (msg) {
                         this.textElem.innerText = msg + " (cached)";
@@ -614,7 +614,7 @@ class EmulatorJS {
                     return;
                 }
                 
-                console.log(`[EJS Cache] Cache MISS for ${dataSizeMB}MB data - Starting decompression (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
+                if (this.debug) console.log(`[EJS Cache] Cache MISS for ${dataSizeMB}MB data - Starting decompression (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
                 
                 // Not in cache, decompress and store result
                 if (msg) {
@@ -633,7 +633,7 @@ class EmulatorJS {
                         fileCbFunc(filename, fileData);
                         // Also collect the data for caching
                         collectedFiles[filename] = fileData;
-                        console.log(`[EJS Cache] Collected file for caching: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
+                        if (this.debug) console.log(`[EJS Cache] Collected file for caching: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
                     };
                 }
                 
@@ -652,23 +652,23 @@ class EmulatorJS {
                 for (const [filename, fileData] of Object.entries(filesToCache)) {
                     if (fileData && fileData !== true) {
                         fileItems.push(new window.EJS_FileItem(filename, fileData));
-                        console.log(`[EJS Cache] Adding file to cache: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
+                        if (this.debug) console.log(`[EJS Cache] Adding file to cache: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
                     } else {
-                        console.log(`[EJS Cache] Skipping file (invalid data): ${filename} (${typeof fileData})`);
+                        if (this.debug) console.log(`[EJS Cache] Skipping file (invalid data): ${filename} (${typeof fileData})`);
                     }
                 }
                 
                 if (fileItems.length > 0) {
                     const cacheItem = new window.EJS_CacheItem(cacheKey, fileItems, Date.now(), type, filename);
                     await this.storageCache.put(cacheItem);
-                    console.log(`[EJS Cache] Stored ${fileItems.length} files in cache with key: ${cacheKey}, type: ${type}, filename: ${filename || 'N/A'}`);
+                    if (this.debug) console.log(`[EJS Cache] Stored ${fileItems.length} files in cache with key: ${cacheKey}, type: ${type}, filename: ${filename || 'N/A'}`);
                 } else {
-                    console.log(`[EJS Cache] No files to cache (fileItems.length = 0)`);
+                    if (this.debug) console.log(`[EJS Cache] No files to cache (fileItems.length = 0)`);
                 }
                 const cacheStoreTime = performance.now() - cacheStoreStartTime;
                 
                 const totalTime = performance.now() - startTime;
-                console.log(`[EJS Cache] Decompression complete for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (decompression: ${decompressionTime.toFixed(2)}ms, cache store: ${cacheStoreTime.toFixed(2)}ms)`);
+                if (this.debug) console.log(`[EJS Cache] Decompression complete for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (decompression: ${decompressionTime.toFixed(2)}ms, cache store: ${cacheStoreTime.toFixed(2)}ms)`);
                 
                 // Return appropriate structure based on whether callback was used
                 if (callbackWrapper) {
@@ -684,7 +684,7 @@ class EmulatorJS {
                 }
             } catch (error) {
                 const totalTime = performance.now() - startTime;
-                console.error(`[EJS Cache] Error processing ${dataSizeMB}MB data after ${totalTime.toFixed(2)}ms:`, error);
+                if (this.debug) console.error(`[EJS Cache] Error processing ${dataSizeMB}MB data after ${totalTime.toFixed(2)}ms:`, error);
                 reject(error);
             }
         });
@@ -850,7 +850,7 @@ class EmulatorJS {
                         const cachedDecompression = await this.storageCache.get(compressionCacheKey);
                         
                         if (cachedDecompression && cachedDecompression.files && cachedDecompression.files.length > 0) {
-                            console.log(`[EJS Core] Found cached decompression (${compressionCacheKey}) - using cached core`);
+                            if (this.debug) console.log(`[EJS Core] Found cached decompression (${compressionCacheKey}) - using cached core`);
                             this.textElem.innerText = this.localization("Loading cached core...");
                             
                             // Use the cached data directly without re-downloading
@@ -860,9 +860,9 @@ class EmulatorJS {
                     }
                 }
                 
-                console.log(`[EJS Core] No valid cache found or file has changed - proceeding with fresh download`);
+                if (this.debug) console.log(`[EJS Core] No valid cache found or file has changed - proceeding with fresh download`);
             } catch (error) {
-                console.warn("[EJS Core] Error checking cache, proceeding with download:", error);
+                if (this.debug) console.warn("[EJS Core] Error checking cache, proceeding with download:", error);
             }
             
             // No valid decompressed cache found, download and rely on browser cache for the file
