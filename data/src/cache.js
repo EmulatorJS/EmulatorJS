@@ -36,6 +36,11 @@ class EJS_Cache {
     }
 
     /**
+     * Indicates whether the startup cleanup has been completed.
+     */
+    #startupCleanupCompleted = false;
+
+    /**
      * Generates a cache key for the given data array.
      * @param {Uint8Array} dataArray 
      * @returns {string} The generated cache key.
@@ -54,6 +59,12 @@ class EJS_Cache {
      */
     async get(key, metadataOnly = false) {
         if (!this.enabled) return null;
+
+        // clean up cache on first get if not already done
+        if (!this.#startupCleanupCompleted) {
+            await this.cleanup();
+            this.#startupCleanupCompleted = true;
+        }
 
         const item = await this.storage.get(key);
         // if the item exists, update its lastAccessed time and return cache item
