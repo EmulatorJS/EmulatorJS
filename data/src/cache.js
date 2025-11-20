@@ -21,7 +21,7 @@ class EJS_Cache {
         this.debug = debug;
 
         if (this.debug) {
-            console.log('Initialized EJS_Cache with settings:', {
+            console.log("Initialized EJS_Cache with settings:", {
                 enabled: this.enabled,
                 storage: this.storage,
                 blobStorage: this.blobStorage,
@@ -147,7 +147,7 @@ class EJS_Cache {
     async cleanup() {
         if (!this.enabled) return;
 
-        if (this.debug) console.log('[EJS Cache] Starting cache cleanup...');
+        if (this.debug) console.log("[EJS Cache] Starting cache cleanup...");
         const cleanupStartTime = performance.now();
 
         // get all items
@@ -193,7 +193,7 @@ class EJS_Cache {
         const currentSizeMB = (currentSize / (1024 * 1024)).toFixed(2);
         const removedSizeMB = (itemsToRemove.reduce((sum, item) => sum + item.size, 0) / (1024 * 1024)).toFixed(2);
 
-        if (this.debug) console.log(`[EJS Cache] Cleanup complete in ${cleanupTime.toFixed(2)}ms - Removed ${itemsToRemove.length}/${totalItems} items (${removedSizeMB}MB), ${currentSizeMB}MB remaining`);
+        if (this.debug) console.log("[EJS Cache] Cleanup complete in " + cleanupTime.toFixed(2) + "ms - Removed " + itemsToRemove.length + "/" + totalItems + " items (" + removedSizeMB + "MB), " + currentSizeMB + "MB remaining");
     }
 }
 
@@ -211,7 +211,7 @@ class EJS_CacheItem {
      * @param {string} type - The type of cached content (e.g., 'core', 'ROM', 'BIOS', 'decompressed').
      * @param {string} filename - The original filename of the cached content.
      */
-    constructor(key, files, added, type = 'unknown', filename = null) {
+    constructor(key, files, added, type = "unknown", filename = null) {
         this.key = key;
         this.files = files;
         this.added = added;
