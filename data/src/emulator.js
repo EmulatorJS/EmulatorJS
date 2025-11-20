@@ -359,15 +359,6 @@ class EmulatorJS {
             this.config.cacheConfig.cacheMaxAgeMins || 7200,
             this.debug
         );
-
-        // Run initial cleanup after cache initialization (non-blocking)
-        setTimeout(async () => {
-            try {
-                await this.storageCache.cleanup();
-            } catch (error) {
-                console.error('[EJS Cache] Error during startup cleanup:', error);
-            }
-        }, 5000); // 5 second delay to avoid blocking startup
         
         // This is not cache. This is save data
         this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
