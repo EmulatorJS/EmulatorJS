@@ -108,7 +108,7 @@ class EmulatorJS {
                 path = this.config.filePaths[path.split("/").pop()];
             }
             let url;
-            try { url = new URL(path) } catch(e) {};
+            try { url = new URL(path) } catch (e) { };
             if (url && !["http:", "https:"].includes(url.protocol)) {
                 //Most commonly blob: urls. Not sure what else it could be
                 if (opts.method === "HEAD") {
@@ -121,11 +121,11 @@ class EmulatorJS {
                         res = await res.arrayBuffer();
                     } else {
                         res = await res.text();
-                        try { res = JSON.parse(res) } catch(e) {}
+                        try { res = JSON.parse(res) } catch (e) { }
                     }
                     if (path.startsWith("blob:")) URL.revokeObjectURL(path);
                     cb({ data: res, headers: {} });
-                } catch(e) {
+                } catch (e) {
                     cb(-1);
                 }
                 return;
@@ -137,14 +137,14 @@ class EmulatorJS {
                     progressCB(progress);
                 });
             }
-            xhr.onload = function() {
+            xhr.onload = function () {
                 if (xhr.readyState === xhr.DONE) {
                     let data = xhr.response;
                     if (xhr.status.toString().startsWith("4") || xhr.status.toString().startsWith("5")) {
                         cb(-1);
                         return;
                     }
-                    try { data = JSON.parse(data) } catch(e) {}
+                    try { data = JSON.parse(data) } catch (e) { }
                     cb({
                         data: data,
                         headers: {
@@ -262,7 +262,7 @@ class EmulatorJS {
             (function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true; })(navigator.userAgent || navigator.vendor || window.opera);
             return check;
         })();
-        this.hasTouchScreen = (function() {
+        this.hasTouchScreen = (function () {
             if (window.PointerEvent && ("maxTouchPoints" in navigator)) {
                 if (navigator.maxTouchPoints > 0) {
                     return true;
@@ -293,12 +293,12 @@ class EmulatorJS {
         this.capture.video.audioBitrate = (typeof this.capture.video.audioBitrate === "number") ? this.capture.video.audioBitrate : 192 * 1024;
         this.bindListeners();
         // Additions for Netplay
-        this.netplayCanvas = null; 
+        this.netplayCanvas = null;
         this.netplayShowTurnWarning = false;
         this.netplayWarningShown = false;
         if (this.netplayEnabled) {
             const iceServers = this.config.netplayICEServers || window.EJS_netplayICEServers || [];
-            const hasTurnServer = iceServers.some(server => 
+            const hasTurnServer = iceServers.some(server =>
                 server && typeof server.urls === 'string' && server.urls.startsWith('turn:')
             );
             if (!hasTurnServer) {
@@ -331,13 +331,13 @@ class EmulatorJS {
             this.storage = {
                 // Remove rom and bios storage - rely on browser cache for files and checkCompression for decompression
             }
-            this.storageCache = new window.EJS_Cache(false, new window.EJS_DUMMYSTORAGE(), 1, 1);
+            this.storageCache = new window.EJS_Cache(false, new window.EJS_DUMMYSTORAGE(), new window.EJS_DUMMYSTORAGE(), 1, 1, this.debug);
         } else {
             this.storage = {
                 // Remove rom and bios storage - rely on browser cache for files and checkCompression for decompression
             }
-            this.storageCache = new window.EJS_Cache(true, new window.EJS_STORAGE("EmulatorJS-cache", "cache"), this.config.cacheMaxSizeMB || 4096, this.config.cacheMaxAgeMins || 7200);
-            
+            this.storageCache = new window.EJS_Cache(true, new window.EJS_STORAGE("EmulatorJS-cache", "cache"), new window.EJS_STORAGE("EmulatorJS-cacheBlobs", "cacheblobs"), this.config.cacheMaxSizeMB || 4096, this.config.cacheMaxAgeMins || 7200, this.debug);
+
             // Run initial cleanup after cache initialization (non-blocking)
             setTimeout(async () => {
                 try {
@@ -401,7 +401,7 @@ class EmulatorJS {
 
     setColor(color) {
         if (typeof color !== "string") color = "";
-        let getColor = function(color) {
+        let getColor = function (color) {
             color = color.toLowerCase();
             if (color && /^#([0-9a-fA-f]{3}|[0-9a-fA-f]{6})$/.test(color)) {
                 if (color.length === 4) {
@@ -473,7 +473,7 @@ class EmulatorJS {
         } else {
             try {
                 document.querySelector('div[class="ejs_ad_iframe"]').remove();
-            } catch(e) {}
+            } catch (e) { }
             this.config.adUrl = url;
             this.setupAds(this.config.adUrl, this.config.adSize[0], this.config.adSize[1]);
         }
@@ -570,12 +570,12 @@ class EmulatorJS {
         return new Promise(async (resolve, reject) => {
             const startTime = performance.now();
             const dataSizeMB = (data.byteLength / (1024 * 1024)).toFixed(2);
-            
+
             try {
                 if (!this.compression) {
                     this.compression = new window.EJS_COMPRESSION(this);
                 }
-                
+
                 // Generate cache key based on data hash
                 const hashStartTime = performance.now();
                 const dataArray = new Uint8Array(data);
@@ -585,20 +585,20 @@ class EmulatorJS {
                 }
                 const cacheKey = `compression_${hash}_${dataArray.length}`;
                 const hashTime = performance.now() - hashStartTime;
-                
+
                 // Check if decompressed content is in cache
                 const cacheCheckStartTime = performance.now();
                 const cachedItem = await this.storageCache.get(cacheKey);
                 const cacheCheckTime = performance.now() - cacheCheckStartTime;
-                
+
                 if (cachedItem && cachedItem.files && cachedItem.files.length > 0) {
                     const totalTime = performance.now() - startTime;
                     if (this.debug) console.log(`[EJS Cache] Cache HIT for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
-                    
+
                     if (msg) {
                         this.textElem.innerText = msg + " (cached)";
                     }
-                    
+
                     // Convert cached files back to expected format
                     const files = {};
                     for (let i = 0; i < cachedItem.files.length; i++) {
@@ -613,20 +613,20 @@ class EmulatorJS {
                     resolve(files);
                     return;
                 }
-                
+
                 if (this.debug) console.log(`[EJS Cache] Cache MISS for ${dataSizeMB}MB data - Starting decompression (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
-                
+
                 // Not in cache, decompress and store result
                 if (msg) {
                     this.textElem.innerText = msg;
                 }
-                
+
                 const decompressionStartTime = performance.now();
-                
+
                 // If callback is provided, we need to collect files for caching while still calling the callback
                 const collectedFiles = {};
                 let callbackWrapper = null;
-                
+
                 if (typeof fileCbFunc === "function") {
                     callbackWrapper = (filename, fileData) => {
                         // Call the original callback
@@ -636,19 +636,19 @@ class EmulatorJS {
                         if (this.debug) console.log(`[EJS Cache] Collected file for caching: ${filename} (${fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data'} bytes)`);
                     };
                 }
-                
+
                 const decompressedFiles = await this.compression.decompress(data, (m, appendMsg) => {
                     this.textElem.innerText = appendMsg ? (msg + m) : m;
                 }, callbackWrapper);
                 const decompressionTime = performance.now() - decompressionStartTime;
-                
+
                 // Store decompressed content in cache
                 const cacheStoreStartTime = performance.now();
                 const fileItems = [];
-                
+
                 // Use collected files if callback was used, otherwise use returned files
                 const filesToCache = callbackWrapper ? collectedFiles : decompressedFiles;
-                
+
                 for (const [filename, fileData] of Object.entries(filesToCache)) {
                     if (fileData && fileData !== true) {
                         fileItems.push(new window.EJS_FileItem(filename, fileData));
@@ -657,7 +657,7 @@ class EmulatorJS {
                         if (this.debug) console.log(`[EJS Cache] Skipping file (invalid data): ${filename} (${typeof fileData})`);
                     }
                 }
-                
+
                 if (fileItems.length > 0) {
                     const cacheItem = new window.EJS_CacheItem(cacheKey, fileItems, Date.now(), type, filename);
                     await this.storageCache.put(cacheItem);
@@ -666,10 +666,10 @@ class EmulatorJS {
                     if (this.debug) console.log(`[EJS Cache] No files to cache (fileItems.length = 0)`);
                 }
                 const cacheStoreTime = performance.now() - cacheStoreStartTime;
-                
+
                 const totalTime = performance.now() - startTime;
                 if (this.debug) console.log(`[EJS Cache] Decompression complete for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (decompression: ${decompressionTime.toFixed(2)}ms, cache store: ${cacheStoreTime.toFixed(2)}ms)`);
-                
+
                 // Return appropriate structure based on whether callback was used
                 if (callbackWrapper) {
                     // For callback-based calls, return a structure indicating completion
@@ -788,7 +788,7 @@ class EmulatorJS {
         const cacheBustInterval = 1000 * 60 * 60; // 1 hour
         const cacheBustParam = Math.floor(Date.now() / cacheBustInterval);
         const reportUrl = `${report}?v=${cacheBustParam}`;
-        
+
         this.downloadFile(reportUrl, null, false, { responseType: "text", method: "GET" }).then(async rep => {
             if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
                 rep = {};
@@ -817,28 +817,28 @@ class EmulatorJS {
 
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore() + (threads ? "-thread" : "") + legacy + "-wasm.data";
-            
+
             // Check if we have the core cached in the compression cache to skip download entirely
             // This leverages the existing checkCompression cache mechanism
             try {
                 console.log(`[EJS Core] Checking for cached core...`);
-                
+
                 // Try to download and check if it's in browser cache first
                 const corePath = "cores/" + filename;
                 const headResponse = await fetch(this.config.dataPath ? this.config.dataPath + corePath : corePath, {
                     method: 'HEAD',
                     cache: 'default'
                 }).catch(() => null);
-                
+
                 if (headResponse && headResponse.status === 304) {
                     console.log("[EJS Core] Browser cache indicates file hasn't changed - proceeding to check decompression cache");
-                    
+
                     // File hasn't changed according to browser cache, so try a minimal download to check our cache
-                    const quickDownload = await this.downloadFile(corePath, null, false, { 
-                        responseType: "arraybuffer", 
-                        method: "GET" 
+                    const quickDownload = await this.downloadFile(corePath, null, false, {
+                        responseType: "arraybuffer",
+                        method: "GET"
                     }).catch(() => null);
-                    
+
                     if (quickDownload && quickDownload.data) {
                         // Generate cache key the same way checkCompression does
                         const dataArray = new Uint8Array(quickDownload.data);
@@ -848,23 +848,23 @@ class EmulatorJS {
                         }
                         const compressionCacheKey = `compression_${hash}_${dataArray.length}`;
                         const cachedDecompression = await this.storageCache.get(compressionCacheKey);
-                        
+
                         if (cachedDecompression && cachedDecompression.files && cachedDecompression.files.length > 0) {
                             if (this.debug) console.log(`[EJS Core] Found cached decompression (${compressionCacheKey}) - using cached core`);
                             this.textElem.innerText = this.localization("Loading cached core...");
-                            
+
                             // Use the cached data directly without re-downloading
                             gotCore(quickDownload.data, false);
                             return;
                         }
                     }
                 }
-                
+
                 if (this.debug) console.log(`[EJS Core] No valid cache found or file has changed - proceeding with fresh download`);
             } catch (error) {
                 if (this.debug) console.warn("[EJS Core] Error checking cache, proceeding with download:", error);
             }
-            
+
             // No valid decompressed cache found, download and rely on browser cache for the file
             console.log("[EJS Core] Downloading core (browser cache will handle file-level caching)");
             const corePath = "cores/" + filename;
@@ -888,7 +888,7 @@ class EmulatorJS {
                 }
                 console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
             }
-            
+
             // No need for extra core-specific caching - checkCompression handles it
             gotCore(res.data);
             // Note: We no longer store the compressed core in IndexedDB - relying on browser cache instead
@@ -984,7 +984,7 @@ class EmulatorJS {
 
             console.log(`[EJS ${type.toUpperCase()}] Downloading ${assetUrl} (browser cache will handle file-level caching)`);
             this.textElem.innerText = progressMessage;
-            
+
             // No longer check our own storage - rely on browser cache and checkCompression cache
             const res = await this.downloadFile(assetUrl, (progress) => {
                 this.textElem.innerText = progressMessage + progress;
@@ -1034,7 +1034,7 @@ class EmulatorJS {
             this.textElem.innerText = this.localization("Download Game Data");
 
             const gotGameData = (data) => {
-                
+
                 const coreName = this.getCore(true);
                 const altName = this.getBaseFileName(true);
                 if (["arcade", "mame"].includes(coreName) || this.config.dontExtractRom === true) {
@@ -1042,7 +1042,7 @@ class EmulatorJS {
                     this.gameManager.FS.writeFile(this.fileName, new Uint8Array(data));
                     resolve();
                     return;
-                } 
+                }
 
                 let disableCue = false;
                 if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xplus4", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
@@ -1254,7 +1254,7 @@ class EmulatorJS {
             if (this.config.fullscreenOnLoad) {
                 try {
                     this.toggleFullscreen(true);
-                } catch(e) {
+                } catch (e) {
                     if (this.debug) console.warn("Could not fullscreen on load");
                 }
             }
@@ -1263,7 +1263,7 @@ class EmulatorJS {
                 //Safari is --- funny
                 this.checkStarted();
             }
-        } catch(e) {
+        } catch (e) {
             console.warn("Failed to start game", e);
             this.startGameError(this.localization("Failed to start game"));
             this.callEvent("exit");
@@ -1601,7 +1601,7 @@ class EmulatorJS {
                     mergedButtonOptions[searchKey].visible = buttonUserOpts[searchKey];
                 } else if (typeof buttonUserOpts[searchKey] === "object") {
                     // If the value is an object, merge it with the default button properties
-    
+
                     // if the button is the contextMenu, only allow the visible property to be set
                     if (searchKey === "contextMenu") {
                         mergedButtonOptions[searchKey].visible = buttonUserOpts[searchKey].visible !== undefined ? buttonUserOpts[searchKey].visible : true;
@@ -1628,18 +1628,18 @@ class EmulatorJS {
                         }
                     }
                 }
-    
+
                 // behaviour exceptions
                 switch (searchKey) {
                     case "playPause":
                         mergedButtonOptions.play.visible = mergedButtonOptions.playPause.visible;
                         mergedButtonOptions.pause.visible = mergedButtonOptions.playPause.visible;
                         break;
-    
+
                     case "mute":
                         mergedButtonOptions.unmute.visible = mergedButtonOptions.mute.visible;
                         break;
-    
+
                     case "fullscreen":
                         mergedButtonOptions.enterFullscreen.visible = mergedButtonOptions.fullscreen.visible;
                         mergedButtonOptions.exitFullscreen.visible = mergedButtonOptions.fullscreen.visible;
@@ -1885,7 +1885,7 @@ class EmulatorJS {
         if (this.currentPopup !== null) {
             try {
                 this.currentPopup.remove();
-            } catch(e) {}
+            } catch (e) { }
             this.currentPopup = null;
         }
     }
@@ -2022,7 +2022,7 @@ class EmulatorJS {
                 show();
             }
             if (this.menu.mousemoveListener) this.removeEventListener(this.menu.mousemoveListener);
-            
+
             if ((this.preGetSetting("menubarBehavior") || "downward") === "downward") {
                 this.menu.mousemoveListener = this.addEventListener(this.elements.parent, "mousemove", mouseListener);
             } else {
@@ -2080,7 +2080,7 @@ class EmulatorJS {
             }
             return both ? [button, svg, text] : button;
         }
-        
+
         const restartButton = addButton(this.config.buttonOpts.restart, () => {
             if (this.isNetplay && this.netplay.owner) {
                 this.gameManager.restart();
@@ -2143,7 +2143,7 @@ class EmulatorJS {
             let state;
             try {
                 state = this.gameManager.getState();
-            } catch(e) {
+            } catch (e) {
                 this.displayMessage(this.localization("FAILED TO SAVE STATE"));
                 return;
             }
@@ -2232,7 +2232,7 @@ class EmulatorJS {
         const netplay = addButton(this.config.buttonOpts.netplay, async () => {
             this.openNetplayMenu();
         });
-        
+
         // add custom buttons
         // get all elements from this.config.buttonOpts with custom: true
         if (this.config.buttonOpts) {
@@ -2403,8 +2403,8 @@ class EmulatorJS {
                 enter.style.display = "none";
                 if (this.isMobile) {
                     try {
-                        screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => {});
-                    } catch(e) {}
+                        screen.orientation.lock(this.getCore(true) === "nds" ? "portrait" : "landscape").catch(e => { });
+                    } catch (e) { }
                 }
             } else {
                 if (document.exitFullscreen) {
@@ -2421,7 +2421,7 @@ class EmulatorJS {
                 if (this.isMobile) {
                     try {
                         screen.orientation.unlock();
-                    } catch(e) {}
+                    } catch (e) { }
                 }
             }
         }
@@ -2585,11 +2585,11 @@ class EmulatorJS {
         (async () => {
             // Run cleanup before showing cache contents
             await this.storageCache.cleanup();
-            
+
             const list = this.createElement("table");
             const thead = this.createElement("thead");
             const tbody = this.createElement("tbody");
-            
+
             // Create header row
             const headerRow = this.createElement("tr");
             const nameHeader = this.createElement("th");
@@ -2597,26 +2597,26 @@ class EmulatorJS {
             const sizeHeader = this.createElement("th");
             const lastUsedHeader = this.createElement("th");
             const actionHeader = this.createElement("th");
-            
+
             nameHeader.innerText = "Filename";
             typeHeader.innerText = "Type";
             sizeHeader.innerText = "Size";
             lastUsedHeader.innerText = "Last Used";
             actionHeader.innerText = "Action";
-            
+
             nameHeader.style.textAlign = "left";
             typeHeader.style.textAlign = "left";
             sizeHeader.style.textAlign = "left";
             lastUsedHeader.style.textAlign = "left";
             actionHeader.style.textAlign = "left";
-            
+
             headerRow.appendChild(nameHeader);
             headerRow.appendChild(typeHeader);
             headerRow.appendChild(sizeHeader);
             headerRow.appendChild(lastUsedHeader);
             headerRow.appendChild(actionHeader);
             thead.appendChild(headerRow);
-            
+
             const body = this.createPopup("Cache Manager", {
                 "Cleanup Now": async () => {
                     const cleanupBtn = document.querySelector('.ejs_popup_button');
@@ -2635,14 +2635,14 @@ class EmulatorJS {
                     this.closePopup();
                 }
             });
-            
+
             list.style.width = "100%";
             list.style["padding-left"] = "10px";
             list.style["text-align"] = "left";
             body.appendChild(list);
             list.appendChild(thead);
             list.appendChild(tbody);
-            
+
             const getSize = function (size) {
                 let i = -1;
                 do {
@@ -2650,8 +2650,8 @@ class EmulatorJS {
                 } while (size > 1024);
                 return Math.max(size, 0.1).toFixed(1) + [" kB", " MB", " GB", " TB", "PB", "EB", "ZB", "YB"][i];
             }
-            
-            const getTypeName = function(key) {
+
+            const getTypeName = function (key) {
                 if (key.startsWith('compression_')) return 'Decompressed Content';
                 if (key.startsWith('core_decompressed_')) return 'Core';
                 // Additional fallback logic for other types
@@ -2661,18 +2661,18 @@ class EmulatorJS {
                 if (key.includes('asset')) return 'Asset';
                 return 'Unknown';
             }
-            
+
             await this.populateCacheList(tbody, getSize, getTypeName);
         })();
     }
-    
+
     async populateCacheList(tbody, getSize, getTypeName) {
         // Get all cache items from the compression cache
         const allCacheItems = await this.storageCache.storage.getAll();
-        
+
         for (const item of allCacheItems) {
-            if (!item.key || !item.files) continue;
-            
+            if (!item.key || !item.fileSize) continue;
+
             const line = this.createElement("tr");
             const name = this.createElement("td");
             const type = this.createElement("td");
@@ -2680,19 +2680,14 @@ class EmulatorJS {
             const lastUsed = this.createElement("td");
             const remove = this.createElement("td");
             remove.style.cursor = "pointer";
-            
+
             // Calculate total size of all files in this cache item
-            let totalSize = 0;
-            for (const file of item.files) {
-                if (file.bytes && file.bytes.byteLength) {
-                    totalSize += file.bytes.byteLength;
-                }
-            }
-            
+            let totalSize = item.fileSize;
+
             // Use filename if available, otherwise fall back to key
             const displayName = item.filename || item.key;
             name.innerText = displayName.substring(0, 50) + (displayName.length > 50 ? '...' : '');
-            
+
             // Use the stored type if available, otherwise fall back to getTypeName
             const itemType = item.type || getTypeName(item.key);
             type.innerText = itemType;
@@ -2707,12 +2702,12 @@ class EmulatorJS {
                 const diffMins = Math.floor(diffMs / (1000 * 60));
                 const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
                 const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-                
+
                 if (diffMins < 1) return 'Just now';
                 if (diffMins < 60) return `${diffMins}m ago`;
                 if (diffHours < 24) return `${diffHours}h ago`;
                 if (diffDays < 7) return `${diffDays}d ago`;
-                
+
                 // For older items, show the actual date
                 return date.toLocaleDateString();
             };
@@ -2734,7 +2729,7 @@ class EmulatorJS {
             tbody.appendChild(line);
         }
     }
-    
+
     getControlScheme() {
         if (this.config.controlScheme && typeof this.config.controlScheme === "string") {
             return this.config.controlScheme;
@@ -3831,7 +3826,7 @@ class EmulatorJS {
                         console.warn("Missing input_value for button " + set[i].text + "! Using default gamepad settings");
                         return false;
                     }
-                } catch(e) {
+                } catch (e) {
                     console.warn("Error checking values! Using default gamepad settings");
                     return false;
                 }
@@ -4511,7 +4506,7 @@ class EmulatorJS {
                 if (coreSpecific && coreSpecific.settings) {
                     return coreSpecific.settings[setting];
                 }
-            } catch(e) {
+            } catch (e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -4548,7 +4543,7 @@ class EmulatorJS {
                     rv += `${k} = ${value}\n`;
                 }
                 return rv;
-            } catch(e) {
+            } catch (e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -4582,7 +4577,7 @@ class EmulatorJS {
                     this.cheats.push(cheat);
                 }
 
-            } catch(e) {
+            } catch (e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -4593,7 +4588,7 @@ class EmulatorJS {
                 this.volume = ejs_settings.volume;
                 this.muted = ejs_settings.muted;
                 this.setVolume(this.muted ? 0 : this.volume);
-            } catch(e) {
+            } catch (e) {
                 console.warn("Could not load previous settings", e);
             }
         }
@@ -4939,7 +4934,7 @@ class EmulatorJS {
                 pageTitle.innerText = title;
                 pageTitle.classList.add("ejs_menu_text_a");
                 button.appendChild(pageTitle);
-                
+
                 // const optionsMenu = this.createElement("div");
                 // optionsMenu.classList.add("ejs_setting_menu");
                 // menu.appendChild(optionsMenu);
@@ -5196,8 +5191,8 @@ class EmulatorJS {
             "jpeg": "jpeg",
             "webp": "webp"
         }
-        if (this.isSafari) {  
-            delete screenshotFormats["webp"]; 
+        if (this.isSafari) {
+            delete screenshotFormats["webp"];
         }
         if (!(this.capture.photo.format in screenshotFormats)) {
             this.capture.photo.format = "png";
@@ -5376,7 +5371,7 @@ class EmulatorJS {
         let coreOpts;
         try {
             coreOpts = this.gameManager.getCoreOptions();
-        } catch(e) {}
+        } catch (e) { }
         if (coreOpts) {
             const coreOptions = createSettingParent(true, "Backend Core Options", home);
             coreOpts.split("\n").forEach((line, index) => {
@@ -5485,7 +5480,7 @@ class EmulatorJS {
             ...(bar.contextMenu || []),
             ...(bar.cacheManager || [])
         ];
-        
+
         // Add the parent containers to the same logic
         if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
             elementsToToggle.push(bar.settings[0].parentElement);
@@ -5600,7 +5595,7 @@ class EmulatorJS {
                     roomNameElem: title2,
                     createButton: createButton,
                     tabs: [rooms, joined],
-                    ...this.netplay 
+                    ...this.netplay
                 };
                 const popups = this.createSubPopup();
                 this.netplayMenu.appendChild(popups[0]);
@@ -5713,9 +5708,9 @@ class EmulatorJS {
                 if (this.netplaySendMessage) {
                     this.netplaySendMessage({
                         "sync-control": [{
-                                frame: frame + 20,
-                                connected_input: [playerIndex, index, value]
-                            }
+                            frame: frame + 20,
+                            connected_input: [playerIndex, index, value]
+                        }
                         ]
                     });
                 } else {
@@ -6081,17 +6076,17 @@ class EmulatorJS {
 
             if (this.netplay.owner && this.netplay.localStream) {
                 pc.createOffer()
-                .then(offer => {
-                    offer.sdp = offer.sdp.replace(/profile-level-id=[0-9a-fA-F]+/, 'profile-level-id=42e01f');
-                    return pc.setLocalDescription(offer);
-                })
-                .then(() => {
-                    this.netplay.socket.emit("webrtc-signal", {
-                        target: peerId,
-                        offer: pc.localDescription
-                    });
-                })
-                .catch(error => console.error("Error creating offer:", error));
+                    .then(offer => {
+                        offer.sdp = offer.sdp.replace(/profile-level-id=[0-9a-fA-F]+/, 'profile-level-id=42e01f');
+                        return pc.setLocalDescription(offer);
+                    })
+                    .then(() => {
+                        this.netplay.socket.emit("webrtc-signal", {
+                            target: peerId,
+                            offer: pc.localDescription
+                        });
+                    })
+                    .catch(error => console.error("Error creating offer:", error));
             }
 
             return pc;
@@ -6130,7 +6125,7 @@ class EmulatorJS {
             document.body.appendChild(videoElement);
             console.log("Video overlay added to DOM, styles:", videoElement.style.cssText);
 
-            const playVideo = async() => {
+            const playVideo = async () => {
                 console.log("Attempting to play video, readyState:", videoElement.readyState, "Paused:", videoElement.paused, "Ended:", videoElement.ended, "Muted:", videoElement.muted);
                 try {
                     await videoElement.play();
@@ -6181,7 +6176,7 @@ class EmulatorJS {
             canvas.width = nativeWidth;
             canvas.height = nativeHeight;
 
-            const ensureVideoPlaying = async() => {
+            const ensureVideoPlaying = async () => {
                 let retries = 0;
                 const maxRetries = 5;
                 while (retries < maxRetries) {
@@ -6221,9 +6216,9 @@ class EmulatorJS {
 
                     const canvasAspect = nativeWidth / nativeHeight;
                     let drawWidth,
-                    drawHeight,
-                    offsetX,
-                    offsetY;
+                        drawHeight,
+                        offsetX,
+                        offsetY;
 
                     if (aspect > canvasAspect) {
                         drawWidth = nativeWidth;
@@ -6256,7 +6251,7 @@ class EmulatorJS {
             if (!this.netplay.previousPlayers) {
                 this.netplay.previousPlayers = {};
             }
-            
+
             if (typeof io === "undefined") {
                 console.error("Socket.IO client library not loaded. Please include <script src='https://cdn.socket.io/4.5.0/socket.io.min.js'></script>");
                 this.displayMessage("Socket.IO not available", 5000);
@@ -6304,7 +6299,7 @@ class EmulatorJS {
                 });
 
                 this.netplay.previousPlayers = currentPlayers;
-                
+
                 console.log("Users updated:", users);
                 this.netplay.players = users;
                 this.netplayUpdatePlayersTable();
@@ -6330,7 +6325,7 @@ class EmulatorJS {
             });
             this.netplay.socket.on("disconnect", () => this.netplayLeaveRoom());
             this.netplay.socket.on("data-message", (data) => this.netplayDataMessage(data));
-            this.netplay.socket.on("webrtc-signal", async(data) => {
+            this.netplay.socket.on("webrtc-signal", async (data) => {
                 const { sender, offer, candidate, answer, requestRenegotiate } = data;
                 console.log(`Received WebRTC signal from ${sender}:`, {
                     offer: !!offer,
@@ -6362,7 +6357,7 @@ class EmulatorJS {
                         pc: this.netplayCreatePeerConnection(sender),
                         dataChannel: null,
                         iceCandidateQueue: []
-                    }; 
+                    };
                     this.netplay.peerConnections[sender] = pcData;
                 }
                 const pc = pcData.pc;
@@ -6376,7 +6371,7 @@ class EmulatorJS {
                             for (const queuedCandidate of pcData.iceCandidateQueue) {
                                 await pc.addIceCandidate(new RTCIceCandidate(queuedCandidate));
                             }
-                            pcData.iceCandidateQueue = []; 
+                            pcData.iceCandidateQueue = [];
                         }
 
                         const answer = await pc.createAnswer();
@@ -6395,7 +6390,7 @@ class EmulatorJS {
                             for (const queuedCandidate of pcData.iceCandidateQueue) {
                                 await pc.addIceCandidate(new RTCIceCandidate(queuedCandidate));
                             }
-                            pcData.iceCandidateQueue = []; 
+                            pcData.iceCandidateQueue = [];
                         }
 
                     } else if (candidate) {
@@ -6507,7 +6502,7 @@ class EmulatorJS {
             this.netplayStartSocketIO(() => {
                 this.netplay.socket.emit("join-room", {
                     extra: this.netplay.extra,
-                    password: password 
+                    password: password
                 }, (error, users) => {
                     if (error) {
                         console.error("Error joining room:", error);
@@ -6591,7 +6586,7 @@ class EmulatorJS {
                 this.netplayCanvas.width = nativeWidth;
                 this.netplayCanvas.height = nativeHeight;
                 Object.assign(this.netplayCanvas.style, {
-                    position: 'absolute', 
+                    position: 'absolute',
                     top: '0',
                     left: '0',
                     width: '100%',
@@ -6631,19 +6626,19 @@ class EmulatorJS {
                             value,
                             playerIndex
                         });
-                       Object.values(this.netplay.peerConnections).forEach((pcData) => {
-                        if (
-                            pcData.pc &&
-                            pcData.pc.connectionState === "connected" &&
-                            pcData.dataChannel && 
-                            pcData.dataChannel.readyState === "open"
-                        ) {
-                        pcData.dataChannel.send(
-                        JSON.stringify({
-                            player: playerIndex,
-                            index,
-                            value,
-                                }));
+                        Object.values(this.netplay.peerConnections).forEach((pcData) => {
+                            if (
+                                pcData.pc &&
+                                pcData.pc.connectionState === "connected" &&
+                                pcData.dataChannel &&
+                                pcData.dataChannel.readyState === "open"
+                            ) {
+                                pcData.dataChannel.send(
+                                    JSON.stringify({
+                                        player: playerIndex,
+                                        index,
+                                        value,
+                                    }));
                             }
                         });
                     };
@@ -6747,7 +6742,7 @@ class EmulatorJS {
                     const vw = window.innerWidth;
                     const vh = window.innerHeight;
                     let newWidth,
-                    newHeight;
+                        newHeight;
 
                     if (vw / vh > aspect) {
                         newHeight = vh;
@@ -6985,7 +6980,7 @@ class EmulatorJS {
 
         this.netplayInitModulePostMainLoop = () => {
             if (this.isNetplay && !this.netplay.owner) {
-                return; 
+                return;
             }
 
             this.netplay.currentFrame = parseInt(this.gameManager ? this.gameManager.getFrameNum() : 0) - (this.netplay.init_frame || 0);
@@ -7042,7 +7037,7 @@ class EmulatorJS {
         if (!this.netplay.url) {
             if (this.debug) console.error("netplayUrl is not defined. Please set it in EJS_config or as a global EJS_netplayUrl variable.");
             this.displayMessage("Network configuration error: netplay URL is not set.", 5000);
-            return; 
+            return;
         }
 
         while (this.netplay.url.endsWith("/")) {
@@ -7203,7 +7198,7 @@ class EmulatorJS {
         if (!this.gameManager) return;
         try {
             this.Module.FS.unlink("/shader/shader.glslp");
-        } catch(e) {}
+        } catch (e) { }
 
         if (name === "disabled" || !this.config.shaders[name]) {
             this.gameManager.toggleShader(0);
@@ -7241,7 +7236,7 @@ class EmulatorJS {
         let scaleHeight = imageUpscale;
         let scaleWidth = imageUpscale;
         let scale = 1;
-        
+
         if (screenshotSource === "retroarch") {
             if (width >= height) {
                 width = height * aspectRatio;
@@ -7280,9 +7275,9 @@ class EmulatorJS {
             } else if (width < height && !videoTurned) {
                 height = width / aspectRatio;
             } else if (width >= height && videoTurned) {
-                width = height * (1/aspectRatio);
+                width = height * (1 / aspectRatio);
             } else if (width < height && videoTurned) {
-                width = height / (1/aspectRatio);
+                width = height / (1 / aspectRatio);
             }
             if (imageUpscale === 0) {
                 scale = gameHeight / height;
@@ -7400,9 +7395,9 @@ class EmulatorJS {
             } else if (width < height && !videoTurned) {
                 height = width / aspectRatio;
             } else if (width >= height && videoTurned) {
-                width = height * (1/aspectRatio);
+                width = height * (1 / aspectRatio);
             } else if (width < height && videoTurned) {
-                width = height / (1/aspectRatio);
+                width = height / (1 / aspectRatio);
             }
             canvasAspect = width / height;
             captureCanvas.width = width * captureUpscale;
@@ -7461,14 +7456,14 @@ class EmulatorJS {
         // Modified to accept a buffer instead of a string and return hex instead of an int
         async function cyrb53(charBuffer, seed = 0) {
             let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-            for(let i = 0, ch; i < charBuffer.length; i++) {
+            for (let i = 0, ch; i < charBuffer.length; i++) {
                 ch = charBuffer[i];
                 h1 = Math.imul(h1 ^ ch, 2654435761);
                 h2 = Math.imul(h2 ^ ch, 1597334677);
             }
-            h1  = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
+            h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
             h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-            h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
+            h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
             h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
 
             // Cyrb53 is a 53-bit hash; we need 14 hex characters to represent it, and the first char will

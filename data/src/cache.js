@@ -7,21 +7,25 @@ class EJS_Cache {
      * Creates an instance of EJS_Cache.
      * @param {boolean} enabled - Whether caching is enabled.
      * @param {EJS_STORAGE} storage - Instance of EJS_STORAGE for IndexedDB operations.
+     * @param {EJS_STORAGE} blobStorage - Instance of EJS_STORAGE for storing blob data.
      * @param {number} maxSizeMB - Maximum size of the cache in megabytes.
      * @param {number} maxAgeMins - Maximum age of items (in minutes) before they are cleaned up.
      */
-    constructor(enabled = true, storage, maxSizeMB = 4096, maxAgeMins = 7200) {
+    constructor(enabled = true, storage, blobStorage, maxSizeMB = 4096, maxAgeMins = 7200, debug = false) {
         this.enabled = enabled;
         this.storage = storage;
+        this.blobStorage = blobStorage;
         this.maxSizeMB = maxSizeMB;
         this.maxAgeMins = maxAgeMins;
         this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
+        this.debug = debug;
 
-        if (window.EJS_emulator.debug) {
+        if (this.debug) {
             console.log('Initialized EJS_Cache with settings:', {
                 enabled: this.enabled,
                 storage: this.storage,
-                enabledValue: enabled,
+                blobStorage: this.blobStorage,
+                enabledValue: this.enabled,
                 maxSizeMB: this.maxSizeMB,
                 maxAgeMins: this.maxAgeMins,
                 minAgeMins: this.minAgeMins
@@ -32,9 +36,10 @@ class EJS_Cache {
     /**
      * Retrieves an item from the cache.
      * @param {*} key - The unique key identifying the cached item.
+     * @param {boolean} [metadataOnly=false] - If true, only retrieves metadata without file data.
      * @returns {Promise<EJS_CacheItem|null>} - The cached item or null if not found.
      */
-    async get(key) {
+    async get(key, metadataOnly = false) {
         if (!this.enabled) return null;
 
         const item = await this.storage.get(key);
@@ -42,6 +47,11 @@ class EJS_Cache {
         if (item) {
             item.lastAccessed = Date.now();
             await this.storage.put(key, item);
+
+            if (!metadataOnly) {
+                // get the blob from cache-blobs
+                item.files = await this.blobStorage.get(key);
+            }
         }
 
         return item ? new EJS_CacheItem(item.key, item.files, item.added, item.type, item.filename) : null;
@@ -62,47 +72,49 @@ class EJS_Cache {
         // check if the item exists, if so remove the existing item
         const existingItem = await this.get(item.key);
         if (existingItem) {
-            await this.storage.remove(item.key);
+            await this.delete(item.key);
         }
+
+        // add file size attribute
+        item.fileSize = item.size();
 
         // check that the size of item.files does not cause the cache to exceed maxSizeMB
         let currentSize = 0;
         const allItems = await this.storage.getAll();
         for (let i = 0; i < allItems.length; i++) {
-            if (allItems[i] && allItems[i].files) {
-                for (let j = 0; j < allItems[i].files.length; j++) {
-                    if (allItems[i].files[j] && allItems[i].files[j].bytes && typeof allItems[i].files[j].bytes.byteLength === "number") {
-                        currentSize += allItems[i].files[j].bytes.byteLength;
-                    }
-                }
+            if (allItems[i]) {
+                currentSize += allItems[i].fileSize || 0;
             }
         }
-        if ((currentSize + item.size()) > (this.maxSizeMB * 1024 * 1024)) {
+        if ((currentSize + item.fileSize) > (this.maxSizeMB * 1024 * 1024)) {
             // exceeded max size, keep removing oldest items until we are under maxSizeMB + the size of the new item
             const itemsToRemove = [];
-            let sizeToFree = (currentSize + item.size()) - (this.maxSizeMB * 1024 * 1024);
+            let sizeToFree = (currentSize + item.fileSize) - (this.maxSizeMB * 1024 * 1024);
             for (let i = 0; i < allItems.length; i++) {
-                if (allItems[i] && allItems[i].files) {
-                    const itemSize = allItems[i].files.reduce((sum, file) => sum + (file.bytes ? file.bytes.byteLength : 0), 0);
-                    itemsToRemove.push({ item: allItems[i], size: itemSize });
+                if (allItems[i]) {
+                    itemsToRemove.push({ item: allItems[i], size: allItems[i].fileSize || 0 });
                 }
             }
             itemsToRemove.sort((a, b) => a.item.lastAccessed - b.item.lastAccessed); // oldest first
             for (let i = 0; i < itemsToRemove.length; i++) {
                 if (sizeToFree <= 0) break;
-                await this.storage.remove(itemsToRemove[i].item.key);
+                await this.delete(itemsToRemove[i].item.key);
                 sizeToFree -= itemsToRemove[i].size;
             }
         }
 
+        // store the metadata in cache
         await this.storage.put(item.key, {
             key: item.key,
-            files: item.files,
+            fileSize: item.fileSize,
             added: item.added,
             lastAccessed: item.lastAccessed,
             type: item.type,
             filename: item.filename
         });
+
+        // store the files in cache-blobs
+        await this.blobStorage.put(item.key, item.files);
     }
 
     /**
@@ -113,6 +125,7 @@ class EJS_Cache {
         // fail silently if the key does not exist
         try {
             await this.storage.remove(key);
+            await this.blobStorage.remove(key);
         } catch (e) {
             console.error("Failed to delete cache item:", e);
         }
@@ -124,7 +137,7 @@ class EJS_Cache {
     async clear() {
         const allItems = await this.storage.getAll();
         for (let i = 0; i < allItems.length; i++) {
-            await this.storage.remove(allItems[i].key);
+            await this.delete(allItems[i].key);
         }
     }
 
@@ -134,24 +147,24 @@ class EJS_Cache {
     async cleanup() {
         if (!this.enabled) return;
 
-        console.log('[EJS Cache] Starting cache cleanup...');
+        if (this.debug) console.log('[EJS Cache] Starting cache cleanup...');
         const cleanupStartTime = performance.now();
-        
+
         // get all items
         const allItems = await this.storage.getAll();
         const now = Date.now();
 
         // sort items by lastAccessed (oldest first)
         allItems.sort((a, b) => a.lastAccessed - b.lastAccessed);
-        
+
         let currentSize = 0;
         let totalItems = allItems.length;
         const itemsToRemove = [];
-        
+
         // Calculate current total size
         for (let i = 0; i < allItems.length; i++) {
             const item = allItems[i];
-            const itemSize = item.files.reduce((sum, file) => sum + (file.bytes ? file.bytes.byteLength : 0), 0);
+            const itemSize = item.fileSize || 0;
             currentSize += itemSize;
             const ageMins = (now - item.lastAccessed) / (1000 * 60);
 
@@ -164,14 +177,23 @@ class EJS_Cache {
 
         // remove items from storage
         for (const item of itemsToRemove) {
-            await this.storage.remove(item.key);
+            await this.delete(item.key);
         }
-        
+
+        // remove orphaned blobs in blobStorage - here as a failsafe in case of previous incomplete deletions
+        const blobKeys = await this.blobStorage.getKeys();
+        for (const blobKey of blobKeys) {
+            const existsInStorage = allItems.find(item => item.key === blobKey);
+            if (!existsInStorage) {
+                await this.blobStorage.remove(blobKey);
+            }
+        }
+
         const cleanupTime = performance.now() - cleanupStartTime;
         const currentSizeMB = (currentSize / (1024 * 1024)).toFixed(2);
         const removedSizeMB = (itemsToRemove.reduce((sum, item) => sum + item.size, 0) / (1024 * 1024)).toFixed(2);
-        
-        console.log(`[EJS Cache] Cleanup complete in ${cleanupTime.toFixed(2)}ms - Removed ${itemsToRemove.length}/${totalItems} items (${removedSizeMB}MB), ${currentSizeMB}MB remaining`);
+
+        if (this.debug) console.log(`[EJS Cache] Cleanup complete in ${cleanupTime.toFixed(2)}ms - Removed ${itemsToRemove.length}/${totalItems} items (${removedSizeMB}MB), ${currentSizeMB}MB remaining`);
     }
 }
 
