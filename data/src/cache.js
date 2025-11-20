@@ -20,6 +20,8 @@ class EJS_Cache {
         this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
         this.debug = debug;
 
+        this.utils = new EJS_UTILS();
+
         if (this.debug) {
             console.log("Initialized EJS_Cache with settings:", {
                 enabled: this.enabled,
@@ -31,6 +33,17 @@ class EJS_Cache {
                 minAgeMins: this.minAgeMins
             });
         }
+    }
+
+    /**
+     * Generates a cache key for the given data array.
+     * @param {Uint8Array} dataArray 
+     * @returns {string} The generated cache key.
+     */
+    generateCacheKey(dataArray) {
+        let hash = this.utils.simpleHash(dataArray);
+        const compressionCacheKey = "Obj-" + hash + "-" + dataArray.length;
+        return compressionCacheKey;
     }
 
     /**

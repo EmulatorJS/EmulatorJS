@@ -209,6 +209,7 @@ class EmulatorJS {
             this.checkForUpdates();
         }
         this.netplayEnabled = true;
+        this.utils = new EJS_UTILS();
         this.config = config;
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
@@ -579,11 +580,7 @@ class EmulatorJS {
                 // Generate cache key based on data hash
                 const hashStartTime = performance.now();
                 const dataArray = new Uint8Array(data);
-                let hash = 0;
-                for (let i = 0; i < dataArray.length; i++) {
-                    hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
-                }
-                const cacheKey = `compression_${hash}_${dataArray.length}`;
+                const cacheKey = this.storageCache.generateCacheKey(dataArray);
                 const hashTime = performance.now() - hashStartTime;
 
                 // Check if decompressed content is in cache
@@ -763,16 +760,6 @@ class EmulatorJS {
             });
         }
 
-        // Helper function to generate cache key for core data
-        const generateCoreDataCacheKey = (data) => {
-            const dataArray = new Uint8Array(data);
-            let hash = 0;
-            for (let i = 0; i < dataArray.length; i++) {
-                hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
-            }
-            return "compression_" + hash + "_" + dataArray.length;
-        };
-
         // Helper function to check if cached core is expired
         const isCoreExpired = (cachedItem) => {
             if (!cachedItem) return true;
@@ -842,11 +829,7 @@ class EmulatorJS {
                     if (quickDownload && quickDownload.data) {
                         // Generate cache key the same way checkCompression does
                         const dataArray = new Uint8Array(quickDownload.data);
-                        let hash = 0;
-                        for (let i = 0; i < dataArray.length; i++) {
-                            hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
-                        }
-                        const compressionCacheKey = `compression_${hash}_${dataArray.length}`;
+                        const compressionCacheKey = this.storageCache.generateCacheKey(dataArray);
                         const cachedDecompression = await this.storageCache.get(compressionCacheKey);
 
                         if (cachedDecompression && cachedDecompression.files && cachedDecompression.files.length > 0) {
@@ -7452,28 +7435,9 @@ class EmulatorJS {
     }
 
     enableSaveUpdateEvent() {
-        // https://stackoverflow.com/questions/7616461
-        // Modified to accept a buffer instead of a string and return hex instead of an int
-        async function cyrb53(charBuffer, seed = 0) {
-            let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed;
-            for(let i = 0, ch; i < charBuffer.length; i++) {
-                ch = charBuffer[i];
-                h1 = Math.imul(h1 ^ ch, 2654435761);
-                h2 = Math.imul(h2 ^ ch, 1597334677);
-            }
-            h1  = Math.imul(h1 ^ (h1 >>> 16), 2246822507);
-            h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
-            h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
-            h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-
-            // Cyrb53 is a 53-bit hash; we need 14 hex characters to represent it, and the first char will
-            // always be 0 or 1 (since it is only 1 bit)
-            return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, "0");
-        };
-
         function withGameSaveHash(saveFile, callback) {
             if (saveFile) {
-                cyrb53(saveFile).then(digest => callback(digest, saveFile));
+                this.utils.cyrb53(saveFile).then(digest => callback(digest, saveFile));
             } else {
                 console.warn("Save file not found when attempting to hash");
                 callback(null, null);

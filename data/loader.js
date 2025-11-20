@@ -4,6 +4,7 @@
         "nipplejs.js",
         "shaders.js",
         "storage.js",
+        "utils.js",
         "cache.js",
         "gamepad.js",
         "GameManager.js",
