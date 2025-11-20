@@ -257,11 +257,15 @@
                 window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
                 window.EJS_DEBUG_XX = enableDebug;
-                window.EJS_disableDatabases = false;
                 window.EJS_threads = enableThreads;
                 if (browserMode) {
                     window.EJS_browserMode = browserMode;
                 }
+                window.EJS_cacheConfig = {
+                    enabled: true,
+                    cacheMaxSizeMB: 4096,
+                    cacheMaxAgeMins: 7200
+                };
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);

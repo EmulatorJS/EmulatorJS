@@ -328,26 +328,47 @@ class EmulatorJS {
             return null;
         })();
         this.isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-        if (this.config.disableDatabases) {
-            this.storage = {
-                // Remove rom and bios storage - rely on browser cache for files and checkCompression for decompression
-            }
-            this.storageCache = new window.EJS_Cache(false, new window.EJS_DUMMYSTORAGE(), new window.EJS_DUMMYSTORAGE(), 1, 1, this.debug);
-        } else {
-            this.storage = {
-                // Remove rom and bios storage - rely on browser cache for files and checkCompression for decompression
-            }
-            this.storageCache = new window.EJS_Cache(true, new window.EJS_STORAGE("EmulatorJS-cache", "cache"), new window.EJS_STORAGE("EmulatorJS-cacheBlobs", "cacheblobs"), this.config.cacheMaxSizeMB || 4096, this.config.cacheMaxAgeMins || 7200, this.debug);
 
-            // Run initial cleanup after cache initialization (non-blocking)
-            setTimeout(async () => {
-                try {
-                    await this.storageCache.cleanup();
-                } catch (error) {
-                    console.error('[EJS Cache] Error during startup cleanup:', error);
-                }
-            }, 5000); // 5 second delay to avoid blocking startup
+        this.storage = {}
+    
+        // set cache configuration defaults
+        const cacheConfigDefaults = {
+            enabled: true,
+            cacheMaxSizeMB: 4096,
+            cacheMaxAgeMins: 7200
+        };
+        // Overwrite invalid or missing values in this.config.cacheConfig with defaults
+        if (!this.config.cacheConfig || typeof this.config.cacheConfig !== "object") {
+            this.config.cacheConfig = {};
         }
+        if (typeof this.config.cacheConfig.enabled !== "boolean") {
+            this.config.cacheConfig.enabled = cacheConfigDefaults.enabled;
+        }
+        if (typeof this.config.cacheConfig.cacheMaxSizeMB !== "number" || this.config.cacheConfig.cacheMaxSizeMB <= 0) {
+            this.config.cacheConfig.cacheMaxSizeMB = cacheConfigDefaults.cacheMaxSizeMB;
+        }
+        if (typeof this.config.cacheConfig.cacheMaxAgeMins !== "number" || this.config.cacheConfig.cacheMaxAgeMins <= 0) {
+            this.config.cacheConfig.cacheMaxAgeMins = cacheConfigDefaults.cacheMaxAgeMins;
+        }
+        
+        this.storageCache = new window.EJS_Cache(
+            this.config.cacheConfig.enabled,
+            new window.EJS_STORAGE("EmulatorJS-cache", "cache"),
+            new window.EJS_STORAGE("EmulatorJS-cacheBlobs", "cacheblobs"),
+            this.config.cacheConfig.cacheMaxSizeMB,
+            this.config.cacheConfig.cacheMaxAgeMins || 7200,
+            this.debug
+        );
+
+        // Run initial cleanup after cache initialization (non-blocking)
+        setTimeout(async () => {
+            try {
+                await this.storageCache.cleanup();
+            } catch (error) {
+                console.error('[EJS Cache] Error during startup cleanup:', error);
+            }
+        }, 5000); // 5 second delay to avoid blocking startup
+        
         // This is not cache. This is save data
         this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
 
@@ -2175,7 +2196,7 @@ class EmulatorJS {
             this.openCacheMenu();
         });
 
-        if (this.config.disableDatabases) cache.style.display = "none";
+        if (this.config.cacheConfig.enabled === false) cache.style.display = "none";
 
         let savUrl;
 
