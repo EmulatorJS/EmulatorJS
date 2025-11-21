@@ -24,7 +24,7 @@ class EJS_STORAGE {
             openRequest.onerror = () => resolve();
             openRequest.onsuccess = () => {
                 let db = openRequest.result;
-                let transaction = db.transaction([this.storeName], mode);
+                let transaction = db.transaction(this.storeName, mode);
                 let objectStore = transaction.objectStore(this.storeName);
                 resolve(objectStore);
             };

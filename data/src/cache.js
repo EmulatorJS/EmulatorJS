@@ -6,15 +6,13 @@ class EJS_Cache {
     /**
      * Creates an instance of EJS_Cache.
      * @param {boolean} enabled - Whether caching is enabled.
-     * @param {EJS_STORAGE} storage - Instance of EJS_STORAGE for IndexedDB operations.
-     * @param {EJS_STORAGE} blobStorage - Instance of EJS_STORAGE for storing blob data.
+     * @param {string} databaseName - Name of the IndexedDB database to use for caching.
      * @param {number} maxSizeMB - Maximum size of the cache in megabytes.
      * @param {number} maxAgeMins - Maximum age of items (in minutes) before they are cleaned up.
      */
-    constructor(enabled = true, storage, blobStorage, maxSizeMB = 4096, maxAgeMins = 7200, debug = false) {
+    constructor(enabled = true, databaseName, maxSizeMB = 4096, maxAgeMins = 7200, debug = false) {
         this.enabled = enabled;
-        this.storage = storage;
-        this.blobStorage = blobStorage;
+        this.databaseName = databaseName;
         this.maxSizeMB = maxSizeMB;
         this.maxAgeMins = maxAgeMins;
         this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
@@ -25,14 +23,44 @@ class EJS_Cache {
         if (this.debug) {
             console.log("Initialized EJS_Cache with settings:", {
                 enabled: this.enabled,
-                storage: this.storage,
-                blobStorage: this.blobStorage,
-                enabledValue: this.enabled,
+                databaseName: this.databaseName,
                 maxSizeMB: this.maxSizeMB,
                 maxAgeMins: this.maxAgeMins,
                 minAgeMins: this.minAgeMins
             });
         }
+    }
+
+    /**
+     * Initializes the IndexedDB database and object stores.
+     * @returns {Promise<void>}
+     */
+    async #createCacheDatabase() {
+        if (!this.enabled) return;
+
+        if (this.storage && this.blobStorage) return;
+
+        return new Promise((resolve, reject) => {
+            const request = window.indexedDB.open(this.databaseName, 1);
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                // Create object stores
+                db.createObjectStore("cache");
+                db.createObjectStore("blobs");
+            };
+
+            request.onsuccess = (event) => {
+                this.storage = new EJS_STORAGE(this.databaseName, "cache");
+                this.blobStorage = new EJS_STORAGE(this.databaseName, "blobs");
+                resolve();
+            };
+
+            request.onerror = (event) => {
+                console.error("Error creating cache database:", event);
+                reject(event);
+            };
+        });
     }
 
     /**
@@ -59,6 +87,9 @@ class EJS_Cache {
      */
     async get(key, metadataOnly = false) {
         if (!this.enabled) return null;
+
+        // ensure database is created
+        await this.#createCacheDatabase();
 
         // clean up cache on first get if not already done
         if (!this.#startupCleanupCompleted) {
@@ -87,6 +118,9 @@ class EJS_Cache {
      */
     async put(item) {
         if (!this.enabled) return;
+
+        // ensure database is created
+        await this.#createCacheDatabase();
 
         // before putting, ensure item is of type EJS_CacheItem
         if (!(item instanceof EJS_CacheItem)) {
@@ -146,6 +180,9 @@ class EJS_Cache {
      * @param {string} key - The unique key identifying the cached item to delete.
      */
     async delete(key) {
+        // ensure database is created
+        await this.#createCacheDatabase();
+
         // fail silently if the key does not exist
         try {
             await this.storage.remove(key);
@@ -159,6 +196,9 @@ class EJS_Cache {
      * Clears all items from the cache.
      */
     async clear() {
+        // ensure database is created
+        await this.#createCacheDatabase();
+
         const allItems = await this.storage.getAll();
         for (let i = 0; i < allItems.length; i++) {
             await this.delete(allItems[i].key);
@@ -170,6 +210,9 @@ class EJS_Cache {
      */
     async cleanup() {
         if (!this.enabled) return;
+
+        // ensure database is created
+        await this.#createCacheDatabase();
 
         if (this.debug) console.log("[EJS Cache] Starting cache cleanup...");
         const cleanupStartTime = performance.now();

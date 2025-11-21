@@ -353,8 +353,7 @@ class EmulatorJS {
         
         this.storageCache = new window.EJS_Cache(
             this.config.cacheConfig.enabled,
-            new window.EJS_STORAGE("EmulatorJS-cache", "cache"),
-            new window.EJS_STORAGE("EmulatorJS-cacheBlobs", "cacheblobs"),
+            "EmulatorJS-Cache",
             this.config.cacheConfig.cacheMaxSizeMB,
             this.config.cacheConfig.cacheMaxAgeMins || 7200,
             this.debug
