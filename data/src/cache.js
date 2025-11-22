@@ -41,17 +41,27 @@ class EJS_Cache {
         if (this.storage && this.blobStorage) return;
 
         return new Promise((resolve, reject) => {
+            const indexes = ["type", "url"];
             const request = window.indexedDB.open(this.databaseName, 1);
 
             request.onupgradeneeded = (event) => {
                 const db = event.target.result;
-                // Create object stores
-                db.createObjectStore("cache");
+                // Create metadata stores
+                const cacheStore = db.createObjectStore("cache");
+                // Create indexes for cache store if indexes array is present
+                if (Array.isArray(indexes)) {
+                    for (const idx of indexes) {
+                        if (!cacheStore.indexNames.contains(idx)) {
+                            cacheStore.createIndex(idx, idx, { unique: false });
+                        }
+                    }
+                }
+                // Create blobs store
                 db.createObjectStore("blobs");
             };
 
             request.onsuccess = (event) => {
-                this.storage = new EJS_STORAGE(this.databaseName, "cache");
+                this.storage = new EJS_STORAGE(this.databaseName, "cache", indexes);
                 this.blobStorage = new EJS_STORAGE(this.databaseName, "blobs");
                 resolve();
             };
