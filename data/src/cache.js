@@ -1,4 +1,148 @@
 /**
+ * EJS Download Manager
+ * Downloads files from a given URL when a download is requested.
+ * The file is checked against the cache to avoid re-downloading files unnecessarily.
+ * The following rules are tested when checking for an update:
+ * 1. THe URL is checked against the cache - if it doesn't exist, download it
+ * 2. The cacheExpiry property is checked - if it exists and is in the future, use the cached version. Note: the cacheExpiry property is sent by the server in the Cache-Control or Expires headers. If these headers are not present, the cacheExpiry property will be set to 5 days in the future by default.
+ * 3. If the cacheExpiry property is in the past or doesn't exist, a HEAD request is made to check the Last-Modified header against the cached version's added date. Falling back to downloading if Last-Modified is not present.
+ * 4. If the Last-Modified date is newer than the cached version's added date, download the new version.
+ * 5. If none of the above conditions are met, use the cached version.
+ */
+class EJS_Download {
+    /**
+     * Downloads a file from the given URL with the specified options.
+     * @param {string} url - The URL to download the file from.
+     * @param {string} method - The HTTP method to use (default is "GET").
+     * @param {Array} headers - An array of headers to include in the request.
+     * @param {*} body - The body of the request (for POST/PUT requests).
+     * @param {*} onProgress - Callback function for progress updates - returns status(downloading or decompressing), percentage, loaded bytes, total bytes.
+     * @param {*} onComplete - Callback function when download is complete - returns success boolean, response data or error message.
+     * @param {Number} timeout - Timeout in milliseconds (default is 30000ms).
+     * @param {string} responseType - The response type (default is "arraybuffer").
+     * @returns {Promise<EJS_CacheItem>} - The downloaded file as an EJS_CacheItem.
+     */
+    downloadFile(url, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer") {
+        return new Promise(async (resolve, reject) => {
+            try {
+                let cached = await window.EJS.storageCache.get(url, false, "url");
+                const now = Date.now();
+                if (cached) {
+                    if (cached.cacheExpiry && cached.cacheExpiry > now) {
+                        resolve(cached);
+                        return;
+                    }
+                    let lastModified = null;
+                    try {
+                        const headResp = await fetch(url, { method: "HEAD", headers });
+                        lastModified = headResp.headers.get("Last-Modified");
+                    } catch (e) {}
+                    if (lastModified) {
+                        const lastModTime = Date.parse(lastModified);
+                        if (!isNaN(lastModTime) && lastModTime <= cached.added) {
+                            resolve(cached);
+                            return;
+                        }
+                    } else {
+                        resolve(cached);
+                        return;
+                    }
+                }
+
+                if (onProgress) onProgress("downloading", 0, 0, 0);
+                let controller = new AbortController();
+                let timer = setTimeout(() => controller.abort(), timeout);
+                let resp, data, filename = url.split("/").pop() || "downloaded.bin";
+                try {
+                    resp = await fetch(url, {
+                        method,
+                        headers,
+                        body,
+                        signal: controller.signal
+                    });
+                    clearTimeout(timer);
+                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                    const cd = resp.headers.get("Content-Disposition");
+                    if (cd) {
+                        const match = cd.match(/filename="?([^";]+)"?/);
+                        if (match) filename = match[1];
+                    }
+                    let cacheExpiry = null;
+                    const cacheControl = resp.headers.get("Cache-Control");
+                    const expires = resp.headers.get("Expires");
+                    if (cacheControl && /max-age=(\d+)/.test(cacheControl)) {
+                        const maxAge = parseInt(cacheControl.match(/max-age=(\d+)/)[1]);
+                        cacheExpiry = now + maxAge * 1000;
+                    } else if (expires) {
+                        const exp = Date.parse(expires);
+                        if (!isNaN(exp)) cacheExpiry = exp;
+                    } else {
+                        cacheExpiry = now + 5 * 24 * 60 * 60 * 1000;
+                    }
+                    if (responseType === "arraybuffer") {
+                        const contentLength = parseInt(resp.headers.get("Content-Length") || "0");
+                        const reader = resp.body.getReader();
+                        let received = 0;
+                        let chunks = [];
+                        while (true) {
+                            const { done, value } = await reader.read();
+                            if (done) break;
+                            chunks.push(value);
+                            received += value.length;
+                            if (onProgress && contentLength) {
+                                onProgress("downloading", Math.floor(received / contentLength * 100), received, contentLength);
+                            }
+                        }
+                        data = new Uint8Array(chunks.reduce((acc, val) => acc + val.length, 0));
+                        let offset = 0;
+                        for (const chunk of chunks) {
+                            data.set(chunk, offset);
+                            offset += chunk.length;
+                        }
+                    } else {
+                        data = await resp[responseType]();
+                    }
+                } catch (err) {
+                    clearTimeout(timer);
+                    reject(`Download failed: ${err}`);
+                    return;
+                }
+
+                let files = [];
+                const ext = filename.toLowerCase().split('.').pop();
+                if (["zip", "7z", "rar"].includes(ext)) {
+                    if (onProgress) onProgress("decompressing", 0, 0, 0);
+                    try {
+                        const compression = new window.EJS_COMPRESSION({ downloadFile: this.downloadFile.bind(this) });
+                        await compression.decompress(data, (msg, isProgress) => {
+                            if (onProgress && isProgress) {
+                                const percent = parseInt(msg);
+                                onProgress("decompressing", isNaN(percent) ? 0 : percent, 0, 0);
+                            }
+                        }, (fname, fileData) => {
+                            files.push(new window.EJS_FileItem(fname, fileData instanceof Uint8Array ? fileData : new Uint8Array(fileData)));
+                        });
+                    } catch (e) {
+                        reject(`Decompression failed: ${e}`);
+                        return;
+                    }
+                } else {
+                    files = [new window.EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
+                }
+
+                const key = window.EJS.storageCache.generateCacheKey(files[0].bytes);
+                const cacheItem = new window.EJS_CacheItem(key, files, now, "downloaded", filename, url, cacheExpiry);
+                await window.EJS.storageCache.put(cacheItem);
+
+                resolve(cacheItem);
+            } catch (err) {
+                reject(err.toString());
+            }
+        });
+    }
+}
+
+/**
  * EJS_Cache
  * Manages a cache of files using IndexedDB for storage.
  */
@@ -93,9 +237,10 @@ class EJS_Cache {
      * Retrieves an item from the cache.
      * @param {*} key - The unique key identifying the cached item.
      * @param {boolean} [metadataOnly=false] - If true, only retrieves metadata without file data.
+     * @param {string|null} indexName - Optional index name to search by (e.g., 'url') - leave null to search by primary key.
      * @returns {Promise<EJS_CacheItem|null>} - The cached item or null if not found.
      */
-    async get(key, metadataOnly = false) {
+    async get(key, metadataOnly = false, indexName = null) {
         if (!this.enabled) return null;
 
         // ensure database is created
@@ -107,7 +252,7 @@ class EJS_Cache {
             this.#startupCleanupCompleted = true;
         }
 
-        const item = await this.storage.get(key);
+        const item = await this.storage.get(key, indexName);
         // if the item exists, update its lastAccessed time and return cache item
         if (item) {
             item.lastAccessed = Date.now();
@@ -287,14 +432,18 @@ class EJS_CacheItem {
      * @param {number} added - Timestamp (in milliseconds) when the item was added to the cache.
      * @param {string} type - The type of cached content (e.g., 'core', 'ROM', 'BIOS', 'decompressed').
      * @param {string} filename - The original filename of the cached content.
+     * @param {string} url - The URL from which the cached content was downloaded.
+     * @param {number|null} cacheExpiry - Timestamp (in milliseconds) indicating when the cache item should expire.
      */
-    constructor(key, files, added, type = "unknown", filename = null) {
+    constructor(key, files, added, type = "unknown", filename, url, cacheExpiry) {
         this.key = key;
         this.files = files;
         this.added = added;
         this.lastAccessed = added;
         this.type = type;
-        this.filename = filename || key; // fallback to key if no filename provided
+        this.filename = filename;
+        this.url = url;
+        this.cacheExpiry = cacheExpiry;
     }
 
     /**
