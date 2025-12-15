@@ -11,8 +11,19 @@
  */
 class EJS_Download {
     /**
+     * Creates an instance of EJS_Download.
+     * @param {EJS_Cache} storageCache - The cache instance to use for storing downloaded files.
+     * @param {Object} EJS - The main EmulatorJS instance.
+     */
+    constructor(storageCache = null, EJS = null) {
+        this.storageCache = storageCache;
+        this.EJS = EJS;
+    }
+
+    /**
      * Downloads a file from the given URL with the specified options.
      * @param {string} url - The URL to download the file from.
+     * @param {string} type - The type of the file to download (e.g. "ROM", "CORE", "BIOS", etc).
      * @param {string} method - The HTTP method to use (default is "GET").
      * @param {Array} headers - An array of headers to include in the request.
      * @param {*} body - The body of the request (for POST/PUT requests).
@@ -20,18 +31,26 @@ class EJS_Download {
      * @param {*} onComplete - Callback function when download is complete - returns success boolean, response data or error message.
      * @param {Number} timeout - Timeout in milliseconds (default is 30000ms).
      * @param {string} responseType - The response type (default is "arraybuffer").
+     * @param {boolean} forceExtract - Whether to force extraction of compressed files regardless of extension (default is false).
+     * @param {boolean} dontCache - If true, the downloaded file will not be cached (default is false).
      * @returns {Promise<EJS_CacheItem>} - The downloaded file as an EJS_CacheItem.
      */
-    downloadFile(url, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer") {
+    downloadFile(url, type, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer", forceExtract = false, dontCache = false) {
         return new Promise(async (resolve, reject) => {
             try {
-                const cache = new window.EJS_Cache(true, "EmulatorJS-Cache");
-                window.EJS_CacheInstance = cache;
+                // Use the provided storageCache or create a temporary one
+                if (!this.storageCache) {
+                    console.warn("No storageCache provided to EJS_Download, downloads will not be cached");
+                }
 
-                let cached = await window.EJS.storageCache.get(url, false, "url");
+                let cached = null;
+                if (this.storageCache) {
+                    cached = await this.storageCache.get(url, false, "url");
+                }
                 const now = Date.now();
                 if (cached) {
                     if (cached.cacheExpiry && cached.cacheExpiry > now) {
+                        if (this.debug) console.log("Using cached version of", url);
                         resolve(cached);
                         return;
                     }
@@ -43,10 +62,12 @@ class EJS_Download {
                     if (lastModified) {
                         const lastModTime = Date.parse(lastModified);
                         if (!isNaN(lastModTime) && lastModTime <= cached.added) {
+                            if (this.debug) console.log("Using cached version of", url);
                             resolve(cached);
                             return;
                         }
                     } else {
+                        if (this.debug) console.log("Using cached version of", url);
                         resolve(cached);
                         return;
                     }
@@ -56,6 +77,7 @@ class EJS_Download {
                 let controller = new AbortController();
                 let timer = setTimeout(() => controller.abort(), timeout);
                 let resp, data, filename = url.split("/").pop() || "downloaded.bin";
+                let cacheExpiry = null;
                 try {
                     resp = await fetch(url, {
                         method,
@@ -70,7 +92,6 @@ class EJS_Download {
                         const match = cd.match(/filename="?([^";]+)"?/);
                         if (match) filename = match[1];
                     }
-                    let cacheExpiry = null;
                     const cacheControl = resp.headers.get("Cache-Control");
                     const expires = resp.headers.get("Expires");
                     if (cacheControl && /max-age=(\d+)/.test(cacheControl)) {
@@ -113,31 +134,60 @@ class EJS_Download {
 
                 let files = [];
                 const ext = filename.toLowerCase().split('.').pop();
-                if (["zip", "7z", "rar"].includes(ext)) {
-                    if (onProgress) onProgress("decompressing", 0, 0, 0);
-                    try {
-                        const compression = new window.EJS_COMPRESSION({ downloadFile: this.downloadFile.bind(this) });
-                        await compression.decompress(data, (msg, isProgress) => {
-                            if (onProgress && isProgress) {
-                                const percent = parseInt(msg);
-                                onProgress("decompressing", isNaN(percent) ? 0 : percent, 0, 0);
-                            }
-                        }, (fname, fileData) => {
-                            files.push(new window.EJS_FileItem(fname, fileData instanceof Uint8Array ? fileData : new Uint8Array(fileData)));
-                        });
-                    } catch (e) {
-                        reject(`Decompression failed: ${e}`);
-                        return;
+                if (responseType === "arraybuffer") {
+                    if (["zip", "7z", "rar"].includes(ext) || forceExtract) {
+                        if (onProgress) onProgress("decompressing", 0, 0, 0);
+                        try {
+                            const compression = new window.EJS_COMPRESSION(this.EJS);
+                            await compression.decompress(data, (msg, isProgress) => {
+                                if (onProgress && isProgress) {
+                                    const percent = parseInt(msg);
+                                    onProgress("decompressing", isNaN(percent) ? 0 : percent, 0, 0);
+                                }
+                            }, (fname, fileData) => {
+                                files.push(new EJS_FileItem(fname, fileData instanceof Uint8Array ? fileData : new Uint8Array(fileData)));
+                            });
+                        } catch (e) {
+                            reject(`Decompression failed: ${e}`);
+                            return;
+                        }
+                    } else {
+                        files = [new EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
                     }
                 } else {
-                    files = [new window.EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
+                    // for non-arraybuffer types, just store the raw data as a single file
+                    files = [new EJS_FileItem(filename, data)];
+                if (typeof data === "string") {
+                    // Encode string as UTF-8 Uint8Array
+                    const encoder = new TextEncoder();
+                    files = [new EJS_FileItem(filename, encoder.encode(data))];
+                } else if (data instanceof Uint8Array) {
+                    files = [new EJS_FileItem(filename, data)];
+                } else if (data instanceof ArrayBuffer) {
+                    files = [new EJS_FileItem(filename, new Uint8Array(data))];
+                } else {
+                    // Fallback: try to convert to string then encode
+                    const encoder = new TextEncoder();
+                    files = [new EJS_FileItem(filename, encoder.encode(String(data)))];
                 }
+                }
+                
+                if (onProgress) onProgress("complete", 100, data.byteLength || 0, data.byteLength || 0);
 
-                const key = cache.generateCacheKey(files[0].bytes);
-                const cacheItem = new window.EJS_CacheItem(key, files, now, "downloaded", filename, url, cacheExpiry);
-                await cache.put(cacheItem);
-
-                resolve(cacheItem);
+                // Store in cache if available
+                if (this.storageCache) {
+                    const key = this.storageCache.generateCacheKey(files[0].bytes);
+                    const cacheItem = new EJS_CacheItem(key, files, now, type, responseType, filename, url, cacheExpiry);
+                    if (dontCache === false) {
+                        await this.storageCache.put(cacheItem);
+                    }
+                    resolve(cacheItem);
+                } else {
+                    // Return a temporary cache item if no cache available
+                    const key = "temp-" + Date.now();
+                    const cacheItem = new EJS_CacheItem(key, files, now, type, responseType, filename, url, cacheExpiry);
+                    resolve(cacheItem);
+                }
             } catch (err) {
                 reject(err.toString());
             }
@@ -259,15 +309,15 @@ class EJS_Cache {
         // if the item exists, update its lastAccessed time and return cache item
         if (item) {
             item.lastAccessed = Date.now();
-            await this.storage.put(key, item);
+            await this.storage.put(item.key, item);
 
             if (!metadataOnly) {
                 // get the blob from cache-blobs
-                item.files = await this.blobStorage.get(key);
+                item.files = await this.blobStorage.get(item.key);
             }
         }
 
-        return item ? new EJS_CacheItem(item.key, item.files, item.added, item.type, item.filename) : null;
+        return item ? new EJS_CacheItem(item.key, item.files, item.added, item.type, item.responseType, item.filename, item.url, item.cacheExpiry, item.lastAccessed) : null;
     }
 
     /**
@@ -326,7 +376,10 @@ class EJS_Cache {
             added: item.added,
             lastAccessed: item.lastAccessed,
             type: item.type,
-            filename: item.filename
+            responseType: item.responseType,
+            filename: item.filename,
+            url: item.url,
+            cacheExpiry: item.cacheExpiry
         });
 
         // store the files in cache-blobs
@@ -434,16 +487,18 @@ class EJS_CacheItem {
      * @param {EJS_FileItem[]} files - array of EJS_FileItem objects representing the files associated with this cache item.
      * @param {number} added - Timestamp (in milliseconds) when the item was added to the cache.
      * @param {string} type - The type of cached content (e.g., 'core', 'ROM', 'BIOS', 'decompressed').
+     * @param {string} responseType - The response type used when downloading the content (e.g., 'arraybuffer', 'blob', 'text').
      * @param {string} filename - The original filename of the cached content.
      * @param {string} url - The URL from which the cached content was downloaded.
      * @param {number|null} cacheExpiry - Timestamp (in milliseconds) indicating when the cache item should expire.
      */
-    constructor(key, files, added, type = "unknown", filename, url, cacheExpiry) {
+    constructor(key, files, added, type = "unknown", responseType, filename, url, cacheExpiry) {
         this.key = key;
         this.files = files;
         this.added = added;
         this.lastAccessed = added;
         this.type = type;
+        this.responseType = responseType;
         this.filename = filename;
         this.url = url;
         this.cacheExpiry = cacheExpiry;
@@ -483,3 +538,4 @@ class EJS_FileItem {
 window.EJS_Cache = EJS_Cache;
 window.EJS_CacheItem = EJS_CacheItem;
 window.EJS_FileItem = EJS_FileItem;
+window.EJS_Download = EJS_Download;

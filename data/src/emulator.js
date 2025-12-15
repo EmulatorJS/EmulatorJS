@@ -43,6 +43,15 @@ class EmulatorJS {
         }
         return rv;
     }
+    downloadType = {
+        "rom": "ROM",
+        "core": "Core",
+        "bios": "BIOS",
+        "reports": "Reports",
+        "states": "States",
+        "support": "Support",
+        "unknown": "Unknown"
+    }
     requiresThreads(core) {
         const requiresThreads = ["ppsspp", "dosbox_pure"];
         return requiresThreads.includes(core);
@@ -89,75 +98,136 @@ class EmulatorJS {
             data[i].elem.removeEventListener(data[i].listener, data[i].cb);
         }
     }
-    downloadFile(path, progressCB, notWithPath, opts) {
-        return new Promise(async cb => {
-            const data = this.toData(path); //check other data types
+    /**
+     * Downloads a file from the specified path.
+     * @param {*} path The path to the file to download.
+     * @param {*} type The expected type of the file.
+     * @param {*} progress A callback function for progress updates.
+     * @param {*} notWithPath Whether to exclude the base path.
+     * @param {*} opts Additional options for the download.
+     * @param {boolean} forceExtract Whether to force extraction of compressed files regardless of extension (default is false).
+     * @param {boolean} dontCache If true, the downloaded file will not be cached (default is false).
+     * @returns A promise that resolves with the downloaded file data.
+     */
+    downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false) {
+        return new Promise(async (resolve) => {
+            // Handle data types (ArrayBuffer, Uint8Array, Blob)
+            const data = this.toData(path);
             if (data) {
                 data.then((game) => {
                     if (opts.method === "HEAD") {
-                        cb({ headers: {} });
+                        resolve({ headers: {} });
                     } else {
-                        cb({ headers: {}, data: game });
+                        resolve({ headers: {}, data: game });
                     }
-                })
+                });
                 return;
             }
+
+            // Construct the full path
             const basePath = notWithPath ? "" : this.config.dataPath;
-            path = basePath + path;
+            let fullPath = basePath + path;
             if (!notWithPath && this.config.filePaths && typeof this.config.filePaths[path.split("/").pop()] === "string") {
-                path = this.config.filePaths[path.split("/").pop()];
+                fullPath = this.config.filePaths[path.split("/").pop()];
             }
+
+            // Check if it's a URL
             let url;
-            try { url = new URL(path) } catch(e) {};
+            try { url = new URL(fullPath) } catch(e) {};
+            
+            // Handle non-http(s) URLs (blob:, data:, etc.)
             if (url && !["http:", "https:"].includes(url.protocol)) {
-                //Most commonly blob: urls. Not sure what else it could be
                 if (opts.method === "HEAD") {
-                    cb({ headers: {} });
+                    resolve({ headers: {} });
                     return;
                 }
                 try {
-                    let res = await fetch(path)
+                    let res = await fetch(fullPath);
                     if ((opts.type && opts.type.toLowerCase() === "arraybuffer") || !opts.type) {
                         res = await res.arrayBuffer();
                     } else {
                         res = await res.text();
                         try { res = JSON.parse(res) } catch(e) {}
                     }
-                    if (path.startsWith("blob:")) URL.revokeObjectURL(path);
-                    cb({ data: res, headers: {} });
+                    if (fullPath.startsWith("blob:")) URL.revokeObjectURL(fullPath);
+                    resolve({ data: res, headers: {} });
                 } catch(e) {
-                    cb(-1);
+                    resolve(-1);
                 }
                 return;
             }
-            const xhr = new XMLHttpRequest();
-            if (progressCB instanceof Function) {
-                xhr.addEventListener("progress", (e) => {
-                    const progress = e.total ? " " + Math.floor(e.loaded / e.total * 100).toString() + "%" : " " + (e.loaded / 1048576).toFixed(2) + "MB";
-                    progressCB(progress);
-                });
-            }
-            xhr.onload = function() {
-                if (xhr.readyState === xhr.DONE) {
-                    let data = xhr.response;
-                    if (xhr.status.toString().startsWith("4") || xhr.status.toString().startsWith("5")) {
-                        cb(-1);
-                        return;
+
+            // Use EJS_Download for http(s) downloads
+            try {
+                const onProgress = progress instanceof Function ? (status, percentage, loaded, total) => {
+                    if (status === "downloading") {
+                        const progressText = total ? " " + Math.floor(percentage).toString() + "%" : " " + (loaded / 1048576).toFixed(2) + "MB";
+                        progress(progressText);
                     }
-                    try { data = JSON.parse(data) } catch(e) {}
-                    cb({
-                        data: data,
-                        headers: {
-                            "content-length": xhr.getResponseHeader("content-length")
+                } : null;
+
+                const onComplete = (success, result) => {
+                    if (!success) {
+                        console.error("Download failed in onComplete:", result);
+                    }
+                };
+
+                const responseType = opts.responseType || "arraybuffer";
+                const method = opts.method || "GET";
+                const headers = {};
+                const timeout = 30000;
+
+                const cacheItem = await this.downloader.downloadFile(
+                    fullPath,
+                    type,
+                    method,
+                    headers,
+                    null,
+                    onProgress,
+                    onComplete,
+                    timeout,
+                    responseType,
+                    forceExtract,
+                    dontCache
+                );
+
+                // Extract the data from the cache item
+                if (cacheItem && cacheItem.files && cacheItem.files.length > 0) {
+                    // If forceExtract was used and there are multiple files, return the entire cache item
+                    // so the caller can access all extracted files
+                    if (forceExtract && cacheItem.files.length > 1) {
+                        resolve({
+                            data: cacheItem,
+                            headers: {
+                                "content-length": cacheItem.files.reduce((sum, f) => sum + (f.bytes.byteLength || 0), 0)
+                            }
+                        });
+                    } else {
+                        let data = cacheItem.files[0].bytes;
+                        
+                        // Convert to appropriate format based on responseType
+                        if (responseType === "text" || (opts.type && opts.type.toLowerCase() === "text")) {
+                            const decoder = new TextDecoder();
+                            data = decoder.decode(data);
+                            try { data = JSON.parse(data) } catch(e) {}
                         }
-                    });
+
+                        resolve({
+                            data: data,
+                            headers: {
+                                "content-length": data.byteLength || data.length
+                            }
+                        });
+                    }
+                } else {
+                    console.error("Invalid cache item returned:", cacheItem);
+                    resolve(-1);
                 }
+            } catch(error) {
+                console.error("Download error:", error);
+                resolve(-1);
             }
-            if (opts.responseType) xhr.responseType = opts.responseType;
-            xhr.onerror = () => cb(-1);
-            xhr.open(opts.method, path, true);
-            xhr.send();
-        })
+        });
     }
     toData(data, rv) {
         if (!(data instanceof ArrayBuffer) && !(data instanceof Uint8Array) && !(data instanceof Blob)) return null;
@@ -351,6 +421,7 @@ class EmulatorJS {
             this.config.cacheConfig.cacheMaxAgeMins = cacheConfigDefaults.cacheMaxAgeMins;
         }
         
+        // Initialize storage cache
         this.storageCache = new window.EJS_Cache(
             this.config.cacheConfig.enabled,
             "EmulatorJS-Cache",
@@ -358,6 +429,9 @@ class EmulatorJS {
             this.config.cacheConfig.cacheMaxAgeMins || 7200,
             this.debug
         );
+
+        // Initialize downloader with cache
+        this.downloader = new window.EJS_Download(this.storageCache, this);
         
         // This is not cache. This is save data
         this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
@@ -578,125 +652,6 @@ class EmulatorJS {
         }
         return text;
     }
-    checkCompression(data, msg, fileCbFunc, type = 'decompressed', filename = null) {
-        return new Promise(async (resolve, reject) => {
-            const startTime = performance.now();
-            const dataSizeMB = (data.byteLength / (1024 * 1024)).toFixed(2);
-
-            try {
-                if (!this.compression) {
-                    this.compression = new window.EJS_COMPRESSION(this);
-                }
-
-                // Generate cache key based on data hash
-                const hashStartTime = performance.now();
-                const dataArray = new Uint8Array(data);
-                const cacheKey = this.storageCache.generateCacheKey(dataArray);
-                const hashTime = performance.now() - hashStartTime;
-
-                // Check if decompressed content is in cache
-                const cacheCheckStartTime = performance.now();
-                const cachedItem = await this.storageCache.get(cacheKey);
-                const cacheCheckTime = performance.now() - cacheCheckStartTime;
-
-                if (cachedItem && cachedItem.files && cachedItem.files.length > 0) {
-                    const totalTime = performance.now() - startTime;
-                    if (this.debug) console.log(`[EJS Cache] Cache HIT for ${dataSizeMB}MB data - Total: ${totalTime.toFixed(2)}ms (hash: ${hashTime.toFixed(2)}ms, cache lookup: ${cacheCheckTime.toFixed(2)}ms)`);
-
-                    if (msg) {
-                        this.textElem.innerText = msg + " (cached)";
-                    }
-
-                    // Convert cached files back to expected format
-                    const files = {};
-                    for (let i = 0; i < cachedItem.files.length; i++) {
-                        const file = cachedItem.files[i];
-                        if (typeof fileCbFunc === "function") {
-                            fileCbFunc(file.filename, file.bytes);
-                            files[file.filename] = true;
-                        } else {
-                            files[file.filename] = file.bytes;
-                        }
-                    }
-                    resolve(files);
-                    return;
-                }
-
-                if (this.debug) console.log("[EJS Cache] Cache MISS for " + dataSizeMB + "MB data - Starting decompression (hash: " + hashTime.toFixed(2) + "ms, cache lookup: " + cacheCheckTime.toFixed(2) + "ms)");
-
-                // Not in cache, decompress and store result
-                if (msg) {
-                    this.textElem.innerText = msg;
-                }
-
-                const decompressionStartTime = performance.now();
-
-                // If callback is provided, we need to collect files for caching while still calling the callback
-                const collectedFiles = {};
-                let callbackWrapper = null;
-
-                if (typeof fileCbFunc === "function") {
-                    callbackWrapper = (filename, fileData) => {
-                        // Call the original callback
-                        fileCbFunc(filename, fileData);
-                        // Also collect the data for caching
-                        collectedFiles[filename] = fileData;
-                        if (this.debug) console.log("[EJS Cache] Collected file for caching: " + filename + " (" + (fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data') + " bytes)");
-                    };
-                }
-
-                const decompressedFiles = await this.compression.decompress(data, (m, appendMsg) => {
-                    this.textElem.innerText = appendMsg ? (msg + m) : m;
-                }, callbackWrapper);
-                const decompressionTime = performance.now() - decompressionStartTime;
-
-                // Store decompressed content in cache
-                const cacheStoreStartTime = performance.now();
-                const fileItems = [];
-
-                // Use collected files if callback was used, otherwise use returned files
-                const filesToCache = callbackWrapper ? collectedFiles : decompressedFiles;
-
-                for (const [filename, fileData] of Object.entries(filesToCache)) {
-                    if (fileData && fileData !== true) {
-                        fileItems.push(new window.EJS_FileItem(filename, fileData));
-                        if (this.debug) console.log("[EJS Cache] Adding file to cache: " + filename + " (" + (fileData ? fileData.byteLength || fileData.length || 'unknown size' : 'no data') + " bytes)");
-                    } else {
-                        if (this.debug) console.log("[EJS Cache] Skipping file (invalid data): " + filename + " (" + typeof fileData + ")");
-                    }
-                }
-
-                if (fileItems.length > 0) {
-                    const cacheItem = new window.EJS_CacheItem(cacheKey, fileItems, Date.now(), type, filename);
-                    await this.storageCache.put(cacheItem);
-                    if (this.debug) console.log("[EJS Cache] Stored " + fileItems.length + " files in cache with key: " + cacheKey + ", type: " + type + ", filename: " + (filename || 'N/A'));
-                } else {
-                    if (this.debug) console.log("[EJS Cache] No files to cache (fileItems.length = 0)");
-                }
-                const cacheStoreTime = performance.now() - cacheStoreStartTime;
-
-                const totalTime = performance.now() - startTime;
-                if (this.debug) console.log("[EJS Cache] Decompression complete for " + dataSizeMB + "MB data - Total: " + totalTime.toFixed(2) + "ms (decompression: " + decompressionTime.toFixed(2) + "ms, cache store: " + cacheStoreTime.toFixed(2) + "ms)");
-
-                // Return appropriate structure based on whether callback was used
-                if (callbackWrapper) {
-                    // For callback-based calls, return a structure indicating completion
-                    const result = {};
-                    for (const filename of Object.keys(collectedFiles)) {
-                        result[filename] = true;
-                    }
-                    resolve(result);
-                } else {
-                    // For promise-based calls, return the actual file data
-                    resolve(decompressedFiles);
-                }
-            } catch (error) {
-                const totalTime = performance.now() - startTime;
-                if (this.debug) console.error("[EJS Cache] Error processing " + dataSizeMB + "MB data after " + totalTime.toFixed(2) + "ms:", error);
-                reject(error);
-            }
-        });
-    }
     checkCoreCompatibility(version) {
         if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
             this.startGameError(this.localization("Outdated EmulatorJS version"));
@@ -733,53 +688,71 @@ class EmulatorJS {
         }
         const gotCore = (data) => {
             this.defaultCoreOpts = {};
-            this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Core"), null, "core", this.getCore()).then(async (decompressedData) => {
-                let js, thread, wasm;
-                for (let k in decompressedData) {
-                    if (k.endsWith(".wasm")) {
-                        wasm = decompressedData[k];
-                    } else if (k.endsWith(".worker.js")) {
-                        thread = decompressedData[k];
-                    } else if (k.endsWith(".js")) {
-                        js = decompressedData[k];
-                    } else if (k === "build.json") {
-                        this.checkCoreCompatibility(JSON.parse(new TextDecoder().decode(decompressedData[k])));
-                    } else if (k === "core.json") {
-                        let core = JSON.parse(new TextDecoder().decode(decompressedData[k]));
-                        this.extensions = core.extensions;
-                        this.coreName = core.name;
-                        this.repository = core.repo;
-                        this.defaultCoreOpts = core.options;
-                        this.enableMouseLock = core.options.supportsMouse;
-                        this.retroarchOpts = core.retroarchOpts;
-                        this.saveFileExt = core.save;
-                    } else if (k === "license.txt") {
-                        this.license = new TextDecoder().decode(decompressedData[k]);
-                    }
+            
+            let decompressedData = {};
+            
+            // Check if data is already a cache item with extracted files
+            if (data && data.files && Array.isArray(data.files)) {
+                console.log("[EJS Core] Data is already decompressed cache item");
+                // Convert cache item files array to object keyed by filename
+                for (const file of data.files) {
+                    decompressedData[file.filename] = file.bytes;
                 }
-
-                if (this.saveFileExt === false) {
-                    this.elements.bottomBar.saveSavFiles[0].style.display = "none";
-                    this.elements.bottomBar.loadSavFiles[0].style.display = "none";
+                this.processCore(decompressedData);
+            } else {
+                // Data is still compressed, need to decompress
+                console.log("[EJS Core] Data needs decompression");
+                if (!this.compression) {
+                    this.compression = new window.EJS_COMPRESSION(this);
                 }
+                
+                this.textElem.innerText = this.localization("Decompress Game Core");
+                
+                this.compression.decompress(new Uint8Array(data), (m, appendMsg) => {
+                    this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Core") + m) : m;
+                }, null).then(async (decompressedData) => {
+                    this.processCore(decompressedData);
+                });
+            }
+        }
+        
+        this.processCore = (decompressedData) => {
+            if (this.debug) console.log("[EJS Core] Decompressed files:", Object.keys(decompressedData));
+            let js, thread, wasm;
+            for (let k in decompressedData) {
+                if (k.endsWith(".wasm")) {
+                    wasm = decompressedData[k];
+                } else if (k.endsWith(".worker.js")) {
+                    thread = decompressedData[k];
+                } else if (k.endsWith(".js")) {
+                    js = decompressedData[k];
+                } else if (k === "build.json") {
+                    this.checkCoreCompatibility(JSON.parse(new TextDecoder().decode(decompressedData[k])));
+                } else if (k === "core.json") {
+                    let core = JSON.parse(new TextDecoder().decode(decompressedData[k]));
+                    this.extensions = core.extensions;
+                    this.coreName = core.name;
+                    this.repository = core.repo;
+                    this.defaultCoreOpts = core.options;
+                    this.enableMouseLock = core.options.supportsMouse;
+                    this.retroarchOpts = core.retroarchOpts;
+                    this.saveFileExt = core.save;
+                } else if (k === "license.txt") {
+                    this.license = new TextDecoder().decode(decompressedData[k]);
+                }
+            }
 
-                // The core decompression is now handled by checkCompression which already caches the result
-                // No need for additional core-specific caching - this would create duplicates
-                console.log("[EJS Core] Core decompression complete (cached by checkCompression)");
+            if (this.saveFileExt === false) {
+                this.elements.bottomBar.saveSavFiles[0].style.display = "none";
+                this.elements.bottomBar.loadSavFiles[0].style.display = "none";
+            }
 
-                this.initGameCore(js, wasm, thread);
-            });
+            if (this.debug) console.log("[EJS Core] Core decompression complete");
+            if (this.debug) console.log("[EJS Core] js size:", js?.byteLength, "wasm size:", wasm?.byteLength, "thread size:", thread?.byteLength);
+
+            this.initGameCore(js, wasm, thread);
         }
 
-        // Helper function to check if cached core is expired
-        const isCoreExpired = (cachedItem) => {
-            if (!cachedItem) return true;
-            const now = Date.now();
-            const ageMins = (now - cachedItem.lastAccessed) / (1000 * 60);
-            // Use the same expiration logic as the cache (7200 minutes = 5 days)
-            const maxAgeMins = this.storageCache.minAgeMins || 7200;
-            return ageMins > maxAgeMins;
-        };
         const report = "cores/reports/" + this.getCore() + ".json";
         // Add cache-busting parameter periodically to ensure we get updated build versions
         // This ensures that when cores are updated, we'll eventually get the new buildStart value
@@ -787,7 +760,7 @@ class EmulatorJS {
         const cacheBustParam = Math.floor(Date.now() / cacheBustInterval);
         const reportUrl = `${report}?v=${cacheBustParam}`;
 
-        this.downloadFile(reportUrl, null, false, { responseType: "text", method: "GET" }).then(async rep => {
+        this.downloadFile(reportUrl, this.downloadType.reports, null, false, { responseType: "text", method: "GET" }, false, true).then(async rep => {
             if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
                 rep = {};
             } else {
@@ -816,62 +789,19 @@ class EmulatorJS {
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
             let filename = this.getCore() + (threads ? "-thread" : "") + legacy + "-wasm.data";
 
-            // Check if we have the core cached in the compression cache to skip download entirely
-            // This leverages the existing checkCompression cache mechanism
-            try {
-                console.log("[EJS Core] Checking for cached core...");
-
-                // Try to download and check if it's in browser cache first
-                const corePath = "cores/" + filename;
-                const headResponse = await fetch(this.config.dataPath ? this.config.dataPath + corePath : corePath, {
-                    method: 'HEAD',
-                    cache: 'default'
-                }).catch(() => null);
-
-                if (headResponse && headResponse.status === 304) {
-                    console.log("[EJS Core] Browser cache indicates file hasn't changed - proceeding to check decompression cache");
-
-                    // File hasn't changed according to browser cache, so try a minimal download to check our cache
-                    const quickDownload = await this.downloadFile(corePath, null, false, {
-                        responseType: "arraybuffer",
-                        method: "GET"
-                    }).catch(() => null);
-
-                    if (quickDownload && quickDownload.data) {
-                        // Generate cache key the same way checkCompression does
-                        const dataArray = new Uint8Array(quickDownload.data);
-                        const compressionCacheKey = this.storageCache.generateCacheKey(dataArray);
-                        const cachedDecompression = await this.storageCache.get(compressionCacheKey);
-
-                        if (cachedDecompression && cachedDecompression.files && cachedDecompression.files.length > 0) {
-                            if (this.debug) console.log("[EJS Core] Found cached decompression (" + compressionCacheKey + ") - using cached core");
-                            this.textElem.innerText = this.localization("Loading cached core...");
-
-                            // Use the cached data directly without re-downloading
-                            gotCore(quickDownload.data, false);
-                            return;
-                        }
-                    }
-                }
-
-                if (this.debug) console.log("[EJS Core] No valid cache found or file has changed - proceeding with fresh download");
-            } catch (error) {
-                if (this.debug) console.warn("[EJS Core] Error checking cache, proceeding with download:", error);
-            }
-
-            // No valid decompressed cache found, download and rely on browser cache for the file
-            console.log("[EJS Core] Downloading core (browser cache will handle file-level caching)");
+            // Download the core
+            console.log("[EJS Core] Downloading core:", filename);
             const corePath = "cores/" + filename;
-            let res = await this.downloadFile(corePath, (progress) => {
+            let res = await this.downloadFile(corePath, this.downloadType.core, (progress) => {
                 this.textElem.innerText = this.localization("Download Game Core") + progress;
-            }, false, { responseType: "arraybuffer", method: "GET" });
+            }, false, { responseType: "arraybuffer", method: "GET" }, true, false);
             if (res === -1) {
                 console.log("File not found, attemping to fetch from emulatorjs cdn.");
                 console.error("**THIS METHOD IS A FAILSAFE, AND NOT OFFICIALLY SUPPORTED. USE AT YOUR OWN RISK**");
                 let version = this.ejs_version.endsWith("-beta") ? "nightly" : this.ejs_version;
-                res = await this.downloadFile(`https://cdn.emulatorjs.org/${version}/data/${corePath}`, (progress) => {
+                res = await this.downloadFile(`https://cdn.emulatorjs.org/${version}/data/${corePath}`, this.downloadType.core, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Core") + progress;
-                }, true, { responseType: "arraybuffer", method: "GET" });
+                }, true, { responseType: "arraybuffer", method: "GET" }, true, false);
                 if (res === -1) {
                     if (!this.supportsWebgl2) {
                         this.startGameError(this.localization("Outdated graphics driver"));
@@ -883,9 +813,8 @@ class EmulatorJS {
                 console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
             }
 
-            // No need for extra core-specific caching - checkCompression handles it
+            // Core download and caching handled by EJS_Download
             gotCore(res.data);
-            // Note: We no longer store the compressed core in IndexedDB - relying on browser cache instead
         });
     }
     initGameCore(js, wasm, thread) {
@@ -936,9 +865,9 @@ class EmulatorJS {
             }
             this.textElem.innerText = this.localization("Download Game State");
 
-            this.downloadFile(this.config.loadState, (progress) => {
+            this.downloadFile(this.config.loadState, this.downloadType.states, (progress) => {
                 this.textElem.innerText = this.localization("Download Game State") + progress;
-            }, true, { responseType: "arraybuffer", method: "GET" }).then((res) => {
+            }, true, { responseType: "arraybuffer", method: "GET" }, false, true).then((res) => {
                 if (res === -1) {
                     this.startGameError(this.localization("Error downloading game state"));
                     return;
@@ -958,14 +887,26 @@ class EmulatorJS {
                 return resolve(assetUrl);
             }
             const gotData = async (input) => {
+                console.log(input);
                 const coreFilename = "/" + this.fileName;
                 const coreFilePath = coreFilename.substring(0, coreFilename.length - coreFilename.split("/").pop().length);
                 if (this.config.dontExtractBIOS === true) {
                     this.gameManager.FS.writeFile(coreFilePath + assetUrl.split("/").pop(), new Uint8Array(input));
                     return resolve(assetUrl);
                 }
+                
+                // Decompress if needed
+                if (!this.compression) {
+                    this.compression = new window.EJS_COMPRESSION(this);
+                }
+                
                 const assetFilename = assetUrl.split("/").pop().split("#")[0].split("?")[0];
-                const data = await this.checkCompression(new Uint8Array(input), decompressProgressMessage, null, "BIOS", assetFilename);
+                this.textElem.innerText = decompressProgressMessage;
+                
+                const data = await this.compression.decompress(new Uint8Array(input), (m, appendMsg) => {
+                    this.textElem.innerText = appendMsg ? (decompressProgressMessage + m) : m;
+                }, null);
+                
                 for (const k in data) {
                     if (k === "!!notCompressedData") {
                         this.gameManager.FS.writeFile(coreFilePath + assetUrl.split("/").pop().split("#")[0].split("?")[0], data[k]);
@@ -976,11 +917,10 @@ class EmulatorJS {
                 }
             }
 
-            console.log("[EJS " + type.toUpperCase() + "] Downloading " + assetUrl + " (browser cache will handle file-level caching)");
+            console.log("[EJS " + type.toUpperCase() + "] Downloading " + assetUrl + " (cached by EJS_Download)");
             this.textElem.innerText = progressMessage;
 
-            // No longer check our own storage - rely on browser cache and checkCompression cache
-            const res = await this.downloadFile(assetUrl, (progress) => {
+            const res = await this.downloadFile(assetUrl, type, (progress) => {
                 this.textElem.innerText = progressMessage + progress;
             }, true, { responseType: "arraybuffer", method: "GET" });
             if (res === -1) {
@@ -995,8 +935,7 @@ class EmulatorJS {
             }
             await gotData(res.data);
             resolve(assetUrl);
-            // No longer store in ROM storage - browser cache handles file caching, checkCompression handles decompression caching
-            console.log("[EJS " + type.toUpperCase() + "] Download and decompression complete (cached by checkCompression)");
+            console.log("[EJS " + type.toUpperCase() + "] Download and decompression complete");
         });
     }
     downloadGamePatch() {
@@ -1027,10 +966,85 @@ class EmulatorJS {
         return new Promise(resolve => {
             this.textElem.innerText = this.localization("Download Game Data");
 
-            const gotGameData = (data) => {
-                
+            const writeFilesToFS = (fileName, fileData, altName) => {
+                if (fileName.includes("/")) {
+                    const paths = fileName.split("/");
+                    let cp = "";
+                    for (let i = 0; i < paths.length - 1; i++) {
+                        if (paths[i] === "") continue;
+                        cp += `/${paths[i]}`;
+                        if (!this.gameManager.FS.analyzePath(cp).exists) {
+                            this.gameManager.FS.mkdir(cp);
+                        }
+                    }
+                }
+                if (fileName.endsWith("/")) {
+                    this.gameManager.FS.mkdir(fileName);
+                    return null;
+                }
+                if (fileName === "!!notCompressedData") {
+                    this.gameManager.FS.writeFile(altName, fileData);
+                    return altName;
+                } else {
+                    this.gameManager.FS.writeFile(`/${fileName}`, fileData);
+                    return fileName;
+                }
+            };
+
+            const selectRomFile = (fileNames, coreName, disableCue) => {
+                let isoFile = null;
+                let supportedFile = null;
+                let cueFile = null;
+                let selectedCueExt = null;
+                fileNames.forEach(fileName => {
+                    const ext = fileName.split(".").pop().toLowerCase();
+                    if (supportedFile === null && supportsExt(ext)) {
+                        supportedFile = fileName;
+                    }
+                    if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
+                        isoFile = fileName;
+                    }
+                    if (["cue", "ccd", "toc", "m3u"].includes(ext)) {
+                        if (coreName === "psx") {
+                            //always prefer m3u files for psx cores
+                            if (selectedCueExt !== "m3u") {
+                                if (cueFile === null || ext === "m3u") {
+                                    cueFile = fileName;
+                                    selectedCueExt = ext;
+                                }
+                            }
+                        } else {
+                            //prefer cue or ccd files over toc or m3u
+                            if (!["cue", "ccd"].includes(selectedCueExt)) {
+                                if (cueFile === null || ["cue", "ccd"].includes(ext)) {
+                                    cueFile = fileName;
+                                    selectedCueExt = ext;
+                                }
+                            }
+                        }
+                    }
+                });
+                if (supportedFile !== null) {
+                    this.fileName = supportedFile;
+                } else {
+                    this.fileName = fileNames[0];
+                }
+                if (isoFile !== null && (supportsExt("iso") || supportsExt("cso") || supportsExt("chd") || supportsExt("elf"))) {
+                    this.fileName = isoFile;
+                } else if (supportsExt("cue") || supportsExt("ccd") || supportsExt("toc") || supportsExt("m3u")) {
+                    if (cueFile !== null) {
+                        this.fileName = cueFile;
+                    } else if (!disableCue) {
+                        this.fileName = this.gameManager.createCueFile(fileNames);
+                    }
+                }
+                resolve();
+            };
+
+            const gotGameData = async (data) => {
                 const coreName = this.getCore(true);
                 const altName = this.getBaseFileName(true);
+                
                 if (["arcade", "mame"].includes(coreName) || this.config.dontExtractRom === true) {
                     this.fileName = altName;
                     this.gameManager.FS.writeFile(this.fileName, new Uint8Array(data));
@@ -1039,92 +1053,74 @@ class EmulatorJS {
                 } 
 
                 let disableCue = false;
-                if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xplus4", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
+                if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
                     disableCue = true;
                 } else {
                     disableCue = this.config.disableCue;
                 }
 
-                let fileNames = [];
                 const romFilename = this.getBaseFileName(true);
-                this.checkCompression(new Uint8Array(data), this.localization("Decompress Game Data"), (fileName, fileData) => {
-                    if (fileName.includes("/")) {
-                        const paths = fileName.split("/");
-                        let cp = "";
-                        for (let i = 0; i < paths.length - 1; i++) {
-                            if (paths[i] === "") continue;
-                            cp += `/${paths[i]}`;
-                            if (!this.gameManager.FS.analyzePath(cp).exists) {
-                                this.gameManager.FS.mkdir(cp);
-                            }
+                const cacheKey = `rom-${coreName}-${romFilename}`;
+
+                // Check the cache for decompressed content
+                const cached = await this.storageCache.get(cacheKey, false);
+                
+                if (cached && cached.files) {
+                    // Cache hit - write cached files to FS
+                    if (this.debug) console.log("[EJS ROM] Using cached decompressed files");
+                    const fileNames = [];
+                    for (const file of cached.files) {
+                        const writtenName = writeFilesToFS(file.filename, file.bytes, altName);
+                        if (writtenName) {
+                            fileNames.push(writtenName);
                         }
                     }
-                    if (fileName.endsWith("/")) {
-                        this.gameManager.FS.mkdir(fileName);
-                        return;
+                    selectRomFile(fileNames, coreName, disableCue);
+                    return;
+                }
+
+                // Cache miss - decompress and cache the result
+                let fileNames = [];
+                
+                if (!this.compression) {
+                    this.compression = new window.EJS_COMPRESSION(this);
+                }
+                
+                this.compression.decompress(new Uint8Array(data), (m, appendMsg) => {
+                    this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Data") + m) : m;
+                }, (fileName, fileData) => {
+                    const writtenName = writeFilesToFS(fileName, fileData, altName);
+                    if (writtenName) {
+                        fileNames.push(writtenName);
                     }
-                    if (fileName === "!!notCompressedData") {
-                        this.gameManager.FS.writeFile(altName, fileData);
-                        fileNames.push(altName);
-                    } else {
-                        this.gameManager.FS.writeFile(`/${fileName}`, fileData);
-                        fileNames.push(fileName);
-                    }
-                }, "ROM", romFilename).then(() => {
-                    let isoFile = null;
-                    let supportedFile = null;
-                    let cueFile = null;
-                    let selectedCueExt = null;
-                    fileNames.forEach(fileName => {
-                        const ext = fileName.split(".").pop().toLowerCase();
-                        if (supportedFile === null && supportsExt(ext)) {
-                            supportedFile = fileName;
-                        }
-                        if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
-                            isoFile = fileName;
-                        }
-                        if (["cue", "ccd", "toc", "m3u"].includes(ext)) {
-                            if (coreName === "psx") {
-                                //always prefer m3u files for psx cores
-                                if (selectedCueExt !== "m3u") {
-                                    if (cueFile === null || ext === "m3u") {
-                                        cueFile = fileName;
-                                        selectedCueExt = ext;
-                                    }
-                                }
-                            } else {
-                                //prefer cue or ccd files over toc or m3u
-                                if (!["cue", "ccd"].includes(selectedCueExt)) {
-                                    if (cueFile === null || ["cue", "ccd"].includes(ext)) {
-                                        cueFile = fileName;
-                                        selectedCueExt = ext;
-                                    }
-                                }
-                            }
-                        }
+                }).then(async (decompressedFiles) => {
+                    // Store decompressed files in cache
+                    const cacheFiles = fileNames.map(name => {
+                        const data = this.gameManager.FS.readFile(`/${name}`);
+                        return new window.EJS_FileItem(name, data);
                     });
-                    if (supportedFile !== null) {
-                        this.fileName = supportedFile;
-                    } else {
-                        this.fileName = fileNames[0];
-                    }
-                    if (isoFile !== null && (supportsExt("iso") || supportsExt("cso") || supportsExt("chd") || supportsExt("elf"))) {
-                        this.fileName = isoFile;
-                    } else if (supportsExt("cue") || supportsExt("ccd") || supportsExt("toc") || supportsExt("m3u")) {
-                        if (cueFile !== null) {
-                            this.fileName = cueFile;
-                        } else if (!disableCue) {
-                            this.fileName = this.gameManager.createCueFile(fileNames);
-                        }
-                    }
-                    resolve();
+                    const cacheItem = new window.EJS_CacheItem(
+                        cacheKey,
+                        cacheFiles,
+                        Date.now(),
+                        "ROM",
+                        "arraybuffer",
+                        romFilename,
+                        romFilename,
+                        Date.now() + 5 * 24 * 60 * 60 * 1000
+                    );
+                    await this.storageCache.put(cacheItem);
+                    
+                    selectRomFile(fileNames, coreName, disableCue);
+                    return;
                 });
             }
             const downloadFile = async () => {
-                console.log("[EJS ROM] Downloading ROM (browser cache will handle file-level caching)");
-                const res = await this.downloadFile(this.config.gameUrl, (progress) => {
+                console.log("[EJS ROM] Downloading ROM " + this.config.gameUrl.name);
+                // create new download class
+                const res = await this.downloadFile(this.config.gameUrl, this.downloadType.rom, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;
-                }, true, { responseType: "arraybuffer", method: "GET" });
+                }, true, { responseType: "arraybuffer", method: "GET" }, false, false);
                 if (res === -1) {
                     this.startGameError(this.localization("Network Error"));
                     return;
@@ -1135,11 +1131,10 @@ class EmulatorJS {
                     this.config.gameUrl = "game";
                 }
                 gotGameData(res.data);
-                // No longer store in ROM storage - browser cache handles file caching, checkCompression handles decompression caching
-                console.log("[EJS ROM] Download and decompression complete (cached by checkCompression)");
+                if (this.debug) console.log("[EJS ROM] Download and decompression complete");
             }
 
-            // No longer check ROM storage - rely on browser cache and checkCompression cache
+            // download the content
             downloadFile();
         })
     }
