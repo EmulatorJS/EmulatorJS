@@ -170,6 +170,9 @@
 
                     if (["d64"].includes(ext))
                         return "vice_x64sc"
+                    
+                    if (["md", "sg", "smd", "gen"].includes(ext))
+                        return "segaMD"
 
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
@@ -205,9 +208,19 @@
                             "Commodore VIC20": "vice_xvic",
                             "Commodore Plus/4": "vice_xplus4",
                             "Commodore PET": "vice_xpet",
-                            "DOSBOX-PURE": "dosbox_pure"
+                        }
+                        
+                        if (enableThreads) {
+                            coreValues["DOSBOX-PURE"] = "dosbox_pure";
+                            coreValues["PlayStation Portable"] = "ppsspp";
                         }
 
+                        for (let core in coreValues) {
+                            if (core.toLowerCase() === ext) {
+                                resolve(core)
+                            }
+                        }
+ 
                         const cores = Object.keys(coreValues).sort().reduce(
                             (obj, key) => { 
                                 obj[key] = coreValues[key]; 

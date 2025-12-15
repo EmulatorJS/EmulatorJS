@@ -4,16 +4,16 @@ class EmulatorJS {
             "atari5200": ["a5200"],
             "vb": ["beetle_vb"],
             "nds": ["melonds", "desmume", "desmume2015"],
-            "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2"],
+            "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi"],
             "nes": ["fceumm", "nestopia"],
             "gb": ["gambatte"],
             "coleco": ["gearcoleco"],
-            "segaMS": ["smsplus", "genesis_plus_gx", "picodrive"],
-            "segaMD": ["genesis_plus_gx", "picodrive"],
-            "segaGG": ["genesis_plus_gx"],
-            "segaCD": ["genesis_plus_gx", "picodrive"],
+            "segaMS": ["smsplus", "genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
+            "segaMD": ["genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
+            "segaGG": ["genesis_plus_gx", "genesis_plus_gx_wide"],
+            "segaCD": ["genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
             "sega32x": ["picodrive"],
-            "sega": ["genesis_plus_gx", "picodrive"],
+            "sega": ["genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
             "lynx": ["handy"],
             "mame": ["mame2003_plus", "mame2003"],
             "ngp": ["mednafen_ngp"],
@@ -26,7 +26,7 @@ class EmulatorJS {
             "3do": ["opera"],
             "psp": ["ppsspp"],
             "atari7800": ["prosystem"],
-            "snes": ["snes9x"],
+            "snes": ["snes9x", "bsnes"],
             "atari2600": ["stella2014"],
             "jaguar": ["virtualjaguar"],
             "segaSaturn": ["yabause"],
@@ -1315,6 +1315,11 @@ class EmulatorJS {
             }, 0);
         });
         this.addEventListener(window, "beforeunload", (e) => {
+            if (this.config.disableAutoUnload) {
+                e.preventDefault();
+                e.returnValue = "";
+                return
+            } 
             if (!this.started) return;
             this.callEvent("exit");
         });
@@ -2146,7 +2151,7 @@ class EmulatorJS {
             if (stateUrl) URL.revokeObjectURL(stateUrl);
             if (this.getSettingValue("save-state-location") === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.put(this.getBaseFileName() + ".state", state);
-                this.displayMessage(this.localization("SAVE SAVED TO BROWSER"));
+                this.displayMessage(this.localization("SAVED STATE TO BROWSER"));
             } else {
                 const blob = new Blob([state]);
                 stateUrl = URL.createObjectURL(blob);
@@ -2162,7 +2167,7 @@ class EmulatorJS {
             if (this.getSettingValue("save-state-location") === "browser" && this.saveInBrowserSupported()) {
                 this.storage.states.get(this.getBaseFileName() + ".state").then(e => {
                     this.gameManager.loadState(e);
-                    this.displayMessage(this.localization("SAVE LOADED FROM BROWSER"));
+                    this.displayMessage(this.localization("LOADED STATE FROM BROWSER"));
                 })
             } else {
                 const file = await this.selectFile();
@@ -2864,7 +2869,7 @@ class EmulatorJS {
                 { id: 17, label: this.localization("RIGHT D-PAD LEFT") },
                 { id: 16, label: this.localization("RIGHT D-PAD RIGHT") },
             ];
-        } else if (["segaCD", "sega32x"].includes(this.getControlScheme())) {
+        } else if (["segaMD", "segaCD", "sega32x"].includes(this.getControlScheme())) {
             buttons = [
                 { id: 1, label: this.localization("A") },
                 { id: 0, label: this.localization("B") },
@@ -3071,6 +3076,31 @@ class EmulatorJS {
                 { id: 18, label: this.localization("STICK DOWN") },
                 { id: 17, label: this.localization("STICK LEFT") },
                 { id: 16, label: this.localization("STICK RIGHT") },
+            ];
+        } else if ("psx" === this.getControlScheme()) {
+            buttons = [
+                { id: 9, label: this.localization("\u25B3") }, // △
+                { id: 1, label: this.localization("\u25A1") }, // □
+                { id: 0, label: this.localization("\uFF58") }, // ｘ
+                { id: 8, label: this.localization("\u25CB") }, // ○
+                { id: 2, label: this.localization("SELECT") },
+                { id: 3, label: this.localization("START") },
+                { id: 4, label: this.localization("UP") },
+                { id: 5, label: this.localization("DOWN") },
+                { id: 6, label: this.localization("LEFT") },
+                { id: 7, label: this.localization("RIGHT") },
+                { id: 10, label: this.localization("L1") },
+                { id: 11, label: this.localization("R1") },
+                { id: 12, label: this.localization("L2") },
+                { id: 13, label: this.localization("R2") },
+                { id: 19, label: this.localization("L STICK UP") },
+                { id: 18, label: this.localization("L STICK DOWN") },
+                { id: 17, label: this.localization("L STICK LEFT") },
+                { id: 16, label: this.localization("L STICK RIGHT") },
+                { id: 23, label: this.localization("R STICK UP") },
+                { id: 22, label: this.localization("R STICK DOWN") },
+                { id: 21, label: this.localization("R STICK LEFT") },
+                { id: 20, label: this.localization("R STICK RIGHT") },
             ];
         } else {
             buttons = [

@@ -164,6 +164,22 @@ class EJS_GameManager {
         }
         return cfg;
     }
+    writeBootupBatchFile() {
+        const data = `
+SET BLASTER=A220 I7 D1 H5 T6
+
+@ECHO OFF
+mount A / -t floppy
+SET PATH=Z:\\;A:\\
+mount c /emulator/c
+c:
+COMMAND.COM
+IF EXIST AUTORUN.BAT AUTORUN.BAT
+`;
+        const filename = "BOOTUP.BAT";
+        this.FS.writeFile("/" + filename, data);
+        return filename;
+    }
     initShaders() {
         if (!this.EJS.config.shaders) return;
         this.mkdir("/shader");
