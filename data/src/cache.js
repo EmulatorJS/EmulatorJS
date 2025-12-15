@@ -25,6 +25,9 @@ class EJS_Download {
     downloadFile(url, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer") {
         return new Promise(async (resolve, reject) => {
             try {
+                const cache = new window.EJS_Cache(true, "EmulatorJS-Cache");
+                window.EJS_CacheInstance = cache;
+
                 let cached = await window.EJS.storageCache.get(url, false, "url");
                 const now = Date.now();
                 if (cached) {
@@ -130,9 +133,9 @@ class EJS_Download {
                     files = [new window.EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
                 }
 
-                const key = window.EJS.storageCache.generateCacheKey(files[0].bytes);
+                const key = cache.generateCacheKey(files[0].bytes);
                 const cacheItem = new window.EJS_CacheItem(key, files, now, "downloaded", filename, url, cacheExpiry);
-                await window.EJS.storageCache.put(cacheItem);
+                await cache.put(cacheItem);
 
                 resolve(cacheItem);
             } catch (err) {
