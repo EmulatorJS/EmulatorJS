@@ -2,249 +2,415 @@
 
 ## Overview
 
-EmulatorJS implements a sophisticated multi-layer caching system designed to optimize performance by minimizing redundant downloads and decompression operations. The system combines browser-native HTTP caching with a custom decompression cache to provide fast loading times for emulator cores, ROMs, BIOS files, and other assets.
+EmulatorJS implements a sophisticated unified caching system designed to optimize performance by minimizing redundant downloads and decompression operations. The system uses IndexedDB-based storage with intelligent cache validation to provide fast loading times for emulator cores, ROMs, BIOS files, and other assets.
 
 ## High-Level Architecture
 
-### Two-Layer Caching Strategy
+### Unified Caching Strategy
 
-1. **Browser HTTP Cache (Layer 1)**
-   - Handles file-level caching using standard HTTP cache headers
-   - Caches compressed files (ZIP, 7Z, RAR) and uncompressed files
-   - Managed automatically by the browser
-   - Provides conditional requests (If-Modified-Since, ETag) for cache validation
+The caching system consists of two main components:
 
-2. **Decompression Cache (Layer 2)**
-   - Custom IndexedDB-based cache for decompressed content
-   - Stores the results of expensive decompression operations
-   - Prevents re-decompression of previously processed archives
-   - Configurable size limits and expiration policies
+1. **EJS_Download Manager**
+   - Handles file downloads with smart caching
+   - Validates cached content using HTTP headers (Cache-Control, Expires, Last-Modified)
+   - Automatically decompresses archives (ZIP, 7Z, RAR)
+   - Provides progress callbacks for download and decompression operations
+
+2. **EJS_Cache Storage**
+   - Custom IndexedDB-based storage for cached content
+   - Stores both metadata and file blobs in separate object stores
+   - Implements LRU (Least Recently Used) eviction policy
+   - Configurable size limits and age-based expiration
 
 ### Cache Flow
 
 ```
-Download Request → Browser Cache Check → File Downloaded/Retrieved
-                                     ↓
-Decompression Required? → Decompression Cache Check → Content Extracted
-                                                  ↓
-                         File System Operations → Game Launch
+Download Request → URL-based Cache Check → Cache Expiry Valid?
+                           ↓                        ↓ Yes
+                    HEAD Request Check       Return Cached Content
+                           ↓ Modified
+                  Download File → Decompress (if needed) → Store in Cache
+                                                     ↓
+                                            Return Content to Application
 ```
 
 ## Detailed Implementation
 
-### Browser Cache Integration
+### Download Manager (EJS_Download)
 
-EmulatorJS leverages the browser's built-in HTTP caching mechanisms:
+The `EJS_Download` class handles all file downloads with intelligent caching:
 
-- **File Downloads**: All file downloads use standard HTTP requests that respect cache headers
-- **Conditional Requests**: The system performs HEAD requests to validate cached files against server versions
-- **Cache Invalidation**: Automatically detects updated files on the server through ETag/Last-Modified headers
+#### Cache Validation Strategy
 
-### Decompression Cache (EJS_Cache)
+1. **Check URL-based cache**: Downloads are cached by URL, enabling reuse across sessions
+2. **Validate cache expiry**: 
+   - Uses `Cache-Control: max-age` header from server
+   - Falls back to `Expires` header if present
+   - Defaults to 5 days if no cache headers provided
+3. **Conditional validation**: If cache expired, performs HEAD request to check `Last-Modified`
+4. **Smart fallback**: Uses cached version if HEAD request fails or file unchanged
+
+#### Download Features
+
+- **Progress tracking**: Real-time callbacks for download and decompression progress
+- **Automatic decompression**: Detects and extracts ZIP, 7Z, and RAR archives
+- **Flexible response types**: Supports arraybuffer, text, blob, and other response types
+- **Timeout handling**: Configurable request timeouts with abort controller
+- **Force extraction**: Optional parameter to force decompression regardless of file extension
+
+### Cache Storage (EJS_Cache)
 
 #### Storage Backend
 - **Technology**: IndexedDB via custom `EJS_STORAGE` wrapper
-- **Database**: `EJS_decompression_cache`
-- **Object Store**: `cache_items`
-- **Key Structure**: `compression_{hash}_{size}` format
+- **Database**: Configurable database name (typically game-specific)
+- **Object Stores**: 
+  - `cache`: Stores metadata (key, fileSize, timestamps, type, filename, URL, expiry)
+  - `blobs`: Stores actual file data separately for better performance
+- **Indexes**: Type and URL indexes for efficient lookups
+- **Key Structure**: `Obj-{hash}-{size}` format for content-based keys, or URL for download caching
 
 #### Cache Key Generation
 ```javascript
-// Hash calculation for cache key
-let hash = 0;
-for (let i = 0; i < dataArray.length; i++) {
-    hash = ((hash << 5) - hash + dataArray[i]) & 0xffffffff;
+// Hash calculation for cache key (content-based)
+generateCacheKey(dataArray) {
+    let hash = this.utils.simpleHash(dataArray);
+    const compressionCacheKey = "Obj-" + hash + "-" + dataArray.length;
+    return compressionCacheKey;
 }
-const cacheKey = `compression_${hash}_${dataArray.length}`;
 ```
 
 #### Cache Configuration
-- **Default Size Limit**: 4GB (4,294,967,296 bytes)
-- **Default Expiration**: 5 days (432,000,000 milliseconds)
+- **Default Size Limit**: 4GB (4096 MB)
+- **Default Max Age**: 5 days (7200 minutes)
+- **Min Age**: 1 hour or 10% of max age (whichever is greater)
 - **Storage Location**: Browser's IndexedDB
-- **Cleanup Policy**: LRU (Least Recently Used) with size-based eviction
+- **Cleanup Policy**: 
+  - LRU (Least Recently Used) eviction when size exceeded
+  - Age-based removal for items older than maxAge
+  - Automatic cleanup on first cache access per session
+  - Orphaned blob cleanup as failsafe
 
 #### Cache Item Structure
 ```javascript
 class EJS_CacheItem {
-    constructor(key, files, timestamp, type = 'unknown', filename = null) {
-        this.key = key;           // Unique identifier
-        this.files = files;       // Array of EJS_FileItem objects
-        this.timestamp = timestamp; // Creation/access time
-        this.type = type;         // Type of cached content (core, ROM, BIOS, etc.)
-        this.filename = filename; // Original filename
+    constructor(key, files, added, type, responseType, filename, url, cacheExpiry) {
+        this.key = key;              // Unique identifier
+        this.files = files;          // Array of EJS_FileItem objects
+        this.added = added;          // Timestamp when added to cache
+        this.lastAccessed = added;   // Timestamp of last access
+        this.type = type;            // Type: 'core', 'ROM', 'BIOS', etc.
+        this.responseType = responseType; // Original response type
+        this.filename = filename;    // Original filename
+        this.url = url;              // Source URL
+        this.cacheExpiry = cacheExpiry; // Expiry timestamp (from HTTP headers)
+    }
+    
+    size() {
+        // Calculates total size of all files
     }
 }
 
 class EJS_FileItem {
     constructor(filename, bytes) {
-        this.filename = filename; // Original filename in archive
-        this.bytes = bytes;       // Uint8Array of file content
+        this.filename = filename;    // Filename (original or from archive)
+        this.bytes = bytes;          // Uint8Array of file content
     }
 }
 ```
 
 ### File Type Handling
 
-#### Core Files (.wasm, .js)
-- **Download**: Browser cache handles file-level caching
-- **Decompression**: Decompression cache stores extracted core files
-- **Validation**: HEAD requests check for server updates
-- **Storage**: No additional IndexedDB storage (removed in favor of browser cache)
+#### All File Types
+The unified caching system handles all file types through the same mechanism:
 
-#### ROM Files (.zip, .7z, .rar, .iso, .bin, etc.)
-- **Download**: Browser cache for compressed archives
-- **Decompression**: Callback-based extraction with cache storage
-- **File Handling**: Multiple files extracted and cached individually
-- **Game Selection**: Automatic selection of primary ROM file
+- **Download**: Managed by `EJS_Download` with URL-based caching
+- **Cache validation**: Automatic expiry checking and conditional requests
+- **Decompression**: Automatic extraction of .zip, .7z, and .rar files
+- **Storage**: Metadata and blobs stored in separate IndexedDB object stores
+- **Retrieval**: URL or content-hash based lookups with index support
 
-#### BIOS Files
-- **Download**: Browser cache for compressed/uncompressed files
-- **Decompression**: Same cache mechanism as ROM files
-- **Extraction**: Optional based on `dontExtractBIOS` configuration
+#### Archive Handling
+- **Automatic detection**: File extension (.zip, .7z, .rar) triggers decompression
+- **Force extraction**: `forceExtract` parameter overrides extension check
+- **Multiple files**: Each file in archive stored as separate `EJS_FileItem`
+- **Progress tracking**: Real-time progress callbacks during extraction
+
+#### Response Type Support
+- **arraybuffer**: Default, used for binary files and archives
+- **text**: Automatically encoded to UTF-8 Uint8Array for storage
+- **blob**: Converted to Uint8Array for consistent storage
+- **others**: Converted to string then encoded for storage
 
 ### Cache Operations
 
-#### checkCompression() Method
-The core caching logic handles both Promise-based and callback-based decompression:
+#### Download with Caching
+The `downloadFile()` method handles the complete download and caching workflow:
 
 ```javascript
-checkCompression(data, msg, fileCbFunc) {
-    // Generate cache key from data hash
-    const cacheKey = `compression_${hash}_${dataArray.length}`;
+async downloadFile(url, type, options) {
+    // 1. Check cache by URL
+    const cached = await this.storageCache.get(url, false, "url");
     
-    // Check cache first
-    const cachedItem = await this.storageCache.get(cacheKey);
-    if (cachedItem) {
-        // Cache HIT: Return cached files
-        return cached_files;
+    // 2. Validate cache expiry
+    if (cached && cached.cacheExpiry > Date.now()) {
+        return cached; // Cache valid
     }
     
-    // Cache MISS: Decompress and store
-    const decompressedFiles = await this.compression.decompress(data, updateMsg, callbackWrapper);
+    // 3. Perform conditional validation with HEAD request
+    const headResp = await fetch(url, { method: "HEAD" });
+    const lastModified = headResp.headers.get("Last-Modified");
+    if (lastModified && Date.parse(lastModified) <= cached.added) {
+        return cached; // File not modified
+    }
     
-    // Store in cache for future use
-    const cacheItem = new EJS_CacheItem(cacheKey, fileItems, Date.now(), 'decompressed', 'example-file.zip');
+    // 4. Download file with progress tracking
+    const response = await fetch(url);
+    const data = await readWithProgress(response);
+    
+    // 5. Extract cache expiry from headers
+    const cacheExpiry = parseCacheHeaders(response.headers);
+    
+    // 6. Decompress if needed
+    if (isArchive(filename)) {
+        files = await decompress(data);
+    }
+    
+    // 7. Store in cache
+    const cacheItem = new EJS_CacheItem(key, files, Date.now(), 
+                                        type, responseType, filename, url, cacheExpiry);
     await this.storageCache.put(cacheItem);
     
-    return decompressedFiles;
+    return cacheItem;
 }
 ```
 
-#### Cache Management
-- **Size Monitoring**: Tracks total cache size and evicts old items when limit exceeded
-- **Expiration Handling**: Removes items older than configured expiration time
-- **Manual Management**: UI provides cache inspection and clearing capabilities
+#### Cache Management Operations
+
+- **get(key, metadataOnly, indexName)**: Retrieve item by key or index (URL, type)
+- **put(item)**: Store item with automatic size management and LRU eviction
+- **delete(key)**: Remove item and its blobs from cache
+- **clear()**: Remove all cached items
+- **cleanup()**: Remove old/excess items based on age and size constraints
+- **getKeys()**: List all cache keys
+- **getSizes()**: Get size information for all cached items
 
 ### Performance Optimizations
 
-#### Timing and Benchmarking
-Every cache operation includes detailed timing metrics:
+#### Separate Metadata and Blob Storage
+The cache uses two separate IndexedDB object stores:
+- **Metadata store**: Small, fast lookups for cache hits/validation
+- **Blob store**: Large file data loaded only when needed
+- **Benefit**: Faster cache lookups without loading large blobs into memory
 
+#### Progress Tracking
+All long-running operations provide progress callbacks:
 ```javascript
-// Cache HIT example
-[EJS Cache] Cache HIT for 15.2MB data - Total: 23.45ms (hash: 12.1ms, cache lookup: 11.35ms)
-
-// Cache MISS example  
-[EJS Cache] Cache MISS for 15.2MB data - Starting decompression (hash: 12.1ms, cache lookup: 8.2ms)
-[EJS Cache] Decompression complete for 15.2MB data - Total: 1847.3ms (decompression: 1789.2ms, cache store: 58.1ms)
+downloadFile(url, type, { 
+    onProgress: (status, percent, loaded, total) => {
+        // status: "downloading" | "decompressing" | "complete"
+        console.log(`${status}: ${percent}%`);
+    }
+});
 ```
 
 #### Memory Management
-- **Streaming**: Large files processed in chunks where possible
-- **Worker Threads**: Decompression operations run in web workers to prevent UI blocking
-- **Cleanup**: Manual cleanup available through UI, automatic cleanup on startup and during size-based eviction
+- **Chunked downloads**: Large files downloaded in chunks with progress tracking
+- **LRU eviction**: Oldest accessed items removed first when size limit exceeded
+- **Automatic cleanup**: Runs on first cache access each session
+- **Orphan removal**: Failsafe cleanup removes blobs without metadata
+- **Size-based eviction**: Pre-emptive removal when adding new items would exceed limit
 
 ### Cache Validation and Invalidation
 
-#### Server-Side Changes
-The system detects server-side file updates through:
-1. **HEAD Requests**: Check ETag and Last-Modified headers
-2. **Conditional Downloads**: Only download if file has changed
-3. **Cache Invalidation**: Remove stale cache entries when source files update
+#### Multi-Level Validation Strategy
+The system uses a tiered approach to validate cached content:
+
+1. **Cache Expiry Check** (fastest)
+   - Checks `cacheExpiry` timestamp from HTTP headers
+   - Avoids network requests for valid cached items
+   - Default: 5 days from server's Cache-Control/Expires headers
+
+2. **Conditional HEAD Request** (medium)
+   - Performed only if cache expired or no expiry set
+   - Compares server's Last-Modified with cached item's `added` timestamp
+   - Reuses cache if file unchanged on server
+
+3. **Full Download** (slowest)
+   - Only when file modified or validation fails
+   - Replaces existing cache entry with new version
 
 #### Client-Side Management
-- **Manual Clearing**: Users can clear cache through settings menu
-- **Selective Removal**: Individual cache items can be removed
-- **Diagnostic Tools**: Cache contents viewable through management UI
+- **Automatic cleanup**: On first cache access per session
+- **Manual clearing**: Via cache management UI
+- **Selective removal**: Delete individual items by key
+- **Index-based queries**: Find items by URL or type
 
 ### Error Handling
 
 #### Network Failures
-- **Graceful Degradation**: Falls back to cached content when network unavailable
-- **Retry Logic**: Implements retry mechanisms for transient failures
-- **Error Reporting**: Detailed logging for debugging cache issues
+- **Graceful fallback**: Uses expired cache if server unavailable
+- **Timeout handling**: Configurable request timeout with abort controller
+- **Error propagation**: Clear error messages for debugging
 
-#### Cache Corruption
-- **Validation**: Verifies cache item integrity before use
-- **Recovery**: Automatically rebuilds corrupted cache entries
-- **Fallback**: Falls back to fresh downloads when cache fails
+#### Cache Failures
+- **Silent degradation**: Cache disabled if IndexedDB unavailable
+- **Orphan cleanup**: Removes blobs without metadata entries
+- **Error recovery**: Falls back to fresh downloads when cache operations fail
 
-### Migration and Compatibility
+#### Decompression Errors
+- **Error propagation**: Clear error messages from decompression library
+- **Fallback**: Returns original data if decompression fails
+- **Progress updates**: Status callbacks during decompression
 
-#### Storage Migration
-The current implementation removes legacy storage systems:
-- **Removed**: Separate IndexedDB stores for cores, ROMs, and BIOS files
-- **Unified**: Single decompression cache for all compressed content
-- **Backward Compatibility**: Graceful handling of existing cache data
+### Storage Architecture
+
+#### Unified Database Design
+The current implementation uses a unified approach:
+- **Single database**: One IndexedDB database per game/instance
+- **Two object stores**: 
+  - `cache`: Metadata with indexed fields (type, url)
+  - `blobs`: Large binary file data
+- **Benefits**: 
+  - Easier management and versioning
+  - Atomic transactions across stores
+  - Better performance than separate databases
+  - Simpler cleanup and maintenance
 
 #### Browser Compatibility
-- **IndexedDB Support**: Required for decompression cache
-- **HTTP Cache**: Utilizes standard browser caching mechanisms
-- **Fallback**: Degrades gracefully when storage unavailable
+- **IndexedDB Required**: Core functionality depends on IndexedDB support
+- **Fallback mode**: `EJS_DUMMYSTORAGE` for browsers without IndexedDB
+- **Feature detection**: Automatic detection and graceful degradation
 
 ## Configuration Options
 
-### EJS_Cache Parameters
-- `maxSize`: Maximum cache size in bytes (default: 4GB)
-- `maxAge`: Item expiration time in milliseconds (default: 5 days)
-- `storageKey`: IndexedDB database name
+### EJS_Cache Constructor Parameters
+```javascript
+new EJS_Cache(enabled, databaseName, maxSizeMB, maxAgeMins, debug)
+```
+- `enabled`: Enable/disable caching (default: true)
+- `databaseName`: IndexedDB database name (game-specific)
+- `maxSizeMB`: Maximum cache size in megabytes (default: 4096)
+- `maxAgeMins`: Maximum item age in minutes (default: 7200 = 5 days)
+- `debug`: Enable debug logging (default: false)
 
-### Runtime Configuration
-- `dontExtractRom`: Skip ROM extraction for certain cores
-- `dontExtractBIOS`: Skip BIOS extraction when not needed
-- `disableCue`: Control CUE file generation for disc-based games
+### EJS_Download Constructor Parameters
+```javascript
+new EJS_Download(storageCache, EJS)
+```
+- `storageCache`: EJS_Cache instance for storage (null disables caching)
+- `EJS`: Main EmulatorJS instance for integration
+
+### downloadFile() Options
+- `url`: Source URL (required)
+- `type`: Content type (e.g., "ROM", "CORE", "BIOS")
+- `method`: HTTP method (default: "GET")
+- `headers`: Request headers object
+- `body`: Request body for POST/PUT
+- `onProgress`: Progress callback function
+- `onComplete`: Completion callback function
+- `timeout`: Request timeout in ms (default: 30000)
+- `responseType`: Response type (default: "arraybuffer")
+- `forceExtract`: Force decompression (default: false)
+- `dontCache`: Skip caching for this download (default: false)
 
 ## Best Practices
 
 ### For Developers
-1. **Monitor Cache Size**: Regular cleanup prevents storage quota issues
-2. **Handle Cache Failures**: Always provide fallback mechanisms
-3. **Optimize File Sizes**: Smaller files cache more efficiently
-4. **Use Appropriate Headers**: Set proper cache headers on servers
+1. **Set proper HTTP headers**: Use Cache-Control/Expires/Last-Modified on servers
+2. **Monitor cache size**: Regular cleanup prevents storage quota issues
+3. **Use progress callbacks**: Provide user feedback during long operations
+4. **Handle failures gracefully**: Always provide fallback for cache failures
+5. **Enable debug mode**: Use debug flag during development for detailed logging
+6. **Test without cache**: Use `dontCache` option to verify download logic
+7. **Optimize file delivery**: Smaller files and good compression improve cache efficiency
+
+### For Server Configuration
+1. **Cache-Control headers**: Set appropriate max-age for assets
+2. **Last-Modified headers**: Enable conditional requests
+3. **Compression**: Pre-compress large assets (gzip, brotli)
+4. **CDN usage**: Leverage CDN caching alongside client-side cache
 
 ### For Users
-1. **Clear Cache Periodically**: Prevents storage quota issues
-2. **Monitor Network Usage**: Cache reduces bandwidth consumption
-3. **Report Performance Issues**: Cache metrics help identify problems
+1. **Monitor storage usage**: Check browser storage settings periodically
+2. **Clear cache if needed**: Use cache management UI for cleanup
+3. **Update browser**: Newer browsers have better IndexedDB performance
 
 ## Troubleshooting
 
 ### Common Issues
-1. **Cache Not Working**: Check IndexedDB support and storage quota
-2. **Slow Loading**: Monitor cache hit/miss ratios in console
-3. **Storage Full**: Clear cache or increase browser storage quota
-4. **Stale Content**: Check cache expiration settings
+
+#### Cache Not Working
+- Check IndexedDB support: `!!window.indexedDB`
+- Verify storage quota: Check browser storage settings
+- Enable debug mode: Set `debug: true` in EJS_Cache constructor
+- Check console: Look for cache operation logs
+
+#### Slow First Load
+- Expected behavior: First load downloads and caches
+- Subsequent loads: Should be much faster with cache hits
+- Monitor progress: Use onProgress callback for user feedback
+
+#### Storage Quota Exceeded
+- Automatic cleanup: Cache runs cleanup on startup
+- Manual cleanup: Use cache management UI
+- Reduce maxSizeMB: Lower the cache size limit
+- Clear other data: Free up browser storage space
+
+#### Stale Content
+- Check cache expiry: Default is 5 days
+- Adjust maxAgeMins: Lower for more frequent updates
+- Force refresh: Clear cache for specific items
+- Server headers: Verify Cache-Control/Expires headers
 
 ### Debug Information
-All cache operations log detailed information to the browser console:
-- Cache hit/miss status
-- Timing breakdowns
-- File sizes and counts
-- Error conditions
+
+Enable debug mode for detailed logging:
+```javascript
+const cache = new EJS_Cache(true, "my-game", 4096, 7200, true);
+```
+
+Debug logs include:
+- Cache initialization settings
+- Startup cleanup results (items removed, size freed, time taken)
+- Cache hit/miss information
+- Download progress and timing
+- Decompression progress
+- Error details and stack traces
 
 ## Cache Manager UI
 
-The Cache Manager provides a user interface for viewing and managing cached items. It displays a table with the following columns:
+The Cache Manager provides a user interface for viewing and managing cached items. It displays information about cached content:
 
+### Display Information
 - **Filename**: Original filename of the cached content
-- **Type**: Content type (core, ROM, BIOS, asset, etc.)
-- **Size**: Total size of cached files
-- **Last Used**: Relative time since last access (e.g., "2h ago", "3d ago")
-- **Action**: Remove button to delete individual cache entries
+- **Type**: Content type (ROM, CORE, BIOS, etc.)
+- **Size**: Total size of all files in the cache item
+- **URL**: Source URL where content was downloaded from
+- **Last Accessed**: Timestamp of last access with relative time
+- **Added**: Timestamp when item was first cached
+- **Cache Expiry**: When the cache entry expires (from HTTP headers)
 
-The interface includes options to:
-- **Cleanup Now**: Remove old/excess items based on age and size constraints
-- **Clear All**: Remove all cached items
+### Management Operations
+- **View Details**: Inspect cache item metadata and file list
+- **Delete Item**: Remove individual cache entries
+- **Cleanup Now**: Run cleanup to remove old/excess items based on age and size
+- **Clear All**: Remove all cached items from storage
 
-This comprehensive caching system significantly improves EmulatorJS performance by eliminating redundant operations while maintaining data freshness and reliability.
+### Cache Statistics
+- **Total Items**: Number of cached items
+- **Total Size**: Combined size of all cached content
+- **Hit Rate**: Percentage of cache hits vs. misses (if tracked)
+- **Oldest Item**: Age of least recently accessed item
+
+## Summary
+
+This unified caching system provides:
+- **Intelligent cache validation** using HTTP headers (Cache-Control, Expires, Last-Modified)
+- **Automatic decompression** and caching of extracted files
+- **Efficient storage** with separate metadata and blob stores
+- **LRU eviction** with configurable size and age limits
+- **Progress tracking** for downloads and decompression
+- **Graceful degradation** when cache unavailable
+- **Debug logging** for troubleshooting
+
+The system significantly improves EmulatorJS performance by eliminating redundant downloads and decompression operations while maintaining data freshness through smart validation.

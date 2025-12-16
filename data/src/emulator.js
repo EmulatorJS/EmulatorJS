@@ -110,6 +110,7 @@ class EmulatorJS {
      * @returns A promise that resolves with the downloaded file data.
      */
     downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false) {
+        if (this.debug) console.log("[EJS Download] Downloading " + path);
         return new Promise(async (resolve) => {
             // Handle data types (ArrayBuffer, Uint8Array, Blob)
             const data = this.toData(path);
