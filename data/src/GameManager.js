@@ -90,7 +90,7 @@ class EJS_GameManager {
                     await new Promise(async (done) => {
                         try {
                             const url = this.EJS.config.externalFiles[key];
-                            const cacheItem = await this.EJS.downloadFile(url, this.EJS.downloadType.support, "GET", {}, null, null, null, 30000, "arraybuffer", false, true);
+                            const cacheItem = await this.EJS.downloadFile(url, this.EJS.downloadType.support.name, "GET", {}, null, null, null, 30000, "arraybuffer", false, this.EJS.downloadType.support.dontCache);
                             
                             let path = key;
                             if (key.trim().endsWith("/")) {
@@ -347,7 +347,7 @@ IF EXIST AUTORUN.BAT AUTORUN.BAT
     loadPpssppAssets() {
         return new Promise(async (resolve, reject) => {
             try {
-                const cacheItem = await this.EJS.downloader.downloadFile("data/cores/ppsspp-assets.zip", this.EJS.downloadType.support, "GET", {}, null, null, null, 30000, "arraybuffer", false, false);
+                const cacheItem = await this.EJS.downloader.downloadFile("data/cores/ppsspp-assets.zip", this.EJS.downloadType.support.name, "GET", {}, null, null, null, 30000, "arraybuffer", false, this.EJS.downloadType.support.dontCache);
 
                 console.log(cacheItem);
                 

@@ -44,13 +44,15 @@ class EmulatorJS {
         return rv;
     }
     downloadType = {
-        "rom": "ROM",
-        "core": "Core",
-        "bios": "BIOS",
-        "reports": "Reports",
-        "states": "States",
-        "support": "Support",
-        "unknown": "Unknown"
+        "rom": { "name": "ROM", "dontCache": false },
+        "core": { "name": "Core", "dontCache": false },
+        "bios": { "name": "BIOS", "dontCache": false },
+        "parent": { "name": "Parent", "dontCache": false },
+        "patch": { "name": "Patch", "dontCache": false },
+        "reports": { "name": "Reports", "dontCache": false },
+        "states": { "name": "States", "dontCache": true },
+        "support": { "name": "Support", "dontCache": false },
+        "unknown": { "name": "Unknown", "dontCache": true }
     }
     requiresThreads(core) {
         const requiresThreads = ["ppsspp", "dosbox_pure"];
@@ -761,7 +763,7 @@ class EmulatorJS {
         const cacheBustParam = Math.floor(Date.now() / cacheBustInterval);
         const reportUrl = `${report}?v=${cacheBustParam}`;
 
-        this.downloadFile(reportUrl, this.downloadType.reports, null, false, { responseType: "text", method: "GET" }, false, true).then(async rep => {
+        this.downloadFile(reportUrl, this.downloadType.reports.name, null, false, { responseType: "text", method: "GET" }, false, this.downloadType.reports.dontCache).then(async rep => {
             if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
                 rep = {};
             } else {
@@ -793,16 +795,16 @@ class EmulatorJS {
             // Download the core
             console.log("[EJS Core] Downloading core:", filename);
             const corePath = "cores/" + filename;
-            let res = await this.downloadFile(corePath, this.downloadType.core, (progress) => {
+            let res = await this.downloadFile(corePath, this.downloadType.core.name, (progress) => {
                 this.textElem.innerText = this.localization("Download Game Core") + progress;
-            }, false, { responseType: "arraybuffer", method: "GET" }, true, false);
+            }, false, { responseType: "arraybuffer", method: "GET" }, true, this.downloadType.core.dontCache);
             if (res === -1) {
                 console.log("File not found, attemping to fetch from emulatorjs cdn.");
                 console.error("**THIS METHOD IS A FAILSAFE, AND NOT OFFICIALLY SUPPORTED. USE AT YOUR OWN RISK**");
                 let version = this.ejs_version.endsWith("-beta") ? "nightly" : this.ejs_version;
-                res = await this.downloadFile(`https://cdn.emulatorjs.org/${version}/data/${corePath}`, this.downloadType.core, (progress) => {
+                res = await this.downloadFile(`https://cdn.emulatorjs.org/${version}/data/${corePath}`, this.downloadType.core.name, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Core") + progress;
-                }, true, { responseType: "arraybuffer", method: "GET" }, true, false);
+                }, true, { responseType: "arraybuffer", method: "GET" }, true, this.downloadType.core.dontCache);
                 if (res === -1) {
                     if (!this.supportsWebgl2) {
                         this.startGameError(this.localization("Outdated graphics driver"));
@@ -866,9 +868,9 @@ class EmulatorJS {
             }
             this.textElem.innerText = this.localization("Download Game State");
 
-            this.downloadFile(this.config.loadState, this.downloadType.states, (progress) => {
+            this.downloadFile(this.config.loadState, this.downloadType.states.name, (progress) => {
                 this.textElem.innerText = this.localization("Download Game State") + progress;
-            }, true, { responseType: "arraybuffer", method: "GET" }, false, true).then((res) => {
+            }, true, { responseType: "arraybuffer", method: "GET" }, false, this.downloadType.states.dontCache).then((res) => {
                 if (res === -1) {
                     this.startGameError(this.localization("Error downloading game state"));
                     return;
@@ -884,11 +886,10 @@ class EmulatorJS {
     }
     downloadGameFile(assetUrl, type, progressMessage, decompressProgressMessage) {
         return new Promise(async (resolve, reject) => {
-            if ((typeof assetUrl !== "string" || !assetUrl.trim()) && !this.toData(assetUrl, true)) {
+            if ((typeof assetUrl !== "string" || !assetUrl.trim()) && !this.toData(assetUrl, true) && !(assetUrl instanceof File)) {
                 return resolve(assetUrl);
             }
             const gotData = async (input) => {
-                console.log(input);
                 const coreFilename = "/" + this.fileName;
                 const coreFilePath = coreFilename.substring(0, coreFilename.length - coreFilename.split("/").pop().length);
                 if (this.config.dontExtractBIOS === true) {
@@ -918,12 +919,12 @@ class EmulatorJS {
                 }
             }
 
-            console.log("[EJS " + type.toUpperCase() + "] Downloading " + assetUrl + " (cached by EJS_Download)");
+            console.log("[EJS " + type.toUpperCase() + "] Downloading " + assetUrl);
             this.textElem.innerText = progressMessage;
 
-            const res = await this.downloadFile(assetUrl, type, (progress) => {
+            const res = await this.downloadFile(assetUrl, type.name, (progress) => {
                 this.textElem.innerText = progressMessage + progress;
-            }, true, { responseType: "arraybuffer", method: "GET" });
+            }, true, { responseType: "arraybuffer", method: "GET" }, false, type.dontCache);
             if (res === -1) {
                 this.startGameError(this.localization("Network Error"));
                 reject();
@@ -941,19 +942,19 @@ class EmulatorJS {
     }
     downloadGamePatch() {
         return new Promise(async (resolve) => {
-            this.config.gamePatchUrl = await this.downloadGameFile(this.config.gamePatchUrl, "patch", this.localization("Download Game Patch"), this.localization("Decompress Game Patch"));
+            this.config.gamePatchUrl = await this.downloadGameFile(this.config.gamePatchUrl, this.downloadType.patch, this.localization("Download Game Patch"), this.localization("Decompress Game Patch"));
             resolve();
         });
     }
     downloadGameParent() {
         return new Promise(async (resolve) => {
-            this.config.gameParentUrl = await this.downloadGameFile(this.config.gameParentUrl, "parent", this.localization("Download Game Parent"), this.localization("Decompress Game Parent"));
+            this.config.gameParentUrl = await this.downloadGameFile(this.config.gameParentUrl, this.downloadType.parent, this.localization("Download Game Parent"), this.localization("Decompress Game Parent"));
             resolve();
         });
     }
     downloadBios() {
         return new Promise(async (resolve) => {
-            this.config.biosUrl = await this.downloadGameFile(this.config.biosUrl, "bios", this.localization("Download Game BIOS"), this.localization("Decompress Game BIOS"));
+            this.config.biosUrl = await this.downloadGameFile(this.config.biosUrl, this.downloadType.bios, this.localization("Download Game BIOS"), this.localization("Decompress Game BIOS"));
             resolve();
         });
     }
@@ -966,6 +967,15 @@ class EmulatorJS {
 
         return new Promise(resolve => {
             this.textElem.innerText = this.localization("Download Game Data");
+
+            // List of cores to generate a CUE file for, if it doesn't exist.
+            const cueGeneration = ["mednafen_psx_hw"];
+            const prioritizeExtensions = ["cue", "ccd", "toc", "m3u"];
+
+            let createCueFile = cueGeneration.includes(this.getCore());
+            if (this.config.disableCue === true) {
+                createCueFile = false;
+            }
 
             const writeFilesToFS = (fileName, fileData, altName) => {
                 if (fileName.includes("/")) {
@@ -1005,21 +1015,21 @@ class EmulatorJS {
                     if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
                         isoFile = fileName;
                     }
-                    if (["cue", "ccd", "toc", "m3u"].includes(ext)) {
+                    if (prioritizeExtensions.includes(ext)) {
+                        const currentCueExt = (cueFile === null) ? null : cueFile.split(".").pop().toLowerCase();
                         if (coreName === "psx") {
-                            //always prefer m3u files for psx cores
-                            if (selectedCueExt !== "m3u") {
+                            // Always prefer m3u files for psx cores
+                            if (currentCueExt !== "m3u") {
                                 if (cueFile === null || ext === "m3u") {
                                     cueFile = fileName;
-                                    selectedCueExt = ext;
                                 }
                             }
                         } else {
-                            //prefer cue or ccd files over toc or m3u
-                            if (!["cue", "ccd"].includes(selectedCueExt)) {
-                                if (cueFile === null || ["cue", "ccd"].includes(ext)) {
+                            const priority = ["cue", "ccd"]
+                            // Prefer cue or ccd files over toc or m3u
+                            if (!priority.includes(currentCueExt)) {
+                                if (cueFile === null || priority.includes(ext)) {
                                     cueFile = fileName;
-                                    selectedCueExt = ext;
                                 }
                             }
                         }
@@ -1030,14 +1040,16 @@ class EmulatorJS {
                 } else {
                     this.fileName = fileNames[0];
                 }
-                if (isoFile !== null && (supportsExt("iso") || supportsExt("cso") || supportsExt("chd") || supportsExt("elf"))) {
+                if (isoFile !== null && supportsExt(isoFile.split(".").pop().toLowerCase())) {
                     this.fileName = isoFile;
-                } else if (supportsExt("cue") || supportsExt("ccd") || supportsExt("toc") || supportsExt("m3u")) {
-                    if (cueFile !== null) {
-                        this.fileName = cueFile;
-                    } else if (!disableCue) {
-                        this.fileName = this.gameManager.createCueFile(fileNames);
-                    }
+                }
+                if (cueFile !== null && supportsExt(cueFile.split(".").pop().toLowerCase())) {
+                    this.fileName = cueFile;
+                } else if (createCueFile && supportsExt("m3u") && supportsExt("cue")) {
+                    this.fileName = this.gameManager.createCueFile(fileNames);
+                }
+                if (this.getCore(true) === "dos" && !this.config.disableBatchBootup) {
+                    this.fileName = this.gameManager.writeBootupBatchFile();
                 }
                 resolve();
             };
@@ -1056,6 +1068,7 @@ class EmulatorJS {
                 let disableCue = false;
                 if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xpet", "puae"].includes(coreName) && this.config.disableCue === undefined) {
                     disableCue = true;
+                    console.log("DISABLING CUE!");
                 } else {
                     disableCue = this.config.disableCue;
                 }
@@ -1104,7 +1117,7 @@ class EmulatorJS {
                         cacheKey,
                         cacheFiles,
                         Date.now(),
-                        "ROM",
+                        this.downloadType.rom.name,
                         "arraybuffer",
                         romFilename,
                         romFilename,
@@ -1119,9 +1132,9 @@ class EmulatorJS {
             const downloadFile = async () => {
                 console.log("[EJS ROM] Downloading ROM " + this.config.gameUrl.name);
                 // create new download class
-                const res = await this.downloadFile(this.config.gameUrl, this.downloadType.rom, (progress) => {
+                const res = await this.downloadFile(this.config.gameUrl, this.downloadType.rom.name, (progress) => {
                     this.textElem.innerText = this.localization("Download Game Data") + progress;
-                }, true, { responseType: "arraybuffer", method: "GET" }, false, false);
+                }, true, { responseType: "arraybuffer", method: "GET" }, false, this.downloadType.rom.dontCache);
                 if (res === -1) {
                     this.startGameError(this.localization("Network Error"));
                     return;
@@ -1210,6 +1223,29 @@ class EmulatorJS {
             if (this.debug) args.push("-v");
             args.push("/" + this.fileName);
             if (this.debug) console.log(args);
+            if (this.debug && this.gameManager && this.gameManager.FS) {
+                const FS = this.gameManager.FS;
+                console.log("File system directory");
+                function listDir(path, indent = "") {
+                    try {
+                        const entries = FS.readdir(path);
+                        for (const entry of entries) {
+                            if (entry === "." || entry === "..") continue;
+                            const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
+                            const stat = FS.stat(fullPath);
+                            if (FS.isDir(stat.mode)) {
+                                console.log(`${indent}[DIR] ${fullPath}`);
+                                listDir(fullPath, indent + "  ");
+                            } else {
+                                console.log(`${indent}${fullPath}`);
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("Error reading directory:", path, e);
+                    }
+                }
+                listDir("/");
+            }
             this.Module.callMain(args);
             if (typeof this.config.softLoad === "number" && this.config.softLoad > 0) {
                 this.resetTimeout = setTimeout(() => {

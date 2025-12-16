@@ -36,6 +36,11 @@ class EJS_Download {
      * @returns {Promise<EJS_CacheItem>} - The downloaded file as an EJS_CacheItem.
      */
     downloadFile(url, type, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer", forceExtract = false, dontCache = false) {
+        let cacheActiveText = " (cache usage requested)"
+        if (dontCache) {
+            cacheActiveText = "";
+        }
+        console.log("[EJS Download] Downloading " + responseType + " file: " + url + cacheActiveText);
         return new Promise(async (resolve, reject) => {
             try {
                 // Use the provided storageCache or create a temporary one
