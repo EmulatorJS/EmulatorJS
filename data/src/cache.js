@@ -222,6 +222,11 @@ class EJS_Cache {
 
         this.utils = new EJS_UTILS();
 
+        /**
+        * Indicates whether the startup cleanup has been completed.
+        */
+        this.startupCleanupCompleted = false;
+
         if (this.debug) {
             console.log("Initialized EJS_Cache with settings:", {
                 enabled: this.enabled,
@@ -237,7 +242,7 @@ class EJS_Cache {
      * Initializes the IndexedDB database and object stores.
      * @returns {Promise<void>}
      */
-    async #createCacheDatabase() {
+    async createCacheDatabase() {
         if (!this.enabled) return;
 
         if (this.storage && this.blobStorage) return;
@@ -276,11 +281,6 @@ class EJS_Cache {
     }
 
     /**
-     * Indicates whether the startup cleanup has been completed.
-     */
-    #startupCleanupCompleted = false;
-
-    /**
      * Generates a cache key for the given data array.
      * @param {Uint8Array} dataArray 
      * @returns {string} The generated cache key.
@@ -302,12 +302,12 @@ class EJS_Cache {
         if (!this.enabled) return null;
 
         // ensure database is created
-        await this.#createCacheDatabase();
+        await this.createCacheDatabase();
 
         // clean up cache on first get if not already done
-        if (!this.#startupCleanupCompleted) {
+        if (!this.startupCleanupCompleted) {
             await this.cleanup();
-            this.#startupCleanupCompleted = true;
+            this.startupCleanupCompleted = true;
         }
 
         const item = await this.storage.get(key, indexName);
@@ -338,7 +338,7 @@ class EJS_Cache {
         if (!this.enabled) return;
 
         // ensure database is created
-        await this.#createCacheDatabase();
+        await this.createCacheDatabase();
 
         // before putting, ensure item is of type EJS_CacheItem
         if (!(item instanceof EJS_CacheItem)) {
@@ -402,7 +402,7 @@ class EJS_Cache {
      */
     async delete(key) {
         // ensure database is created
-        await this.#createCacheDatabase();
+        await this.createCacheDatabase();
 
         // fail silently if the key does not exist
         try {
@@ -418,7 +418,7 @@ class EJS_Cache {
      */
     async clear() {
         // ensure database is created
-        await this.#createCacheDatabase();
+        await this.createCacheDatabase();
 
         const allItems = await this.storage.getAll();
         for (let i = 0; i < allItems.length; i++) {
@@ -433,7 +433,7 @@ class EJS_Cache {
         if (!this.enabled) return;
 
         // ensure database is created
-        await this.#createCacheDatabase();
+        await this.createCacheDatabase();
 
         if (this.debug) console.log("[EJS Cache] Starting cache cleanup...");
         const cleanupStartTime = performance.now();

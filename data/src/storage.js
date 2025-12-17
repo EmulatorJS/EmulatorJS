@@ -9,7 +9,7 @@ class EJS_STORAGE {
         this.storeName = storeName;
         this.indexes = indexes;
     }
-    #addFileToDB(key, add) {
+    addFileToDB(key, add) {
         (async () => {
             if (key === "?EJS_KEYS!") return;
             let keys = await this.get("?EJS_KEYS!");
@@ -23,7 +23,7 @@ class EJS_STORAGE {
             this.put("?EJS_KEYS!", keys);
         })();
     }
-    #getObjectStore(mode = "readwrite") {
+    getObjectStore(mode = "readwrite") {
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) return resolve();
             let openRequest = indexedDB.open(this.dbName, 1);
@@ -61,7 +61,7 @@ class EJS_STORAGE {
      */
     get(key, indexName = null) {
         return new Promise(async (resolve, reject) => {
-            const objectStore = await this.#getObjectStore();
+            const objectStore = await this.getObjectStore();
             if (!objectStore) return resolve();
             if (!indexName) {
                 // Default: get by primary key
@@ -84,22 +84,22 @@ class EJS_STORAGE {
     }
     put(key, data) {
         return new Promise(async (resolve, reject) => {
-            const objectStore = await this.#getObjectStore();
+            const objectStore = await this.getObjectStore();
             if (!objectStore) return resolve();
             let request = objectStore.put(data, key);
             request.onerror = () => resolve();
             request.onsuccess = () => {
-                this.#addFileToDB(key, true);
+                this.addFileToDB(key, true);
                 resolve();
             };
         });
     }
     remove(key) {
         return new Promise(async (resolve, reject) => {
-            const objectStore = await this.#getObjectStore();
+            const objectStore = await this.getObjectStore();
             if (!objectStore) return resolve();
             let request = objectStore.delete(key);
-            this.#addFileToDB(key, false);
+            this.addFileToDB(key, false);
             request.onsuccess = () => resolve();
             request.onerror = () => {};
         });
@@ -144,7 +144,7 @@ class EJS_STORAGE {
 
 class EJS_DUMMYSTORAGE {
     constructor() {}
-    #addFileToDB() {
+    addFileToDB() {
         return new Promise(resolve => resolve());
     }
     get() {
