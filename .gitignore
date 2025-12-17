@@ -11,6 +11,8 @@ data/cores/*
 !data/cores/.npmignore
 .DS_Store
 .vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 *.tgz
 dist/
 jsdoc/
