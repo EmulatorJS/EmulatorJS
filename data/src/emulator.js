@@ -49,7 +49,7 @@ class EmulatorJS {
         "bios": { "name": "BIOS", "dontCache": false },
         "parent": { "name": "Parent", "dontCache": false },
         "patch": { "name": "Patch", "dontCache": false },
-        "reports": { "name": "Reports", "dontCache": false },
+        "reports": { "name": "Reports", "dontCache": true },
         "states": { "name": "States", "dontCache": true },
         "support": { "name": "Support", "dontCache": true },
         "unknown": { "name": "Unknown", "dontCache": true }
@@ -770,7 +770,7 @@ class EmulatorJS {
                 rep = rep.data;
             }
             if (!rep.buildStart) {
-                console.warn("Could not fetch core report JSON! Core caching will be disabled!");
+                console.warn("Could not fetch core report JSON at " + reportUrl + "! Core caching will be disabled!");
                 rep.buildStart = Math.random() * 100;
             }
             if (this.webgl2Enabled === null) {
