@@ -51,7 +51,7 @@ class EmulatorJS {
         "patch": { "name": "Patch", "dontCache": false },
         "reports": { "name": "Reports", "dontCache": false },
         "states": { "name": "States", "dontCache": true },
-        "support": { "name": "Support", "dontCache": false },
+        "support": { "name": "Support", "dontCache": true },
         "unknown": { "name": "Unknown", "dontCache": true }
     }
     requiresThreads(core) {
@@ -112,7 +112,7 @@ class EmulatorJS {
      * @returns A promise that resolves with the downloaded file data.
      */
     downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false) {
-        if (this.debug) console.log("[EJS Download] Downloading " + path);
+        if (this.debug) console.log("[EJS " + type + "] Downloading " + path);
         return new Promise(async (resolve) => {
             // Handle data types (ArrayBuffer, Uint8Array, Blob)
             const data = this.toData(path);
@@ -196,9 +196,9 @@ class EmulatorJS {
 
                 // Extract the data from the cache item
                 if (cacheItem && cacheItem.files && cacheItem.files.length > 0) {
-                    // If forceExtract was used and there are multiple files, return the entire cache item
+                    // If there are files, return the entire cache item
                     // so the caller can access all extracted files
-                    if (forceExtract && cacheItem.files.length > 1) {
+                    if (cacheItem.files.length > 0) {
                         resolve({
                             data: cacheItem,
                             headers: {
@@ -884,7 +884,149 @@ class EmulatorJS {
             });
         })
     }
+
+    download(url, type) {
+        if (url === undefined || url === null || url === "") {
+            if (this.debug) console.log("[EJS " + type.name.toUpperCase() + "] No URL provided, skipping download.");
+            return new Promise((resolve) => {
+                resolve(url);
+            });
+        }
+
+        if (!this.compression) {
+            this.compression = new window.EJS_COMPRESSION(this);
+        }
+
+        return new Promise(async (resolve, reject) => {
+            let returnData;
+
+            // check if url is a file object, and if so convert it to an EJS_CacheItem
+            if (typeof url === "object" && url instanceof File) {
+                if (this.debug) console.log("[EJS " + type.name.toUpperCase() + "] Requested download for File object " + url.name);
+
+                // Convert File to Uint8Array
+                const arrayBuffer = await url.arrayBuffer();
+                const inData = new Uint8Array(arrayBuffer);
+
+                // check cache
+                let key = this.storageCache.generateCacheKey(inData);
+                let cachedItem = await this.storageCache.get(key);
+                if (cachedItem) {
+                    if (this.debug) console.log("[EJS " + type.name.toUpperCase() + "] Using cached content for " + url.name);
+                    returnData = cachedItem;
+                } else {
+                    // Not in cache - decompress
+                    let files = [];
+                    const decompressedData = await this.compression.decompress(inData, (m, appendMsg) => {
+                        this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Core") + m) : m;
+                    }, (fileName, fileData) => {
+                        // Use file callback to collect files during decompression
+                        let bytes;
+                        if (fileData instanceof Uint8Array) {
+                            bytes = fileData;
+                        } else if (fileData instanceof ArrayBuffer) {
+                            bytes = new Uint8Array(fileData);
+                        } else if (fileData && typeof fileData === 'object') {
+                            // Handle case where it might be an object with numeric keys
+                            bytes = new Uint8Array(Object.values(fileData));
+                        } else {
+                            console.error("Unknown file data type:", typeof fileData, fileData);
+                            return;
+                        }
+
+                        if (fileName === "!!notCompressedData") {
+                            files.push(new EJS_FileItem(url.name, bytes));
+                        } else if (!fileName.endsWith("/")) {
+                            files.push(new EJS_FileItem(fileName, bytes));
+                        }
+                    });
+
+                    // construct EJS_CacheItem
+                    let data = new EJS_CacheItem(
+                        key,
+                        files,
+                        Date.now(),
+                        type.name,
+                        "arraybuffer",
+                        url.name,
+                        url.name,
+                        Date.now() + 5 * 24 * 60 * 60 * 1000 // 5 days expiration
+                    );
+
+                    this.storageCache.put(data);
+
+                    returnData = data;
+                }
+            } else {
+                // download using a url
+                if (this.debug) console.log("[EJS " + type.name.toUpperCase() + "] Requested download for " + url);
+                // download the content
+                const data = await this.downloadFile(
+                    url,
+                    type.name,
+                    (progress) => {
+                        this.textElem.innerText = this.localization("Download Game Data") + progress;
+                    },
+                    true,
+                    { responseType: "arraybuffer", method: "GET" },
+                    false,
+                    type.dontCache
+                );
+                // check for error
+                if (data === -1) {
+                    this.startGameError(this.localization("Network Error"));
+                    return;
+                }
+                // check for content type
+                if (this.config.gameUrl instanceof File) {
+                    this.config.gameUrl = this.config.gameUrl.name;
+                } else if (this.toData(this.config.gameUrl, true)) {
+                    this.config.gameUrl = type.name.toLowerCase();
+                }
+
+                returnData = data.data;
+            }
+
+            if (this.debug) console.log("[EJS " + type.name.toUpperCase() + "] Downloaded content:", returnData);
+
+            const writeFilesToFS = (fileName, fileData) => {
+                if (fileName.includes("/")) {
+                    const paths = fileName.split("/");
+                    let cp = "";
+                    for (let i = 0; i < paths.length - 1; i++) {
+                        if (paths[i] === "") continue;
+                        cp += `/${paths[i]}`;
+                        if (!this.gameManager.FS.analyzePath(cp).exists) {
+                            this.gameManager.FS.mkdir(cp);
+                        }
+                    }
+                }
+                if (fileName.endsWith("/")) {
+                    this.gameManager.FS.mkdir(fileName);
+                    return null;
+                }
+                this.gameManager.FS.writeFile(`/${fileName}`, fileData);
+                return fileName;
+            };
+
+            // extract to the file system
+            if (returnData && returnData.files) {
+                for (let i = 0; i < returnData.files.length; i++) {
+                    writeFilesToFS(returnData.files[i].filename, returnData.files[i].bytes)
+                }
+            }
+
+            resolve(returnData);
+        });
+    }
+
     downloadGameFile(assetUrl, type, progressMessage, decompressProgressMessage) {
+        if (assetUrl === undefined || assetUrl === null) {
+            return new Promise((resolve) => {
+                resolve(assetUrl);
+            });
+        }
+        console.log("[EJS " + type.name.toUpperCase() + "] Requested download for " + assetUrl);
         return new Promise(async (resolve, reject) => {
             if ((typeof assetUrl !== "string" || !assetUrl.trim()) && !this.toData(assetUrl, true) && !(assetUrl instanceof File)) {
                 return resolve(assetUrl);
@@ -919,7 +1061,7 @@ class EmulatorJS {
                 }
             }
 
-            console.log("[EJS " + type.toUpperCase() + "] Downloading " + assetUrl);
+            console.log("[EJS " + type.name.toUpperCase() + "] Downloading " + assetUrl);
             this.textElem.innerText = progressMessage;
 
             const res = await this.downloadFile(assetUrl, type.name, (progress) => {
@@ -937,7 +1079,7 @@ class EmulatorJS {
             }
             await gotData(res.data);
             resolve(assetUrl);
-            console.log("[EJS " + type.toUpperCase() + "] Download and decompression complete");
+            console.log("[EJS " + type.name.toUpperCase() + "] Download and decompression complete");
         });
     }
     downloadGamePatch() {
@@ -1161,11 +1303,102 @@ class EmulatorJS {
             if (this.getCore() === "ppsspp") {
                 await this.gameManager.loadPpssppAssets();
             }
-            await this.downloadRom();
-            await this.downloadBios();
+            const romData = await this.download(this.config.gameUrl, this.downloadType.rom);
+            const biosData = await this.download(this.config.biosUrl, this.downloadType.bios);
             await this.downloadStartState();
-            await this.downloadGameParent();
-            await this.downloadGamePatch();
+            const parentData = await this.download(this.config.gameParentUrl, this.downloadType.parent);
+            const patchData = await this.download(this.config.gamePatchUrl, this.downloadType.patch);
+            // await this.downloadRom();
+            // await this.downloadBios();
+            // await this.downloadStartState();
+            // await this.downloadGameParent();
+            // await this.downloadGamePatch();
+
+            // Select rom file for start up
+            // List of cores to generate a CUE file for, if it doesn't exist.
+            const cueGeneration = ["mednafen_psx_hw"];
+            const prioritizeExtensions = ["cue", "ccd", "toc", "m3u"];
+
+            let createCueFile = cueGeneration.includes(this.getCore());
+            if (this.config.disableCue === true) {
+                createCueFile = false;
+            }
+            const selectRomFile = (fileNames, coreName) => {
+                let isoFile = null;
+                let supportedFile = null;
+                let cueFile = null;
+                let selectedCueExt = null;
+
+                const supportsExt = (ext) => {
+                    const core = this.getCore();
+                    if (!this.extensions) return false;
+                    return this.extensions.includes(ext);
+                };
+
+                fileNames.forEach(fileName => {
+                    const ext = fileName.split(".").pop().toLowerCase();
+                    if (supportedFile === null && supportsExt(ext)) {
+                        supportedFile = fileName;
+                    }
+                    if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
+                        isoFile = fileName;
+                    }
+                    if (prioritizeExtensions.includes(ext)) {
+                        const currentCueExt = (cueFile === null) ? null : cueFile.split(".").pop().toLowerCase();
+                        if (coreName === "psx") {
+                            // Always prefer m3u files for psx cores
+                            if (currentCueExt !== "m3u") {
+                                if (cueFile === null || ext === "m3u") {
+                                    cueFile = fileName;
+                                }
+                            }
+                        } else {
+                            const priority = ["cue", "ccd"]
+                            // Prefer cue or ccd files over toc or m3u
+                            if (!priority.includes(currentCueExt)) {
+                                if (cueFile === null || priority.includes(ext)) {
+                                    cueFile = fileName;
+                                }
+                            }
+                        }
+                    }
+                });
+                if (supportedFile !== null) {
+                    this.fileName = supportedFile;
+                } else {
+                    this.fileName = fileNames[0];
+                }
+                if (isoFile !== null && supportsExt(isoFile.split(".").pop().toLowerCase())) {
+                    this.fileName = isoFile;
+                }
+                if (cueFile !== null && supportsExt(cueFile.split(".").pop().toLowerCase())) {
+                    this.fileName = cueFile;
+                } else if (createCueFile && supportsExt("m3u") && supportsExt("cue")) {
+                    this.fileName = this.gameManager.createCueFile(fileNames);
+                }
+                if (this.getCore(true) === "dos" && !this.config.disableBatchBootup) {
+                    this.fileName = this.gameManager.writeBootupBatchFile();
+                }
+            };
+
+            let disableCue = false;
+            if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xpet", "puae"].includes(this.getCore()) && this.config.disableCue === undefined) {
+                disableCue = true;
+                console.log("DISABLING CUE!");
+            } else {
+                disableCue = this.config.disableCue;
+            }
+
+            const fileNames = [];
+            for (const file of romData.files) {
+                if (file.filename.endsWith("/")) {
+                    continue;
+                }
+                fileNames.push(file.filename);
+            }
+            selectRomFile(fileNames, this.getCore(), disableCue);
+
+            // start the game
             this.startGame();
         })();
     }
@@ -1223,29 +1456,6 @@ class EmulatorJS {
             if (this.debug) args.push("-v");
             args.push("/" + this.fileName);
             if (this.debug) console.log(args);
-            if (this.debug && this.gameManager && this.gameManager.FS) {
-                const FS = this.gameManager.FS;
-                console.log("File system directory");
-                function listDir(path, indent = "") {
-                    try {
-                        const entries = FS.readdir(path);
-                        for (const entry of entries) {
-                            if (entry === "." || entry === "..") continue;
-                            const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
-                            const stat = FS.stat(fullPath);
-                            if (FS.isDir(stat.mode)) {
-                                console.log(`${indent}[DIR] ${fullPath}`);
-                                listDir(fullPath, indent + "  ");
-                            } else {
-                                console.log(`${indent}${fullPath}`);
-                            }
-                        }
-                    } catch (e) {
-                        console.warn("Error reading directory:", path, e);
-                    }
-                }
-                listDir("/");
-            }
             this.Module.callMain(args);
             if (typeof this.config.softLoad === "number" && this.config.softLoad > 0) {
                 this.resetTimeout = setTimeout(() => {
@@ -1288,6 +1498,31 @@ class EmulatorJS {
             if (this.isSafari && this.isMobile) {
                 //Safari is --- funny
                 this.checkStarted();
+            }
+
+            // debug list directory structure
+            if (this.debug && this.gameManager && this.gameManager.FS) {
+                const FS = this.gameManager.FS;
+                console.log("File system directory");
+                function listDir(path, indent = "") {
+                    try {
+                        const entries = FS.readdir(path);
+                        for (const entry of entries) {
+                            if (entry === "." || entry === "..") continue;
+                            const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
+                            const stat = FS.stat(fullPath);
+                            if (FS.isDir(stat.mode)) {
+                                console.log(`${indent}[DIR] ${fullPath}`);
+                                listDir(fullPath, indent + "  ");
+                            } else {
+                                console.log(`${indent}${fullPath}`);
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("Error reading directory:", path, e);
+                    }
+                }
+                listDir("/");
             }
         } catch(e) {
             console.warn("Failed to start game", e);

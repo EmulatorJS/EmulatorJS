@@ -322,7 +322,12 @@ class EJS_Cache {
             }
         }
 
-        return item ? new EJS_CacheItem(item.key, item.files, item.added, item.type, item.responseType, item.filename, item.url, item.cacheExpiry, item.lastAccessed) : null;
+        if (item) {
+            const cacheItem = new EJS_CacheItem(item.key, item.files, item.added, item.type, item.responseType, item.filename, item.url, item.cacheExpiry, item.lastAccessed);
+            cacheItem.source = "cache";
+            return cacheItem;
+        }
+        return null;
     }
 
     /**
