@@ -89,6 +89,12 @@ class EmulatorJS {
             data[i].elem.removeEventListener(data[i].listener, data[i].cb);
         }
     }
+    findElementId(classList, fallback) {
+        for (const cls of classList) {
+            if (cls.startsWith("b_")) return cls;
+        }
+        return fallback;
+    }
     downloadFile(path, progressCB, notWithPath, opts) {
         return new Promise(async cb => {
             const data = this.toData(path); //check other data types
@@ -1070,6 +1076,10 @@ class EmulatorJS {
             }
             this.setupSettingsMenu();
             this.loadSettings();
+            // Apply virtual gamepad layout after settings are loaded
+            if (this.virtualGamepadLayout && this.virtualGamepadDefaults) {
+                this.applyVirtualGamepadLayout();
+            }
             this.updateCheatUI();
             this.updateGamepadLabels();
             if (!this.muted) this.setVolume(this.volume);
@@ -3869,6 +3879,9 @@ class EmulatorJS {
         const blockCSS = "height:31px;text-align:center;border:1px solid #ccc;border-radius:5px;line-height:31px;";
         const controlSchemeCls = `cs_${this.getControlScheme()}`.split(/\s/g).join("_");
 
+        // Store default positions for each element
+        this.virtualGamepadDefaults = {};
+
         for (let i = 0; i < info.length; i++) {
             if (info[i].type !== "button") continue;
             if (leftHandedMode && ["left", "right"].includes(info[i].location)) {
@@ -3906,13 +3919,25 @@ class EmulatorJS {
                 button.style = style;
                 button.innerText = info[i].text;
                 button.classList.add("ejs_virtualGamepad_button", controlSchemeCls);
-                if (info[i].id) {
-                    button.classList.add(`b_${info[i].id}`);
-                }
+                const buttonId = info[i].id
+                    ? `b_${info[i].id}`
+                    : `b_${(info[i].text || info[i].input_value || `button_${i}`).toString().replace(/\s+/g, '_')}`;
+                button.classList.add(buttonId);
                 elems[info[i].location].appendChild(button);
+                // Store default position (styles and absolute position after render)
+                this.virtualGamepadDefaults[buttonId] = {
+                    left: button.style.left,
+                    right: button.style.right,
+                    top: button.style.top,
+                    transform: "",
+                    width: button.style.width,
+                    height: button.style.height,
+                    element: button // Store reference to calculate absolute pos later
+                };
                 const value = info[i].input_new_cores || info[i].input_value;
                 let downValue = info[i].joystickInput === true ? 0x7fff : 1;
                 this.addEventListener(button, "touchstart touchend touchcancel", (e) => {
+                    if (this.virtualGamepadEditMode) return;
                     e.preventDefault();
                     if (e.type === "touchend" || e.type === "touchcancel") {
                         e.target.classList.remove("ejs_virtualGamepad_button_down");
@@ -3947,6 +3972,7 @@ class EmulatorJS {
             dpadMain.appendChild(horizontal);
 
             const updateCb = (e) => {
+                if (this.virtualGamepadEditMode) return;
                 e.preventDefault();
                 const touch = e.targetTouches[0];
                 if (!touch) return;
@@ -3994,6 +4020,7 @@ class EmulatorJS {
                 callback(up, down, left, right);
             }
             const cancelCb = (e) => {
+                if (this.virtualGamepadEditMode) return;
                 e.preventDefault();
                 dpadMain.classList.remove("ejs_dpad_up_pressed");
                 dpadMain.classList.remove("ejs_dpad_down_pressed");
@@ -4034,11 +4061,25 @@ class EmulatorJS {
                 style += "top:" + dpad.top + ";";
             }
             elem.classList.add(controlSchemeCls);
-            if (dpad.id) {
-                elem.classList.add(`b_${dpad.id}`);
-            }
+            const dpadId = dpad.id
+                ? `b_${dpad.id}`
+                : `b_dpad_${dpad.location || index}`;
+            elem.classList.add(dpadId);
             elem.style = style;
             elems[dpad.location].appendChild(elem);
+
+            // Store default position for dpad container
+            this.virtualGamepadDefaults[dpadId] = {
+                left: elem.style.left,
+                right: elem.style.right,
+                top: elem.style.top,
+                transform: "",
+                width: elem.style.width,
+                height: elem.style.height,
+                container: elem,
+                // measureElement will be set after dpad is created
+            };
+
             createDPad({
                 container: elem,
                 event: (up, down, left, right) => {
@@ -4054,6 +4095,12 @@ class EmulatorJS {
                     this.gameManager.simulateInput(0, dpad.inputValues[3], right);
                 }
             });
+
+            // Store reference to inner element for measuring
+            const dpadMain = elem.querySelector(".ejs_dpad_main");
+            if (dpadMain) {
+                this.virtualGamepadDefaults[dpadId].element = dpadMain;
+            }
         })
 
         info.forEach((zone, index) => {
@@ -4070,12 +4117,14 @@ class EmulatorJS {
             }
             const elem = this.createElement("div");
             this.addEventListener(elem, "touchstart touchmove touchend touchcancel", (e) => {
+                if (this.virtualGamepadEditMode) return;
                 e.preventDefault();
             });
             elem.classList.add(controlSchemeCls);
-            if (zone.id) {
-                elem.classList.add(`b_${zone.id}`);
-            }
+            const zoneId = zone.id
+                ? `b_${zone.id}`
+                : `b_zone_${zone.location || index}`;
+            elem.classList.add(zoneId);
             elems[zone.location].appendChild(elem);
             const zoneObj = nipplejs.create({
                 "zone": elem,
@@ -4086,95 +4135,28 @@ class EmulatorJS {
                 },
                 "color": zone.color || "red"
             });
-            zoneObj.on("end", () => {
-                this.gameManager.simulateInput(0, zone.inputValues[0], 0);
-                this.gameManager.simulateInput(0, zone.inputValues[1], 0);
-                this.gameManager.simulateInput(0, zone.inputValues[2], 0);
-                this.gameManager.simulateInput(0, zone.inputValues[3], 0);
-            });
-            zoneObj.on("move", (e, info) => {
-                const degree = info.angle.degree;
-                const distance = info.distance;
-                if (zone.joystickInput === true) {
-                    let x = 0, y = 0;
-                    if (degree > 0 && degree <= 45) {
-                        x = distance / 50;
-                        y = -0.022222222222222223 * degree * distance / 50;
-                    }
-                    if (degree > 45 && degree <= 90) {
-                        x = 0.022222222222222223 * (90 - degree) * distance / 50;
-                        y = -distance / 50;
-                    }
-                    if (degree > 90 && degree <= 135) {
-                        x = 0.022222222222222223 * (90 - degree) * distance / 50;
-                        y = -distance / 50;
-                    }
-                    if (degree > 135 && degree <= 180) {
-                        x = -distance / 50;
-                        y = -0.022222222222222223 * (180 - degree) * distance / 50;
-                    }
-                    if (degree > 135 && degree <= 225) {
-                        x = -distance / 50;
-                        y = -0.022222222222222223 * (180 - degree) * distance / 50;
-                    }
-                    if (degree > 225 && degree <= 270) {
-                        x = -0.022222222222222223 * (270 - degree) * distance / 50;
-                        y = distance / 50;
-                    }
-                    if (degree > 270 && degree <= 315) {
-                        x = -0.022222222222222223 * (270 - degree) * distance / 50;
-                        y = distance / 50;
-                    }
-                    if (degree > 315 && degree <= 359.9) {
-                        x = distance / 50;
-                        y = 0.022222222222222223 * (360 - degree) * distance / 50;
-                    }
-                    if (x > 0) {
-                        this.gameManager.simulateInput(0, zone.inputValues[0], 0x7fff * x);
-                        this.gameManager.simulateInput(0, zone.inputValues[1], 0);
-                    } else {
-                        this.gameManager.simulateInput(0, zone.inputValues[1], 0x7fff * -x);
-                        this.gameManager.simulateInput(0, zone.inputValues[0], 0);
-                    }
-                    if (y > 0) {
-                        this.gameManager.simulateInput(0, zone.inputValues[2], 0x7fff * y);
-                        this.gameManager.simulateInput(0, zone.inputValues[3], 0);
-                    } else {
-                        this.gameManager.simulateInput(0, zone.inputValues[3], 0x7fff * -y);
-                        this.gameManager.simulateInput(0, zone.inputValues[2], 0);
-                    }
+            this.bindZoneEventHandlers(zoneObj, zone);
 
-                } else {
-                    if (degree >= 30 && degree < 150) {
-                        this.gameManager.simulateInput(0, zone.inputValues[0], 1);
-                    } else {
-                        window.setTimeout(() => {
-                            this.gameManager.simulateInput(0, zone.inputValues[0], 0);
-                        }, 30);
-                    }
-                    if (degree >= 210 && degree < 330) {
-                        this.gameManager.simulateInput(0, zone.inputValues[1], 1);
-                    } else {
-                        window.setTimeout(() => {
-                            this.gameManager.simulateInput(0, zone.inputValues[1], 0);
-                        }, 30);
-                    }
-                    if (degree >= 120 && degree < 240) {
-                        this.gameManager.simulateInput(0, zone.inputValues[2], 1);
-                    } else {
-                        window.setTimeout(() => {
-                            this.gameManager.simulateInput(0, zone.inputValues[2], 0);
-                        }, 30);
-                    }
-                    if (degree >= 300 || degree >= 0 && degree < 60) {
-                        this.gameManager.simulateInput(0, zone.inputValues[3], 1);
-                    } else {
-                        window.setTimeout(() => {
-                            this.gameManager.simulateInput(0, zone.inputValues[3], 0);
-                        }, 30);
-                    }
-                }
-            });
+            // Store default position and nipplejs config for zone
+            const nipple = elem.querySelector(".nipple");
+            const back = nipple ? nipple.querySelector(".back") : null;
+            // nipplejs default size is 100
+            const originalSize = zone.size || 100;
+            this.virtualGamepadDefaults[zoneId] = {
+                // Original nipplejs position config
+                originalLeft: zone.left,
+                originalTop: zone.top,
+                originalSize: originalSize,
+                // Zone container reference
+                container: elem,
+                nippleElement: nipple,
+                // nipplejs manager for recreation
+                nippleManager: zoneObj,
+                // Zone config for recreation
+                zoneConfig: zone,
+                // Use .back (outer circle) for measuring if available
+                element: back || nipple
+            };
         })
 
         if (this.touch || this.hasTouchScreen) {
@@ -4206,6 +4188,248 @@ class EmulatorJS {
         }
 
         this.virtualGamepad.style.display = "none";
+    }
+    /** Enter virtual gamepad edit mode using the external editor class */
+    enterVirtualGamepadEditMode() {
+        if (!this.gamepadEditor && window.VirtualGamepadEditor) {
+            this.gamepadEditor = new window.VirtualGamepadEditor(this);
+        }
+        if (!this.gamepadEditor) return;
+        this.gamepadEditor.enter();
+    }
+    /** Check if virtual gamepad edit mode is active */
+    get isVirtualGamepadEditMode() {
+        return this.gamepadEditor?.isActive || false;
+    }
+    saveVirtualGamepadLayout(elements) {
+        const layout = {};
+        const editElements = elements || [];
+
+        editElements.forEach(item => {
+            // OverlayElement from external class has .original and .id/.type properties
+            const element = item.original || item.element;
+            const id = item.id;
+            const type = item.type;
+
+            if (type === "zone") {
+                // For zones, get the nipple position and size from virtualGamepadDefaults
+                const defaults = this.virtualGamepadDefaults[id];
+                const nipple = element.querySelector(".nipple");
+                if (nipple && defaults) {
+                    layout[id] = {
+                        left: nipple.style.left,
+                        top: nipple.style.top,
+                        size: defaults.currentSize || defaults.originalSize || 100
+                    };
+                }
+            } else {
+                layout[id] = {
+                    left: element.style.left,
+                    top: element.style.top,
+                    right: element.style.right,
+                    transform: element.style.transform,
+                    transformOrigin: element.style.transformOrigin
+                };
+            }
+        });
+
+        this.virtualGamepadLayout = layout;
+        this.saveSettings();
+    }
+    bindZoneEventHandlers(zoneObj, zone) {
+        const endHandler = () => {
+            if (this.virtualGamepadEditMode) return;
+            this.gameManager.simulateInput(0, zone.inputValues[0], 0);
+            this.gameManager.simulateInput(0, zone.inputValues[1], 0);
+            this.gameManager.simulateInput(0, zone.inputValues[2], 0);
+            this.gameManager.simulateInput(0, zone.inputValues[3], 0);
+        };
+        const moveHandler = (e, info) => {
+            if (this.virtualGamepadEditMode) return;
+            this.handleZoneMove(zone, info.angle.degree, info.distance);
+        };
+
+        zoneObj.on("end", endHandler);
+        zoneObj.on("move", moveHandler);
+
+        // Store references for cleanup
+        zoneObj._ejsHandlers = { end: endHandler, move: moveHandler };
+    }
+    unbindZoneEventHandlers(zoneObj) {
+        if (zoneObj._ejsHandlers) {
+            zoneObj.off("end", zoneObj._ejsHandlers.end);
+            zoneObj.off("move", zoneObj._ejsHandlers.move);
+            delete zoneObj._ejsHandlers;
+        }
+    }
+    handleZoneMove(zone, degree, distance) {
+        if (zone.joystickInput === true) {
+            let x = 0, y = 0;
+            if (degree > 0 && degree <= 45) {
+                x = distance / 50;
+                y = -0.022222222222222223 * degree * distance / 50;
+            }
+            if (degree > 45 && degree <= 90) {
+                x = 0.022222222222222223 * (90 - degree) * distance / 50;
+                y = -distance / 50;
+            }
+            if (degree > 90 && degree <= 135) {
+                x = 0.022222222222222223 * (90 - degree) * distance / 50;
+                y = -distance / 50;
+            }
+            if (degree > 135 && degree <= 180) {
+                x = -distance / 50;
+                y = -0.022222222222222223 * (180 - degree) * distance / 50;
+            }
+            if (degree > 135 && degree <= 225) {
+                x = -distance / 50;
+                y = -0.022222222222222223 * (180 - degree) * distance / 50;
+            }
+            if (degree > 225 && degree <= 270) {
+                x = -0.022222222222222223 * (270 - degree) * distance / 50;
+                y = distance / 50;
+            }
+            if (degree > 270 && degree <= 315) {
+                x = -0.022222222222222223 * (270 - degree) * distance / 50;
+                y = distance / 50;
+            }
+            if (degree > 315 && degree <= 359.9) {
+                x = distance / 50;
+                y = 0.022222222222222223 * (360 - degree) * distance / 50;
+            }
+            if (x > 0) {
+                this.gameManager.simulateInput(0, zone.inputValues[0], 0x7fff * x);
+                this.gameManager.simulateInput(0, zone.inputValues[1], 0);
+            } else {
+                this.gameManager.simulateInput(0, zone.inputValues[1], 0x7fff * -x);
+                this.gameManager.simulateInput(0, zone.inputValues[0], 0);
+            }
+            if (y > 0) {
+                this.gameManager.simulateInput(0, zone.inputValues[2], 0x7fff * y);
+                this.gameManager.simulateInput(0, zone.inputValues[3], 0);
+            } else {
+                this.gameManager.simulateInput(0, zone.inputValues[3], 0x7fff * -y);
+                this.gameManager.simulateInput(0, zone.inputValues[2], 0);
+            }
+        } else {
+            if (degree >= 30 && degree < 150) {
+                this.gameManager.simulateInput(0, zone.inputValues[0], 1);
+            } else {
+                window.setTimeout(() => {
+                    this.gameManager.simulateInput(0, zone.inputValues[0], 0);
+                }, 30);
+            }
+            if (degree >= 210 && degree < 330) {
+                this.gameManager.simulateInput(0, zone.inputValues[1], 1);
+            } else {
+                window.setTimeout(() => {
+                    this.gameManager.simulateInput(0, zone.inputValues[1], 0);
+                }, 30);
+            }
+            if (degree >= 120 && degree < 240) {
+                this.gameManager.simulateInput(0, zone.inputValues[2], 1);
+            } else {
+                window.setTimeout(() => {
+                    this.gameManager.simulateInput(0, zone.inputValues[2], 0);
+                }, 30);
+            }
+            if (degree >= 300 || degree >= 0 && degree < 60) {
+                this.gameManager.simulateInput(0, zone.inputValues[3], 1);
+            } else {
+                window.setTimeout(() => {
+                    this.gameManager.simulateInput(0, zone.inputValues[3], 0);
+                }, 30);
+            }
+        }
+    }
+    measureVirtualGamepadDefaults() {
+        if (this._virtualGamepadMeasured) return;
+        const parentRect = this.elements.parent.getBoundingClientRect();
+        for (const id in this.virtualGamepadDefaults) {
+            const def = this.virtualGamepadDefaults[id];
+            if (def.element) {
+                const rect = def.element.getBoundingClientRect();
+                def.absoluteLeft = rect.left - parentRect.left;
+                def.absoluteTop = rect.top - parentRect.top;
+                def.absoluteWidth = rect.width;
+                def.absoluteHeight = rect.height;
+            }
+        }
+        this._virtualGamepadMeasured = true;
+    }
+    applyVirtualGamepadLayout() {
+        if (!this.virtualGamepadLayout) return;
+
+        const applyToElement = (element, id) => {
+            if (this.virtualGamepadLayout[id]) {
+                const saved = this.virtualGamepadLayout[id];
+                if (saved.left) element.style.left = saved.left;
+                if (saved.top) element.style.top = saved.top;
+                if (saved.right !== undefined) element.style.right = saved.right;
+                if (saved.transform) {
+                    element.style.transform = saved.transform;
+                    element.style.transformOrigin = saved.transformOrigin || "top left";
+                }
+            }
+        };
+
+        const buttons = this.virtualGamepad.querySelectorAll(".ejs_virtualGamepad_button");
+        const dpads = this.virtualGamepad.querySelectorAll(".ejs_dpad_main");
+        const nipples = this.virtualGamepad.querySelectorAll(".nipple");
+
+        buttons.forEach((btn, index) => {
+            const id = this.findElementId(btn.classList, `b_button_${index}`);
+            applyToElement(btn, id);
+        });
+
+        dpads.forEach((dpad, index) => {
+            const dpadContainer = dpad.parentElement;
+            if (!dpadContainer) return;
+            const id = this.findElementId(dpadContainer.classList, `b_dpad_${index}`);
+            applyToElement(dpadContainer, id);
+        });
+
+        // Apply to zones (joysticks) - recreate nipplejs with saved position and size
+        nipples.forEach((nipple, index) => {
+            const zone = nipple.parentElement;
+            if (!zone) return;
+            const id = this.findElementId(zone.classList, `b_zone_${index}`);
+
+            const saved = this.virtualGamepadLayout[id];
+            const defaults = this.virtualGamepadDefaults[id];
+            if (!saved || !defaults || !defaults.nippleManager || !defaults.zoneConfig) return;
+
+            // Destroy and recreate nipplejs with saved position and size
+            this.unbindZoneEventHandlers(defaults.nippleManager);
+            // Remove existing nipple DOM elements before destroying to prevent memory leaks
+            const existingNipple = zone.querySelector(".nipple");
+            if (existingNipple) {
+                existingNipple.remove();
+            }
+            defaults.nippleManager.destroy();
+
+            const zoneConfig = defaults.zoneConfig;
+            const savedSize = saved.size || defaults.originalSize || 100;
+            const newZoneObj = nipplejs.create({
+                "zone": zone,
+                "mode": "static",
+                "position": {
+                    "left": saved.left || defaults.originalLeft,
+                    "top": saved.top || defaults.originalTop
+                },
+                "size": savedSize,
+                "color": zoneConfig.color || "red"
+            });
+
+            this.bindZoneEventHandlers(newZoneObj, zoneConfig);
+
+            // Update stored references
+            defaults.nippleManager = newZoneObj;
+            defaults.currentSize = savedSize;
+            defaults.nippleElement = zone.querySelector(".nipple");
+            const newBack = defaults.nippleElement ? defaults.nippleElement.querySelector(".back") : null;
+            defaults.element = newBack || defaults.nippleElement;
+        });
     }
     handleResize() {
         if (this.virtualGamepad) {
@@ -4245,7 +4469,8 @@ class EmulatorJS {
         const coreSpecific = {
             controlSettings: this.controls,
             settings: this.settings,
-            cheats: this.cheats
+            cheats: this.cheats,
+            virtualGamepadLayout: this.virtualGamepadLayout
         }
         const ejs_settings = {
             volume: this.volume,
@@ -4344,6 +4569,10 @@ class EmulatorJS {
                     }
                     if (includes) continue;
                     this.cheats.push(cheat);
+                }
+                // Load virtual gamepad layout
+                if (coreSpecific.virtualGamepadLayout) {
+                    this.virtualGamepadLayout = coreSpecific.virtualGamepadLayout;
                 }
 
             } catch(e) {
@@ -5134,6 +5363,20 @@ class EmulatorJS {
                 "enabled": this.localization("Enabled"),
                 "disabled": this.localization("Disabled")
             }, "disabled", virtualGamepad, true);
+
+            // Add Edit Virtual Gamepad button
+            const editVirtualGamepadRow = this.createElement("div");
+            editVirtualGamepadRow.classList.add("ejs_settings_main_bar");
+            const editVirtualGamepadSpan = this.createElement("span");
+            editVirtualGamepadSpan.innerText = this.localization("EDIT_VIRTUAL_GAMEPAD");
+            editVirtualGamepadRow.appendChild(editVirtualGamepadSpan);
+            virtualGamepad.appendChild(editVirtualGamepadRow);
+            this.addEventListener(editVirtualGamepadRow, "click", () => {
+                this.settingsMenu.style.display = "none";
+                this.settingsMenuOpen = false;
+                this.enterVirtualGamepadEditMode();
+            });
+
             checkForEmptyMenu(virtualGamepad);
         }
 
