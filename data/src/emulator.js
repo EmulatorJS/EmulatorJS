@@ -5368,7 +5368,7 @@ class EmulatorJS {
             const editVirtualGamepadRow = this.createElement("div");
             editVirtualGamepadRow.classList.add("ejs_settings_main_bar");
             const editVirtualGamepadSpan = this.createElement("span");
-            editVirtualGamepadSpan.innerText = this.localization("EDIT_VIRTUAL_GAMEPAD");
+            editVirtualGamepadSpan.innerText = this.localization("Edit Virtual Gamepad");
             editVirtualGamepadRow.appendChild(editVirtualGamepadSpan);
             virtualGamepad.appendChild(editVirtualGamepadRow);
             this.addEventListener(editVirtualGamepadRow, "click", () => {
