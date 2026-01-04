@@ -100,6 +100,7 @@
     config.loadState = window.EJS_loadStateURL;
     config.cacheLimit = window.EJS_CacheLimit;
     config.cheats = window.EJS_cheats;
+    config.cheatPath = window.EJS_cheatPath;
     config.defaultOptions = window.EJS_defaultOptions;
     config.gamePatchUrl = window.EJS_gamePatchUrl;
     config.gameParentUrl = window.EJS_gameParentUrl;
