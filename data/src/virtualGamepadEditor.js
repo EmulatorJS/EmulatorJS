@@ -442,7 +442,7 @@ class VirtualGamepadEditor {
     setupOverlayElements() {
         const parentRect = this.emu.elements.parent.getBoundingClientRect();
         const virtualGamepad = this.emu.virtualGamepad;
-        const findId = (classList, fallback) => this.emu.findElementId(classList, fallback);
+        const findId = (classList) => this.emu.findElementId(classList);
 
         // Process buttons
         const buttons = virtualGamepad.querySelectorAll(".ejs_virtualGamepad_button");

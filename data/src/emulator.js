@@ -89,11 +89,8 @@ class EmulatorJS {
             data[i].elem.removeEventListener(data[i].listener, data[i].cb);
         }
     }
-    findElementId(classList, fallback) {
-        for (const cls of classList) {
-            if (cls.startsWith("b_")) return cls;
-        }
-        return fallback;
+    findElementId(classList) {
+        return [...classList].find(cls => cls.startsWith("b_"));
     }
     downloadFile(path, progressCB, notWithPath, opts) {
         return new Promise(async cb => {
@@ -4377,23 +4374,23 @@ class EmulatorJS {
         const dpads = this.virtualGamepad.querySelectorAll(".ejs_dpad_main");
         const nipples = this.virtualGamepad.querySelectorAll(".nipple");
 
-        buttons.forEach((btn, index) => {
-            const id = this.findElementId(btn.classList, `b_button_${index}`);
+        buttons.forEach(btn => {
+            const id = this.findElementId(btn.classList);
             applyToElement(btn, id);
         });
 
-        dpads.forEach((dpad, index) => {
+        dpads.forEach(dpad => {
             const dpadContainer = dpad.parentElement;
             if (!dpadContainer) return;
-            const id = this.findElementId(dpadContainer.classList, `b_dpad_${index}`);
+            const id = this.findElementId(dpadContainer.classList);
             applyToElement(dpadContainer, id);
         });
 
         // Apply to zones (joysticks) - recreate nipplejs with saved position and size
-        nipples.forEach((nipple, index) => {
+        nipples.forEach(nipple => {
             const zone = nipple.parentElement;
             if (!zone) return;
-            const id = this.findElementId(zone.classList, `b_zone_${index}`);
+            const id = this.findElementId(zone.classList);
 
             const saved = this.virtualGamepadLayout[id];
             const defaults = this.virtualGamepadDefaults[id];
