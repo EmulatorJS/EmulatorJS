@@ -1075,6 +1075,8 @@ class EmulatorJS {
             this.loadSettings();
             // Apply virtual gamepad layout after settings are loaded
             if (this.virtualGamepadLayout && this.virtualGamepadDefaults) {
+                // Measure default positions BEFORE applying saved layout
+                this.measureVirtualGamepadDefaults();
                 this.applyVirtualGamepadLayout();
             }
             this.updateCheatUI();
