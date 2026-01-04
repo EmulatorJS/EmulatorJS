@@ -1650,3 +1650,176 @@
     display: flex;
     align-items: center;
 }
+
+/* Virtual Gamepad Edit Mode */
+.ejs_virtualGamepad_edit_container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    background: rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+/* Enable pointer events for toolbar */
+.ejs_virtualGamepad_edit_toolbar {
+    pointer-events: auto;
+}
+
+/* Style for original elements when in edit mode */
+.ejs_virtualGamepad_edit_mode .ejs_virtualGamepad_button {
+    outline: 2px dashed rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+    cursor: move;
+    touch-action: none;
+    pointer-events: none;
+}
+
+/* Dpad container styling in edit mode */
+.ejs_virtualGamepad_edit_mode .ejs_dpad_main {
+    pointer-events: none;
+}
+
+.ejs_virtualGamepad_edit_mode [class*="b_dpad"],
+.ejs_virtualGamepad_edit_mode [class*="b_stick"] {
+    outline: 2px dashed rgba(255, 255, 255, 0.8);
+    outline-offset: 2px;
+    cursor: move;
+    touch-action: none;
+    pointer-events: none;
+}
+
+.ejs_virtualGamepad_edit_toolbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+    padding: 5px 5px 15px;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+    z-index: 10010;
+    pointer-events: none;
+}
+
+.ejs_virtualGamepad_edit_toolbar button {
+    background-color: rgba(var(--ejs-primary-color), 0.9);
+    border: none;
+    border-radius: 3px;
+    padding: 4px 6px;
+    color: #fff;
+    cursor: pointer;
+    touch-action: manipulation;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    pointer-events: auto;
+    z-index: 10005;
+    position: relative;
+}
+
+.ejs_virtualGamepad_edit_toolbar button:hover {
+    opacity: 0.85;
+}
+
+.ejs_virtualGamepad_edit_toolbar button:active {
+    opacity: 0.7;
+}
+
+.ejs_virtualGamepad_edit_toolbar button.ejs_edit_btn_close {
+    background-color: #28a745;
+}
+
+.ejs_virtualGamepad_edit_toolbar button.ejs_edit_btn_default {
+    background-color: #e6a817;
+}
+
+.ejs_virtualGamepad_edit_toolbar button.ejs_edit_btn_clear {
+    background-color: #dc3545;
+}
+
+.ejs_virtualGamepad_edit_toolbar button.ejs_edit_btn_undo,
+.ejs_virtualGamepad_edit_toolbar button.ejs_edit_btn_redo {
+    background-color: #555;
+}
+
+.ejs_virtualGamepad_edit_toolbar button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+
+.ejs_virtualGamepad_resize_handle {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background: #007bff;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    z-index: 10003;
+    cursor: se-resize;
+    touch-action: none;
+    pointer-events: auto;
+}
+
+.ejs_virtualGamepad_resize_handle.ejs_resize_se {
+    bottom: -8px;
+    right: -8px;
+}
+
+/* Overlay container for edit mode */
+.ejs_virtualGamepad_overlay_container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 10002;
+}
+
+/* Individual overlay element (captures touch events for dragging) */
+.ejs_edit_overlay_element {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: move;
+    box-sizing: border-box;
+    outline: 2px dashed rgba(255, 255, 255, 0.9);
+    outline-offset: 2px;
+    opacity: 0.9;
+    user-select: none;
+}
+
+/* Zone (joystick) overlay styling */
+.ejs_edit_overlay_element[data-type="zone"] {
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(100,100,100,0.8) 0%, rgba(60,60,60,0.9) 100%);
+    border: 3px solid rgba(255,255,255,0.5);
+    box-shadow: 0 0 10px rgba(0,0,0,0.5), inset 0 0 20px rgba(0,0,0,0.3);
+}
+
+.ejs_edit_overlay_element span {
+    pointer-events: none;
+    user-select: none;
+}
+
+/* Highlight when dragging */
+.ejs_edit_overlay_element.ejs_dragging {
+    outline-color: #007bff !important;
+    background: rgba(0, 123, 255, 0.3) !important;
+}
+
+/* Fade original gamepad during editing */
+.ejs_virtualGamepad_edit_mode_faded {
+    opacity: 0.3;
+}

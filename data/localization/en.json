@@ -335,5 +335,10 @@
     "System Save interval": "System Save interval",
     "Menu Bar Button": "Menu Bar Button",
     "visible": "visible",
-    "hidden": "hidden"
+    "hidden": "hidden",
+    "EDIT_VIRTUAL_GAMEPAD": "Edit Virtual Gamepad",
+    "UNDO_VIRTUAL_GAMEPAD": "Undo",
+    "REDO_VIRTUAL_GAMEPAD": "Redo",
+    "RESET_TO_DEFAULT_VIRTUAL_GAMEPAD": "Reset to Default",
+    "SAVE_AND_CLOSE_VIRTUAL_GAMEPAD": "Save & Close"
 }
