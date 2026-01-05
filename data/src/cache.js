@@ -63,7 +63,7 @@ class EJS_Download {
                     try {
                         const headResp = await fetch(url, { method: "HEAD", headers });
                         lastModified = headResp.headers.get("Last-Modified");
-                    } catch (e) {}
+                    } catch (e) { }
                     if (lastModified) {
                         const lastModTime = Date.parse(lastModified);
                         if (!isNaN(lastModTime) && lastModTime <= cached.added) {
@@ -106,10 +106,18 @@ class EJS_Download {
                         const exp = Date.parse(expires);
                         if (!isNaN(exp)) cacheExpiry = exp;
                     } else {
+                        // default to 5 days if no cache headers present
                         cacheExpiry = now + 5 * 24 * 60 * 60 * 1000;
                     }
                     if (responseType === "arraybuffer") {
-                        const contentLength = parseInt(resp.headers.get("Content-Length") || "0");
+                        let contentLength = 0;
+                        if (resp.headers.get("Content-Length")) {
+                            try {
+                                contentLength = parseInt(resp.headers.get("Content-Length"));
+                            } catch (e) {
+                                // swallow any errors parseing content length
+                            }
+                        }
                         const reader = resp.body.getReader();
                         let received = 0;
                         let chunks = [];
@@ -162,21 +170,21 @@ class EJS_Download {
                 } else {
                     // for non-arraybuffer types, just store the raw data as a single file
                     files = [new EJS_FileItem(filename, data)];
-                if (typeof data === "string") {
-                    // Encode string as UTF-8 Uint8Array
-                    const encoder = new TextEncoder();
-                    files = [new EJS_FileItem(filename, encoder.encode(data))];
-                } else if (data instanceof Uint8Array) {
-                    files = [new EJS_FileItem(filename, data)];
-                } else if (data instanceof ArrayBuffer) {
-                    files = [new EJS_FileItem(filename, new Uint8Array(data))];
-                } else {
-                    // Fallback: try to convert to string then encode
-                    const encoder = new TextEncoder();
-                    files = [new EJS_FileItem(filename, encoder.encode(String(data)))];
+                    if (typeof data === "string") {
+                        // Encode string as UTF-8 Uint8Array
+                        const encoder = new TextEncoder();
+                        files = [new EJS_FileItem(filename, encoder.encode(data))];
+                    } else if (data instanceof Uint8Array) {
+                        files = [new EJS_FileItem(filename, data)];
+                    } else if (data instanceof ArrayBuffer) {
+                        files = [new EJS_FileItem(filename, new Uint8Array(data))];
+                    } else {
+                        // Fallback: try to convert to string then encode
+                        const encoder = new TextEncoder();
+                        files = [new EJS_FileItem(filename, encoder.encode(String(data)))];
+                    }
                 }
-                }
-                
+
                 if (onProgress) onProgress("complete", 100, data.byteLength || 0, data.byteLength || 0);
 
                 // Store in cache if available

@@ -463,6 +463,24 @@ IF EXIST AUTORUN.BAT AUTORUN.BAT
     setAltKeyEnabled(enabled) {
         this.functions.setKeyboardEnabled(enabled === true ? 3 : 2);
     }
+    listDir(path, indent = "") {
+        try {
+            const entries = this.FS.readdir(path);
+            for (const entry of entries) {
+                if (entry === "." || entry === "..") continue;
+                const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
+                const stat = this.FS.stat(fullPath);
+                if (this.FS.isDir(stat.mode)) {
+                    console.log(`${indent}[DIR] ${fullPath}`);
+                    this.listDir(fullPath, indent + "  ");
+                } else {
+                    console.log(`${indent}${fullPath}`);
+                }
+            }
+        } catch (e) {
+            console.warn("Error reading directory:", path, e);
+        }
+    }
 }
 
 window.EJS_GameManager = EJS_GameManager;

@@ -412,6 +412,9 @@ class EmulatorJS {
         if (typeof this.config.cacheConfig.cacheMaxAgeMins !== "number" || this.config.cacheConfig.cacheMaxAgeMins <= 0) {
             this.config.cacheConfig.cacheMaxAgeMins = cacheConfigDefaults.cacheMaxAgeMins;
         }
+        if (this.config.disableDatabases === true) {
+            this.config.cacheConfig.enabled = false;
+        }
         
         // Populate downloadTypes
         this.downloadType = {
@@ -1233,27 +1236,8 @@ class EmulatorJS {
 
             // debug list directory structure
             if (this.debug && this.gameManager && this.gameManager.FS) {
-                const FS = this.gameManager.FS;
                 console.log("File system directory");
-                function listDir(path, indent = "") {
-                    try {
-                        const entries = FS.readdir(path);
-                        for (const entry of entries) {
-                            if (entry === "." || entry === "..") continue;
-                            const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
-                            const stat = FS.stat(fullPath);
-                            if (FS.isDir(stat.mode)) {
-                                console.log(`${indent}[DIR] ${fullPath}`);
-                                listDir(fullPath, indent + "  ");
-                            } else {
-                                console.log(`${indent}${fullPath}`);
-                            }
-                        }
-                    } catch (e) {
-                        console.warn("Error reading directory:", path, e);
-                    }
-                }
-                listDir("/");
+                this.gameManager.listDir("/");
             }
         } catch(e) {
             console.warn("Failed to start game", e);
@@ -2637,9 +2621,10 @@ class EmulatorJS {
             list.style.width = "100%";
             list.style["padding-left"] = "10px";
             list.style["text-align"] = "left";
-            body.appendChild(list);
+            
             list.appendChild(thead);
             list.appendChild(tbody);
+            body.appendChild(list);
 
             const getSize = function (size) {
                 let i = -1;
