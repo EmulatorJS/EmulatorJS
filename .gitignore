@@ -10,7 +10,10 @@ data/cores/*
 !data/cores/package.json
 !data/cores/.npmignore
 .DS_Store
+.hintrc
 .vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
 *.tgz
 dist/
 jsdoc/

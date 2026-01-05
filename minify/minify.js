@@ -14,10 +14,10 @@ async function doMinify() {
         input: path.join(rootPath, "data/src/*.js"),
         output: path.join(rootPath, "data/emulator.min.js"),
     })
-        .catch(function (err) {
+        .catch((err) => {
             console.error(err);
         })
-        .then(function() {
+        .then(() => {
             console.log("Minified JS");
         });
     await minify({
@@ -25,14 +25,16 @@ async function doMinify() {
         input: path.join(rootPath, "data/emulator.css"),
         output: path.join(rootPath, "data/emulator.min.css"),
     })
-        .catch(function (err) {
+        .catch((err) => {
             console.error(err);
         })
-        .then(function() {
+        .then(() => {
             console.log("Minified CSS");
         });
 }
 
 console.log("Minifying");
-await doMinify();
-console.log("Minifying Done!");
+(async () => {
+    await doMinify();
+    console.log("Minifying Done!");
+})();
