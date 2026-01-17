@@ -306,5 +306,6 @@
   "DPAD_UP": "DPAD_YUKARI",
   "DPAD_DOWN": "DPAD_AŞAĞI",
   "DPAD_LEFT": "DPAD_SOL",
-  "DPAD_RIGHT": "DPAD_SAĞ"
+  "DPAD_RIGHT": "DPAD_SAĞ",
+  "Autofire": "Autofire"
 }
