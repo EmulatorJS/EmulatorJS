@@ -250,7 +250,7 @@ class EmulatorJS {
                 }
             }
         }
-        this.defaultAutoFireInterval = this.config.defaultAutoFireInterval || 100;
+        this.defaultAutoFireInterval = 100;
         this.autofireIntervals = {};
         this.muted = false;
         this.paused = true;
@@ -1975,9 +1975,6 @@ class EmulatorJS {
                 }
             }
             this.gameManager.toggleMainLoop(this.paused ? 0 : 1);
-            if (this.paused) {
-                this.stopAllAutofire();
-            }
 
             //I now realize its not easy to pause it while the cursor is locked, just in case I guess
             if (this.enableMouseLock) {
@@ -3522,9 +3519,9 @@ class EmulatorJS {
             return;
         }
         let pressed = true;
-        this.gameManager.simulateInput(playerIndex, buttonIndex, inputValue);
         const interval = this.getAutofireInterval(playerIndex, buttonIndex);
         this.autofireIntervals[key] = setInterval(() => {
+            if (this.paused || !this.gameManager) return;
             pressed = !pressed;
             this.gameManager.simulateInput(playerIndex, buttonIndex, pressed ? inputValue : 0);
         }, interval);
