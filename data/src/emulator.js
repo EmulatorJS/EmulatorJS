@@ -6871,7 +6871,10 @@ class EmulatorJS {
                     select.style.width = "100%";
                     select.classList.add("ejs_cheat_code");
                     div.appendChild(select);
-                    return { container: div, select: select };
+                    return {
+                        container: div,
+                        select: select
+                    };
                 };
 
                 const importDiv = this.createElement("div");
@@ -6920,6 +6923,7 @@ class EmulatorJS {
                 main.appendChild(this.createElement("br"));
                 popup.appendChild(main);
 
+
                 const loadCheatList = (gameName) => {
                     cheatSelectUI.select.innerHTML = "";
 
@@ -6966,17 +6970,14 @@ class EmulatorJS {
                     const url = this.config.cheatPath + system + ".json";
 
                     try {
-                        const res = await this.downloadFile(url, null, true, { responseType: "text", method: "GET" });
+                        const res = await this.downloadFile(url, null, true, {
+                            responseType: "text",
+                            method: "GET"
+                        });
 
                         let data;
                         if (res === -1) {
                             throw new Error("Cheat JSON not found. Create a file at: " + url);
-                        } else if (typeof res.data === "string") {
-                            try {
-                                data = JSON.parse(res.data);
-                            } catch (e) {
-                                throw new Error("Failed to parse cheat JSON: " + e.message);
-                            }
                         } else {
                             data = res.data;
                         }
