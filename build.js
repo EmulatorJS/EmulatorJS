@@ -61,9 +61,9 @@ if (!build_type) {
     Seven.add(`dist/${version}.7z`, './', {
         $raw: ['-xr@dist/.ignore'],
         $progress: true
-    }).on('progress', function (progress) {
+    }).on('progress', (progress) => {
         progressData['7z'] = progress.percent;
-    }).on('end', function() {
+    }).on('end', () => {
         progressData['7z'] = 100;
 
     });
@@ -71,9 +71,9 @@ if (!build_type) {
     Seven.add(`dist/${version}.zip`, './', {
         $raw: ['-xr@dist/.ignore'],
         $progress: true
-    }).on('progress', function (progress) {
+    }).on('progress', (progress) => {
         progressData['zip'] = progress.percent;
-    }).on('end', function() {
+    }).on('end', () => {   
         progressData['zip'] = 100;
     });
 } else if (build_type !== "emulatorjs" && build_type !== "cores" && build_type !== "get-cores") {
