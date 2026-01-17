@@ -129,7 +129,6 @@
     config.fixedSaveInterval = window.EJS_fixedSaveInterval;
     config.disableAutoUnload = window.EJS_disableAutoUnload;
     config.disableBatchBootup = window.EJS_disableBatchBootup;
-    config.defaultAutoFireInterval = window.EJS_defaultAutoFireInterval;
 
     let systemLang;
     try {
