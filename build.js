@@ -73,7 +73,7 @@ if (!build_type) {
         $progress: true
     }).on('progress', (progress) => {
         progressData['zip'] = progress.percent;
-    }).on('end', () => {   
+    }).on('end', () => {
         progressData['zip'] = 100;
     });
 } else if (build_type !== "emulatorjs" && build_type !== "cores" && build_type !== "get-cores") {
