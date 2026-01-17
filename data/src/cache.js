@@ -133,12 +133,10 @@ class EJS_Download {
                                 onProgress("downloading", Math.floor(received / contentLength * 100), received, contentLength);
                             }
                         }
-                        data = new Uint8Array(chunks.reduce((acc, val) => acc + val.length, 0));
-                        let offset = 0;
-                        for (const chunk of chunks) {
-                            data.set(chunk, offset);
-                            offset += chunk.length;
-                        }
+                        // Optimize concatenation by leveraging Blob to avoid double iteration
+                        const blob = new Blob(chunks);
+                        const ab = await blob.arrayBuffer();
+                        data = new Uint8Array(ab);
                     } else {
                         data = await resp[responseType]();
                     }
