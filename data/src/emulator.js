@@ -6684,9 +6684,9 @@ class EmulatorJS {
                     popups[0].remove();
                 });
             },
-            Close: () => {
+            "Close": () => {
                 this.cheatMenu.style.display = "none";
-            },
+            }
         }, true);
         this.cheatMenu = body.parentElement;
         this.cheatMenu.getElementsByTagName("h4")[0].style["padding-bottom"] = "0px";
