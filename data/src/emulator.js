@@ -91,6 +91,8 @@ class EmulatorJS {
     }
     /**
      * Downloads a file from the specified path.
+     * Helper method that delegates to EJS_Download system for all URL-based downloads.
+     * Handles direct data objects (ArrayBuffer, Uint8Array, Blob) and constructs proper paths.
      * @param {*} path The path to the file to download.
      * @param {*} type The expected type of the file.
      * @param {*} progress A callback function for progress updates.
@@ -103,7 +105,7 @@ class EmulatorJS {
     downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false) {
         if (this.debug) console.log("[EJS " + type + "] Downloading " + path);
         return new Promise(async (resolve) => {
-            // Handle data types (ArrayBuffer, Uint8Array, Blob)
+            // Handle direct data objects (ArrayBuffer, Uint8Array, Blob)
             const data = this.toData(path);
             if (data) {
                 data.then((game) => {
@@ -116,40 +118,14 @@ class EmulatorJS {
                 return;
             }
 
-            // Construct the full path
+            // Construct the full path/URL
             const basePath = notWithPath ? "" : this.config.dataPath;
             let fullPath = basePath + path;
             if (!notWithPath && this.config.filePaths && typeof this.config.filePaths[path.split("/").pop()] === "string") {
                 fullPath = this.config.filePaths[path.split("/").pop()];
             }
 
-            // Check if it's a URL
-            let url;
-            try { url = new URL(fullPath) } catch(e) {};
-            
-            // Handle non-http(s) URLs (blob:, data:, etc.)
-            if (url && !["http:", "https:"].includes(url.protocol)) {
-                if (opts.method === "HEAD") {
-                    resolve({ headers: {} });
-                    return;
-                }
-                try {
-                    let res = await fetch(fullPath);
-                    if ((opts.type && opts.type.toLowerCase() === "arraybuffer") || !opts.type) {
-                        res = await res.arrayBuffer();
-                    } else {
-                        res = await res.text();
-                        try { res = JSON.parse(res) } catch(e) {}
-                    }
-                    if (fullPath.startsWith("blob:")) URL.revokeObjectURL(fullPath);
-                    resolve({ data: res, headers: {} });
-                } catch(e) {
-                    resolve(-1);
-                }
-                return;
-            }
-
-            // Use EJS_Download for http(s) downloads
+            // Delegate all URL downloads (http, https, blob, data, etc.) to EJS_Download
             try {
                 const onProgress = progress instanceof Function ? (status, percentage, loaded, total) => {
                     if (status === "downloading") {
@@ -183,8 +159,14 @@ class EmulatorJS {
                     dontCache
                 );
 
+                // Handle HEAD requests (returns null)
+                if (!cacheItem) {
+                    resolve({ headers: {} });
+                    return;
+                }
+
                 // Extract the data from the cache item
-                if (cacheItem && cacheItem.files && cacheItem.files.length > 0) {
+                if (cacheItem.files && cacheItem.files.length > 0) {
                     // If there are files, return the entire cache item
                     // so the caller can access all extracted files
                     if (cacheItem.files.length > 0) {

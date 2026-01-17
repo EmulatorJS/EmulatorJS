@@ -21,7 +21,71 @@ class EJS_Download {
     }
 
     /**
+     * Handles downloading non-http(s) URLs (blob:, data:, file:, etc.)
+     * @param {string} url - The non-http(s) URL to fetch
+     * @param {string} type - The type of the file
+     * @param {string} method - The HTTP method (HEAD returns empty, others fetch)
+     * @param {string} responseType - The response type ("arraybuffer" or "text")
+     * @returns {Promise<EJS_CacheItem|null>} - The fetched data as a cache item, or null for HEAD requests
+     */
+    async handleNonHttpUrl(url, type, method = "GET", responseType = "arraybuffer") {
+        console.log("[EJS Download] Handling non-http(s) URL:", url);
+        
+        if (method === "HEAD") {
+            // HEAD requests just return empty for non-http URLs
+            return null;
+        }
+
+        try {
+            let res = await fetch(url);
+            let data;
+            
+            if (responseType === "arraybuffer" || !responseType) {
+                data = await res.arrayBuffer();
+                data = new Uint8Array(data);
+            } else {
+                data = await res.text();
+                // Try to parse as JSON if it looks like JSON
+                try { data = JSON.parse(data) } catch(e) {}
+            }
+            
+            // Clean up blob URLs to free memory
+            if (url.startsWith("blob:")) {
+                URL.revokeObjectURL(url);
+            }
+            
+            // Create a cache item for consistency
+            const filename = url.split("/").pop() || "downloaded.bin";
+            const now = Date.now();
+            
+            // Ensure data is Uint8Array for file item
+            let fileData;
+            if (data instanceof Uint8Array) {
+                fileData = data;
+            } else if (typeof data === "string") {
+                const encoder = new TextEncoder();
+                fileData = encoder.encode(data);
+            } else if (data instanceof ArrayBuffer) {
+                fileData = new Uint8Array(data);
+            } else {
+                const encoder = new TextEncoder();
+                fileData = encoder.encode(String(data));
+            }
+            
+            const files = [new EJS_FileItem(filename, fileData)];
+            const key = this.storageCache ? this.storageCache.generateCacheKey(fileData) : "temp-" + Date.now();
+            
+            // Don't cache non-http URLs (they're typically temporary or special)
+            return new EJS_CacheItem(key, files, now, type, responseType, filename, url, null);
+        } catch(e) {
+            console.error("[EJS Download] Failed to fetch non-http URL:", url, e);
+            throw new Error(`Failed to fetch non-http URL: ${e}`);
+        }
+    }
+
+    /**
      * Downloads a file from the given URL with the specified options.
+     * Automatically detects and handles both http(s) and non-http(s) URLs (blob:, data:, etc.)
      * @param {string} url - The URL to download the file from.
      * @param {string} type - The type of the file to download (e.g. "ROM", "CORE", "BIOS", etc).
      * @param {string} method - The HTTP method to use (default is "GET").
@@ -43,6 +107,17 @@ class EJS_Download {
         console.log("[EJS Download] Downloading " + responseType + " file: " + url + cacheActiveText);
         return new Promise(async (resolve, reject) => {
             try {
+                // Check if this is a non-http(s) URL (blob:, data:, file:, etc.)
+                let urlObj;
+                try { urlObj = new URL(url) } catch(e) {};
+                
+                if (urlObj && !["http:", "https:"].includes(urlObj.protocol)) {
+                    // Handle non-http(s) URLs directly
+                    const result = await this.handleNonHttpUrl(url, type, method, responseType);
+                    resolve(result);
+                    return;
+                }
+
                 // Use the provided storageCache or create a temporary one
                 if (!this.storageCache) {
                     console.warn("No storageCache provided to EJS_Download, downloads will not be cached");
