@@ -297,5 +297,6 @@
     "DPAD_UP": "十字キー上",
     "DPAD_DOWN": "十字キー下",
     "DPAD_LEFT": "十字キー左",
-    "DPAD_RIGHT": "十字キー右"
+    "DPAD_RIGHT": "十字キー右",
+    "Autofire": "Autofire"
 }

@@ -297,5 +297,6 @@
     "DPAD_UP": "डीपीएडी_यूपी",
     "DPAD_DOWN": "डीपीएडी_डाउन",
     "DPAD_LEFT": "DPAD_LEFT",
-    "DPAD_RIGHT": "डीपीएडी_दाएँ"
+    "DPAD_RIGHT": "डीपीएडी_दाएँ",
+    "Autofire": "Autofire"
 }
