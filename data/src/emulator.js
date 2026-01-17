@@ -4052,18 +4052,14 @@ class EmulatorJS {
                     if (e.type === "touchend" || e.type === "touchcancel") {
                         e.target.classList.remove("ejs_virtualGamepad_button_down");
                         window.setTimeout(() => {
-                            if (this.isAutofireEnabled(0, value) && !isAnalog) {
-                                this.stopAutofire(0, value);
-                            } else {
-                                this.gameManager.simulateInput(0, value, 0);
-                            }
+                            this.stopAutofire(0, value);
+                            this.gameManager.simulateInput(0, value, 0);
                         })
                     } else {
                         e.target.classList.add("ejs_virtualGamepad_button_down");
+                        this.gameManager.simulateInput(0, value, downValue);
                         if (this.isAutofireEnabled(0, value) && !isAnalog) {
                             this.startAutofire(0, value, downValue);
-                        } else {
-                            this.gameManager.simulateInput(0, value, downValue);
                         }
                     }
                 })
