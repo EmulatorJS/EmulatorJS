@@ -3,7 +3,7 @@
  * Downloads files from a given URL when a download is requested.
  * The file is checked against the cache to avoid re-downloading files unnecessarily.
  * The following rules are tested when checking for an update:
- * 1. THe URL is checked against the cache - if it doesn't exist, download it
+ * 1. The URL is checked against the cache - if it doesn't exist, download it
  * 2. The cacheExpiry property is checked - if it exists and is in the future, use the cached version. Note: the cacheExpiry property is sent by the server in the Cache-Control or Expires headers. If these headers are not present, the cacheExpiry property will be set to 5 days in the future by default.
  * 3. If the cacheExpiry property is in the past or doesn't exist, a HEAD request is made to check the Last-Modified header against the cached version's added date. Falling back to downloading if Last-Modified is not present.
  * 4. If the Last-Modified date is newer than the cached version's added date, download the new version.
