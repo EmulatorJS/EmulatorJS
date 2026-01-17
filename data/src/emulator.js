@@ -239,16 +239,14 @@ class EmulatorJS {
         this.volume = (typeof this.config.volume === "number") ? this.config.volume : 0.5;
         if (this.config.defaultControllers) {
             // Merge user config with defaults instead of replacing
-            for (const player in this.config.defaultControllers) {
-                if (!this.defaultControllers[player]) {
-                    this.defaultControllers[player] = {};
-                }
-                for (const button in this.config.defaultControllers[player]) {
-                    this.defaultControllers[player][button] = Object.assign(
-                        {},
-                        this.defaultControllers[player][button] || {},
-                        this.config.defaultControllers[player][button]
-                    );
+            for (const [player, buttons] of Object.entries(this.config.defaultControllers)) {
+                this.defaultControllers[player] = this.defaultControllers[player] || {};
+
+                for (const [button, config] of Object.entries(buttons)) {
+                    this.defaultControllers[player][button] = {
+                        ...(this.defaultControllers[player][button] || {}),
+                        ...config
+                    };
                 }
             }
         }
