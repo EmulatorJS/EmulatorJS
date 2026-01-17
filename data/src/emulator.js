@@ -3507,7 +3507,8 @@ class EmulatorJS {
         if (control && typeof control.autoFireInterval === "number") {
             return control.autoFireInterval;
         }
-        return this.defaultAutoFireInterval;
+        const settingValue = this.getSettingValue("autofireInterval");
+        return settingValue ? parseInt(settingValue) : this.defaultAutoFireInterval;
     }
     isAutofireEnabled(playerIndex, buttonIndex) {
         const control = this.controls[playerIndex] && this.controls[playerIndex][buttonIndex];
