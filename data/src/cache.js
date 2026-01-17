@@ -208,7 +208,7 @@ class EJS_Download {
                                 onProgress("downloading", Math.floor(received / contentLength * 100), received, contentLength);
                             }
                         }
-                        // Optimize concatenation by leveraging Blob to avoid double iteration
+                        
                         const blob = new Blob(chunks);
                         const ab = await blob.arrayBuffer();
                         data = new Uint8Array(ab);
