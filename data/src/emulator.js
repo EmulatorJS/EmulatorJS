@@ -1013,109 +1013,149 @@ class EmulatorJS {
         });
     }
     /**
+     * Initialize GameManager and load external files and file systems
+     */
+    async initializeGameManager() {
+        this.gameManager = new window.EJS_GameManager(this.Module, this);
+        await this.gameManager.loadExternalFiles();
+        await this.gameManager.mountFileSystems();
+        this.callEvent("saveDatabaseLoaded", this.gameManager.FS);
+        if (this.getCore() === "ppsspp") {
+            await this.gameManager.loadPpssppAssets();
+        }
+    }
+
+    /**
+     * Download all game-related files (ROM, BIOS, parent, patch, and start state)
+     */
+    async downloadGameFiles() {
+        const romData = await this.download(this.config.gameUrl, this.downloadType.rom);
+        const biosData = await this.download(this.config.biosUrl, this.downloadType.bios);
+        await this.downloadStartState();
+        const parentData = await this.download(this.config.gameParentUrl, this.downloadType.parent);
+        const patchData = await this.download(this.config.gamePatchUrl, this.downloadType.patch);
+        return romData;
+    }
+
+    /**
+     * Determine CUE file handling settings based on core type and configuration
+     */
+    determineCueSettings() {
+        const coresThatNeedCueHandling = ["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xpet", "puae"];
+        let disableCue = false;
+
+        if (coresThatNeedCueHandling.includes(this.getCore()) && this.config.disableCue === undefined) {
+            disableCue = true;
+        } else {
+            disableCue = this.config.disableCue;
+        }
+
+        if (this.debug) console.log("Disable CUE handling:", disableCue);
+        return disableCue;
+    }
+
+    /**
+     * Check if extension is supported by the current core
+     */
+    supportsExtension(ext) {
+        if (!this.extensions) return false;
+        return this.extensions.includes(ext);
+    }
+
+    /**
+     * Select the most appropriate ROM file from available files
+     */
+    selectRomFile(fileNames, coreName) {
+        const cueGenerationCores = ["mednafen_psx_hw"];
+        const prioritizeExtensions = ["cue", "ccd", "toc", "m3u"];
+
+        let createCueFile = cueGenerationCores.includes(this.getCore());
+        if (this.config.disableCue === true) {
+            createCueFile = false;
+        }
+
+        let isoFile = null;
+        let supportedFile = null;
+        let cueFile = null;
+
+        fileNames.forEach(fileName => {
+            const ext = fileName.split(".").pop().toLowerCase();
+            if (supportedFile === null && this.supportsExtension(ext)) {
+                supportedFile = fileName;
+            }
+            if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
+                isoFile = fileName;
+            }
+            if (prioritizeExtensions.includes(ext)) {
+                const currentCueExt = (cueFile === null) ? null : cueFile.split(".").pop().toLowerCase();
+                if (coreName === "psx") {
+                    // Always prefer m3u files for psx cores
+                    if (currentCueExt !== "m3u") {
+                        if (cueFile === null || ext === "m3u") {
+                            cueFile = fileName;
+                        }
+                    }
+                } else {
+                    const priority = ["cue", "ccd"]
+                    // Prefer cue or ccd files over toc or m3u
+                    if (!priority.includes(currentCueExt)) {
+                        if (cueFile === null || priority.includes(ext)) {
+                            cueFile = fileName;
+                        }
+                    }
+                }
+            }
+        });
+
+        // Set the primary file selection with priority order
+        if (supportedFile !== null) {
+            this.fileName = supportedFile;
+        } else {
+            this.fileName = fileNames[0];
+        }
+
+        // ISO files take priority if supported
+        if (isoFile !== null && this.supportsExtension(isoFile.split(".").pop().toLowerCase())) {
+            this.fileName = isoFile;
+        }
+
+        // CUE/CCD files take priority if supported, or create a CUE file if needed
+        if (cueFile !== null && this.supportsExtension(cueFile.split(".").pop().toLowerCase())) {
+            this.fileName = cueFile;
+        } else if (createCueFile && this.supportsExtension("m3u") && this.supportsExtension("cue")) {
+            this.fileName = this.gameManager.createCueFile(fileNames);
+        }
+
+        // Special handling for DOS
+        if (this.getCore(true) === "dos" && !this.config.disableBatchBootup) {
+            this.fileName = this.gameManager.writeBootupBatchFile();
+        }
+    }
+
+    /**
+     * Extract file names from downloaded ROM data and start game
+     */
+    startGameFromDownload(romData) {
+        const fileNames = [];
+        for (const file of romData.files) {
+            if (file.filename.endsWith("/")) {
+                continue;
+            }
+            fileNames.push(file.filename);
+        }
+        this.selectRomFile(fileNames, this.getCore());
+        this.startGame();
+    }
+
+    /**
      * Download all necessary files and start the game
      */
     downloadFiles() {
         (async () => {
-            this.gameManager = new window.EJS_GameManager(this.Module, this);
-            await this.gameManager.loadExternalFiles();
-            await this.gameManager.mountFileSystems();
-            this.callEvent("saveDatabaseLoaded", this.gameManager.FS);
-            if (this.getCore() === "ppsspp") {
-                await this.gameManager.loadPpssppAssets();
-            }
-            const romData = await this.download(this.config.gameUrl, this.downloadType.rom);
-            const biosData = await this.download(this.config.biosUrl, this.downloadType.bios);
-            await this.downloadStartState();
-            const parentData = await this.download(this.config.gameParentUrl, this.downloadType.parent);
-            const patchData = await this.download(this.config.gamePatchUrl, this.downloadType.patch);
-
-            // Select rom file for start up
-            // List of cores to generate a CUE file for, if it doesn't exist.
-            const cueGeneration = ["mednafen_psx_hw"];
-            const prioritizeExtensions = ["cue", "ccd", "toc", "m3u"];
-
-            let createCueFile = cueGeneration.includes(this.getCore());
-            if (this.config.disableCue === true) {
-                createCueFile = false;
-            }
-            const selectRomFile = (fileNames, coreName) => {
-                let isoFile = null;
-                let supportedFile = null;
-                let cueFile = null;
-                let selectedCueExt = null;
-
-                const supportsExt = (ext) => {
-                    const core = this.getCore();
-                    if (!this.extensions) return false;
-                    return this.extensions.includes(ext);
-                };
-
-                fileNames.forEach(fileName => {
-                    const ext = fileName.split(".").pop().toLowerCase();
-                    if (supportedFile === null && supportsExt(ext)) {
-                        supportedFile = fileName;
-                    }
-                    if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
-                        isoFile = fileName;
-                    }
-                    if (prioritizeExtensions.includes(ext)) {
-                        const currentCueExt = (cueFile === null) ? null : cueFile.split(".").pop().toLowerCase();
-                        if (coreName === "psx") {
-                            // Always prefer m3u files for psx cores
-                            if (currentCueExt !== "m3u") {
-                                if (cueFile === null || ext === "m3u") {
-                                    cueFile = fileName;
-                                }
-                            }
-                        } else {
-                            const priority = ["cue", "ccd"]
-                            // Prefer cue or ccd files over toc or m3u
-                            if (!priority.includes(currentCueExt)) {
-                                if (cueFile === null || priority.includes(ext)) {
-                                    cueFile = fileName;
-                                }
-                            }
-                        }
-                    }
-                });
-                if (supportedFile !== null) {
-                    this.fileName = supportedFile;
-                } else {
-                    this.fileName = fileNames[0];
-                }
-                if (isoFile !== null && supportsExt(isoFile.split(".").pop().toLowerCase())) {
-                    this.fileName = isoFile;
-                }
-                if (cueFile !== null && supportsExt(cueFile.split(".").pop().toLowerCase())) {
-                    this.fileName = cueFile;
-                } else if (createCueFile && supportsExt("m3u") && supportsExt("cue")) {
-                    this.fileName = this.gameManager.createCueFile(fileNames);
-                }
-                if (this.getCore(true) === "dos" && !this.config.disableBatchBootup) {
-                    this.fileName = this.gameManager.writeBootupBatchFile();
-                }
-            };
-
-            let disableCue = false;
-            if (["pcsx_rearmed", "genesis_plus_gx", "picodrive", "mednafen_pce", "smsplus", "vice_x64", "vice_x64sc", "vice_x128", "vice_xvic", "vice_xpet", "puae"].includes(this.getCore()) && this.config.disableCue === undefined) {
-                disableCue = true;
-            } else {
-                disableCue = this.config.disableCue;
-            }
-            if (this.debug) console.log("Disable CUE handling:", disableCue);
-
-            const fileNames = [];
-            for (const file of romData.files) {
-                if (file.filename.endsWith("/")) {
-                    continue;
-                }
-                fileNames.push(file.filename);
-            }
-            selectRomFile(fileNames, this.getCore(), disableCue);
-
-            // start the game
-            this.startGame();
+            await this.initializeGameManager();
+            const romData = await this.downloadGameFiles();
+            this.determineCueSettings();
+            this.startGameFromDownload(romData);
         })();
     }
     initModule(wasmData, threadData) {
