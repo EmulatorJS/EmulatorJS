@@ -3569,18 +3569,13 @@ class EmulatorJS {
                 if (this.controls[i][j] && this.controls[i][j].value === e.keyCode) {
                     const isAnalog = this.analogAxes.includes(j);
                     const inputValue = isAnalog ? 0x7fff : 1;
-                    if (e.type === "keyup") {
-                        if (this.isAutofireEnabled(i, j) && !isAnalog) {
-                            this.stopAutofire(i, j);
-                        } else {
-                            this.gameManager.simulateInput(i, j, 0);
-                        }
+                    const isKeyUp = e.type === "keyup";
+                    const value = isKeyUp ? 0 : inputValue;
+
+                    if (this.isAutofireEnabled(i, j) && !isAnalog) {
+                        isKeyUp ? this.stopAutofire(i, j) : this.startAutofire(i, j, inputValue);
                     } else {
-                        if (this.isAutofireEnabled(i, j) && !isAnalog) {
-                            this.startAutofire(i, j, inputValue);
-                        } else {
-                            this.gameManager.simulateInput(i, j, inputValue);
-                        }
+                        this.gameManager.simulateInput(i, j, value);
                     }
                 }
             }
