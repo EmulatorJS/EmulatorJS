@@ -193,7 +193,7 @@ class EJS_Download {
                                     contentLength = parsedContentLength;
                                 }
                             } catch (e) {
-                                // swallow any errors parseing content length
+                                // swallow any errors parsing content length
                             }
                         }
                         const reader = resp.body.getReader();
