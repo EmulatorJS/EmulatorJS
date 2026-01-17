@@ -113,7 +113,10 @@ class EJS_Download {
                         let contentLength = 0;
                         if (resp.headers.get("Content-Length")) {
                             try {
-                                contentLength = parseInt(resp.headers.get("Content-Length"));
+                                const parsedContentLength = parseInt(resp.headers.get("Content-Length"));
+                                if (!isNaN(parsedContentLength) && parsedContentLength > 0) {
+                                    contentLength = parsedContentLength;
+                                }
                             } catch (e) {
                                 // swallow any errors parseing content length
                             }
