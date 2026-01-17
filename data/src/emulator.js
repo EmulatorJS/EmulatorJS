@@ -3620,18 +3620,13 @@ class EmulatorJS {
 
                 if (["buttonup", "buttondown"].includes(e.type) && (controlValue === e.label || controlValue === e.index)) {
                     const inputValue = isAnalog ? 0x7fff : 1;
-                    if (e.type === "buttonup") {
-                        if (this.isAutofireEnabled(i, j) && !isAnalog) {
-                            this.stopAutofire(i, j);
-                        } else {
-                            this.gameManager.simulateInput(i, j, 0);
-                        }
+                    const isButtonUp = e.type === "buttonup";
+                    const value = isButtonUp ? 0 : inputValue;
+
+                    if (this.isAutofireEnabled(i, j) && !isAnalog) {
+                        isButtonUp ? this.stopAutofire(i, j) : this.startAutofire(i, j, inputValue);
                     } else {
-                        if (this.isAutofireEnabled(i, j) && !isAnalog) {
-                            this.startAutofire(i, j, inputValue);
-                        } else {
-                            this.gameManager.simulateInput(i, j, inputValue);
-                        }
+                        this.gameManager.simulateInput(i, j, value);
                     }
                 } else if (e.type === "axischanged") {
                     if (typeof controlValue === "string" && controlValue.split(":")[0] === e.axis) {
