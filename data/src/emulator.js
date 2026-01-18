@@ -4190,8 +4190,8 @@ class EmulatorJS {
     }
     /** Enter virtual gamepad edit mode using the external editor class */
     enterVirtualGamepadEditMode() {
-        if (!this.gamepadEditor && window.VirtualGamepadEditor) {
-            this.gamepadEditor = new window.VirtualGamepadEditor(this);
+        if (!this.gamepadEditor && window.EJS_VirtualGamepadEditor) {
+            this.gamepadEditor = new window.EJS_VirtualGamepadEditor(this);
         }
         if (!this.gamepadEditor) return;
         this.gamepadEditor.enter();
