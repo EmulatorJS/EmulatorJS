@@ -87,13 +87,13 @@ class EJSCompression {
                 path = "compression/libunrar.js";
                 obj = "rar";
             }
-            const res = await this.EJS.downloadFile(path, null, false, { responseType: "text", method: "GET" });
+            const res = await this.EJS.downloadFile(path, this.EJS.downloadType.support.name, null, false, { responseType: "text", method: "GET" }, false, this.EJS.downloadType.support.dontCache);
             if (res === -1) {
                 this.EJS.startGameError(this.EJS.localization("Network Error"));
                 return;
             }
             if (method === "rar") {
-                const res2 = await this.EJS.downloadFile("compression/libunrar.wasm", null, false, { responseType: "arraybuffer", method: "GET" });
+                const res2 = await this.EJS.downloadFile("compression/libunrar.wasm", this.EJS.downloadType.support.name, null, false, { responseType: "arraybuffer", method: "GET" }, false, this.EJS.downloadType.support.dontCache);
                 if (res2 === -1) {
                     this.EJS.startGameError(this.EJS.localization("Network Error"));
                     return;
@@ -151,7 +151,7 @@ class EJSCompression {
                 })
                 resolve(blob);
             } else {
-                const blob = new Blob([res.data], {
+                const blob = new Blob([res.data.files[0].bytes], {
                     type: "application/javascript"
                 })
                 resolve(blob);

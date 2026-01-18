@@ -116,20 +116,22 @@ const updateContributors = async () => {
     console.log("Updated Contributors.md with new contributors.");
 }
 
-console.log(`Current EmulatorJS Version: ${version}`);
-if (!update_version) {
-    console.warn("Warning: Version number not provided.");
-} else {
-    console.log(`Updating EmulatorJS Version number to: ${update_version}`);
-}
+(async () => {
+    console.log(`Current EmulatorJS Version: ${version}`);
+    if (!update_version) {
+        console.warn("Warning: Version number not provided.");
+    } else {
+        console.log(`Updating EmulatorJS Version number to: ${update_version}`);
+    }
 
-console.log("Updating EmulatorJS dependencies...");
-if (depsArg) {
-    await updateDependencies();
-}
-if (update_version || dev === "false" || dev === "true") {
-    console.log("Updating EmulatorJS version...");
-    await updateVersion(update_version || version);
-}
-await updateContributors();
-console.log("Updating EmulatorJS completed.");
+    console.log("Updating EmulatorJS dependencies...");
+    if (depsArg) {
+        await updateDependencies();
+    }
+    if (update_version || dev === "false" || dev === "true") {
+        console.log("Updating EmulatorJS version...");
+        await updateVersion(update_version || version);
+    }
+    await updateContributors();
+    console.log("Updating EmulatorJS completed.");
+})();
