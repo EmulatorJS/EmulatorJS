@@ -1027,18 +1027,6 @@ class EmulatorJS {
     }
 
     /**
-     * Download all game-related files (ROM, BIOS, parent, patch, and start state)
-     */
-    async downloadGameFiles() {
-        const romData = await this.download(this.config.gameUrl, this.downloadType.rom);
-        const biosData = await this.download(this.config.biosUrl, this.downloadType.bios);
-        await this.downloadStartState();
-        const parentData = await this.download(this.config.gameParentUrl, this.downloadType.parent);
-        const patchData = await this.download(this.config.gamePatchUrl, this.downloadType.patch);
-        return romData;
-    }
-
-    /**
      * Determine CUE file handling settings based on core type and configuration
      */
     determineCueSettings() {
@@ -1071,7 +1059,7 @@ class EmulatorJS {
         const prioritizeExtensions = ["cue", "ccd", "toc", "m3u"];
 
         let createCueFile = cueGenerationCores.includes(this.getCore());
-        if (this.config.disableCue === true) {
+        if (this.determineCueSettings()) {
             createCueFile = false;
         }
 
@@ -1154,7 +1142,13 @@ class EmulatorJS {
     downloadFiles() {
         (async () => {
             await this.initializeGameManager();
-            const romData = await this.downloadGameFiles();
+            
+            const romData = await this.download(this.config.gameUrl, this.downloadType.rom);
+            await this.download(this.config.biosUrl, this.downloadType.bios);
+            await this.downloadStartState();
+            await this.download(this.config.gameParentUrl, this.downloadType.parent);
+            await this.download(this.config.gamePatchUrl, this.downloadType.patch);
+
             this.determineCueSettings();
             this.startGameFromDownload(romData);
         })();
