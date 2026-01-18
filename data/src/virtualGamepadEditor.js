@@ -1,20 +1,34 @@
 /**
- * HistoryManager - Command pattern for undo/redo operations
+ * Manages undo/redo history using the Command pattern.
+ * Stores actions as pairs of undo/redo functions that can be executed to
+ * reverse or replay state changes.
+ *
+ * @class EJS_HistoryManager
  */
-class HistoryManager {
+class EJS_HistoryManager {
+    /**
+     * Creates a new history manager.
+     * @param {Function} onUpdate - Callback invoked after any history change
+     */
     constructor(onUpdate) {
         this.undoStack = [];
         this.redoStack = [];
         this.onUpdate = onUpdate;
     }
 
+    /**
+     * Pushes a new action onto the history stack and clears redo history.
+     * @param {{undo: Function, redo: Function}} action - Action with undo/redo functions
+     */
     push(action) {
-        // action = { undo: Function, redo: Function }
         this.undoStack.push(action);
         this.redoStack = [];
         this.onUpdate();
     }
 
+    /**
+     * Undoes the most recent action.
+     */
     undo() {
         const action = this.undoStack.pop();
         if (action) {
@@ -24,6 +38,9 @@ class HistoryManager {
         }
     }
 
+    /**
+     * Redoes the most recently undone action.
+     */
     redo() {
         const action = this.redoStack.pop();
         if (action) {
@@ -33,13 +50,23 @@ class HistoryManager {
         }
     }
 
+    /**
+     * Clears all history.
+     */
     clear() {
         this.undoStack = [];
         this.redoStack = [];
         this.onUpdate();
     }
 
+    /**
+     * @returns {boolean} True if there are actions to undo
+     */
     canUndo() { return this.undoStack.length > 0; }
+
+    /**
+     * @returns {boolean} True if there are actions to redo
+     */
     canRedo() { return this.redoStack.length > 0; }
 }
 
