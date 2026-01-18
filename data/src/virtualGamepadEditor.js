@@ -44,9 +44,23 @@ class HistoryManager {
 }
 
 /**
- * OverlayElement - Encapsulates overlay creation and state for a single editable element
+ * Represents an editable overlay for a virtual gamepad control element.
+ * Creates a draggable/resizable overlay positioned over the original element,
+ * handling position state and undo/redo integration.
+ *
+ * @class EJS_OverlayElement
  */
-class OverlayElement {
+class EJS_OverlayElement {
+    /**
+     * Creates a new overlay element.
+     * @param {EJS_VirtualGamepadEditor} editor - The parent editor instance
+     * @param {HTMLElement} original - The original DOM element being edited
+     * @param {string} id - Unique identifier for this element (e.g., "b_A", "b_dpad")
+     * @param {string} type - Element type: "button", "dpad", or "zone"
+     * @param {DOMRect} rect - Bounding rectangle of the original element
+     * @param {DOMRect} parentRect - Bounding rectangle of the parent container
+     * @param {Object} [defaults] - Default position/size values for reset functionality
+     */
     constructor(editor, original, id, type, rect, parentRect, defaults) {
         this.editor = editor;
         this.original = original;
@@ -58,6 +72,13 @@ class OverlayElement {
         this.startState = this.captureState();
     }
 
+    /**
+     * Creates the visual overlay element with styling and event handlers.
+     * @param {DOMRect} rect - Bounding rectangle of the original element
+     * @param {DOMRect} parentRect - Bounding rectangle of the parent container
+     * @returns {HTMLElement} The created overlay element
+     * @private
+     */
     createOverlay(rect, parentRect) {
         const emu = this.editor.emu;
         const overlay = emu.createElement("div");
@@ -115,6 +136,11 @@ class OverlayElement {
         return overlay;
     }
 
+    /**
+     * Sets up drag interaction handlers for moving the overlay.
+     * @param {HTMLElement} overlay - The overlay element to make draggable
+     * @private
+     */
     setupDragHandlers(overlay) {
         let startLeft, startTop, dragOldState;
 
@@ -150,6 +176,11 @@ class OverlayElement {
         if (cleanup) this.cleanupFns.push(cleanup);
     }
 
+    /**
+     * Creates and sets up a resize handle for the overlay.
+     * @param {HTMLElement} overlay - The overlay element to add resize handle to
+     * @private
+     */
     setupResizeHandle(overlay) {
         const emu = this.editor.emu;
         const handle = emu.createElement("div");
@@ -190,6 +221,10 @@ class OverlayElement {
         if (cleanup) this.cleanupFns.push(cleanup);
     }
 
+    /**
+     * Captures the current position and size state of the overlay.
+     * @returns {{left: number, top: number, width: number, height: number}} Current state
+     */
     captureState() {
         return {
             left: parseFloat(this.overlay.style.left) || 0,
@@ -199,6 +234,10 @@ class OverlayElement {
         };
     }
 
+    /**
+     * Applies a position/size state to the overlay.
+     * @param {{left?: number, top?: number, width?: number, height?: number}} state - State to apply
+     */
     setState(state) {
         if (state.left !== undefined) this.overlay.style.left = state.left + "px";
         if (state.top !== undefined) this.overlay.style.top = state.top + "px";
@@ -206,11 +245,19 @@ class OverlayElement {
         if (state.height !== undefined) this.overlay.style.height = state.height + "px";
     }
 
+    /**
+     * Sets the overlay dimensions.
+     * @param {number} width - Width in pixels
+     * @param {number} height - Height in pixels
+     */
     setSize(width, height) {
         this.overlay.style.width = width + "px";
         this.overlay.style.height = height + "px";
     }
 
+    /**
+     * Resets the overlay to its position when the editor was opened.
+     */
     resetToStart() {
         this.setState({
             left: this.overlay._startLeft,
@@ -220,6 +267,10 @@ class OverlayElement {
         });
     }
 
+    /**
+     * Resets the overlay to its default position from CSS/config.
+     * @returns {{oldState: Object, newState: Object}|false} State change info, or false if unchanged
+     */
     resetToDefault() {
         const oldState = this.captureState();
         const newState = {
@@ -241,6 +292,9 @@ class OverlayElement {
         return { oldState, newState };
     }
 
+    /**
+     * Removes all event listeners and cleans up resources.
+     */
     cleanup() {
         this.cleanupFns.forEach(fn => fn());
         this.cleanupFns = [];
