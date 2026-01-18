@@ -248,13 +248,21 @@ class OverlayElement {
 }
 
 /**
- * VirtualGamepadEditor - Orchestrates edit mode for virtual gamepad
+ * Orchestrates the virtual gamepad edit mode.
+ * Provides UI for repositioning and resizing virtual gamepad controls,
+ * with undo/redo support and persistent storage of layouts.
+ *
+ * @class EJS_VirtualGamepadEditor
  */
-class VirtualGamepadEditor {
+class EJS_VirtualGamepadEditor {
+    /**
+     * Creates a new virtual gamepad editor.
+     * @param {Object} emulator - The EmulatorJS instance
+     */
     constructor(emulator) {
         this.emu = emulator;
         this.elements = [];
-        this.history = new HistoryManager(() => this.updateToolbarState());
+        this.history = new EJS_HistoryManager(() => this.updateToolbarState());
         this.container = null;
         this.overlayContainer = null;
         this.toolbar = null;
@@ -264,12 +272,25 @@ class VirtualGamepadEditor {
         this.active = false;
     }
 
-    /** Check if edit mode is currently active */
+    /**
+     * Whether edit mode is currently active.
+     * @type {boolean}
+     */
     get isActive() {
         return this.active;
     }
 
-    /** Setup pointer (touch + mouse) interaction with unified event handling */
+    /**
+     * Sets up unified pointer (touch + mouse) interaction handlers.
+     * @param {HTMLElement} element - Element to attach handlers to
+     * @param {Object} options - Handler options
+     * @param {Function} options.onStart - Called on pointer down, receives {x, y, event}
+     * @param {Function} options.onMove - Called on pointer move, receives {x, y, deltaX, deltaY, event}
+     * @param {Function} options.onEnd - Called on pointer up, receives {event}
+     * @param {boolean} [options.documentEvents=false] - Attach move/end to document
+     * @param {boolean} [options.stopPropagation=false] - Stop event propagation
+     * @returns {Function} Cleanup function to remove listeners
+     */
     setupPointerInteraction(element, { onStart, onMove, onEnd, documentEvents = false, stopPropagation = false }) {
         let isActive = false;
         let startX = 0, startY = 0;
@@ -320,6 +341,9 @@ class VirtualGamepadEditor {
         };
     }
 
+    /**
+     * Enters edit mode, pausing the emulator and displaying the editor UI.
+     */
     enter() {
         if (this.active) return;
         this.active = true;
@@ -367,6 +391,11 @@ class VirtualGamepadEditor {
         this.emu.virtualGamepad.classList.add("ejs_virtualGamepad_edit_mode_faded");
     }
 
+    /**
+     * Creates the editor toolbar with undo/redo/reset/save buttons.
+     * @returns {HTMLElement} The toolbar element
+     * @private
+     */
     createToolbar() {
         const toolbar = this.emu.createElement("div");
         toolbar.classList.add("ejs_virtualGamepad_edit_toolbar");
@@ -398,6 +427,18 @@ class VirtualGamepadEditor {
         return toolbar;
     }
 
+    /**
+     * Creates a toolbar button from configuration.
+     * @param {Object} cfg - Button configuration
+     * @param {string} [cfg.icon] - SVG icon HTML
+     * @param {string} [cfg.text] - Button text (localization key)
+     * @param {string} cfg.cls - CSS class suffix
+     * @param {string} [cfg.title] - Tooltip text (localization key)
+     * @param {Function} cfg.action - Click handler
+     * @param {Function} [cfg.getDisabled] - Returns whether button should be disabled
+     * @returns {HTMLButtonElement} The button element
+     * @private
+     */
     createButton(cfg) {
         const btn = this.emu.createElement("button");
         if (cfg.icon) {
@@ -421,7 +462,10 @@ class VirtualGamepadEditor {
         return btn;
     }
 
-    /** Check if any element has changed from its start position */
+    /**
+     * Checks if any element has changed from its position when the editor opened.
+     * @returns {boolean} True if any element has moved or resized
+     */
     hasChangesFromStart() {
         return this.elements.some(el => {
             const current = el.captureState();
@@ -432,6 +476,10 @@ class VirtualGamepadEditor {
         });
     }
 
+    /**
+     * Updates toolbar button disabled states based on current conditions.
+     * @private
+     */
     updateToolbarState() {
         for (const key in this.toolbarButtons) {
             const { element, getDisabled } = this.toolbarButtons[key];
@@ -439,6 +487,10 @@ class VirtualGamepadEditor {
         }
     }
 
+    /**
+     * Creates overlay elements for all editable virtual gamepad controls.
+     * @private
+     */
     setupOverlayElements() {
         const parentRect = this.emu.elements.parent.getBoundingClientRect();
         const virtualGamepad = this.emu.virtualGamepad;
@@ -451,7 +503,7 @@ class VirtualGamepadEditor {
             const rect = btn.getBoundingClientRect();
             const defaults = this.emu.virtualGamepadDefaults[id];
 
-            const overlayEl = new OverlayElement(this, btn, id, "button", rect, parentRect, defaults);
+            const overlayEl = new EJS_OverlayElement(this, btn, id, "button", rect, parentRect, defaults);
             this.overlayContainer.appendChild(overlayEl.overlay);
             this.elements.push(overlayEl);
         });
@@ -466,7 +518,7 @@ class VirtualGamepadEditor {
             const rect = dpadMain.getBoundingClientRect();
             const defaults = this.emu.virtualGamepadDefaults[id];
 
-            const overlayEl = new OverlayElement(this, dpadContainer, id, "dpad", rect, parentRect, defaults);
+            const overlayEl = new EJS_OverlayElement(this, dpadContainer, id, "dpad", rect, parentRect, defaults);
             this.overlayContainer.appendChild(overlayEl.overlay);
             this.elements.push(overlayEl);
         });
@@ -503,13 +555,16 @@ class VirtualGamepadEditor {
             zone.style.position = "absolute";
             const defaults = this.emu.virtualGamepadDefaults[id];
 
-            const overlayEl = new OverlayElement(this, zone, id, "zone", rect, parentRect, defaults);
+            const overlayEl = new EJS_OverlayElement(this, zone, id, "zone", rect, parentRect, defaults);
             overlayEl.nippleElement = nipple;
             this.overlayContainer.appendChild(overlayEl.overlay);
             this.elements.push(overlayEl);
         });
     }
 
+    /**
+     * Clears all changes made in the current session, reverting to session start state.
+     */
     clear() {
         // Capture current states of all elements
         const oldStates = this.elements.map(el => ({ element: el, state: el.captureState() }));
@@ -538,6 +593,9 @@ class VirtualGamepadEditor {
         });
     }
 
+    /**
+     * Resets all elements to their default CSS/config positions.
+     */
     reset() {
         // Capture current states of all elements
         const oldStates = this.elements.map(el => ({ element: el, state: el.captureState() }));
@@ -560,6 +618,10 @@ class VirtualGamepadEditor {
         });
     }
 
+    /**
+     * Exits edit mode, optionally saving changes.
+     * @param {boolean} save - Whether to save changes before exiting
+     */
     exit(save) {
         if (!this.active) return;
 
@@ -604,6 +666,10 @@ class VirtualGamepadEditor {
         this.active = false;
     }
 
+    /**
+     * Applies overlay positions to the original DOM elements.
+     * @private
+     */
     applyChangesToOriginals() {
         const parentRect = this.emu.elements.parent.getBoundingClientRect();
 
@@ -685,6 +751,14 @@ class VirtualGamepadEditor {
         });
     }
 
+    /**
+     * Recreates a nipplejs zone with new position and size.
+     * @param {HTMLElement} element - The zone container element
+     * @param {Object} defaults - Default configuration for the zone
+     * @param {{left: string, top: string}} position - New position (CSS values)
+     * @param {number} size - New size in pixels
+     * @private
+     */
     recreateZone(element, defaults, position, size) {
         this.emu.unbindZoneEventHandlers(defaults.nippleManager);
         defaults.nippleManager.destroy();
@@ -704,6 +778,12 @@ class VirtualGamepadEditor {
         defaults.element = newBack || defaults.nippleElement;
     }
 
+    /**
+     * Restores a zone to its original default position and size.
+     * @param {HTMLElement} element - The zone container element
+     * @param {Object} defaults - Default configuration for the zone
+     * @private
+     */
     restoreZoneToDefault(element, defaults) {
         const originalSize = defaults.originalSize || 100;
         
@@ -730,6 +810,15 @@ class VirtualGamepadEditor {
         }, originalSize);
     }
 
+    /**
+     * Applies a new position and scale to a zone element.
+     * @param {HTMLElement} element - The zone container element
+     * @param {Object} state - Current overlay state {left, top, width, height}
+     * @param {number} scale - Scale factor to apply
+     * @param {Object} defaults - Default configuration for the zone
+     * @param {DOMRect} parentRect - Parent container bounding rectangle
+     * @private
+     */
     applyZonePosition(element, state, scale, defaults, parentRect) {
         // nipplejs positions relative to the zone element, not its parent
         const elementRect = element.getBoundingClientRect();
@@ -755,4 +844,4 @@ class VirtualGamepadEditor {
     }
 }
 
-window.VirtualGamepadEditor = VirtualGamepadEditor;
+window.EJS_VirtualGamepadEditor = EJS_VirtualGamepadEditor;
