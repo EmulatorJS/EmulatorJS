@@ -155,6 +155,10 @@
                     <input type="checkbox" id="threadsToggle" />
                     <label for="threadsToggle"> Enable Threads</label>
                 </div>
+                <div id="advancedOptionsCache" class="advancedOptionsBoxRow">
+                    <input type="checkbox" id="cacheToggle" checked="checked" />
+                    <label for="cacheToggle"> Enable Cache</label>
+                </div>
                 <div class="advancedOptionsBoxRow">
                     <span>Browser mode: </span>
                     <input type="radio" id="browserModeAuto" name="browserMode" value="auto">
@@ -192,6 +196,17 @@
             debugToggle.addEventListener("change", (event) => {
                 enableDebug = event.target.checked;
                 console.log(`Debug is ${enableDebug ? "enabled" : "disabled"}`);
+            });
+            const cacheToggle = document.getElementById("cacheToggle");
+            window.EJS_cacheConfig = {
+                enabled: true,
+                cacheMaxSizeMB: 4096, // 4096 MB = 4 GB
+                cacheMaxAgeMins: 7200 // 7200 minutes = 5 days
+            };
+            cacheToggle.addEventListener("change", (event) => {
+                const cacheEnabled = event.target.checked;
+                console.log(`Cache is ${cacheEnabled ? "enabled" : "disabled"}`);
+                window.EJS_cacheConfig.enabled = cacheEnabled;
             });
             const threadsToggleAvailable = document.getElementById("advancedOptionsBoxThreads");
             const threadsToggle = document.getElementById("threadsToggle");
@@ -406,11 +421,6 @@
                 if (browserMode) {
                     window.EJS_browserMode = browserMode;
                 }
-                window.EJS_cacheConfig = {
-                    enabled: true,
-                    cacheMaxSizeMB: 4096, // 4096 MB = 4 GB
-                    cacheMaxAgeMins: 7200 // 7200 minutes = 5 days
-                };
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);
