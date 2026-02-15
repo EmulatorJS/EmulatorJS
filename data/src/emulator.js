@@ -256,6 +256,29 @@ class EmulatorJS {
         this.netplayEnabled = true;
         this.utils = new EJS_UTILS();
         this.config = config;
+        // set cache configuration defaults
+        const cacheConfigDefaults = {
+            enabled: true,
+            cacheMaxSizeMB: 4096,
+            cacheMaxAgeMins: 7200
+        };
+        // Overwrite invalid or missing values in this.config.cacheConfig with defaults
+        if (this.config.cacheConfig === undefined || typeof this.config.cacheConfig !== "object") {
+            this.config.cacheConfig = cacheConfigDefaults;
+        } else {
+            if (!this.config.cacheConfig || typeof this.config.cacheConfig !== "object") {
+                this.config.cacheConfig = {};
+            }
+            if (typeof this.config.cacheConfig.enabled !== "boolean") {
+                this.config.cacheConfig.enabled = cacheConfigDefaults.enabled;
+            }
+            if (typeof this.config.cacheConfig.cacheMaxSizeMB !== "number" || this.config.cacheConfig.cacheMaxSizeMB <= 0) {
+                this.config.cacheConfig.cacheMaxSizeMB = cacheConfigDefaults.cacheMaxSizeMB;
+            }
+            if (typeof this.config.cacheConfig.cacheMaxAgeMins !== "number" || this.config.cacheConfig.cacheMaxAgeMins <= 0) {
+                this.config.cacheConfig.cacheMaxAgeMins = cacheConfigDefaults.cacheMaxAgeMins;
+            }
+        }
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
         switch (this.config.browserMode) {
@@ -376,25 +399,6 @@ class EmulatorJS {
 
         this.storage = {}
     
-        // set cache configuration defaults
-        const cacheConfigDefaults = {
-            enabled: true,
-            cacheMaxSizeMB: 4096,
-            cacheMaxAgeMins: 7200
-        };
-        // Overwrite invalid or missing values in this.config.cacheConfig with defaults
-        if (!this.config.cacheConfig || typeof this.config.cacheConfig !== "object") {
-            this.config.cacheConfig = {};
-        }
-        if (typeof this.config.cacheConfig.enabled !== "boolean") {
-            this.config.cacheConfig.enabled = cacheConfigDefaults.enabled;
-        }
-        if (typeof this.config.cacheConfig.cacheMaxSizeMB !== "number" || this.config.cacheConfig.cacheMaxSizeMB <= 0) {
-            this.config.cacheConfig.cacheMaxSizeMB = cacheConfigDefaults.cacheMaxSizeMB;
-        }
-        if (typeof this.config.cacheConfig.cacheMaxAgeMins !== "number" || this.config.cacheConfig.cacheMaxAgeMins <= 0) {
-            this.config.cacheConfig.cacheMaxAgeMins = cacheConfigDefaults.cacheMaxAgeMins;
-        }
         if (this.config.disableDatabases === true) {
             this.config.cacheConfig.enabled = false;
         }
