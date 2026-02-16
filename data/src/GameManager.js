@@ -464,11 +464,17 @@ IF EXIST AUTORUN.BAT AUTORUN.BAT
         this.functions.setKeyboardEnabled(enabled === true ? 3 : 2);
     }
     listDir(path, indent = "") {
+        const skipPaths = ["/dev", "/proc", "/sys"];
+        if (skipPaths.includes(path)) {
+            console.warn(`Skipping directory listing for ${path}`);
+            return;
+        }
         try {
             const entries = this.FS.readdir(path);
             for (const entry of entries) {
                 if (entry === "." || entry === "..") continue;
                 const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
+                if (skipPaths.some(skip => fullPath.startsWith(skip))) continue;
                 const stat = this.FS.stat(fullPath);
                 if (this.FS.isDir(stat.mode)) {
                     console.log(`${indent}[DIR] ${fullPath}`);
