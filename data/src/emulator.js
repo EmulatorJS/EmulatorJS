@@ -6921,9 +6921,10 @@ class EmulatorJS {
                             btn.innerText = self.localization("Join");
                             c3.appendChild(btn);
                             self.addEventListener(btn, "click", function() {
-                                const pw = r.hasPassword ? prompt("Password:") : null;
-                                if (pw !== undefined) {
-                                    self.netplayJoinRoom(id, r.room_name, r.max, pw ? pw.trim() : null);
+                                if (r.hasPassword) {
+                                    self.netplayShowJoinPasswordDialog(id, r.room_name, r.max);
+                                } else {
+                                    self.netplayJoinRoom(id, r.room_name, r.max, null);
                                 }
                             });
                         }
@@ -7003,7 +7004,148 @@ class EmulatorJS {
             popups[1].appendChild(sub);
             popups[1].appendChild(cls);
         };
-
+        
+        this.netplayShowJoinPasswordDialog = function(roomId, roomName, maxPlayers) {
+            if (!this.createSubPopup) return;
+            const self = this;
+            
+            const popups = this.createSubPopup();
+            this.netplayMenu.appendChild(popups[0]);
+            popups[1].classList.add("ejs_cheat_parent");
+            
+            const title = this.createElement("h2");
+            title.innerText = this.localization("Enter Password");
+            title.classList.add("ejs_netplay_name_heading");
+            popups[1].appendChild(title);
+            
+            const form = this.createElement("div");
+            form.classList.add("ejs_netplay_header");
+            
+            const roomLabel = this.createElement("div");
+            roomLabel.classList.add("ejs_netplay_dialog_label");
+            roomLabel.innerText = this.localization("Room") + ": " + roomName;
+            form.appendChild(roomLabel);
+            
+            const pwLabel = this.createElement("strong");
+            pwLabel.innerText = this.localization("Password");
+            form.appendChild(pwLabel);
+            form.appendChild(this.createElement("br"));
+            
+            const pwInput = this.createElement("input");
+            pwInput.type = "password";
+            pwInput.maxLength = 20;
+            pwInput.placeholder = this.localization("Enter room password");
+            form.appendChild(pwInput);
+            
+            popups[1].appendChild(form);
+            
+            const buttonRow = this.createElement("div");
+            buttonRow.classList.add("ejs_netplay_dialog_buttons");
+            
+            const joinBtn = this.createElement("button");
+            joinBtn.classList.add("ejs_button_button", "ejs_popup_submit");
+            joinBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
+            joinBtn.innerText = this.localization("Join");
+            
+            const cancelBtn = this.createElement("button");
+            cancelBtn.classList.add("ejs_button_button", "ejs_popup_submit");
+            cancelBtn.innerText = this.localization("Cancel");
+            
+            this.addEventListener(joinBtn, "click", function() {
+                const pw = pwInput.value.trim();
+                popups[0].remove();
+                if (pw) {
+                    self.netplayJoinRoom(roomId, roomName, maxPlayers, pw);
+                }
+            });
+            
+            this.addEventListener(cancelBtn, "click", function() {
+                popups[0].remove();
+            });
+            
+            this.addEventListener(pwInput, "keydown", function(e) {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    const pw = pwInput.value.trim();
+                    popups[0].remove();
+                    if (pw) {
+                        self.netplayJoinRoom(roomId, roomName, maxPlayers, pw);
+                    }
+                }
+                if (e.key === "Escape") {
+                    popups[0].remove();
+                }
+            });
+            
+            buttonRow.appendChild(joinBtn);
+            buttonRow.appendChild(cancelBtn);
+            popups[1].appendChild(buttonRow);
+            
+            setTimeout(function() {
+                pwInput.focus();
+            }, 50);
+        };
+        
+        this.netplayShowJoinErrorDialog = function(roomId, roomName, maxPlayers, errorMessage, hadPassword) {
+            if (!this.createSubPopup) {
+                this.displayMessage(this.localization("Join error") + ": " + errorMessage, 5000);
+                return;
+            }
+            const self = this;
+            
+            const popups = this.createSubPopup();
+            this.netplayMenu.appendChild(popups[0]);
+            popups[1].classList.add("ejs_cheat_parent");
+            
+            const title = this.createElement("h2");
+            title.innerText = this.localization("Unable to Join");
+            title.classList.add("ejs_netplay_name_heading");
+            popups[1].appendChild(title);
+            
+            const content = this.createElement("div");
+            content.classList.add("ejs_netplay_header");
+            
+            const roomLabel = this.createElement("div");
+            roomLabel.classList.add("ejs_netplay_dialog_label");
+            roomLabel.innerText = this.localization("Room") + ": " + roomName;
+            content.appendChild(roomLabel);
+            
+            const errorBox = this.createElement("div");
+            errorBox.classList.add("ejs_netplay_error_box");
+            errorBox.innerText = errorMessage;
+            content.appendChild(errorBox);
+            
+            popups[1].appendChild(content);
+            
+            const buttonRow = this.createElement("div");
+            buttonRow.classList.add("ejs_netplay_dialog_buttons");
+            
+            if (hadPassword) {
+                const retryBtn = this.createElement("button");
+                retryBtn.classList.add("ejs_button_button", "ejs_popup_submit");
+                retryBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
+                retryBtn.innerText = this.localization("Try Again");
+                
+                this.addEventListener(retryBtn, "click", function() {
+                    popups[0].remove();
+                    self.netplayShowJoinPasswordDialog(roomId, roomName, maxPlayers);
+                });
+                
+                buttonRow.appendChild(retryBtn);
+            }
+            
+            const closeBtn = this.createElement("button");
+            closeBtn.classList.add("ejs_button_button", "ejs_popup_submit");
+            closeBtn.innerText = this.localization("Close");
+            
+            this.addEventListener(closeBtn, "click", function() {
+                popups[0].remove();
+            });
+            
+            buttonRow.appendChild(closeBtn);
+            popups[1].appendChild(buttonRow);
+        };          
+           
         this.netplayStartSocketIO = function(cb) {
             const self = this;
 
@@ -7335,7 +7477,7 @@ class EmulatorJS {
             this.netplayStartSocketIO(function() {
                 self.netplay.socket.emit("join-room", { extra: self.netplay.extra, password: pw }, function(e, u) {
                     if (e) {
-                        alert("Join error: " + e);
+                        self.netplayShowJoinErrorDialog(sid, rn, mp, e, !!pw);
                         return;
                     }
                     self.netplay.players = u;
