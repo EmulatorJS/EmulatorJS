@@ -297,5 +297,6 @@
     "DPAD_UP": "DPAD_ВВЕРХ",
     "DPAD_DOWN": "DPAD_ВНИЗ",
     "DPAD_LEFT": "DPAD_ВЛЕВО",
-    "DPAD_RIGHT": "DPAD_СПРАВО"
+    "DPAD_RIGHT": "DPAD_СПРАВО",
+    "Autofire": "Autofire"
 }

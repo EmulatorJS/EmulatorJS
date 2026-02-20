@@ -306,5 +306,6 @@
     "DPAD_UP": "DPAD ARRIBA",
     "DPAD_DOWN": "DPAD_ABAJO",
     "DPAD_LEFT": "DPAD_IZQUIERDA",
-    "DPAD_RIGHT": "DPAD_DERECHO"
+    "DPAD_RIGHT": "DPAD_DERECHO",
+    "Autofire": "Autofire"
 }
