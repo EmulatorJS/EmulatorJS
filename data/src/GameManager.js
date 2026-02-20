@@ -170,11 +170,10 @@ SET BLASTER=A220 I7 D1 H5 T6
 
 @ECHO OFF
 mount A / -t floppy
-SET PATH=Z:\\;A:\\
+SET PATH=Z:\;A:\
 mount c /emulator/c
 c:
-COMMAND.COM
-IF EXIST AUTORUN.BAT AUTORUN.BAT
+IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
 `;
         const filename = "BOOTUP.BAT";
         this.FS.writeFile("/" + filename, data);
