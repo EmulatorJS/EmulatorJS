@@ -1,5 +1,6 @@
 (async function() {
     const scripts = [
+        "virtualGamepadEditor.js",
         "emulator.js",
         "nipplejs.js",
         "shaders.js",
