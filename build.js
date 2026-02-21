@@ -61,9 +61,9 @@ if (!build_type) {
     Seven.add(`dist/${version}.7z`, './', {
         $raw: ['-xr@dist/.ignore'],
         $progress: true
-    }).on('progress', function (progress) {
+    }).on('progress', (progress) => {
         progressData['7z'] = progress.percent;
-    }).on('end', function() {
+    }).on('end', () => {
         progressData['7z'] = 100;
 
     });
@@ -71,9 +71,9 @@ if (!build_type) {
     Seven.add(`dist/${version}.zip`, './', {
         $raw: ['-xr@dist/.ignore'],
         $progress: true
-    }).on('progress', function (progress) {
+    }).on('progress', (progress) => {
         progressData['zip'] = progress.percent;
-    }).on('end', function() {
+    }).on('end', () => {
         progressData['zip'] = 100;
     });
 } else if (build_type !== "emulatorjs" && build_type !== "cores" && build_type !== "get-cores") {
@@ -99,14 +99,15 @@ if (!build_type) {
         return JSON.parse(fs.readFileSync(coresJsonPath, 'utf8'));
     };
 
-    if (build_type === "emulatorjs") {
-        console.log(`Current EmulatorJS Version: ${version}`);
-        removeLogo();
-        console.log("Ready to build EmulatorJS!");
-    } else if (build_type === "get-cores") {
-        const cores = await getCores();
-        console.log(JSON.stringify(cores.map(coreName => coreName.name)));
-    } else if (build_type === "cores") {
+    const main = async () => {
+        if (build_type === "emulatorjs") {
+            console.log(`Current EmulatorJS Version: ${version}`);
+            removeLogo();
+            console.log("Ready to build EmulatorJS!");
+        } else if (build_type === "get-cores") {
+            const cores = await getCores();
+            console.log(JSON.stringify(cores.map(coreName => coreName.name)));
+        } else if (build_type === "cores") {
         console.log(`Current EmulatorJS Version: ${version}`);
         console.log("Building cores...");
         const allCores = await getCores();
@@ -177,7 +178,10 @@ if (!build_type) {
             packageJson.dependencies[`@emulatorjs/core-${core}`] = "latest";
             fs.writeFileSync(packagePath, JSON.stringify(packageJson, null, 4), 'utf8');
         }
-        console.log("EmulatorJS cores built successfully!");
-        console.log("Ready to build EmulatorJS!");
-    }
+            console.log("EmulatorJS cores built successfully!");
+            console.log("Ready to build EmulatorJS!");
+        }
+    };
+
+    main();
 }

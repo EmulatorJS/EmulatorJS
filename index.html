@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="utf-8">
         <title>EmulatorJS</title>
-        <link rel = icon href = docs/favicon.ico sizes = "16x16 32x32 48x48 64x64" type = image/vnd.microsoft.icon>
-        <meta name = viewport content = "width = device-width, initial-scale = 1">
+        <link rel="icon" href="docs/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+        <meta name="viewport" content="width = device-width, initial-scale = 1">
         <style>
              body, html {
                 height: 100%;
@@ -47,6 +48,35 @@
             #box:hover, #box[drag] {
                 border-color: #1AAFFF;
                 color: #ddd
+            }
+
+            #advanced {
+                color: #aaa;
+                text-align: left;
+                width: 30em;
+                max-width: 80%;
+                background-color: #333;
+                border-radius: 0.4em;
+                border: 2px solid #555;
+                position: relative;
+                flex-direction: column;
+                transition-duration: 0.2s;
+                overflow: hidden;
+                font-family: monospace;
+                font-weight: bold;
+                font-size: 20px;
+                margin: 5px;
+                padding: 10px;
+            }
+
+            #advancedOptionsBox {
+                margin-top: 10px;
+                font-size: 14px;
+                margin-left: 20px;
+            }
+
+            .advancedOptionsBoxRow {
+                margin-top: 10px;
             }
 
             #input {
@@ -107,34 +137,147 @@
             <input type="file" id ="input" title="Upload" />
             Drag ROM file or click here
         </div>
+        <div id="advanced">
+            <div id="advancedToggleBox">
+                <input type="checkbox" id="advancedToggle" />
+                <label for="advancedToggle"> Show Advanced Options</label>
+            </div>
+            <div id="advancedOptionsBox">
+                <div class="advancedOptionsBoxRow">
+                    <input type="file" id ="inputAdvanced" title="BIOS" />
+                    <label for="inputAdvanced"> Upload BIOS file (if required)</label>
+                </div>
+                <div class="advancedOptionsBoxRow">
+                    <input type="checkbox" id="debugToggle" />
+                    <label for="debugToggle"> Enable Debug Mode</label>
+                </div>
+                <div id="advancedOptionsBoxThreads" class="advancedOptionsBoxRow">
+                    <input type="checkbox" id="threadsToggle" />
+                    <label for="threadsToggle"> Enable Threads</label>
+                </div>
+                <div id="advancedOptionsCache" class="advancedOptionsBoxRow">
+                    <input type="checkbox" id="cacheToggle" checked="checked" />
+                    <label for="cacheToggle"> Enable Cache</label>
+                </div>
+                <div class="advancedOptionsBoxRow">
+                    <span>Browser mode: </span>
+                    <input type="radio" id="browserModeAuto" name="browserMode" value="auto">
+                    <label for="browserModeAuto"> Auto </label>
+                    <input type="radio" id="browserModeDesktop" name="browserMode" value="desktop">
+                    <label for="browserModeDesktop"> Desktop </label>
+                    <input type="radio" id="browserModeMobile" name="browserMode" value="mobile">
+                    <label for="browserModeMobile"> Mobile </label>
+                </div>
+            </div>
+        </div>
 
         <script>
             let enableDebug = false;
             let enableThreads = false;
             let browserMode;
+
+            const biosFileInput = document.getElementById("inputAdvanced");
+            
+            const advancedToggle = document.getElementById("advancedToggle");
+            const advanced = document.getElementById("advanced");
+            const advancedOptionsBox = document.getElementById("advancedOptionsBox");
+            advancedOptionsBox.style.display = "none";
+            advancedToggle.addEventListener("change", (event) => {
+                if (event.target.checked) {
+                    advancedOptionsBox.style.display = "block";
+                } else {
+                    advancedOptionsBox.style.display = "none";
+                }
+            });
+
             const queryString = window.location.search;
             const urlParams = new URLSearchParams(queryString);
+            const debugToggle = document.getElementById("debugToggle");
+            debugToggle.addEventListener("change", (event) => {
+                enableDebug = event.target.checked;
+                console.log(`Debug is ${enableDebug ? "enabled" : "disabled"}`);
+            });
+            const cacheToggle = document.getElementById("cacheToggle");
+            window.EJS_cacheConfig = {
+                enabled: true,
+                cacheMaxSizeMB: 4096, // 4096 MB = 4 GB
+                cacheMaxAgeMins: 7200 // 7200 minutes = 5 days
+            };
+            cacheToggle.addEventListener("change", (event) => {
+                const cacheEnabled = event.target.checked;
+                console.log(`Cache is ${cacheEnabled ? "enabled" : "disabled"}`);
+                window.EJS_cacheConfig.enabled = cacheEnabled;
+            });
+            const threadsToggleAvailable = document.getElementById("advancedOptionsBoxThreads");
+            const threadsToggle = document.getElementById("threadsToggle");
+            threadsToggle.addEventListener("change", (event) => {
+                enableThreads = event.target.checked;
+                console.log(`Threads are ${enableThreads ? "enabled" : "disabled"}`);
+            });
             if (parseInt(urlParams.get("debug")) === 1 || urlParams.get("debug") === "true") {
                 enableDebug = true;
+                debugToggle.checked = true;
                 console.log("Debug is enabled");
             } else {
+                debugToggle.checked = false;
                 console.log("Debug is disabled");
             }
 
-            if (parseInt(urlParams.get("threads")) === 1 || urlParams.get("threads") === "true") {
-                if (window.SharedArrayBuffer) {
+            if (window.SharedArrayBuffer) {
+                threadsToggleAvailable.style.display = "block";
+                if (parseInt(urlParams.get("threads")) === 1 || urlParams.get("threads") === "true") {
                     enableThreads = true;
+                    threadsToggle.checked = true;
                     console.log("Threads are enabled");
                 } else {
-                    console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+                    threadsToggle.checked = false;
                     console.log("Threads are disabled");
                 }
             } else {
-                console.log("Threads are disabled");
+                threadsToggleAvailable.style.display = "none";
+                console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
             }
 
+            const browserModeAuto = document.getElementById("browserModeAuto");
+            browserModeAuto.addEventListener("change", (event) => {
+                if (event.target.checked) {
+                    browserMode = undefined;
+                    console.log("Browser mode set to auto");
+                }
+            });
+            const browserModeDesktop = document.getElementById("browserModeDesktop");
+            browserModeDesktop.addEventListener("change", (event) => {
+                if (event.target.checked) {
+                    browserMode = "desktop";
+                    console.log("Browser mode set to desktop");
+                }
+            });
+            const browserModeMobile = document.getElementById("browserModeMobile");
+            browserModeMobile.addEventListener("change", (event) => {
+                if (event.target.checked) {
+                    browserMode = "mobile";
+                    console.log("Browser mode set to mobile");
+                }
+            });
             if (urlParams.get("browserMode")) {
                 browserMode = urlParams.get("browserMode");
+                switch (browserMode) {
+                    case 1:
+                    case "1":
+                    case "mobile":
+                        browserModeMobile.checked = true;
+                        break;
+                    case 2:
+                    case "2":
+                    case "desktop":
+                        browserModeDesktop.checked = true;
+                        break;
+                    default:
+                        browserModeAuto.checked = true;
+                        break;
+                }
+            } else {
+                browserModeAuto.checked = true;
             }
 
             if (urlParams.get("rom")) {
@@ -145,6 +288,8 @@
             async function run(upload, file) {
                 const url = upload ? input.files[0] : `roms/${file}`;
                 const parts = upload ? input.files[0].name.split(".") : file.split(".");
+
+                const biosUrl = biosFileInput.files.length > 0 ? biosFileInput.files[0] : "";
 
                 const core = await (async (ext) => {
                     if (["fds", "nes", "unif", "unf"].includes(ext))
@@ -208,6 +353,7 @@
                             "Commodore VIC20": "vice_xvic",
                             "Commodore Plus/4": "vice_xplus4",
                             "Commodore PET": "vice_xpet",
+                            "Amiga": "puae"
                         }
                         
                         if (enableThreads) {
@@ -258,19 +404,19 @@
 
                 const top = document.getElementById("top");
                 top.remove();
-                box.remove()
-                div.appendChild(sub)
+                box.remove();
+                div.appendChild(sub);
+                advanced.remove();
                 document.body.appendChild(div)
 
                 window.EJS_player = "#game";
                 window.EJS_gameName = parts.shift();
-                window.EJS_biosUrl = "";
+                window.EJS_biosUrl = biosUrl;
                 window.EJS_gameUrl = url;
                 window.EJS_core = core;
                 window.EJS_pathtodata = "data/";
                 window.EJS_startOnLoaded = true;
                 window.EJS_DEBUG_XX = enableDebug;
-                window.EJS_disableDatabases = true;
                 window.EJS_threads = enableThreads;
                 if (browserMode) {
                     window.EJS_browserMode = browserMode;

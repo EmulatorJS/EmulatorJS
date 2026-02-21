@@ -87,34 +87,29 @@ class EJS_GameManager {
         return new Promise(async (resolve, reject) => {
             if (this.EJS.config.externalFiles && this.EJS.config.externalFiles.constructor.name === "Object") {
                 for (const key in this.EJS.config.externalFiles) {
-                    await new Promise(done => {
-                        this.EJS.downloadFile(this.EJS.config.externalFiles[key], null, true, { responseType: "arraybuffer", method: "GET" }).then(async (res) => {
-                            if (res === -1) {
-                                if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.");
-                                return done();
-                            }
+                    await new Promise(async (done) => {
+                        try {
+                            const url = this.EJS.config.externalFiles[key];
+                            const cacheItem = await this.EJS.downloadFile(url, this.EJS.downloadType.support.name, "GET", {}, null, null, null, 30000, "arraybuffer", false, this.EJS.downloadType.support.dontCache);
+                            
                             let path = key;
                             if (key.trim().endsWith("/")) {
-                                const invalidCharacters = /[#<$+%>!`&*'|{}/\\?"=@:^\r\n]/ig;
-                                let name = this.EJS.config.externalFiles[key].split("/").pop().split("#")[0].split("?")[0].replace(invalidCharacters, "").trim();
-                                if (!name) return done();
-                                const files = await this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Assets"));
-                                if (files["!!notCompressedData"]) {
-                                    path += name;
-                                } else {
-                                    for (const k in files) {
-                                        this.writeFile(path + k, files[k]);
-                                    }
-                                    return done();
+                                // Extract to directory
+                                for (let i = 0; i < cacheItem.files.length; i++) {
+                                    const file = cacheItem.files[i];
+                                    this.writeFile(path + file.filename, file.bytes);
+                                }
+                            } else {
+                                // Write single file (or first file from archive)
+                                if (cacheItem.files.length > 0) {
+                                    this.writeFile(path, cacheItem.files[0].bytes);
                                 }
                             }
-                            try {
-                                this.writeFile(path, new Uint8Array(res.data));
-                            } catch(e) {
-                                if (this.EJS.debug) console.warn("Failed to write file to '" + path + "'. Make sure there are no conflicting files.");
-                            }
                             done();
-                        });
+                        } catch (e) {
+                            if (this.EJS.debug) console.warn("Failed to fetch file from '" + this.EJS.config.externalFiles[key] + "'. Make sure the file exists.", e);
+                            done();
+                        }
                     })
                 }
             }
@@ -349,35 +344,36 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
         return (fileNames.length === 1) ? baseFileName + "-0.cue" : baseFileName + ".m3u";
     }
     loadPpssppAssets() {
-        return new Promise(resolve => {
-            this.EJS.downloadFile("cores/ppsspp-assets.zip", null, false, { responseType: "arraybuffer", method: "GET" }).then((res) => {
-                this.EJS.checkCompression(new Uint8Array(res.data), this.EJS.localization("Decompress Game Data")).then((pspassets) => {
-                    if (pspassets === -1) {
-                        this.EJS.textElem.innerText = this.localization("Network Error");
-                        this.EJS.textElem.style.color = "red";
-                        return;
-                    }
-                    this.mkdir("/PPSSPP");
+        return new Promise(async (resolve, reject) => {
+            try {
+                const cacheItem = await this.EJS.downloader.downloadFile("data/cores/ppsspp-assets.zip", this.EJS.downloadType.core.name, "GET", {}, null, null, null, 30000, "arraybuffer", false, this.EJS.downloadType.core.dontCache);
 
-                    for (const file in pspassets) {
-                        const data = pspassets[file];
-                        const path = "/PPSSPP/" + file;
-                        const paths = path.split("/");
-                        let cp = "";
-                        for (let i = 0; i < paths.length - 1; i++) {
-                            if (paths[i] === "") continue;
-                            cp += "/" + paths[i];
-                            if (!this.FS.analyzePath(cp).exists) {
-                                this.FS.mkdir(cp);
-                            }
-                        }
-                        if (!path.endsWith("/")) {
-                            this.FS.writeFile(path, data);
+                console.log(cacheItem);
+                
+                this.mkdir("/PPSSPP");
+
+                for (let i = 0; i < cacheItem.files.length; i++) {
+                    const file = cacheItem.files[i];
+                    const path = "/PPSSPP/" + file.filename;
+                    const paths = path.split("/");
+                    let cp = "";
+                    for (let j = 0; j < paths.length - 1; j++) {
+                        if (paths[j] === "") continue;
+                        cp += "/" + paths[j];
+                        if (!this.FS.analyzePath(cp).exists) {
+                            this.FS.mkdir(cp);
                         }
                     }
-                    resolve();
-                })
-            });
+                    if (!path.endsWith("/")) {
+                        this.FS.writeFile(path, file.bytes);
+                    }
+                }
+                resolve();
+            } catch (error) {
+                this.EJS.textElem.innerText = this.EJS.localization("Network Error");
+                this.EJS.textElem.style.color = "red";
+                reject(error);
+            }
         })
     }
     setVSync(enabled) {
@@ -465,6 +461,30 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     }
     setAltKeyEnabled(enabled) {
         this.functions.setKeyboardEnabled(enabled === true ? 3 : 2);
+    }
+    listDir(path, indent = "") {
+        const skipPaths = ["/dev", "/proc", "/sys"];
+        if (skipPaths.includes(path)) {
+            console.warn(`Skipping directory listing for ${path}`);
+            return;
+        }
+        try {
+            const entries = this.FS.readdir(path);
+            for (const entry of entries) {
+                if (entry === "." || entry === "..") continue;
+                const fullPath = path === "/" ? `/${entry}` : `${path}/${entry}`;
+                if (skipPaths.some(skip => fullPath.startsWith(skip))) continue;
+                const stat = this.FS.stat(fullPath);
+                if (this.FS.isDir(stat.mode)) {
+                    console.log(`${indent}[DIR] ${fullPath}`);
+                    this.listDir(fullPath, indent + "  ");
+                } else {
+                    console.log(`${indent}${fullPath}`);
+                }
+            }
+        } catch (e) {
+            console.warn("Error reading directory:", path, e);
+        }
     }
 }
 
