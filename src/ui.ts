@@ -112,8 +112,8 @@ export function buildDOM(app: HTMLElement): void {
 
       <!-- ── Error banner ── -->
       <div id="error-banner" role="alert" aria-live="assertive">
-        <span class="error-close" id="error-close" title="Dismiss">✕</span>
         <span id="error-message"></span>
+        <span class="error-close" id="error-close" title="Dismiss" aria-label="Dismiss error">✕</span>
       </div>
     </main>
 

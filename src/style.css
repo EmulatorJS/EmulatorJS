@@ -11,18 +11,20 @@
 }
 
 :root {
-  --c-bg:        #111318;
-  --c-surface:   #1c1f27;
-  --c-surface2:  #252931;
-  --c-border:    #353a47;
-  --c-accent:    #4f8ef7;
-  --c-accent-h:  #6fa3ff;
-  --c-danger:    #e05252;
-  --c-warn:      #e0a052;
-  --c-success:   #52c97a;
-  --c-text:      #d8dce8;
-  --c-text-dim:  #7a8099;
-  --c-text-faint:#4a5068;
+  --c-bg:           #111318;
+  --c-bg-overlay:   rgba(17, 19, 24, 0.92); /* --c-bg at 92% opacity */
+  --c-surface:      #1c1f27;
+  --c-surface2:     #252931;
+  --c-border:       #353a47;
+  --c-accent:       #4f8ef7;
+  --c-accent-h:     #6fa3ff;
+  --c-danger:       #e05252;
+  --c-warn:         #e0a052;
+  --c-success:      #52c97a;
+  --c-text:         #d8dce8;
+  --c-text-dim:     #7a8099;
+  --c-text-faint:   #4a5068;
+  --c-text-on-dark: #ffffff; /* white text on coloured/dark backgrounds */
 
   --radius:      6px;
   --radius-lg:   10px;
@@ -137,6 +139,7 @@ body {
 .landing__drop-zone:hover,
 .landing__drop-zone.drag-over {
   border-color: var(--c-accent);
+  background: var(--c-surface2); /* fallback for browsers without color-mix() */
   background: color-mix(in srgb, var(--c-accent) 6%, var(--c-surface));
 }
 
@@ -171,7 +174,7 @@ body {
   margin-top: 4px;
   padding: 8px 22px;
   background: var(--c-accent);
-  color: #fff;
+  color: var(--c-text-on-dark);
   border: none;
   border-radius: var(--radius);
   font-size: 0.9rem;
@@ -207,7 +210,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background: rgba(17, 19, 24, 0.92);
+  background: var(--c-bg-overlay);
   z-index: 20;
   opacity: 0;
   visibility: hidden;
@@ -220,7 +223,7 @@ body {
 #loading-overlay.visible {
   opacity: 1;
   visibility: visible;
-  pointer-events: all;
+  pointer-events: auto;
 }
 
 .loading-spinner {
@@ -230,6 +233,7 @@ body {
   border-top-color: var(--c-accent);
   border-radius: 50%;
   animation: spin 0.75s linear infinite;
+  will-change: transform; /* promote to GPU layer for smooth animation */
 }
 
 @keyframes spin {
@@ -250,6 +254,12 @@ body {
   transform: translateX(-50%);
   z-index: 30;
   max-width: min(90vw, 560px);
+  /* Flexbox keeps the close button pinned to the right regardless of
+     message length, avoiding the fragile float: right behaviour. */
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--c-surface); /* fallback for browsers without color-mix() */
   background: color-mix(in srgb, var(--c-danger) 15%, var(--c-surface));
   border: 1px solid var(--c-danger);
   border-radius: var(--radius);
@@ -257,8 +267,6 @@ body {
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--c-text);
-  white-space: pre-wrap;
-  word-break: break-word;
   /* Use opacity/visibility so the banner fades in/out like other overlays */
   opacity: 0;
   visibility: hidden;
@@ -272,13 +280,23 @@ body {
   pointer-events: auto;
 }
 
+#error-message {
+  flex: 1;
+  min-width: 0; /* allow the text to wrap inside the flex item */
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 #error-banner .error-close {
-  float: right;
-  margin-left: 12px;
+  flex-shrink: 0;
   cursor: pointer;
   opacity: 0.6;
   font-size: 1rem;
   line-height: 1;
+  /* Small tap target padding without affecting visual size */
+  padding: 2px 4px;
+  margin: -2px -4px;
+  border-radius: var(--radius);
   transition: opacity var(--transition);
 }
 
@@ -349,8 +367,8 @@ body {
   flex-shrink: 0;
 }
 
-.status-dot.idle    { background: var(--c-text-faint); }
-.status-dot.loading { background: var(--c-warn);   animation: pulse 1s infinite; }
+/* .status-dot.idle omitted — .status-dot base rule already sets the same colour */
+.status-dot.loading { background: var(--c-warn);    animation: pulse 1s infinite; }
 .status-dot.running { background: var(--c-success); }
 .status-dot.error   { background: var(--c-danger);  }
 
@@ -392,13 +410,13 @@ body {
 .btn--primary {
   background: var(--c-accent);
   border-color: var(--c-accent);
-  color: #fff;
+  color: var(--c-text-on-dark);
 }
 
 .btn--primary:hover {
   background: var(--c-accent-h);
   border-color: var(--c-accent-h);
-  color: #fff;
+  color: var(--c-text-on-dark);
 }
 
 .btn--danger {
@@ -407,6 +425,7 @@ body {
 }
 
 .btn--danger:hover {
+  background: var(--c-surface); /* fallback for browsers without color-mix() */
   background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface2));
 }
 
@@ -436,7 +455,7 @@ body {
   }
 
   .vol-slider {
-    width: 52px;
+    width: 60px; /* 52px was too narrow for touch-friendly interaction */
   }
 }
 
