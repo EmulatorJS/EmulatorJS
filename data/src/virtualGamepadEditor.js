@@ -157,10 +157,32 @@ class EJS_OverlayElement {
             dpadPreview.classList.add("ejs_edit_overlay_dpad_preview");
             overlay.appendChild(dpadPreview);
         } else if (this.type === "zone") {
+            const nipple = this.original.querySelector(".nipple");
+            const back = nipple ? nipple.querySelector(".back") : null;
+            const front = nipple ? nipple.querySelector(".front") : null;
+
             const stickBase = emu.createElement("div");
             stickBase.classList.add("ejs_edit_overlay_stick_base");
             const stickKnob = emu.createElement("div");
             stickKnob.classList.add("ejs_edit_overlay_stick_knob");
+
+            // Preserve the real joystick look (usually red) while editing.
+            if (back) this.copyVisualStyle(back, stickBase);
+            if (front) this.copyVisualStyle(front, stickKnob);
+
+            // Match knob size ratio from the live joystick so preview shape stays faithful.
+            if (back && front) {
+                const backRect = back.getBoundingClientRect();
+                const frontRect = front.getBoundingClientRect();
+                const ratio = backRect.width > 0 ? (frontRect.width / backRect.width) : 0;
+                const knobRatio = Math.max(0.2, Math.min(0.9, ratio || 0.44));
+                const insetPct = (100 - (knobRatio * 100)) / 2;
+                stickKnob.style.width = (knobRatio * 100) + "%";
+                stickKnob.style.height = (knobRatio * 100) + "%";
+                stickKnob.style.left = insetPct + "%";
+                stickKnob.style.top = insetPct + "%";
+            }
+
             overlay.appendChild(stickBase);
             overlay.appendChild(stickKnob);
         }
@@ -319,6 +341,23 @@ class EJS_OverlayElement {
         const scale = Math.max(0.25, Math.min(4, (scaleX + scaleY) / 2));
         const visualScale = this.buttonVisualScale || 1;
         this.buttonLabel.style.fontSize = (this.buttonBaseFontSize * visualScale * scale) + "px";
+    }
+
+    /**
+     * Copies key visual styles from one element to another.
+     * Used to keep overlay previews visually aligned with live controls.
+     * @param {HTMLElement} sourceEl
+     * @param {HTMLElement} targetEl
+     * @private
+     */
+    copyVisualStyle(sourceEl, targetEl) {
+        const style = window.getComputedStyle(sourceEl);
+        targetEl.style.background = style.background;
+        targetEl.style.backgroundColor = style.backgroundColor;
+        targetEl.style.border = style.border;
+        targetEl.style.borderRadius = style.borderRadius;
+        targetEl.style.boxShadow = style.boxShadow;
+        targetEl.style.opacity = style.opacity;
     }
 
     /**

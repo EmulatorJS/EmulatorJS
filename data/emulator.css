@@ -1788,15 +1788,16 @@
     overflow: visible;
 }
 
-/* Keep button/dpad edit overlays clearly outlined */
+/* Keep button/dpad/zone edit overlays clearly outlined */
 .ejs_edit_overlay_element[data-type="button"],
-.ejs_edit_overlay_element[data-type="dpad"] {
+.ejs_edit_overlay_element[data-type="dpad"],
+.ejs_edit_overlay_element[data-type="zone"] {
     outline: none !important;
     opacity: 1;
 }
 
 .ejs_edit_overlay_element[data-type="button"] {
-    border: 2px solid #fff !important;
+    border: none !important;
 }
 
 .ejs_edit_overlay_element[data-type="dpad"] {
@@ -1805,19 +1806,30 @@
     border: none;
 }
 
+.ejs_edit_overlay_element[data-type="zone"] {
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+}
+
 .ejs_edit_overlay_element[data-type="button"]::after,
-.ejs_edit_overlay_element[data-type="dpad"]::after {
+.ejs_edit_overlay_element[data-type="dpad"]::after,
+.ejs_edit_overlay_element[data-type="zone"]::after {
     content: "";
     position: absolute;
     top: -3px;
     right: -3px;
     bottom: -3px;
     left: -3px;
-    border: 3px dashed #fff;
+    border: 3px dashed #ccc;
     pointer-events: none;
 }
 
 .ejs_edit_overlay_element[data-type="button"]::after {
+    border-radius: inherit;
+}
+
+.ejs_edit_overlay_element[data-type="zone"]::after {
     border-radius: inherit;
 }
 
@@ -1836,41 +1848,39 @@
 }
 
 .ejs_edit_overlay_element[data-type="button"].ejs_dragging::after,
-.ejs_edit_overlay_element[data-type="dpad"].ejs_dragging::after {
+.ejs_edit_overlay_element[data-type="dpad"].ejs_dragging::after,
+.ejs_edit_overlay_element[data-type="zone"].ejs_dragging::after {
     border-color: #007bff;
 }
 
 /* Zone (joystick) overlay styling */
 .ejs_edit_overlay_element[data-type="zone"] {
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.25);
-    border: 2px solid rgba(255, 255, 255, 0.55);
-    box-shadow: 0 0 10px rgba(0,0,0,0.35);
+    box-shadow: none;
 }
 
 .ejs_edit_overlay_stick_base {
     position: absolute;
-    top: 10%;
-    left: 10%;
-    width: 80%;
-    height: 80%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.45);
-    background: radial-gradient(circle, rgba(120,120,120,0.55) 0%, rgba(45,45,45,0.85) 100%);
-    box-shadow: inset 0 0 12px rgba(0,0,0,0.35);
+    border: 1px solid rgba(255, 0, 0, 0.8);
+    background: rgba(255, 0, 0, 0.35);
+    box-shadow: none;
     pointer-events: none;
 }
 
 .ejs_edit_overlay_stick_knob {
     position: absolute;
-    top: 33%;
-    left: 33%;
-    width: 34%;
-    height: 34%;
+    top: 28%;
+    left: 28%;
+    width: 44%;
+    height: 44%;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, rgba(235,235,235,0.95) 0%, rgba(125,125,125,0.9) 60%, rgba(60,60,60,0.95) 100%);
-    border: 1px solid rgba(255,255,255,0.5);
-    box-shadow: 0 3px 6px rgba(0,0,0,0.35);
+    background: rgba(255, 0, 0, 0.85);
+    border: 1px solid rgba(255, 0, 0, 1);
+    box-shadow: none;
     pointer-events: none;
 }
 
@@ -1882,6 +1892,9 @@
 /* Highlight when dragging */
 .ejs_edit_overlay_element.ejs_dragging {
     outline-color: #007bff !important;
+}
+
+.ejs_edit_overlay_element:not([data-type="zone"]).ejs_dragging {
     background: rgba(0, 123, 255, 0.3) !important;
 }
 
