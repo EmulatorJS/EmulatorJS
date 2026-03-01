@@ -1,281 +1,168 @@
-<div align = center>
+# Web PSP Emulator
 
-<img width = 300 src = docs/Logo-light.png#gh-dark-mode-only>
-<img width = 300 src = docs/Logo.png#gh-light-mode-only> 
- 
-<br>
-<br>
+A minimal, single-page web application that runs PSP games in the browser using
+[EmulatorJS](https://emulatorjs.org) and the PPSSPP core.
+No server required — everything runs client-side. You supply the ROM.
 
-[![Badge License]][License]
+---
 
-Self-hosted **Javascript** emulation for various systems.
+## Quick Start
 
-<br>
+```bash
+npm install
+npm run dev
+```
 
-[![Button Website]][Website]
-[![Button Usage]][Usage]<br>
-[![Button Configurator]][Configurator]<br>
-[![Button Demo]][Demo]<br>
-[![Button Contributors]][Contributors]
+Then open **http://localhost:5173** in Chrome or Firefox.
 
-Join our Discord server:
+> **First visit on a static host:** the service worker (`coi-serviceworker.js`)
+> will register and immediately reload the page once — that's normal and needed
+> for SharedArrayBuffer support.
 
-[![Join our Discord server!](https://invidget.switchblade.xyz/6akryGkETU)](https://discord.gg/6akryGkETU)
+---
 
-</div>
+## Commands
 
-<br>
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Vite dev server with hot-reload on port 5173 |
+| `npm run build` | Type-check + produce optimised static output in `dist/` |
+| `npm run preview` | Serve the `dist/` build locally on port 4173 |
 
-> [!NOTE]  
-> **As of EmulatorJS version 4.0, this project is no longer a reverse-engineered version of the emulatorjs.com project. It is now a complete rewrite.**
+---
 
-> [!WARNING]  
-> As of version 4.0.9 cores and minified files are no longer included in the repository. You will need to get them separately. You can get it from [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the \* new CDN (see [this](#CDN) for more info). There is also a new version system that we will be using. (read [here](#Versioning) for more info).
+## Tech Stack
 
-> [!TIP]
-> Cloning the repository is no longer recommended for production use. You should use [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the [CDN](https://cdn.emulatorjs.org/) instead.
+| Layer | Tool |
+|-------|------|
+| Build | [Vite 5](https://vitejs.dev) |
+| Language | TypeScript 5 |
+| Emulation | [EmulatorJS](https://emulatorjs.org) — PPSSPP core via CDN |
+| Persistence | `localStorage` (settings); IndexedDB (save states, managed by EmulatorJS) |
 
-<br>
+### EmulatorJS CDN URL
 
-### Ads
+```
+https://cdn.emulatorjs.org/stable/data/
+```
 
-*This project has no ads.* <br>
-*Although, the demo page currently has an ad to help fund this project.* <br>
-*Ads on the demo page may come and go depending on how many people are* <br>
-*funding this project.* <br>
+The `stable` channel is pinned to the latest tested release.
+All EmulatorJS assets (JavaScript, WebAssembly cores, assets) are fetched
+on-demand from this CDN when a game is launched — nothing is bundled.
 
-*You can help fund this project on* ***[patreon]***
+---
 
-<br>
+## Project Structure
 
-### Issues
+```
+index.html                  HTML shell (one <div id="app">)
+vite.config.ts              Dev server with COOP/COEP headers + build config
+tsconfig.json               TypeScript config
+public/
+  coi-serviceworker.js      Injects COOP/COEP headers via SW (static hosting)
+src/
+  main.ts                   Entry point — bootstraps UI, loads settings
+  emulator.ts               PSPEmulator class (EmulatorJS lifecycle wrapper)
+  ui.ts                     DOM construction and event wiring
+  style.css                 Minimal dark-theme styles
+```
 
-*If something doesn't work, please consider opening an* ***[Issue]*** <br>
-*with as many details as possible, as well as the console log.*
+---
 
-<br>
+## Usage
 
-### 3rd Party Projects
+1. Click the drop zone (or drag a file onto it) and pick a PSP game file.
+2. Supported formats: `.iso`, `.cso`, `.pbp`, `.chd`, `.elf`, `.zip`
+3. EmulatorJS downloads the PPSSPP core from the CDN (≈ 5–15 MB, cached).
+4. The game boots automatically.
 
-EmulatorJS itself is built to be a plugin, rather than an entire website. This is why there is no docker container of this project. However, there are several projects you can use that use EmulatorJS!
+### Controls
 
-Looking for projects that integrate EmulatorJS? Check out https://emulatorjs.org/docs/3rd-party
+**Keyboard defaults** (configured inside EmulatorJS settings ⚙):
 
-<br>
+| PSP Button | Default Key |
+|-----------|-------------|
+| D-pad | Arrow keys |
+| ✕ / ○ / □ / △ | Z / X / A / S |
+| L / R | Q / E |
+| Start / Select | Enter / Backspace |
+| Analog stick | WASD |
 
-### Versioning
+**Gamepad:** plug in a USB/Bluetooth gamepad — EmulatorJS detects it
+automatically via the Web Gamepad API.
 
-There are three different version names that you need to be aware of:
+**Mobile:** touch controls (virtual D-pad + buttons) appear automatically on
+touch-screen devices.
 
-1. **stable** - This will be the most stable version of the emulator both code and cores will be tested before release. It will be updated every time a new version is released on GitHub. This is the default version on the Demo.
-2. **latest** - This will contain the latest code but use the stable cores. This will be updated every time the *main* branch is updated.
-3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is considered alpha.
+### Application controls
 
-<br>
+| Control | Action |
+|---------|--------|
+| 💾 Save (header) | Quick-save to slot 1 |
+| 📂 Load (header) | Quick-load from slot 1 |
+| ↺ Reset (header) | Restart the current game |
+| 📁 New Game (header) | Reload page to pick a different game |
+| Volume slider (header) | Adjust volume (persisted) |
+| **F5** | Quick-save slot 1 |
+| **F7** | Quick-load slot 1 |
+| **F1** | Reset |
+| EmulatorJS ⚙ icon | Full settings: key remap, shaders, state slots, … |
 
-### CDN
+### Persisted settings (localStorage)
 
-**EmulatorJS provides a CDN** at `https://cdn.emulatorjs.org/`, allowing access to any version of the emulator.
+- **Volume** — restored on next visit.
+- **Last game name** — shown in the status bar (the ROM file itself is never stored).
 
-To use it, set `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`, replacing `<version>` with `stable`, `latest`, `nightly`, or another main release.
+---
 
-Be sure to also update the `loader.js` path to:
-`https://cdn.emulatorjs.org/<version>/data/loader.js`
+## Cross-Origin Isolation
 
-<br>
+The PPSSPP core uses WebAssembly threads, which require `SharedArrayBuffer`.
+`SharedArrayBuffer` is only available in [Cross-Origin Isolated](https://web.dev/cross-origin-isolation-guide/) contexts:
 
-### Development:
+```
+Cross-Origin-Opener-Policy:  same-origin
+Cross-Origin-Embedder-Policy: require-corp
+```
 
-*Run a local server with:* 
+**Development:** Vite sets these headers directly (`vite.config.ts`).
 
-1. Open a terminal in the root of the project.
+**Production (static hosts):** `public/coi-serviceworker.js` intercepts all
+fetch responses and injects the headers. The page reloads once on first visit
+to activate the service worker — this is expected behaviour.
 
-2. Install the dependencies with:
+---
 
-   ```sh
-   npm i
-   ```
+## Known Limitations
 
-3. Start the minification with:
+### PPSSPP core on the web
 
-   ```sh
-   node start
-   ```
+| Limitation | Details |
+|-----------|---------|
+| Requires SharedArrayBuffer | Needs COOP + COEP isolation. See above. |
+| Requires WebGL 2 | PPSSPP uses OpenGL ES 3-level rendering. Most desktop browsers support this; some older mobile browsers do not. |
+| Performance | Running a PSP (originally ~333 MHz MIPS + custom GPU) in a browser tab is demanding. Expect 20–60 fps depending on game and hardware. CPU-heavy titles may run at half speed. |
+| Audio latency | Web Audio introduces several frames of latency compared with native; audio may stutter on slow machines. |
+| No networking | PSP ad-hoc / infrastructure multiplayer is not implemented in this MVP. |
+| Save-data path | EmulatorJS stores saves in IndexedDB under the game name. Renaming the ROM file before loading can cause saves to be unlinked. |
+| Large ISOs | A 1 GB ISO creates a 1 GB Blob in browser memory. This is fine on desktop with 8 GB+ RAM; it may OOM on mobile. |
+| iOS Safari | Cross-Origin Isolation via service worker is unreliable on iOS WebKit. Use Chrome or Firefox on desktop for best results. |
+| One game per session | EmulatorJS does not expose a clean `destroy()` API. Loading a different game requires a page reload (the "New Game" button handles this). |
 
-4. Open your browser and go to `http://localhost:8080/` to see the demo page.
+### Tips
 
-<br>
+- **Start with simpler games** (2D, action, puzzle) before trying CPU-heavy 3D titles.
+- **Use Chrome or Firefox on desktop** — they have the most complete WebAssembly and WebGL 2 implementations.
+- **Enable hardware acceleration** in your browser settings for better performance.
+- **Chrome flags** — if SharedArrayBuffer is still unavailable, try enabling `chrome://flags/#enable-experimental-web-platform-features`.
+- **CSO format** — compressed ISOs (`.cso`) are smaller downloads; PPSSPP decompresses them transparently.
 
-<br>
+---
 
-#### Minifying
+## Legal
 
-Before pushing the script files onto your production server it is recommended to minify them to save on load times as well as bandwidth.
+This application does **not** include or distribute any ROM files, BIOS images,
+or proprietary Sony assets.
+You must supply your own legally obtained game files.
 
-Read the [minifying](minify/README.md) documentation for more info.
-
-<br>
-
-#### Localization
-
-If you want to help with localization, please check out the [localization](data/localization/README.md) documentation.
-
-<br>
-
-**>> When reporting bugs, please specify what version you are using**
-
-<br>
-<br>
-<br>
-
-<h1 align = center>Supported Systems</h1>
-
-<br>
-
-<div align = center>
-
-### Nintendo
-
-**[Game Boy Advance][Nintendo Game Boy Advance]**   | 
-**[Famicom / NES][NES / Famicom]**   | 
-**[Virtual Boy][Virtual Boy]**
-    
-**[Game Boy][Nintendo Game Boy]**   | 
-**[SNES]**   | 
-**[DS][Nintendo DS]**   | 
-**[64][Nintendo 64]**
-
-<br>
-<br>
-
-### Sega
-
-**[Master System][Sega Master System]**   | 
-**[Mega Drive][Sega Mega Drive]**   | 
-**[Game Gear][Sega Game Gear]**
-    
-**[Saturn][Sega Saturn]**   | 
-**[32X][Sega 32X]**   | 
-**[CD][Sega CD]**
-
-<br>
-<br>
-
-### Atari
-
-**[2600][Atari 2600]**   | 
-**[5200][Atari 5200]**   | 
-**[7800][Atari 7800]**   | 
-**[Lynx][Atari Lynx]**   | 
-**[Jaguar][Atari Jaguar]**
-
-<br>
-<br>
-
-### Commodore
-
-**[Commodore 64]** |
-**[Commodore 128]** |
-**[Commodore Amiga]**
-
-**[Commodore PET]** |
-**[Commodore Plus/4]** |
-**[Commodore VIC-20]**
-
-<br>
-<br>
-
-### Other
-
-**[PlayStation]**   | 
-**[PlayStation Portable]**   | 
-**[Arcade]**    
-
-**[3DO]** |
-**[MAME 2003]** |
-**[ColecoVision]**
-
-</div>
-
-<br>
-
-## Star History
-
-<a href="https://star-history.com/#EmulatorJS/EmulatorJS&Date">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
- </picture>
-</a>
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[License]: LICENSE
-[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
-[patreon]: https://patreon.com/EmulatorJS
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[Configurator]: https://emulatorjs.org/editor
-[Contributors]: docs/contributors.md
-[Website]: https://emulatorjs.org/
-[Usage]: https://emulatorjs.org/docs/
-[Demo]: https://demo.emulatorjs.org/
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
-
-[Nintendo Game Boy Advance]: https://emulatorjs.org/docs/systems/nintendo-game-boy-advance
-[Nintendo Game Boy]: https://emulatorjs.org/docs/systems/nintendo-game-boy
-[Nintendo 64]: https://emulatorjs.org/docs/systems/nintendo-64
-[Nintendo DS]: https://emulatorjs.org/docs/systems/nintendo-ds
-
-[Sega Master System]: https://emulatorjs.org/docs/systems/sega-master-system
-[Sega Mega Drive]: https://emulatorjs.org/docs/systems/sega-mega-drive
-[Sega Game Gear]: https://emulatorjs.org/docs/systems/sega-game-gear
-[Sega Saturn]: https://emulatorjs.org/docs/systems/sega-saturn
-[Sega 32X]: https://emulatorjs.org/docs/systems/sega-32x
-[Sega CD]: https://emulatorjs.org/docs/systems/sega-cd
-
-[Atari Jaguar]: https://emulatorjs.org/docs/systems/atari-jaguar
-[Atari Lynx]: https://emulatorjs.org/docs/systems/atari-lynx
-[Atari 7800]: https://emulatorjs.org/docs/systems/atari-7800
-[Atari 2600]: https://emulatorjs.org/docs/systems/atari-2600
-[Atari 5200]: https://emulatorjs.org/docs/systems/atari-5200
-
-[NES / Famicom]: https://emulatorjs.org/docs/systems/nes-famicom
-[SNES]: https://emulatorjs.org/docs/systems/snes
-
-<!--
-[TurboGrafs-16 / PC Engine]: https://emulatorjs.org/systems/TurboGrafx-16
-[MSX]: https://emulatorjs.org/systems/MSX
-[WanderSwan / Color]: https://emulatorjs.org/systems/WonderSwan
-[Neo Geo Poket]: https://emulatorjs.org/systems/Neo%20Geo%20Pocket
---->
-[PlayStation]: https://emulatorjs.org/docs/systems/playstation
-[PlayStation Portable]: https://emulatorjs.org/docs/systems/psp
-[Virtual Boy]: https://emulatorjs.org/docs/systems/virtual-boy
-[Arcade]: https://emulatorjs.org/docs/systems/arcade
-[3DO]: https://emulatorjs.org/docs/systems/3do
-[MAME 2003]: https://emulatorjs.org/docs/systems/mame-2003
-[ColecoVision]: https://emulatorjs.org/docs/systems/colecovision
-
-[Commodore 64]: https://emulatorjs.org/docs/systems/commodore-64
-[Commodore 128]: https://emulatorjs.org/docs/systems/commodore-128
-[Commodore Amiga]: https://emulatorjs.org/docs/systems/commodore-amiga
-[Commodore PET]: https://emulatorjs.org/docs/systems/commodore-pet
-[Commodore Plus/4]: https://emulatorjs.org/docs/systems/commodore-plus4
-[Commodore VIC-20]: https://emulatorjs.org/docs/systems/commodore-vic20
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge
-
-[Button Configurator]: https://img.shields.io/badge/Code%20Generator-992cb3?style=for-the-badge
-[Button Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
-[Button Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
-[Button Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
-[Button Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
-[Button Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
+EmulatorJS is licensed under [GPL-3.0](https://github.com/EmulatorJS/EmulatorJS/blob/main/LICENSE).
