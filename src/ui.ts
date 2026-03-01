@@ -66,7 +66,7 @@ export function buildDOM(app: HTMLElement): void {
           <line x1="9"  y1="12" x2="15" y2="12"/>
         </svg>
         <span class="title-long">Web PSP Emulator</span>
-        <span class="title-short" style="display:none">PSP</span>
+        <span class="title-short">PSP</span>
       </div>
       <div class="app-header__actions" id="header-actions">
         <!-- Populated by initControls() after emulator starts -->
@@ -162,17 +162,38 @@ export function initUI(opts: UIOptions): void {
     if (file) onFileSelected(file);
   });
 
-  dropZone.addEventListener("dragover", (e) => {
+  // Use a counter so dragleave over child elements doesn't remove the
+  // drag-over highlight prematurely (each dragenter increments, each
+  // dragleave decrements; only remove the class when it reaches zero).
+  let dragCounter = 0;
+
+  dropZone.addEventListener("dragenter", (e) => {
     e.preventDefault();
+    dragCounter++;
     dropZone.classList.add("drag-over");
   });
 
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault(); // Required to allow the drop
+  });
+
   dropZone.addEventListener("dragleave", () => {
+    dragCounter--;
+    if (dragCounter <= 0) {
+      dragCounter = 0;
+      dropZone.classList.remove("drag-over");
+    }
+  });
+
+  dropZone.addEventListener("dragend", () => {
+    // Fires when a drag is cancelled (e.g. Escape key) without a drop
+    dragCounter = 0;
     dropZone.classList.remove("drag-over");
   });
 
   dropZone.addEventListener("drop", (e) => {
     e.preventDefault();
+    dragCounter = 0;
     dropZone.classList.remove("drag-over");
     const file = e.dataTransfer?.files[0];
     if (file) onFileSelected(file);
@@ -252,16 +273,17 @@ function buildInGameControls(
   });
 
   // Volume control
-  const volumeWrap = make("label", { class: "btn", style: "gap:6px;cursor:default" });
+  const volumeWrap = make("label", { class: "btn volume-wrap" });
   volumeWrap.title = "Volume";
-  const volIcon = make("span", {}, "🔊");
+  const volIcon = make("span", { "aria-hidden": "true" }, "🔊");
   const volSlider = make("input", {
-    type:  "range",
-    min:   "0",
-    max:   "1",
-    step:  "0.05",
-    value: String(settings.volume),
-    style: "width:72px;cursor:pointer;accent-color:var(--c-accent)",
+    type:       "range",
+    min:        "0",
+    max:        "1",
+    step:       "0.05",
+    value:      String(settings.volume),
+    class:      "vol-slider",
+    "aria-label": "Volume",
   }) as HTMLInputElement;
 
   volSlider.addEventListener("input", () => {

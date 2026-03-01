@@ -257,13 +257,19 @@ body {
   font-size: 0.85rem;
   line-height: 1.5;
   color: var(--c-text);
-  display: none;
   white-space: pre-wrap;
   word-break: break-word;
+  /* Use opacity/visibility so the banner fades in/out like other overlays */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition), visibility var(--transition);
 }
 
 #error-banner.visible {
-  display: block;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
 }
 
 #error-banner .error-close {
@@ -404,13 +410,55 @@ body {
   background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface2));
 }
 
+/* ── Volume control (in-game header) ─────────────────────── */
+.volume-wrap {
+  cursor: default;
+}
+
+.vol-slider {
+  width: 72px;
+  cursor: pointer;
+  accent-color: var(--c-accent);
+}
+
 /* ── Responsive: hide non-essential items on small screens ── */
+
+/* title-short is only visible on narrow viewports */
+.app-header__title span.title-short {
+  display: none;
+}
+
+/* Tighten in-game header buttons on medium-small screens */
+@media (max-width: 600px) {
+  .app-header__actions .btn {
+    padding: 4px 8px;
+    font-size: 0.78rem;
+  }
+
+  .vol-slider {
+    width: 52px;
+  }
+}
+
 @media (max-width: 480px) {
   .app-header__title span.title-long {
     display: none;
   }
 
+  .app-header__title span.title-short {
+    display: inline;
+  }
+
   .status-item.hide-mobile {
     display: none;
+  }
+
+  /* On very narrow screens shrink the header gap to reclaim space */
+  .app-header {
+    padding: 0 10px;
+  }
+
+  .app-header__actions {
+    gap: 4px;
   }
 }
