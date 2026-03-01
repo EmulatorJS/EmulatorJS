@@ -1,0 +1,416 @@
+/* ============================================================
+   Web PSP Emulator — global styles
+   Dark, minimal, mobile-aware. No frameworks.
+   ============================================================ */
+
+/* ── Reset / base ─────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --c-bg:        #111318;
+  --c-surface:   #1c1f27;
+  --c-surface2:  #252931;
+  --c-border:    #353a47;
+  --c-accent:    #4f8ef7;
+  --c-accent-h:  #6fa3ff;
+  --c-danger:    #e05252;
+  --c-warn:      #e0a052;
+  --c-success:   #52c97a;
+  --c-text:      #d8dce8;
+  --c-text-dim:  #7a8099;
+  --c-text-faint:#4a5068;
+
+  --radius:      6px;
+  --radius-lg:   10px;
+  --transition:  0.18s ease;
+
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  color: var(--c-text);
+  background: var(--c-bg);
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden; /* The emulator must be full-height */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── App shell ────────────────────────────────────────────── */
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  height: 48px;
+  min-height: 48px;
+  background: var(--c-surface);
+  border-bottom: 1px solid var(--c-border);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.app-header__title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--c-text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-header__title svg {
+  opacity: 0.85;
+}
+
+.app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Main area ────────────────────────────────────────────── */
+.app-main {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: var(--c-bg);
+}
+
+/* ── Landing (file-picker) screen ────────────────────────── */
+#landing {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  background: var(--c-bg);
+  z-index: 5;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+#landing.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.landing__drop-zone {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  min-height: 200px;
+  border: 2px dashed var(--c-border);
+  border-radius: var(--radius-lg);
+  background: var(--c-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 24px;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+  text-align: center;
+}
+
+.landing__drop-zone:hover,
+.landing__drop-zone.drag-over {
+  border-color: var(--c-accent);
+  background: color-mix(in srgb, var(--c-accent) 6%, var(--c-surface));
+}
+
+.landing__drop-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  font-size: 0; /* hide "no file chosen" text in some browsers */
+}
+
+.landing__drop-icon {
+  font-size: 2.5rem;
+  line-height: 1;
+  opacity: 0.4;
+}
+
+.landing__drop-label {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.landing__drop-sub {
+  font-size: 0.82rem;
+  color: var(--c-text-dim);
+}
+
+.landing__drop-browse {
+  margin-top: 4px;
+  padding: 8px 22px;
+  background: var(--c-accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+  pointer-events: none; /* the invisible <input> handles clicks */
+}
+
+.landing__drop-zone:hover .landing__drop-browse {
+  background: var(--c-accent-h);
+}
+
+.landing__legal {
+  max-width: 460px;
+  font-size: 0.78rem;
+  color: var(--c-text-faint);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.landing__legal a {
+  color: var(--c-accent);
+  text-decoration: none;
+}
+
+/* ── Progress / status overlay ───────────────────────────── */
+#loading-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(17, 19, 24, 0.92);
+  z-index: 20;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity var(--transition), visibility var(--transition);
+  text-align: center;
+  padding: 24px;
+}
+
+#loading-overlay.visible {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+.loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--c-border);
+  border-top-color: var(--c-accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#loading-message {
+  font-size: 0.92rem;
+  color: var(--c-text-dim);
+  max-width: 360px;
+}
+
+/* ── Error banner ─────────────────────────────────────────── */
+#error-banner {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 30;
+  max-width: min(90vw, 560px);
+  background: color-mix(in srgb, var(--c-danger) 15%, var(--c-surface));
+  border: 1px solid var(--c-danger);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  font-size: 0.85rem;
+  line-height: 1.5;
+  color: var(--c-text);
+  display: none;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+#error-banner.visible {
+  display: block;
+}
+
+#error-banner .error-close {
+  float: right;
+  margin-left: 12px;
+  cursor: pointer;
+  opacity: 0.6;
+  font-size: 1rem;
+  line-height: 1;
+  transition: opacity var(--transition);
+}
+
+#error-banner .error-close:hover {
+  opacity: 1;
+}
+
+/* ── EmulatorJS container ─────────────────────────────────── */
+#ejs-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  /* Hidden until a game is launched */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+#ejs-container.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* EmulatorJS mounts its own DOM inside #ejs-player.
+   We just need that element to fill the container. */
+#ejs-player {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Footer / status bar ──────────────────────────────────── */
+.app-footer {
+  height: 28px;
+  min-height: 28px;
+  flex-shrink: 0;
+  background: var(--c-surface);
+  border-top: 1px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 16px;
+  font-size: 0.75rem;
+  color: var(--c-text-dim);
+  z-index: 10;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.status-item__label {
+  color: var(--c-text-faint);
+}
+
+.status-item__value {
+  color: var(--c-text-dim);
+  font-weight: 500;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-text-faint);
+  flex-shrink: 0;
+}
+
+.status-dot.idle    { background: var(--c-text-faint); }
+.status-dot.loading { background: var(--c-warn);   animation: pulse 1s infinite; }
+.status-dot.running { background: var(--c-success); }
+.status-dot.error   { background: var(--c-danger);  }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.35; }
+}
+
+/* ── Shared button base ───────────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  background: var(--c-surface2);
+  color: var(--c-text);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+  line-height: 1.4;
+}
+
+.btn:hover {
+  background: var(--c-surface);
+  border-color: var(--c-accent);
+  color: var(--c-accent-h);
+}
+
+.btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.btn--primary {
+  background: var(--c-accent);
+  border-color: var(--c-accent);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--c-accent-h);
+  border-color: var(--c-accent-h);
+  color: #fff;
+}
+
+.btn--danger {
+  border-color: var(--c-danger);
+  color: var(--c-danger);
+}
+
+.btn--danger:hover {
+  background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface2));
+}
+
+/* ── Responsive: hide non-essential items on small screens ── */
+@media (max-width: 480px) {
+  .app-header__title span.title-long {
+    display: none;
+  }
+
+  .status-item.hide-mobile {
+    display: none;
+  }
+}
