@@ -123,8 +123,8 @@ class EJS_OverlayElement {
         overlay.style.width = rect.width + "px";
         overlay.style.height = rect.height + "px";
 
-        // Copy visual styles from original (for buttons/dpads, not zones)
-        if (this.type !== "zone") {
+        // Copy visual styles from original button
+        if (this.type === "button") {
             const computedStyle = window.getComputedStyle(this.original);
             overlay.style.borderRadius = computedStyle.borderRadius;
             overlay.style.background = computedStyle.background;
@@ -136,13 +136,46 @@ class EJS_OverlayElement {
             overlay.style.fontWeight = computedStyle.fontWeight;
         }
 
-        // Add label
-        const labelText = this.type === "button" ? (this.original.innerText || "") :
-                         this.type === "dpad" ? "D-PAD" : "STICK";
+        // Render control-specific overlay previews for complex controls
+        if (this.type === "dpad") {
+            overlay.classList.add("ejs_edit_overlay_dpad");
+            const dpadPreview = this.original.cloneNode(true);
+            dpadPreview.classList.remove(
+                "ejs_dpad_up_pressed",
+                "ejs_dpad_down_pressed",
+                "ejs_dpad_left_pressed",
+                "ejs_dpad_right_pressed"
+            );
+            // The source d-pad may have saved inline layout styles (left/top/transform).
+            // Reset them so the preview always fits the current overlay box.
+            dpadPreview.style.left = "0";
+            dpadPreview.style.top = "0";
+            dpadPreview.style.right = "";
+            dpadPreview.style.width = "100%";
+            dpadPreview.style.height = "100%";
+            dpadPreview.style.transform = "";
+            dpadPreview.style.transformOrigin = "";
+            dpadPreview.classList.add("ejs_edit_overlay_dpad_preview");
+            overlay.appendChild(dpadPreview);
+        } else if (this.type === "zone") {
+            overlay.classList.add("ejs_edit_overlay_zone");
+            const stickBase = emu.createElement("div");
+            stickBase.classList.add("ejs_edit_overlay_stick_base");
+            const stickKnob = emu.createElement("div");
+            stickKnob.classList.add("ejs_edit_overlay_stick_knob");
+            overlay.appendChild(stickBase);
+            overlay.appendChild(stickKnob);
+        }
+
+        // Add label for buttons only (complex controls use visual preview instead)
+        const labelText = this.type === "button" ? (this.original.innerText || "") : "";
         if (labelText) {
             const label = emu.createElement("span");
             label.innerText = labelText;
             overlay.appendChild(label);
+            this.buttonLabel = label;
+            const buttonStyle = window.getComputedStyle(this.original);
+            this.buttonBaseFontSize = parseFloat(buttonStyle.fontSize) || 16;
         }
 
         // Store starting state
@@ -156,6 +189,8 @@ class EJS_OverlayElement {
         overlay._defaultTop = this.defaults.absoluteTop ?? top;
         overlay._defaultWidth = this.defaults.absoluteWidth ?? rect.width;
         overlay._defaultHeight = this.defaults.absoluteHeight ?? rect.height;
+
+        this.updateButtonPreviewScale(overlay);
 
         this.setupDragHandlers(overlay);
         this.setupResizeHandle(overlay);
@@ -229,6 +264,7 @@ class EJS_OverlayElement {
                 const delta = (deltaX + deltaY) / 2;
                 overlay.style.width = Math.max(20, startWidth + delta) + "px";
                 overlay.style.height = Math.max(20, startHeight + delta) + "px";
+                this.updateButtonPreviewScale();
             },
             onEnd: () => {
                 const newState = this.captureState();
@@ -262,6 +298,24 @@ class EJS_OverlayElement {
     }
 
     /**
+     * Keeps button label text scaled with the overlay size while editing.
+     * @private
+     */
+    updateButtonPreviewScale(overlayElement) {
+        if (this.type !== "button" || !this.buttonLabel) return;
+        const targetOverlay = overlayElement || this.overlay;
+        if (!targetOverlay) return;
+        const baseWidth = targetOverlay._startWidth || 50;
+        const baseHeight = targetOverlay._startHeight || 50;
+        const currentWidth = parseFloat(targetOverlay.style.width) || 50;
+        const currentHeight = parseFloat(targetOverlay.style.height) || 50;
+        const scaleX = baseWidth > 0 ? currentWidth / baseWidth : 1;
+        const scaleY = baseHeight > 0 ? currentHeight / baseHeight : 1;
+        const scale = Math.max(0.25, Math.min(4, (scaleX + scaleY) / 2));
+        this.buttonLabel.style.fontSize = (this.buttonBaseFontSize * scale) + "px";
+    }
+
+    /**
      * Applies a position/size state to the overlay.
      * @param {{left?: number, top?: number, width?: number, height?: number}} state - State to apply
      */
@@ -270,6 +324,7 @@ class EJS_OverlayElement {
         if (state.top !== undefined) this.overlay.style.top = state.top + "px";
         if (state.width !== undefined) this.overlay.style.width = state.width + "px";
         if (state.height !== undefined) this.overlay.style.height = state.height + "px";
+        this.updateButtonPreviewScale();
     }
 
     /**
@@ -280,6 +335,7 @@ class EJS_OverlayElement {
     setSize(width, height) {
         this.overlay.style.width = width + "px";
         this.overlay.style.height = height + "px";
+        this.updateButtonPreviewScale();
     }
 
     /**
