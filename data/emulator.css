@@ -1682,15 +1682,6 @@
     pointer-events: none;
 }
 
-.ejs_virtualGamepad_edit_mode [class*="b_dpad"],
-.ejs_virtualGamepad_edit_mode [class*="b_stick"] {
-    outline: 2px dashed rgba(255, 255, 255, 0.8);
-    outline-offset: 2px;
-    cursor: move;
-    touch-action: none;
-    pointer-events: none;
-}
-
 .ejs_virtualGamepad_edit_toolbar {
     position: absolute;
     top: 0;

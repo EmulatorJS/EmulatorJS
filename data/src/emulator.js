@@ -4368,8 +4368,8 @@ class EmulatorJS {
                 const touch = e.targetTouches[0];
                 if (!touch) return;
                 const rect = dpadMain.getBoundingClientRect();
-                const x = touch.clientX - rect.left - dpadMain.clientWidth / 2;
-                const y = touch.clientY - rect.top - dpadMain.clientHeight / 2;
+                const x = touch.clientX - rect.left - rect.width / 2;
+                const y = touch.clientY - rect.top - rect.height / 2;
                 let up = 0,
                     down = 0,
                     left = 0,
@@ -4459,18 +4459,6 @@ class EmulatorJS {
             elem.style = style;
             elems[dpad.location].appendChild(elem);
 
-            // Store default position for dpad container
-            this.virtualGamepadDefaults[dpadId] = {
-                left: elem.style.left,
-                right: elem.style.right,
-                top: elem.style.top,
-                transform: "",
-                width: elem.style.width,
-                height: elem.style.height,
-                container: elem,
-                // measureElement will be set after dpad is created
-            };
-
             createDPad({
                 container: elem,
                 event: (up, down, left, right) => {
@@ -4489,9 +4477,18 @@ class EmulatorJS {
 
             // Store reference to inner element for measuring
             const dpadMain = elem.querySelector(".ejs_dpad_main");
-            if (dpadMain) {
-                this.virtualGamepadDefaults[dpadId].element = dpadMain;
-            }
+            this.virtualGamepadDefaults[dpadId] = {
+                // Persist and restore the actual interactive element.
+                // The wrapping container is not positioned, so left/top/scale must be applied to .ejs_dpad_main.
+                left: dpadMain ? dpadMain.style.left : "",
+                right: dpadMain ? dpadMain.style.right : "",
+                top: dpadMain ? dpadMain.style.top : "",
+                transform: dpadMain ? dpadMain.style.transform : "",
+                width: dpadMain ? dpadMain.style.width : "",
+                height: dpadMain ? dpadMain.style.height : "",
+                container: elem,
+                element: dpadMain || elem
+            };
         })
 
         info.forEach((zone, index) => {
@@ -4637,7 +4634,9 @@ class EmulatorJS {
         };
         const moveHandler = (e, info) => {
             if (this.virtualGamepadEditMode) return;
-            this.handleZoneMove(zone, info.angle.degree, info.distance);
+            const zoneSize = parseFloat(info?.instance?.options?.size);
+            const movementRadius = Number.isFinite(zoneSize) && zoneSize > 0 ? zoneSize / 2 : 50;
+            this.handleZoneMove(zone, info.angle.degree, info.distance, movementRadius);
         };
 
         zoneObj.on("end", endHandler);
@@ -4653,40 +4652,42 @@ class EmulatorJS {
             delete zoneObj._ejsHandlers;
         }
     }
-    handleZoneMove(zone, degree, distance) {
+    handleZoneMove(zone, degree, distance, movementRadius = 50) {
         if (zone.joystickInput === true) {
+            const radius = Math.max(1, movementRadius);
+            const distanceRatio = Math.min(1, distance / radius);
             let x = 0, y = 0;
             if (degree > 0 && degree <= 45) {
-                x = distance / 50;
-                y = -0.022222222222222223 * degree * distance / 50;
+                x = distanceRatio;
+                y = -0.022222222222222223 * degree * distanceRatio;
             }
             if (degree > 45 && degree <= 90) {
-                x = 0.022222222222222223 * (90 - degree) * distance / 50;
-                y = -distance / 50;
+                x = 0.022222222222222223 * (90 - degree) * distanceRatio;
+                y = -distanceRatio;
             }
             if (degree > 90 && degree <= 135) {
-                x = 0.022222222222222223 * (90 - degree) * distance / 50;
-                y = -distance / 50;
+                x = 0.022222222222222223 * (90 - degree) * distanceRatio;
+                y = -distanceRatio;
             }
             if (degree > 135 && degree <= 180) {
-                x = -distance / 50;
-                y = -0.022222222222222223 * (180 - degree) * distance / 50;
+                x = -distanceRatio;
+                y = -0.022222222222222223 * (180 - degree) * distanceRatio;
             }
             if (degree > 135 && degree <= 225) {
-                x = -distance / 50;
-                y = -0.022222222222222223 * (180 - degree) * distance / 50;
+                x = -distanceRatio;
+                y = -0.022222222222222223 * (180 - degree) * distanceRatio;
             }
             if (degree > 225 && degree <= 270) {
-                x = -0.022222222222222223 * (270 - degree) * distance / 50;
-                y = distance / 50;
+                x = -0.022222222222222223 * (270 - degree) * distanceRatio;
+                y = distanceRatio;
             }
             if (degree > 270 && degree <= 315) {
-                x = -0.022222222222222223 * (270 - degree) * distance / 50;
-                y = distance / 50;
+                x = -0.022222222222222223 * (270 - degree) * distanceRatio;
+                y = distanceRatio;
             }
             if (degree > 315 && degree <= 359.9) {
-                x = distance / 50;
-                y = 0.022222222222222223 * (360 - degree) * distance / 50;
+                x = distanceRatio;
+                y = 0.022222222222222223 * (360 - degree) * distanceRatio;
             }
             if (x > 0) {
                 this.gameManager.simulateInput(0, zone.inputValues[0], 0x7fff * x);
@@ -4777,7 +4778,7 @@ class EmulatorJS {
             const dpadContainer = dpad.parentElement;
             if (!dpadContainer) return;
             const id = this.findElementId(dpadContainer.classList);
-            applyToElement(dpadContainer, id);
+            applyToElement(dpad, id);
         });
 
         // Apply to zones (joysticks) - recreate nipplejs with saved position and size

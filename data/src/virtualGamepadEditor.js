@@ -599,7 +599,7 @@ class EJS_VirtualGamepadEditor {
             const rect = dpadMain.getBoundingClientRect();
             const defaults = this.emu.virtualGamepadDefaults[id];
 
-            const overlayEl = new EJS_OverlayElement(this, dpadContainer, id, "dpad", rect, parentRect, defaults);
+            const overlayEl = new EJS_OverlayElement(this, dpadMain, id, "dpad", rect, parentRect, defaults);
             this.overlayContainer.appendChild(overlayEl.overlay);
             this.elements.push(overlayEl);
         });
@@ -811,9 +811,10 @@ class EJS_VirtualGamepadEditor {
                 }
             }
 
-            // Calculate position relative to element's parent container
-            const elementParent = element.parentElement;
-            const elementParentRect = elementParent ? elementParent.getBoundingClientRect() : parentRect;
+            // Calculate position relative to the element's positioning context.
+            // For absolutely positioned elements this is offsetParent (not always parentElement).
+            const positioningParent = element.offsetParent || element.parentElement;
+            const elementParentRect = positioningParent ? positioningParent.getBoundingClientRect() : parentRect;
             const mainParentRect = this.emu.elements.parent.getBoundingClientRect();
             const containerOffsetX = elementParentRect.left - mainParentRect.left;
             const containerOffsetY = elementParentRect.top - mainParentRect.top;
