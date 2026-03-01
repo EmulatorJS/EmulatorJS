@@ -2,75 +2,74 @@
  * main.ts — Application entry point
  *
  * Responsibilities:
- *   1. Import CSS (Vite injects it as a <style> tag at build time)
- *   2. Build the DOM shell into #app
- *   3. Load persisted settings from localStorage
- *   4. Instantiate PSPEmulator
+ *   1. Build the DOM
+ *   2. Detect device capabilities (once, at startup)
+ *   3. Load settings from localStorage
+ *   4. Instantiate PSPEmulator and GameLibrary
  *   5. Wire the UI via initUI()
- *   6. Handle the "user chose a file" event:
- *       a. Show loading overlay
- *       b. Persist game name
- *       c. Call emulator.launch()
- *   7. Persist settings changes as they happen
+ *   6. Handle game launch requests (from library cards or file drop)
+ *   7. Handle "return to library" (page is NOT reloaded — EJS is hidden)
+ *   8. Persist settings changes
  *
- * Persistence notes
- * -----------------
- * We deliberately use localStorage for settings (small, synchronous, enough).
- * EmulatorJS itself uses IndexedDB internally for save-state data and ROM
- * caching; we don't need to duplicate that.
- *
- * Settings persisted:
- *   - volume        (number, 0–1)
- *   - lastGameName  (string, display only — the ROM itself is never stored)
+ * Persistence:
+ *   - Settings (volume, performanceMode, etc.) → localStorage (small, sync)
+ *   - ROM blobs → IndexedDB via GameLibrary (large, async)
+ *   - Save states → IndexedDB managed by EmulatorJS internally
  */
 
 import "./style.css";
-import { PSPEmulator }             from "./emulator.js";
-import { buildDOM, initUI } from "./ui.js";
+import { PSPEmulator }   from "./emulator.js";
+import { GameLibrary }   from "./library.js";
+import { detectCapabilities } from "./performance.js";
+import { buildDOM, initUI, showLanding,
+         hideEjsContainer, renderLibrary, openSettingsPanel } from "./ui.js";
+import type { PerformanceMode } from "./performance.js";
 
 // ── Settings schema ───────────────────────────────────────────────────────────
 
 export interface Settings {
-  /** Audio volume, 0–1. Default 0.7 */
-  volume: number;
-  /** Display name of the last loaded game (not the file path). */
-  lastGameName: string | null;
+  volume:          number;
+  lastGameName:    string | null;
+  performanceMode: PerformanceMode;
 }
 
-const STORAGE_KEY = "web-psp-emulator-settings";
+const STORAGE_KEY = "retrovault-settings";
 
 const DEFAULT_SETTINGS: Settings = {
-  volume:       0.7,
-  lastGameName: null,
+  volume:          0.7,
+  lastGameName:    null,
+  performanceMode: "auto",
 };
 
 // ── Persistence ───────────────────────────────────────────────────────────────
 
 function loadSettings(): Settings {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw    = localStorage.getItem(STORAGE_KEY);
     if (!raw) return { ...DEFAULT_SETTINGS };
     const parsed = JSON.parse(raw) as Partial<Settings>;
+    const validModes: PerformanceMode[] = ["auto", "performance", "quality"];
     return {
-      volume:       typeof parsed.volume === "number"
-                      ? Math.max(0, Math.min(1, parsed.volume))
-                      : DEFAULT_SETTINGS.volume,
+      volume: typeof parsed.volume === "number"
+        ? Math.max(0, Math.min(1, parsed.volume))
+        : DEFAULT_SETTINGS.volume,
       lastGameName: typeof parsed.lastGameName === "string"
-                      ? parsed.lastGameName
-                      : null,
+        ? parsed.lastGameName
+        : null,
+      performanceMode: validModes.includes(parsed.performanceMode as PerformanceMode)
+        ? (parsed.performanceMode as PerformanceMode)
+        : DEFAULT_SETTINGS.performanceMode,
     };
   } catch {
-    // Corrupt or inaccessible storage — fall back to defaults.
     return { ...DEFAULT_SETTINGS };
   }
 }
 
-function saveSettings(settings: Settings): void {
+function saveSettings(s: Settings): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
   } catch {
-    // Storage quota exceeded or private-browsing restriction — non-fatal.
-    console.warn("[settings] Could not persist settings to localStorage.");
+    console.warn("[retrovault] Could not persist settings to localStorage.");
   }
 }
 
@@ -82,60 +81,121 @@ function main(): void {
   if (!app) throw new Error("Root element #app not found");
   buildDOM(app);
 
-  // 2. Load settings
+  // 2. Detect hardware
+  const deviceCaps = detectCapabilities();
+
+  // 3. Load settings
   const settings = loadSettings();
 
-  // 3. Instantiate emulator
-  // "ejs-player" matches the <div id="ejs-player"> rendered by buildDOM().
+  // 4. Instantiate services
   const emulator = new PSPEmulator("ejs-player");
+  const library  = new GameLibrary();
 
-  // 4. Wire UI
+  // 5. Wire launch callback
+  const onLaunchGame = async (file: File, systemId: string): Promise<void> => {
+    const gameName = file.name.replace(/\.[^.]+$/, "");
+    settings.lastGameName = gameName;
+    saveSettings(settings);
+
+    await emulator.launch({
+      file,
+      volume:          settings.volume,
+      systemId,
+      performanceMode: settings.performanceMode,
+      deviceCaps,
+    });
+  };
+
+  // Expose for settings panel's "Clear Library" button
+  (window as any).__onLaunchGame = onLaunchGame;
+
+  // 6. Wire "return to library" — hides the emulator, shows library
+  const onReturnToLibrary = (): void => {
+    if (emulator.state !== "running") return;
+    // Note: EJS has no clean stop() API. We hide it and the user can
+    // return to the game by clicking the card again (page stays loaded).
+    // The emulator continues running in the background (paused by hidden canvas).
+    hideEjsContainer();
+    showLanding();
+    document.title = "RetroVault";
+
+    void renderLibrary(library, settings, onLaunchGame);
+    // Restore header to library mode
+    const headerActions = document.getElementById("header-actions");
+    if (headerActions) {
+      // Trigger a re-init of landing controls
+      // We do this by dispatching a custom event caught in initUI
+      document.dispatchEvent(new CustomEvent("retrovault:returnToLibrary"));
+    }
+  };
+
+  // 7. Wire UI
   initUI({
     emulator,
+    library,
     settings,
-
-    onFileSelected: async (file: File) => {
-      // Persist game name for display in status bar (never the file itself).
-      const gameName = file.name.replace(/\.[^.]+$/, "");
-      settings.lastGameName = gameName;
-      saveSettings(settings);
-
-      // Launch — emulator callbacks drive the rest of the UI transitions.
-      await emulator.launch({ file, volume: settings.volume });
-    },
-
-    onSettingsChange: (patch: Partial<Settings>) => {
+    deviceCaps,
+    onLaunchGame,
+    onSettingsChange: (patch) => {
       Object.assign(settings, patch);
       saveSettings(settings);
     },
+    onReturnToLibrary,
   });
 
-  // 5. Development helpers — expose emulator instance for console inspection
+  // 8. If user returns to landing, rebuild landing header controls
+  document.addEventListener("retrovault:returnToLibrary", () => {
+    // Re-init landing controls (settings gear, perf chip)
+    const container = document.getElementById("header-actions");
+    if (!container) return;
+    // Simple approach: dispatch to ui.ts — but we can't easily call the closure.
+    // Instead, we duplicate the minimal controls here.
+    container.innerHTML = "";
+    const btnSettings = document.createElement("button");
+    btnSettings.className = "btn";
+    btnSettings.textContent = "⚙ Settings";
+    btnSettings.addEventListener("click", () => {
+      document.dispatchEvent(new CustomEvent("retrovault:openSettings"));
+    });
+    if (deviceCaps.isLowSpec) {
+      const chip = document.createElement("span");
+      chip.className = "perf-chip perf-chip--warn";
+      chip.textContent = "⚡ Low-spec";
+      chip.title = "Performance mode recommended for this device";
+      container.appendChild(chip);
+    }
+    container.appendChild(btnSettings);
+  });
+
+  document.addEventListener("retrovault:openSettings", () => {
+    openSettingsPanel(settings, deviceCaps, library, (patch) => {
+      Object.assign(settings, patch);
+      saveSettings(settings);
+    });
+  });
+
+  // 9. Dev helpers
   if (import.meta.env.DEV) {
-    // @ts-expect-error — intentional debug exposure
-    window.__pspEmulator = emulator;
-    console.info(
-      "[Web PSP Emulator] Dev mode: access `window.__pspEmulator` in the console.\n" +
-      "Loaded settings:", settings
-    );
+    // @ts-expect-error dev debug
+    window.__retrovault = { emulator, library, settings, deviceCaps };
+    console.info("[RetroVault] Dev mode. Access `window.__retrovault` in the console.");
+    console.info("Device capabilities:", deviceCaps);
+    console.info("Settings:", settings);
   }
 
-  // 6. Warn if the page is not cross-origin isolated
-  //    (the SW may still be loading on first visit — warn only after a delay)
+  // 10. Cross-origin isolation warning
   setTimeout(() => {
     if (!self.crossOriginIsolated) {
       console.warn(
-        "[Web PSP Emulator] Page is NOT cross-origin isolated.\n" +
-        "SharedArrayBuffer will be unavailable. The PPSSPP core requires it.\n" +
-        "Ensure COOP + COEP headers are set, or that coi-serviceworker.js " +
-        "is registered and the page has been reloaded."
+        "[RetroVault] Page is NOT cross-origin isolated.\n" +
+        "SharedArrayBuffer is unavailable — PSP (PPSSPP) games will fail.\n" +
+        "Other systems (NES, SNES, GBA, etc.) are not affected.\n" +
+        "Ensure coi-serviceworker.js is registered and the page has been reloaded."
       );
     }
   }, 2000);
 }
 
-// Run after the DOM is ready.  With Vite's <script type="module">, the script
-// is deferred by default, so DOMContentLoaded has typically already fired.
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", main);
 } else {

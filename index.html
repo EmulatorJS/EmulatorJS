@@ -3,29 +3,40 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Web PSP Emulator</title>
-    <meta name="description" content="Play PSP games in your browser via the PPSSPP core — bring your own ROM." />
+    <title>RetroVault</title>
+    <meta name="description"
+          content="Play retro games in your browser — PSP, NES, SNES, GBA, N64 and more. Bring your own ROMs; your library is stored locally on your device." />
+    <meta name="theme-color" content="#191c25" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RetroVault" />
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json" />
 
     <!--
-      coi-serviceworker.js injects Cross-Origin-Isolation headers via a service
-      worker so SharedArrayBuffer (required by PPSSPP) is available on static
-      hosts that don't let you set custom HTTP headers.
-
-      The dev server (Vite) already sets these headers directly, so the SW
-      registration is a no-op during development.
+      coi-serviceworker.js injects Cross-Origin-Isolation headers (COOP + COEP)
+      via a service worker. This is required for SharedArrayBuffer, which the
+      PPSSPP (PSP) core needs. Other systems (NES, SNES, GBA, etc.) work fine
+      without it. The Vite dev server sets the headers directly.
     -->
     <script src="/coi-serviceworker.js"></script>
   </head>
   <body>
     <!--
-      #app is where our TypeScript UI mounts.
+      #app is where the TypeScript UI mounts at runtime.
+      Structure (built by buildDOM() in ui.ts):
 
-      The structure built at runtime is:
         #app
           header.app-header
           main.app-main
-            section#landing   ← file-picker screen  (hidden once game loads)
-            div#ejs-container ← EmulatorJS mounts here (hidden until game loads)
+            section#landing        ← library grid + drop zone
+            div#ejs-container      ← EmulatorJS mount (hidden until game loads)
+            div#loading-overlay    ← spinner during boot
+            div#error-banner       ← dismissible error
+            div#system-picker      ← modal for ambiguous file extensions
+            div#settings-panel     ← performance / library settings
           footer.app-footer
     -->
     <div id="app"></div>
