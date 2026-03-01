@@ -1,0 +1,21 @@
+{
+  "name": "RetroVault",
+  "short_name": "RetroVault",
+  "description": "Play retro games in your browser. Your library is stored locally.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f1117",
+  "theme_color": "#191c25",
+  "orientation": "landscape-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><rect width='24' height='24' rx='4' fill='%23191c25'/><rect x='2' y='7' width='20' height='11' rx='2' fill='none' stroke='%234f8ef7' stroke-width='1.5'/><circle cx='8' cy='12' r='1.4' fill='%234f8ef7'/><circle cx='16' cy='12' r='1.4' fill='%234f8ef7'/><line x1='12' y1='9.5' x2='12' y2='14.5' stroke='%234f8ef7' stroke-width='1.5'/><line x1='9.5' y1='12' x2='14.5' y2='12' stroke='%234f8ef7' stroke-width='1.5'/></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "screenshots": [],
+  "prefer_related_applications": false
+}

@@ -1,6 +1,6 @@
 /* ============================================================
-   Web PSP Emulator — global styles
-   Dark, minimal, mobile-aware. No frameworks.
+   RetroVault — Global styles
+   Dark theme, mobile-aware, no frameworks.
    ============================================================ */
 
 /* ── Reset / base ─────────────────────────────────────────── */
@@ -11,10 +11,11 @@
 }
 
 :root {
-  --c-bg:        #111318;
-  --c-surface:   #1c1f27;
-  --c-surface2:  #252931;
-  --c-border:    #353a47;
+  --c-bg:        #0f1117;
+  --c-surface:   #191c25;
+  --c-surface2:  #222630;
+  --c-surface3:  #2a2f3d;
+  --c-border:    #32374a;
   --c-accent:    #4f8ef7;
   --c-accent-h:  #6fa3ff;
   --c-danger:    #e05252;
@@ -25,8 +26,11 @@
   --c-text-faint:#4a5068;
 
   --radius:      6px;
-  --radius-lg:   10px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
   --transition:  0.18s ease;
+  --shadow:      0 4px 24px rgba(0,0,0,0.4);
+  --shadow-sm:   0 2px 8px rgba(0,0,0,0.3);
 
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   font-size: 15px;
@@ -36,12 +40,12 @@
 
 html, body {
   height: 100%;
-  overflow: hidden; /* The emulator must be full-height */
 }
 
 body {
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 /* ── App shell ────────────────────────────────────────────── */
@@ -66,19 +70,21 @@ body {
   z-index: 10;
 }
 
-.app-header__title {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--c-text);
+.app-header__brand {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--c-text);
 }
 
-.app-header__title svg {
-  opacity: 0.85;
+.app-header__brand svg {
+  color: var(--c-accent);
 }
+
+.brand-short { display: none; }
 
 .app-header__actions {
   display: flex;
@@ -94,16 +100,16 @@ body {
   background: var(--c-bg);
 }
 
-/* ── Landing (file-picker) screen ────────────────────────── */
+/* ── Landing / Library view ───────────────────────────────── */
 #landing {
   position: absolute;
   inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  overflow-y: auto;
+  padding: 24px 16px 16px;
   gap: 24px;
-  padding: 24px;
   background: var(--c-bg);
   z-index: 5;
   transition: opacity var(--transition), visibility var(--transition);
@@ -115,11 +121,192 @@ body {
   pointer-events: none;
 }
 
-.landing__drop-zone {
-  position: relative;
+/* ── Library section ──────────────────────────────────────── */
+#library-section {
   width: 100%;
-  max-width: 460px;
-  min-height: 200px;
+  max-width: 960px;
+}
+
+#library-section.hidden-section {
+  display: none;
+}
+
+.library-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.library-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.library-count {
+  font-size: 0.8rem;
+  color: var(--c-text-faint);
+  font-weight: 400;
+}
+
+/* ── Game grid ────────────────────────────────────────────── */
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+/* ── Game card ────────────────────────────────────────────── */
+.game-card {
+  position: relative;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  cursor: pointer;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  display: flex;
+  flex-direction: column;
+  outline: none;
+  user-select: none;
+}
+
+.game-card:hover,
+.game-card:focus-visible {
+  border-color: var(--sys-color, var(--c-accent));
+  box-shadow: 0 0 0 1px var(--sys-color, var(--c-accent)), var(--shadow);
+  transform: translateY(-2px);
+}
+
+.game-card__icon {
+  width: 100%;
+  aspect-ratio: 16/9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  border-bottom: 1px solid var(--c-border);
+  flex-shrink: 0;
+}
+
+.game-card__info {
+  padding: 10px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.game-card__name {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--c-text);
+  line-height: 1.3;
+  /* Clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.game-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.game-card__size {
+  font-size: 0.73rem;
+  color: var(--c-text-faint);
+}
+
+.game-card__played {
+  font-size: 0.72rem;
+  color: var(--c-text-faint);
+  margin-top: auto;
+}
+
+/* Remove button — top-right, shown on hover */
+.game-card__remove {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.55);
+  border: 1px solid var(--c-border);
+  color: var(--c-text-dim);
+  font-size: 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition), background var(--transition), color var(--transition);
+  z-index: 2;
+}
+
+.game-card:hover .game-card__remove {
+  opacity: 1;
+}
+
+.game-card__remove:hover {
+  background: var(--c-danger);
+  border-color: var(--c-danger);
+  color: #fff;
+}
+
+/* Play overlay — shown on hover */
+.game-card__play-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity var(--transition);
+  border-radius: inherit;
+}
+
+.game-card:hover .game-card__play-overlay {
+  opacity: 1;
+}
+
+.game-card__play-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--sys-color, var(--c-accent));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: #fff;
+  box-shadow: var(--shadow);
+  padding-left: 4px; /* optical adjustment for ▶ */
+}
+
+/* System badge ────────────────────────────────────────────── */
+.sys-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.03em;
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+/* ── Drop zone ─────────────────────────────────────────────── */
+.drop-zone {
+  position: relative;
   border: 2px dashed var(--c-border);
   border-radius: var(--radius-lg);
   background: var(--c-surface);
@@ -127,70 +314,96 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 32px 24px;
+  gap: 10px;
   cursor: pointer;
   transition: border-color var(--transition), background var(--transition);
   text-align: center;
 }
 
-.landing__drop-zone:hover,
-.landing__drop-zone.drag-over {
+/* Prominent (no games): large centered drop zone */
+.drop-zone--prominent {
+  width: 100%;
+  max-width: 460px;
+  min-height: 200px;
+  padding: 40px 24px;
+}
+
+/* Compact (library has games): smaller strip at bottom */
+.drop-zone--compact {
+  width: 100%;
+  max-width: 960px;
+  padding: 20px 24px;
+  flex-direction: row;
+  gap: 14px;
+}
+
+.drop-zone--compact .drop-zone__sub { display: none; }
+
+.drop-zone:hover,
+.drop-zone.drag-over {
   border-color: var(--c-accent);
   background: color-mix(in srgb, var(--c-accent) 6%, var(--c-surface));
 }
 
-.landing__drop-zone input[type="file"] {
+.drop-zone input[type="file"] {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   opacity: 0;
   cursor: pointer;
-  font-size: 0; /* hide "no file chosen" text in some browsers */
+  font-size: 0;
 }
 
-.landing__drop-icon {
-  font-size: 2.5rem;
-  line-height: 1;
-  opacity: 0.4;
+.drop-zone__icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c-surface2);
+  border: 2px solid var(--c-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 300;
+  color: var(--c-text-dim);
+  flex-shrink: 0;
+  transition: border-color var(--transition), color var(--transition);
 }
 
-.landing__drop-label {
-  font-size: 1.05rem;
+.drop-zone:hover .drop-zone__icon {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.drop-zone__label {
+  font-size: 0.95rem;
   font-weight: 600;
   color: var(--c-text);
 }
 
-.landing__drop-sub {
+.drop-zone--compact .drop-zone__label {
+  font-size: 0.88rem;
+}
+
+.drop-zone__sub {
   font-size: 0.82rem;
   color: var(--c-text-dim);
 }
 
-.landing__drop-browse {
-  margin-top: 4px;
-  padding: 8px 22px;
-  background: var(--c-accent);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-size: 0.9rem;
-  font-weight: 600;
+.drop-zone__browse {
+  color: var(--c-accent);
+  text-decoration: underline;
   cursor: pointer;
-  transition: background var(--transition);
-  pointer-events: none; /* the invisible <input> handles clicks */
 }
 
-.landing__drop-zone:hover .landing__drop-browse {
-  background: var(--c-accent-h);
-}
-
+/* Legal notice */
 .landing__legal {
-  max-width: 460px;
-  font-size: 0.78rem;
+  max-width: 540px;
+  font-size: 0.75rem;
   color: var(--c-text-faint);
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .landing__legal a {
@@ -198,7 +411,28 @@ body {
   text-decoration: none;
 }
 
-/* ── Progress / status overlay ───────────────────────────── */
+/* ── EmulatorJS container ─────────────────────────────────── */
+#ejs-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: #000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transition), visibility var(--transition);
+}
+
+#ejs-container.visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+#ejs-player {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Loading overlay ──────────────────────────────────────── */
 #loading-overlay {
   position: absolute;
   inset: 0;
@@ -207,7 +441,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background: rgba(17, 19, 24, 0.92);
+  background: rgba(15, 17, 23, 0.93);
   z-index: 20;
   opacity: 0;
   visibility: hidden;
@@ -224,8 +458,8 @@ body {
 }
 
 .loading-spinner {
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border: 3px solid var(--c-border);
   border-top-color: var(--c-accent);
   border-radius: 50%;
@@ -237,9 +471,10 @@ body {
 }
 
 #loading-message {
-  font-size: 0.92rem;
+  font-size: 0.9rem;
   color: var(--c-text-dim);
-  max-width: 360px;
+  max-width: 380px;
+  line-height: 1.5;
 }
 
 /* ── Error banner ─────────────────────────────────────────── */
@@ -249,13 +484,13 @@ body {
   left: 50%;
   transform: translateX(-50%);
   z-index: 30;
-  max-width: min(90vw, 560px);
-  background: color-mix(in srgb, var(--c-danger) 15%, var(--c-surface));
+  max-width: min(90vw, 580px);
+  background: color-mix(in srgb, var(--c-danger) 14%, var(--c-surface));
   border: 1px solid var(--c-danger);
   border-radius: var(--radius);
   padding: 12px 16px;
   font-size: 0.85rem;
-  line-height: 1.5;
+  line-height: 1.6;
   color: var(--c-text);
   display: none;
   white-space: pre-wrap;
@@ -266,42 +501,249 @@ body {
   display: block;
 }
 
-#error-banner .error-close {
+.error-close {
   float: right;
   margin-left: 12px;
+  background: none;
+  border: none;
   cursor: pointer;
-  opacity: 0.6;
+  opacity: 0.55;
   font-size: 1rem;
   line-height: 1;
+  color: var(--c-text);
   transition: opacity var(--transition);
 }
 
-#error-banner .error-close:hover {
-  opacity: 1;
-}
+.error-close:hover { opacity: 1; }
 
-/* ── EmulatorJS container ─────────────────────────────────── */
-#ejs-container {
-  position: absolute;
+/* ── Modals (system picker + settings) ────────────────────── */
+.modal-backdrop {
+  position: fixed;
   inset: 0;
-  z-index: 1;
-  background: #000;
-  /* Hidden until a game is launched */
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--transition), visibility var(--transition);
+  background: rgba(0,0,0,0.6);
+  z-index: 40;
 }
 
-#ejs-container.visible {
-  opacity: 1;
-  visibility: visible;
+#system-picker,
+#settings-panel {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
 }
 
-/* EmulatorJS mounts its own DOM inside #ejs-player.
-   We just need that element to fill the container. */
-#ejs-player {
-  width: 100%;
-  height: 100%;
+#system-picker[hidden],
+#settings-panel[hidden] {
+  display: none;
+}
+
+.modal-box {
+  position: relative;
+  z-index: 51;
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  width: min(92vw, 440px);
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.settings-modal-box {
+  width: min(92vw, 520px);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--c-border);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--c-text-dim);
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: color var(--transition);
+  padding: 2px;
+}
+
+.modal-close:hover { color: var(--c-text); }
+
+.modal-subtitle {
+  padding: 14px 20px 8px;
+  font-size: 0.87rem;
+  color: var(--c-text-dim);
+  flex-shrink: 0;
+}
+
+/* ── System picker list ───────────────────────────────────── */
+.system-picker-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 20px 20px;
+  overflow-y: auto;
+}
+
+.system-pick-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--c-surface2);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius);
+  color: var(--c-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition);
+}
+
+.system-pick-btn:hover {
+  background: var(--c-surface3);
+  border-color: var(--c-accent);
+}
+
+/* ── Settings panel content ───────────────────────────────── */
+#settings-content {
+  overflow-y: auto;
+  padding: 8px 0 4px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-section {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.settings-section:last-child {
+  border-bottom: none;
+}
+
+.settings-section__title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-text-faint);
+  margin-bottom: 10px;
+}
+
+.settings-help {
+  font-size: 0.82rem;
+  color: var(--c-text-dim);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+
+/* Radio rows */
+.radio-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 0;
+  cursor: pointer;
+}
+
+.radio-row input[type="radio"] {
+  margin-top: 3px;
+  accent-color: var(--c-accent);
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.radio-row__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.radio-row__label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.radio-row__desc {
+  font-size: 0.78rem;
+  color: var(--c-text-dim);
+}
+
+/* Device info */
+.device-info {
+  font-size: 0.83rem;
+  color: var(--c-text-dim);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+/* Tier badge */
+.tier-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.tier-badge--ok   { background: color-mix(in srgb, var(--c-success) 15%, transparent); color: var(--c-success); }
+.tier-badge--warn { background: color-mix(in srgb, var(--c-warn)    15%, transparent); color: var(--c-warn); }
+
+/* System chips (settings panel) */
+.sys-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.sys-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Performance chip in header */
+.perf-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.perf-chip--warn {
+  background: color-mix(in srgb, var(--c-warn) 15%, transparent);
+  color: var(--c-warn);
+  border: 1px solid color-mix(in srgb, var(--c-warn) 30%, transparent);
 }
 
 /* ── Footer / status bar ──────────────────────────────────── */
@@ -326,14 +768,8 @@ body {
   gap: 5px;
 }
 
-.status-item__label {
-  color: var(--c-text-faint);
-}
-
-.status-item__value {
-  color: var(--c-text-dim);
-  font-weight: 500;
-}
+.status-item__label  { color: var(--c-text-faint); }
+.status-item__value  { color: var(--c-text-dim); font-weight: 500; }
 
 .status-dot {
   width: 7px;
@@ -344,20 +780,20 @@ body {
 }
 
 .status-dot.idle    { background: var(--c-text-faint); }
-.status-dot.loading { background: var(--c-warn);   animation: pulse 1s infinite; }
+.status-dot.loading { background: var(--c-warn);    animation: pulse 1s infinite; }
 .status-dot.running { background: var(--c-success); }
 .status-dot.error   { background: var(--c-danger);  }
 
 @keyframes pulse {
   0%, 100% { opacity: 1; }
-  50%       { opacity: 0.35; }
+  50%       { opacity: 0.3; }
 }
 
 /* ── Shared button base ───────────────────────────────────── */
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   padding: 5px 12px;
   border: 1px solid var(--c-border);
   border-radius: var(--radius);
@@ -372,7 +808,7 @@ body {
 }
 
 .btn:hover {
-  background: var(--c-surface);
+  background: var(--c-surface3);
   border-color: var(--c-accent);
   color: var(--c-accent-h);
 }
@@ -404,13 +840,45 @@ body {
   background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface2));
 }
 
-/* ── Responsive: hide non-essential items on small screens ── */
-@media (max-width: 480px) {
-  .app-header__title span.title-long {
-    display: none;
+/* Volume control in game header */
+.vol-control {
+  gap: 6px;
+  cursor: default !important;
+}
+
+.vol-control input[type="range"] {
+  width: 72px;
+  cursor: pointer;
+  accent-color: var(--c-accent);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .brand-long  { display: none; }
+  .brand-short { display: inline; }
+
+  .status-item.hide-mobile { display: none; }
+
+  .library-grid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
   }
 
-  .status-item.hide-mobile {
-    display: none;
+  .game-card__remove { opacity: 1; } /* always visible on touch */
+
+  .modal-box,
+  .settings-modal-box { width: 96vw; }
+}
+
+@media (max-width: 400px) {
+  .library-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Larger screens: more columns */
+@media (min-width: 900px) {
+  .library-grid {
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
   }
 }
