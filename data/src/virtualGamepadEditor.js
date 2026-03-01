@@ -1,73 +1,110 @@
 /**
- * Manages undo/redo history using the Command pattern.
- * Stores actions as pairs of undo/redo functions that can be executed to
- * reverse or replay state changes.
+ * Manages undo/redo using full layout snapshots.
  *
  * @class EJS_HistoryManager
  */
 class EJS_HistoryManager {
     /**
-     * Creates a new history manager.
-     * @param {Function} onUpdate - Callback invoked after any history change
+     * @param {Function} onUpdate
+     * @param {Function} applySnapshot
      */
-    constructor(onUpdate) {
-        this.undoStack = [];
-        this.redoStack = [];
+    constructor(onUpdate, applySnapshot) {
+        this.past = [];
+        this.future = [];
+        this.present = null;
         this.onUpdate = onUpdate;
+        this.applySnapshot = applySnapshot;
     }
 
-    /**
-     * Pushes a new action onto the history stack and clears redo history.
-     * @param {{undo: Function, redo: Function}} action - Action with undo/redo functions
-     */
-    push(action) {
-        this.undoStack.push(action);
-        this.redoStack = [];
+    cloneSnapshot(snapshot) {
+        const clone = {};
+        if (!snapshot) return clone;
+        for (const id in snapshot) {
+            const state = snapshot[id];
+            clone[id] = {
+                left: state.left,
+                top: state.top,
+                width: state.width,
+                height: state.height
+            };
+        }
+        return clone;
+    }
+
+    snapshotsEqual(a, b, epsilon = 0.5) {
+        const keysA = Object.keys(a || {});
+        const keysB = Object.keys(b || {});
+        if (keysA.length !== keysB.length) return false;
+        for (let i = 0; i < keysA.length; i++) {
+            const id = keysA[i];
+            const stateA = a[id];
+            const stateB = b[id];
+            if (!stateA || !stateB) return false;
+            if (Math.abs(stateA.left - stateB.left) > epsilon) return false;
+            if (Math.abs(stateA.top - stateB.top) > epsilon) return false;
+            if (Math.abs(stateA.width - stateB.width) > epsilon) return false;
+            if (Math.abs(stateA.height - stateB.height) > epsilon) return false;
+        }
+        return true;
+    }
+
+    setInitial(snapshot) {
+        this.present = this.cloneSnapshot(snapshot);
+        this.past = [];
+        this.future = [];
         this.onUpdate();
     }
 
-    /**
-     * Undoes the most recent action.
-     */
+    push(snapshot) {
+        const next = this.cloneSnapshot(snapshot);
+        if (this.present && this.snapshotsEqual(this.present, next)) return;
+        if (this.present) {
+            this.past.push(this.cloneSnapshot(this.present));
+        }
+        this.present = next;
+        this.future = [];
+        this.onUpdate();
+    }
+
     undo() {
-        const action = this.undoStack.pop();
-        if (action) {
-            action.undo();
-            this.redoStack.push(action);
+        if (!this.canUndo()) return;
+        const previous = this.past[this.past.length - 1];
+        const current = this.cloneSnapshot(this.present);
+        try {
+            this.applySnapshot(previous);
+            this.past.pop();
+            this.future.push(current);
+            this.present = this.cloneSnapshot(previous);
             this.onUpdate();
+        } catch (e) {
+            console.warn("Virtual gamepad undo failed", e);
         }
     }
 
-    /**
-     * Redoes the most recently undone action.
-     */
     redo() {
-        const action = this.redoStack.pop();
-        if (action) {
-            action.redo();
-            this.undoStack.push(action);
+        if (!this.canRedo()) return;
+        const next = this.future[this.future.length - 1];
+        const current = this.cloneSnapshot(this.present);
+        try {
+            this.applySnapshot(next);
+            this.future.pop();
+            this.past.push(current);
+            this.present = this.cloneSnapshot(next);
             this.onUpdate();
+        } catch (e) {
+            console.warn("Virtual gamepad redo failed", e);
         }
     }
 
-    /**
-     * Clears all history.
-     */
     clear() {
-        this.undoStack = [];
-        this.redoStack = [];
+        this.past = [];
+        this.future = [];
+        this.present = null;
         this.onUpdate();
     }
 
-    /**
-     * @returns {boolean} True if there are actions to undo
-     */
-    canUndo() { return this.undoStack.length > 0; }
-
-    /**
-     * @returns {boolean} True if there are actions to redo
-     */
-    canRedo() { return this.redoStack.length > 0; }
+    canUndo() { return this.past.length > 0; }
+    canRedo() { return this.future.length > 0; }
 }
 
 /**
@@ -231,15 +268,13 @@ class EJS_OverlayElement {
      * @private
      */
     setupDragHandlers(overlay) {
-        let startLeft, startTop, dragOldState;
+        let startLeft, startTop;
 
         const cleanup = this.editor.setupPointerInteraction(overlay, {
             onStart: ({ event }) => {
                 if (event.target.classList.contains("ejs_virtualGamepad_resize_handle")) return false;
                 startLeft = parseFloat(overlay.style.left) || 0;
                 startTop = parseFloat(overlay.style.top) || 0;
-                // Capture FULL state for proper undo
-                dragOldState = this.captureState();
                 overlay.classList.add("ejs_dragging");
             },
             onMove: ({ deltaX, deltaY }) => {
@@ -248,18 +283,7 @@ class EJS_OverlayElement {
             },
             onEnd: () => {
                 overlay.classList.remove("ejs_dragging");
-                const newState = this.captureState();
-                // Copy to local const to avoid closure capturing mutable variable
-                const oldState = { ...dragOldState };
-
-                // Check if position actually changed
-                if (Math.abs(oldState.left - newState.left) > 0.5 ||
-                    Math.abs(oldState.top - newState.top) > 0.5) {
-                    this.editor.history.push({
-                        undo: () => this.setState(oldState),
-                        redo: () => this.setState(newState)
-                    });
-                }
+                this.editor.commitSnapshot();
             }
         });
         if (cleanup) this.cleanupFns.push(cleanup);
@@ -276,16 +300,13 @@ class EJS_OverlayElement {
         handle.classList.add("ejs_virtualGamepad_resize_handle", "ejs_resize_se");
         overlay.appendChild(handle);
 
-        let startWidth, startHeight, resizeOldState;
+        let startWidth, startHeight;
 
         const cleanup = this.editor.setupPointerInteraction(handle, {
-            documentEvents: true,
             stopPropagation: true,
             onStart: () => {
                 startWidth = parseFloat(overlay.style.width) || 50;
                 startHeight = parseFloat(overlay.style.height) || 50;
-                // Capture FULL state for proper undo
-                resizeOldState = this.captureState();
             },
             onMove: ({ deltaX, deltaY }) => {
                 const delta = (deltaX + deltaY) / 2;
@@ -294,18 +315,7 @@ class EJS_OverlayElement {
                 this.updateButtonPreviewScale();
             },
             onEnd: () => {
-                const newState = this.captureState();
-                // Copy to local const to avoid closure capturing mutable variable
-                const oldState = { ...resizeOldState };
-
-                // Check if size actually changed
-                if (Math.abs(oldState.width - newState.width) > 0.5 ||
-                    Math.abs(oldState.height - newState.height) > 0.5) {
-                    this.editor.history.push({
-                        undo: () => this.setState(oldState),
-                        redo: () => this.setState(newState)
-                    });
-                }
+                this.editor.commitSnapshot();
             }
         });
         if (cleanup) this.cleanupFns.push(cleanup);
@@ -444,7 +454,11 @@ class EJS_VirtualGamepadEditor {
     constructor(emulator) {
         this.emu = emulator;
         this.elements = [];
-        this.history = new EJS_HistoryManager(() => this.updateToolbarState());
+        this.history = new EJS_HistoryManager(
+            () => this.updateToolbarState(),
+            (snapshot) => this.applySnapshot(snapshot)
+        );
+        this.initialSnapshot = {};
         this.container = null;
         this.overlayContainer = null;
         this.toolbar = null;
@@ -463,22 +477,84 @@ class EJS_VirtualGamepadEditor {
     }
 
     /**
-     * Sets up unified pointer (touch + mouse) interaction handlers.
+     * Sets up pointer interaction handlers (Pointer Events with a legacy fallback).
      * @param {HTMLElement} element - Element to attach handlers to
      * @param {Object} options - Handler options
      * @param {Function} options.onStart - Called on pointer down, receives {x, y, event}
      * @param {Function} options.onMove - Called on pointer move, receives {x, y, deltaX, deltaY, event}
      * @param {Function} options.onEnd - Called on pointer up, receives {event}
-     * @param {boolean} [options.documentEvents=false] - Attach move/end to document
      * @param {boolean} [options.stopPropagation=false] - Stop event propagation
      * @returns {Function} Cleanup function to remove listeners
      */
-    setupPointerInteraction(element, { onStart, onMove, onEnd, documentEvents = false, stopPropagation = false }) {
+    setupPointerInteraction(element, { onStart, onMove, onEnd, stopPropagation = false }) {
+        if (window.PointerEvent) {
+            let isActive = false;
+            let startX = 0;
+            let startY = 0;
+            let pointerId = null;
+            // Use document-level move/up for reliability (eg when dragging outside bounds).
+            const moveEndTarget = document;
+
+            const handleStart = (e) => {
+                if (isActive) return;
+                if (stopPropagation) e.stopPropagation();
+                e.preventDefault();
+                const result = onStart({ x: e.clientX, y: e.clientY, event: e });
+                if (result === false) return;
+                isActive = true;
+                pointerId = e.pointerId;
+                startX = e.clientX;
+                startY = e.clientY;
+                if (element.setPointerCapture) {
+                    try {
+                        element.setPointerCapture(pointerId);
+                    } catch (err) {}
+                }
+            };
+
+            const handleMove = (e) => {
+                if (!isActive || e.pointerId !== pointerId) return;
+                e.preventDefault();
+                onMove({
+                    x: e.clientX,
+                    y: e.clientY,
+                    deltaX: e.clientX - startX,
+                    deltaY: e.clientY - startY,
+                    event: e
+                });
+            };
+
+            const handleEnd = (e) => {
+                if (!isActive || e.pointerId !== pointerId) return;
+                isActive = false;
+                if (element.releasePointerCapture) {
+                    try {
+                        element.releasePointerCapture(pointerId);
+                    } catch (err) {}
+                }
+                pointerId = null;
+                onEnd({ event: e });
+            };
+
+            element.addEventListener("pointerdown", handleStart, { passive: false });
+            moveEndTarget.addEventListener("pointermove", handleMove, { passive: false });
+            moveEndTarget.addEventListener("pointerup", handleEnd);
+            moveEndTarget.addEventListener("pointercancel", handleEnd);
+
+            return () => {
+                element.removeEventListener("pointerdown", handleStart);
+                moveEndTarget.removeEventListener("pointermove", handleMove);
+                moveEndTarget.removeEventListener("pointerup", handleEnd);
+                moveEndTarget.removeEventListener("pointercancel", handleEnd);
+            };
+        }
+
+        // Fallback for legacy browsers.
         let isActive = false;
         let startX = 0, startY = 0;
 
         const handleStart = (e) => {
-            if (isActive) return; // Prevent duplicate starts from touch+mouse
+            if (isActive) return;
             if (stopPropagation) e.stopPropagation();
             e.preventDefault();
             const touch = e.touches ? e.touches[0] : e;
@@ -505,7 +581,7 @@ class EJS_VirtualGamepadEditor {
         element.addEventListener("touchstart", handleStart, { passive: false });
         element.addEventListener("mousedown", handleStart);
 
-        const moveEndTarget = documentEvents ? document : element;
+        const moveEndTarget = document;
         moveEndTarget.addEventListener("touchmove", handleMove, { passive: false });
         moveEndTarget.addEventListener("mousemove", handleMove);
         moveEndTarget.addEventListener("touchend", handleEnd);
@@ -568,6 +644,8 @@ class EJS_VirtualGamepadEditor {
 
         // Setup overlay elements
         this.setupOverlayElements();
+        this.initialSnapshot = this.captureSnapshot();
+        this.history.setInitial(this.initialSnapshot);
 
         // Dim original virtual gamepad
         this.emu.virtualGamepad.classList.add("ejs_virtualGamepad_edit_mode_faded");
@@ -593,11 +671,11 @@ class EJS_VirtualGamepadEditor {
         const SAVE_ICON = '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>';
 
         const buttonConfigs = [
-            { icon: UNDO_ICON, cls: "undo", title: "UNDO_VIRTUAL_GAMEPAD", action: () => this.history.undo(), getDisabled: () => !this.history.canUndo() },
-            { icon: REDO_ICON, cls: "redo", title: "REDO_VIRTUAL_GAMEPAD", action: () => this.history.redo(), getDisabled: () => !this.history.canRedo() },
-            { icon: CLEAR_ICON, cls: "clear", title: "CLEAR_VIRTUAL_GAMEPAD", action: () => this.clear(), getDisabled: () => !this.hasChangesFromStart() },
-            { icon: DEFAULT_ICON, cls: "default", title: "RESET_TO_DEFAULT_VIRTUAL_GAMEPAD", action: () => this.reset() },
-            { icon: SAVE_ICON, cls: "close", title: "SAVE_AND_CLOSE_VIRTUAL_GAMEPAD", action: () => this.exit(true) }
+            { icon: UNDO_ICON, cls: "undo", title: "Undo", action: () => this.history.undo(), getDisabled: () => !this.history.canUndo() },
+            { icon: REDO_ICON, cls: "redo", title: "Redo", action: () => this.history.redo(), getDisabled: () => !this.history.canRedo() },
+            { icon: CLEAR_ICON, cls: "clear", title: "Clear", action: () => this.clear(), getDisabled: () => !this.hasChangesFromStart() },
+            { icon: DEFAULT_ICON, cls: "default", title: "Reset to Default", action: () => this.reset() },
+            { icon: SAVE_ICON, cls: "close", title: "Save & Close", action: () => this.exit(true) }
         ];
 
         buttonConfigs.forEach(cfg => {
@@ -644,18 +722,32 @@ class EJS_VirtualGamepadEditor {
         return btn;
     }
 
+    captureSnapshot() {
+        const snapshot = {};
+        this.elements.forEach((el) => {
+            snapshot[el.id] = el.captureState();
+        });
+        return snapshot;
+    }
+
+    applySnapshot(snapshot) {
+        if (!snapshot) return;
+        this.elements.forEach((el) => {
+            const state = snapshot[el.id];
+            if (state) el.setState(state);
+        });
+    }
+
+    commitSnapshot() {
+        this.history.push(this.captureSnapshot());
+    }
+
     /**
      * Checks if any element has changed from its position when the editor opened.
      * @returns {boolean} True if any element has moved or resized
      */
     hasChangesFromStart() {
-        return this.elements.some(el => {
-            const current = el.captureState();
-            return Math.abs(current.left - el.overlay._startLeft) > 0.5 ||
-                   Math.abs(current.top - el.overlay._startTop) > 0.5 ||
-                   Math.abs(current.width - el.overlay._startWidth) > 0.5 ||
-                   Math.abs(current.height - el.overlay._startHeight) > 0.5;
-        });
+        return !this.history.snapshotsEqual(this.initialSnapshot, this.captureSnapshot());
     }
 
     /**
@@ -675,70 +767,44 @@ class EJS_VirtualGamepadEditor {
      */
     setupOverlayElements() {
         const parentRect = this.emu.elements.parent.getBoundingClientRect();
-        const virtualGamepad = this.emu.virtualGamepad;
-        const findId = (classList) => this.emu.findElementId(classList);
+        const controls = this.emu.getVirtualGamepadControls ? this.emu.getVirtualGamepadControls() : [];
 
-        // Process buttons
-        const buttons = virtualGamepad.querySelectorAll(".ejs_virtualGamepad_button");
-        buttons.forEach((btn, index) => {
-            const id = findId(btn.classList, `b_button_${index}`);
-            const rect = btn.getBoundingClientRect();
-            const defaults = this.emu.virtualGamepadDefaults[id];
+        controls.forEach((control) => {
+            if (!control?.id || !control.element) return;
+            const defaults = this.emu.virtualGamepadDefaults[control.id];
 
-            const overlayEl = new EJS_OverlayElement(this, btn, id, "button", rect, parentRect, defaults);
-            this.overlayContainer.appendChild(overlayEl.overlay);
-            this.elements.push(overlayEl);
-        });
-
-        // Process dpads
-        const dpads = virtualGamepad.querySelectorAll(".ejs_dpad_main");
-        dpads.forEach((dpadMain, index) => {
-            const dpadContainer = dpadMain.parentElement;
-            if (!dpadContainer) return;
-
-            const id = findId(dpadContainer.classList, `b_dpad_${index}`);
-            const rect = dpadMain.getBoundingClientRect();
-            const defaults = this.emu.virtualGamepadDefaults[id];
-
-            const overlayEl = new EJS_OverlayElement(this, dpadMain, id, "dpad", rect, parentRect, defaults);
-            this.overlayContainer.appendChild(overlayEl.overlay);
-            this.elements.push(overlayEl);
-        });
-
-        // Process zones (nipplejs joysticks)
-        const nipples = virtualGamepad.querySelectorAll(".nipple");
-        const zones = [];
-        nipples.forEach(nipple => {
-            const zone = nipple.parentElement;
-            if (zone && !zones.includes(zone)) zones.push(zone);
-        });
-
-        zones.forEach((zone, index) => {
-            const id = findId(zone.classList, `b_zone_${index}`);
-
-            // Get dimensions from the nipple element
-            const nipple = zone.querySelector(".nipple");
-            const back = nipple ? nipple.querySelector(".back") : null;
-            let rect;
-            if (back && back.getBoundingClientRect().width > 0) {
-                rect = back.getBoundingClientRect();
-            } else if (nipple && nipple.getBoundingClientRect().width > 0) {
-                rect = nipple.getBoundingClientRect();
+            let rect = null;
+            if (control.type === "zone") {
+                const zone = control.element;
+                const nipple = zone.querySelector(".nipple");
+                const back = nipple ? nipple.querySelector(".back") : null;
+                if (back && back.getBoundingClientRect().width > 0) {
+                    rect = back.getBoundingClientRect();
+                } else if (nipple && nipple.getBoundingClientRect().width > 0) {
+                    rect = nipple.getBoundingClientRect();
+                } else {
+                    const zoneRect = zone.getBoundingClientRect();
+                    rect = {
+                        left: zoneRect.left + zoneRect.width / 2 - 50,
+                        top: zoneRect.top + zoneRect.height / 2 - 50,
+                        width: 100,
+                        height: 100
+                    };
+                }
+                zone.style.position = "absolute";
             } else {
-                const zoneRect = zone.getBoundingClientRect();
-                rect = {
-                    left: zoneRect.left + zoneRect.width / 2 - 50,
-                    top: zoneRect.top + zoneRect.height / 2 - 50,
-                    width: 100,
-                    height: 100
-                };
+                rect = control.element.getBoundingClientRect();
             }
 
-            zone.style.position = "absolute";
-            const defaults = this.emu.virtualGamepadDefaults[id];
-
-            const overlayEl = new EJS_OverlayElement(this, zone, id, "zone", rect, parentRect, defaults);
-            overlayEl.nippleElement = nipple;
+            const overlayEl = new EJS_OverlayElement(
+                this,
+                control.element,
+                control.id,
+                control.type,
+                rect,
+                parentRect,
+                defaults
+            );
             this.overlayContainer.appendChild(overlayEl.overlay);
             this.elements.push(overlayEl);
         });
@@ -748,56 +814,16 @@ class EJS_VirtualGamepadEditor {
      * Clears all changes made in the current session, reverting to session start state.
      */
     clear() {
-        // Capture current states of all elements
-        const oldStates = this.elements.map(el => ({ element: el, state: el.captureState() }));
-        
-        // Check if any element has changed from start
-        const hasChanges = this.elements.some(el => {
-            const current = el.captureState();
-            return Math.abs(current.left - el.overlay._startLeft) > 0.5 ||
-                   Math.abs(current.top - el.overlay._startTop) > 0.5 ||
-                   Math.abs(current.width - el.overlay._startWidth) > 0.5 ||
-                   Math.abs(current.height - el.overlay._startHeight) > 0.5;
-        });
-        
-        if (!hasChanges) return;
-        
-        // Reset all elements to start
-        this.elements.forEach(el => el.resetToStart());
-        
-        // Capture new states (start states)
-        const newStates = this.elements.map(el => ({ element: el, state: el.captureState() }));
-        
-        // Push single action to history
-        this.history.push({
-            undo: () => oldStates.forEach(({ element, state }) => element.setState(state)),
-            redo: () => newStates.forEach(({ element, state }) => element.setState(state))
-        });
+        this.applySnapshot(this.initialSnapshot);
+        this.commitSnapshot();
     }
 
     /**
      * Resets all elements to their default CSS/config positions.
      */
     reset() {
-        // Capture current states of all elements
-        const oldStates = this.elements.map(el => ({ element: el, state: el.captureState() }));
-        
-        // Check which elements will actually change
-        const changes = [];
-        this.elements.forEach((el) => {
-            const result = el.resetToDefault();
-            if (result) {
-                changes.push({ element: el, oldState: result.oldState, newState: result.newState });
-            }
-        });
-        
-        if (changes.length === 0) return;
-        
-        // Push single action to history for ALL changes
-        this.history.push({
-            undo: () => changes.forEach(({ element, oldState }) => element.setState(oldState)),
-            redo: () => changes.forEach(({ element, newState }) => element.setState(newState))
-        });
+        this.elements.forEach((el) => el.resetToDefault());
+        this.commitSnapshot();
     }
 
     /**
@@ -860,71 +886,49 @@ class EJS_VirtualGamepadEditor {
             const overlay = overlayEl.overlay;
             const element = overlayEl.original;
             const id = overlayEl.id;
-
-            // Get default positions
-            const defaultLeft = overlay._defaultLeft || 0;
-            const defaultTop = overlay._defaultTop || 0;
-            const defaultWidth = overlay._defaultWidth || state.width;
-            const defaultHeight = overlay._defaultHeight || state.height;
-
-            // Check if at default position
-            const isAtDefault = Math.abs(state.left - defaultLeft) < 1 &&
-                               Math.abs(state.top - defaultTop) < 1 &&
-                               Math.abs(state.width - defaultWidth) < 1 &&
-                               Math.abs(state.height - defaultHeight) < 1;
-
             const defaults = this.emu.virtualGamepadDefaults[id];
-
-            if (isAtDefault && defaults) {
-                // Restore original CSS positioning
-                if (overlayEl.type === "zone" && defaults.nippleManager && defaults.zoneConfig) {
-                    this.restoreZoneToDefault(element, defaults);
-                } else {
-                    element.style.left = defaults.left;
-                    element.style.top = defaults.top;
-                    element.style.right = defaults.right;
-                    element.style.transform = defaults.transform || "";
-                    element.style.width = defaults.width || "";
-                    element.style.height = defaults.height || "";
-                }
-                return;
-            }
-
-            // Calculate scale factor
+            const defaultLeft = overlay._defaultLeft ?? state.left;
+            const defaultTop = overlay._defaultTop ?? state.top;
+            const defaultWidth = overlay._defaultWidth ?? state.width;
+            const defaultHeight = overlay._defaultHeight ?? state.height;
+            const isAtDefault = Math.abs(state.left - defaultLeft) < 1 &&
+                Math.abs(state.top - defaultTop) < 1 &&
+                Math.abs(state.width - defaultWidth) < 1 &&
+                Math.abs(state.height - defaultHeight) < 1;
             const scaleX = defaultWidth > 0 ? state.width / defaultWidth : 1;
             const scaleY = defaultHeight > 0 ? state.height / defaultHeight : 1;
             const scale = Math.max(0.1, Math.min(10, (scaleX + scaleY) / 2));
 
-            if (overlayEl.type === "zone" && defaults && defaults.nippleManager && defaults.zoneConfig) {
-                this.applyZonePosition(element, state, scale, defaults, parentRect);
+            if (overlayEl.type === "zone") {
+                if (!defaults || !defaults.nippleManager || !defaults.zoneConfig) return;
+                if (isAtDefault) {
+                    this.restoreZoneToDefault(element, defaults);
+                } else {
+                    this.applyZonePosition(element, state, scale, defaults);
+                }
                 return;
             }
 
-            // Calculate offset for dpad
-            let offsetX = 0, offsetY = 0;
-            if (overlayEl.type === "dpad") {
-                const dpadMain = element.querySelector(".ejs_dpad_main");
-                if (dpadMain) {
-                    const containerRect = element.getBoundingClientRect();
-                    const innerRect = dpadMain.getBoundingClientRect();
-                    offsetX = innerRect.left - containerRect.left;
-                    offsetY = innerRect.top - containerRect.top;
-                }
+            if (isAtDefault && defaults) {
+                element.style.left = defaults.left ?? "";
+                element.style.top = defaults.top ?? "";
+                element.style.right = defaults.right ?? "";
+                element.style.transform = defaults.transform || "";
+                element.style.width = defaults.width || "";
+                element.style.height = defaults.height || "";
+                return;
             }
 
             // Calculate position relative to the element's positioning context.
             // For absolutely positioned elements this is offsetParent (not always parentElement).
             const positioningParent = element.offsetParent || element.parentElement;
             const elementParentRect = positioningParent ? positioningParent.getBoundingClientRect() : parentRect;
-            const mainParentRect = this.emu.elements.parent.getBoundingClientRect();
-            const containerOffsetX = elementParentRect.left - mainParentRect.left;
-            const containerOffsetY = elementParentRect.top - mainParentRect.top;
-
+            const containerOffsetX = elementParentRect.left - parentRect.left;
+            const containerOffsetY = elementParentRect.top - parentRect.top;
             element.style.right = "";
-            element.style.left = (state.left - offsetX - containerOffsetX) + "px";
-            element.style.top = (state.top - offsetY - containerOffsetY) + "px";
+            element.style.left = (state.left - containerOffsetX) + "px";
+            element.style.top = (state.top - containerOffsetY) + "px";
 
-            // Apply scale transform
             if (Math.abs(scale - 1) > 0.01) {
                 element.style.transform = `scale(${scale})`;
                 element.style.transformOrigin = "top left";
@@ -999,10 +1003,9 @@ class EJS_VirtualGamepadEditor {
      * @param {Object} state - Current overlay state {left, top, width, height}
      * @param {number} scale - Scale factor to apply
      * @param {Object} defaults - Default configuration for the zone
-     * @param {DOMRect} parentRect - Parent container bounding rectangle
      * @private
      */
-    applyZonePosition(element, state, scale, defaults, parentRect) {
+    applyZonePosition(element, state, scale, defaults) {
         // nipplejs positions relative to the zone element, not its parent
         const elementRect = element.getBoundingClientRect();
         const mainParentRect = this.emu.elements.parent.getBoundingClientRect();

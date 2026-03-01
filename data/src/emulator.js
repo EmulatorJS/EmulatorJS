@@ -90,8 +90,15 @@ class EmulatorJS {
             data[i].elem.removeEventListener(data[i].listener, data[i].cb);
         }
     }
-    findElementId(classList) {
-        return [...classList].find(cls => cls.startsWith("b_"));
+    registerVirtualGamepadControl(control) {
+        if (!control || !control.id || !control.type || !control.element) return;
+        if (!Array.isArray(this.virtualGamepadControls)) {
+            this.virtualGamepadControls = [];
+        }
+        this.virtualGamepadControls.push(control);
+    }
+    getVirtualGamepadControls() {
+        return this.virtualGamepadControls || [];
     }
     /**
      * Downloads a file from the specified path.
@@ -4267,6 +4274,7 @@ class EmulatorJS {
 
         // Store default positions for each element
         this.virtualGamepadDefaults = {};
+        this.virtualGamepadControls = [];
 
         for (let i = 0; i < info.length; i++) {
             if (info[i].type !== "button") continue;
@@ -4305,21 +4313,28 @@ class EmulatorJS {
                 button.style = style;
                 button.innerText = info[i].text;
                 button.classList.add("ejs_virtualGamepad_button", controlSchemeCls);
-                const buttonId = info[i].id
-                    ? `b_${info[i].id}`
-                    : `b_${(info[i].text || info[i].input_value || `button_${i}`).toString().replace(/\s+/g, '_')}`;
-                button.classList.add(buttonId);
+                const buttonId = info[i].id ? `b_${info[i].id}` : null;
+                if (buttonId) {
+                    button.classList.add(buttonId);
+                }
                 elems[info[i].location].appendChild(button);
-                // Store default position (styles and absolute position after render)
-                this.virtualGamepadDefaults[buttonId] = {
-                    left: button.style.left,
-                    right: button.style.right,
-                    top: button.style.top,
-                    transform: "",
-                    width: button.style.width,
-                    height: button.style.height,
-                    element: button // Store reference to calculate absolute pos later
-                };
+                if (buttonId) {
+                    // Store default position (styles and absolute position after render)
+                    this.virtualGamepadDefaults[buttonId] = {
+                        left: button.style.left,
+                        right: button.style.right,
+                        top: button.style.top,
+                        transform: "",
+                        width: button.style.width,
+                        height: button.style.height,
+                        element: button // Store reference to calculate absolute pos later
+                    };
+                    this.registerVirtualGamepadControl({
+                        id: buttonId,
+                        type: "button",
+                        element: button
+                    });
+                }
                 const value = info[i].input_new_cores || info[i].input_value;
                 let downValue = info[i].joystickInput === true ? 0x7fff : 1;
                 this.addEventListener(button, "touchstart touchend touchcancel", (e) => {
@@ -4428,7 +4443,7 @@ class EmulatorJS {
             container.appendChild(dpadMain);
         }
 
-        info.forEach((dpad, index) => {
+        info.forEach((dpad) => {
             if (dpad.type !== "dpad") return;
             if (leftHandedMode && ["left", "right"].includes(dpad.location)) {
                 dpad.location = (dpad.location === "left") ? "right" : "left";
@@ -4452,10 +4467,10 @@ class EmulatorJS {
                 style += "top:" + dpad.top + ";";
             }
             elem.classList.add(controlSchemeCls);
-            const dpadId = dpad.id
-                ? `b_${dpad.id}`
-                : `b_dpad_${dpad.location || index}`;
-            elem.classList.add(dpadId);
+            const dpadId = dpad.id ? `b_${dpad.id}` : null;
+            if (dpadId) {
+                elem.classList.add(dpadId);
+            }
             elem.style = style;
             elems[dpad.location].appendChild(elem);
 
@@ -4477,21 +4492,29 @@ class EmulatorJS {
 
             // Store reference to inner element for measuring
             const dpadMain = elem.querySelector(".ejs_dpad_main");
-            this.virtualGamepadDefaults[dpadId] = {
-                // Persist and restore the actual interactive element.
-                // The wrapping container is not positioned, so left/top/scale must be applied to .ejs_dpad_main.
-                left: dpadMain ? dpadMain.style.left : "",
-                right: dpadMain ? dpadMain.style.right : "",
-                top: dpadMain ? dpadMain.style.top : "",
-                transform: dpadMain ? dpadMain.style.transform : "",
-                width: dpadMain ? dpadMain.style.width : "",
-                height: dpadMain ? dpadMain.style.height : "",
-                container: elem,
-                element: dpadMain || elem
-            };
+            if (dpadId) {
+                this.virtualGamepadDefaults[dpadId] = {
+                    // Persist and restore the actual interactive element.
+                    // The wrapping container is not positioned, so left/top/scale must be applied to .ejs_dpad_main.
+                    left: dpadMain ? dpadMain.style.left : "",
+                    right: dpadMain ? dpadMain.style.right : "",
+                    top: dpadMain ? dpadMain.style.top : "",
+                    transform: dpadMain ? dpadMain.style.transform : "",
+                    width: dpadMain ? dpadMain.style.width : "",
+                    height: dpadMain ? dpadMain.style.height : "",
+                    container: elem,
+                    element: dpadMain || elem
+                };
+                this.registerVirtualGamepadControl({
+                    id: dpadId,
+                    type: "dpad",
+                    element: dpadMain || elem,
+                    container: elem
+                });
+            }
         })
 
-        info.forEach((zone, index) => {
+        info.forEach((zone) => {
             if (zone.type !== "zone") return;
             if (leftHandedMode && ["left", "right"].includes(zone.location)) {
                 zone.location = (zone.location === "left") ? "right" : "left";
@@ -4509,10 +4532,10 @@ class EmulatorJS {
                 e.preventDefault();
             });
             elem.classList.add(controlSchemeCls);
-            const zoneId = zone.id
-                ? `b_${zone.id}`
-                : `b_zone_${zone.location || index}`;
-            elem.classList.add(zoneId);
+            const zoneId = zone.id ? `b_${zone.id}` : null;
+            if (zoneId) {
+                elem.classList.add(zoneId);
+            }
             elems[zone.location].appendChild(elem);
             const zoneObj = nipplejs.create({
                 "zone": elem,
@@ -4530,21 +4553,28 @@ class EmulatorJS {
             const back = nipple ? nipple.querySelector(".back") : null;
             // nipplejs default size is 100
             const originalSize = zone.size || 100;
-            this.virtualGamepadDefaults[zoneId] = {
-                // Original nipplejs position config
-                originalLeft: zone.left,
-                originalTop: zone.top,
-                originalSize: originalSize,
-                // Zone container reference
-                container: elem,
-                nippleElement: nipple,
-                // nipplejs manager for recreation
-                nippleManager: zoneObj,
-                // Zone config for recreation
-                zoneConfig: zone,
-                // Use .back (outer circle) for measuring if available
-                element: back || nipple
-            };
+            if (zoneId) {
+                this.virtualGamepadDefaults[zoneId] = {
+                    // Original nipplejs position config
+                    originalLeft: zone.left,
+                    originalTop: zone.top,
+                    originalSize: originalSize,
+                    // Zone container reference
+                    container: elem,
+                    nippleElement: nipple,
+                    // nipplejs manager for recreation
+                    nippleManager: zoneObj,
+                    // Zone config for recreation
+                    zoneConfig: zone,
+                    // Use .back (outer circle) for measuring if available
+                    element: back || nipple
+                };
+                this.registerVirtualGamepadControl({
+                    id: zoneId,
+                    type: "zone",
+                    element: elem
+                });
+            }
         })
 
         if (this.touch || this.hasTouchScreen) {
@@ -4751,53 +4781,34 @@ class EmulatorJS {
     }
     applyVirtualGamepadLayout() {
         if (!this.virtualGamepadLayout) return;
+        const controls = this.getVirtualGamepadControls();
+        if (!controls.length) return;
 
-        const applyToElement = (element, id) => {
-            if (this.virtualGamepadLayout[id]) {
-                const saved = this.virtualGamepadLayout[id];
-                if (saved.left) element.style.left = saved.left;
-                if (saved.top) element.style.top = saved.top;
-                if (saved.right !== undefined) element.style.right = saved.right;
-                if (saved.transform) {
-                    element.style.transform = saved.transform;
-                    element.style.transformOrigin = saved.transformOrigin || "top left";
-                }
+        const applyToElement = (element, saved) => {
+            if (saved.left !== undefined) element.style.left = saved.left;
+            if (saved.top !== undefined) element.style.top = saved.top;
+            if (saved.right !== undefined) element.style.right = saved.right;
+            if (saved.transform !== undefined) {
+                element.style.transform = saved.transform || "";
+                element.style.transformOrigin = saved.transform ? (saved.transformOrigin || "top left") : "";
             }
         };
 
-        const buttons = this.virtualGamepad.querySelectorAll(".ejs_virtualGamepad_button");
-        const dpads = this.virtualGamepad.querySelectorAll(".ejs_dpad_main");
-        const nipples = this.virtualGamepad.querySelectorAll(".nipple");
-
-        buttons.forEach(btn => {
-            const id = this.findElementId(btn.classList);
-            applyToElement(btn, id);
-        });
-
-        dpads.forEach(dpad => {
-            const dpadContainer = dpad.parentElement;
-            if (!dpadContainer) return;
-            const id = this.findElementId(dpadContainer.classList);
-            applyToElement(dpad, id);
-        });
-
-        // Apply to zones (joysticks) - recreate nipplejs with saved position and size
-        nipples.forEach(nipple => {
-            const zone = nipple.parentElement;
-            if (!zone) return;
-            const id = this.findElementId(zone.classList);
-
-            const saved = this.virtualGamepadLayout[id];
-            const defaults = this.virtualGamepadDefaults[id];
-            if (!saved || !defaults || !defaults.nippleManager || !defaults.zoneConfig) return;
-
-            // Destroy and recreate nipplejs with saved position and size
-            this.unbindZoneEventHandlers(defaults.nippleManager);
-            // Remove existing nipple DOM elements before destroying to prevent memory leaks
-            const existingNipple = zone.querySelector(".nipple");
-            if (existingNipple) {
-                existingNipple.remove();
+        controls.forEach((control) => {
+            const saved = this.virtualGamepadLayout[control.id];
+            if (!saved) return;
+            if (control.type !== "zone") {
+                applyToElement(control.element, saved);
+                return;
             }
+
+            const zone = control.element;
+            const defaults = this.virtualGamepadDefaults[control.id];
+            if (!defaults || !defaults.nippleManager || !defaults.zoneConfig) return;
+
+            this.unbindZoneEventHandlers(defaults.nippleManager);
+            const existingNipple = zone.querySelector(".nipple");
+            if (existingNipple) existingNipple.remove();
             defaults.nippleManager.destroy();
 
             const zoneConfig = defaults.zoneConfig;
@@ -4815,7 +4826,6 @@ class EmulatorJS {
 
             this.bindZoneEventHandlers(newZoneObj, zoneConfig);
 
-            // Update stored references
             defaults.nippleManager = newZoneObj;
             defaults.currentSize = savedSize;
             defaults.nippleElement = zone.querySelector(".nipple");
