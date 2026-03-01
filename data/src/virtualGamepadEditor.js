@@ -138,7 +138,6 @@ class EJS_OverlayElement {
 
         // Render control-specific overlay previews for complex controls
         if (this.type === "dpad") {
-            overlay.classList.add("ejs_edit_overlay_dpad");
             const dpadPreview = this.original.cloneNode(true);
             dpadPreview.classList.remove(
                 "ejs_dpad_up_pressed",
@@ -158,7 +157,6 @@ class EJS_OverlayElement {
             dpadPreview.classList.add("ejs_edit_overlay_dpad_preview");
             overlay.appendChild(dpadPreview);
         } else if (this.type === "zone") {
-            overlay.classList.add("ejs_edit_overlay_zone");
             const stickBase = emu.createElement("div");
             stickBase.classList.add("ejs_edit_overlay_stick_base");
             const stickKnob = emu.createElement("div");
@@ -176,6 +174,13 @@ class EJS_OverlayElement {
             this.buttonLabel = label;
             const buttonStyle = window.getComputedStyle(this.original);
             this.buttonBaseFontSize = parseFloat(buttonStyle.fontSize) || 16;
+            // If the original button is already visually scaled (eg via transform: scale(...)),
+            // include that factor so the edit preview matches what users currently see.
+            const intrinsicWidth = parseFloat(buttonStyle.width) || rect.width;
+            const intrinsicHeight = parseFloat(buttonStyle.height) || rect.height;
+            const visualScaleX = intrinsicWidth > 0 ? rect.width / intrinsicWidth : 1;
+            const visualScaleY = intrinsicHeight > 0 ? rect.height / intrinsicHeight : 1;
+            this.buttonVisualScale = Math.max(0.25, Math.min(4, (visualScaleX + visualScaleY) / 2));
         }
 
         // Store starting state
@@ -312,7 +317,8 @@ class EJS_OverlayElement {
         const scaleX = baseWidth > 0 ? currentWidth / baseWidth : 1;
         const scaleY = baseHeight > 0 ? currentHeight / baseHeight : 1;
         const scale = Math.max(0.25, Math.min(4, (scaleX + scaleY) / 2));
-        this.buttonLabel.style.fontSize = (this.buttonBaseFontSize * scale) + "px";
+        const visualScale = this.buttonVisualScale || 1;
+        this.buttonLabel.style.fontSize = (this.buttonBaseFontSize * visualScale * scale) + "px";
     }
 
     /**

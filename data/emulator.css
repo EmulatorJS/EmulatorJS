@@ -1670,10 +1670,6 @@
 
 /* Style for original elements when in edit mode */
 .ejs_virtualGamepad_edit_mode .ejs_virtualGamepad_button {
-    outline: 2px dashed rgba(255, 255, 255, 0.8);
-    outline-offset: 2px;
-    cursor: move;
-    touch-action: none;
     pointer-events: none;
 }
 
@@ -1792,11 +1788,37 @@
     overflow: visible;
 }
 
-/* D-Pad overlay styling */
+/* Keep button/dpad edit overlays clearly outlined */
+.ejs_edit_overlay_element[data-type="button"],
+.ejs_edit_overlay_element[data-type="dpad"] {
+    outline: none !important;
+    opacity: 1;
+}
+
+.ejs_edit_overlay_element[data-type="button"] {
+    border: 2px solid #fff !important;
+}
+
 .ejs_edit_overlay_element[data-type="dpad"] {
     border-radius: 0;
     background: transparent;
     border: none;
+}
+
+.ejs_edit_overlay_element[data-type="button"]::after,
+.ejs_edit_overlay_element[data-type="dpad"]::after {
+    content: "";
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    bottom: -3px;
+    left: -3px;
+    border: 3px dashed #fff;
+    pointer-events: none;
+}
+
+.ejs_edit_overlay_element[data-type="button"]::after {
+    border-radius: inherit;
 }
 
 .ejs_edit_overlay_dpad_preview {
@@ -1807,6 +1829,15 @@
     height: 100%;
     pointer-events: none;
     opacity: 0.95;
+}
+
+.ejs_edit_overlay_dpad_preview.ejs_dpad_main {
+    opacity: 1 !important;
+}
+
+.ejs_edit_overlay_element[data-type="button"].ejs_dragging::after,
+.ejs_edit_overlay_element[data-type="dpad"].ejs_dragging::after {
+    border-color: #007bff;
 }
 
 /* Zone (joystick) overlay styling */
@@ -1857,4 +1888,11 @@
 /* Fade original gamepad during editing */
 .ejs_virtualGamepad_edit_mode_faded {
     opacity: 0.3;
+}
+
+/* Keep outlines off faded originals so only editable overlays are outlined */
+.ejs_virtualGamepad_edit_mode_faded .ejs_virtualGamepad_button,
+.ejs_virtualGamepad_edit_mode_faded [class*="b_dpad"],
+.ejs_virtualGamepad_edit_mode_faded [class*="b_zone"] {
+    outline: none !important;
 }
