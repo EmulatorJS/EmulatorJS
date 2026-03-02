@@ -109,22 +109,24 @@ function main(): void {
   // Expose for settings panel's "Clear Library" button
   (window as any).__onLaunchGame = onLaunchGame;
 
-  // 6. Wire "return to library" — hides the emulator, shows library
+  // 6a. Resume a paused game — shows the emulator, hides library
+  const onResumeGame = (): void => {
+    if (emulator.state !== "paused") return;
+    emulator.resume();
+    document.dispatchEvent(new CustomEvent("retrovault:resumeGame"));
+  };
+
+  // 6b. Wire "return to library" — pauses and hides the emulator, shows library
   const onReturnToLibrary = (): void => {
     if (emulator.state !== "running") return;
-    // Note: EJS has no clean stop() API. We hide it and the user can
-    // return to the game by clicking the card again (page stays loaded).
-    // The emulator continues running in the background (paused by hidden canvas).
+    emulator.pause();
     hideEjsContainer();
     showLanding();
     document.title = "RetroVault";
 
     void renderLibrary(library, settings, onLaunchGame);
-    // Restore header to library mode
     const headerActions = document.getElementById("header-actions");
     if (headerActions) {
-      // Trigger a re-init of landing controls
-      // We do this by dispatching a custom event caught in initUI
       document.dispatchEvent(new CustomEvent("retrovault:returnToLibrary"));
     }
   };
@@ -145,12 +147,18 @@ function main(): void {
 
   // 8. If user returns to landing, rebuild landing header controls
   document.addEventListener("retrovault:returnToLibrary", () => {
-    // Re-init landing controls (settings gear, perf chip)
     const container = document.getElementById("header-actions");
     if (!container) return;
-    // Simple approach: dispatch to ui.ts — but we can't easily call the closure.
-    // Instead, we duplicate the minimal controls here.
     container.innerHTML = "";
+
+    // Resume button — only shown while a game is paused
+    const btnResume = document.createElement("button");
+    btnResume.className = "btn btn--primary";
+    btnResume.textContent = "▶ Resume";
+    btnResume.title = "Return to the paused game";
+    btnResume.addEventListener("click", onResumeGame);
+    container.appendChild(btnResume);
+
     const btnSettings = document.createElement("button");
     btnSettings.className = "btn";
     btnSettings.textContent = "⚙ Settings";

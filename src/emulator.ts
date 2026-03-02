@@ -40,6 +40,8 @@ declare global {
 
 interface EJSEmulatorInstance {
   setVolume(volume: number): void;
+  pause?(): void;
+  resume?(): void;
   gameManager?: {
     restart(): void;
     quickSave(slot: number): boolean;
@@ -54,7 +56,7 @@ export const EJS_CDN_BASE = "https://cdn.emulatorjs.org/stable/data/";
 
 // ── State machine ─────────────────────────────────────────────────────────────
 
-export type EmulatorState = "idle" | "loading" | "running" | "error";
+export type EmulatorState = "idle" | "loading" | "running" | "paused" | "error";
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
@@ -93,10 +95,11 @@ export class PSPEmulator {
   // ── launch ──────────────────────────────────────────────────────────────────
 
   async launch(opts: LaunchOptions): Promise<void> {
-    if (this._state === "loading" || this._state === "running") {
+    if (this._state === "loading" || this._state === "running" || this._state === "paused") {
       this._emitError(
-        "Emulator is already running. Use Reset to restart, " +
-        "or return to the library to load a different game."
+        this._state === "paused"
+          ? "A game is currently paused. Click Resume to continue, or reload the page to start a different game."
+          : "Emulator is already running. Use Reset to restart, or return to the library to load a different game."
       );
       return;
     }
@@ -195,6 +198,18 @@ export class PSPEmulator {
 
   setVolume(volume: number): void {
     window.EJS_emulator?.setVolume(Math.max(0, Math.min(1, volume)));
+  }
+
+  pause(): void {
+    if (this._state !== "running") return;
+    window.EJS_emulator?.pause?.();
+    this._setState("paused");
+  }
+
+  resume(): void {
+    if (this._state !== "paused") return;
+    window.EJS_emulator?.resume?.();
+    this._setState("running");
   }
 
   dispose(): void {

@@ -782,6 +782,7 @@ body {
 .status-dot.idle    { background: var(--c-text-faint); }
 .status-dot.loading { background: var(--c-warn);    animation: pulse 1s infinite; }
 .status-dot.running { background: var(--c-success); }
+.status-dot.paused  { background: var(--c-accent);  }
 .status-dot.error   { background: var(--c-danger);  }
 
 @keyframes pulse {
@@ -838,6 +839,15 @@ body {
 
 .btn--danger:hover {
   background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface2));
+}
+
+.btn--primary {
+  border-color: var(--c-accent);
+  color: var(--c-accent);
+}
+
+.btn--primary:hover {
+  background: color-mix(in srgb, var(--c-accent) 12%, var(--c-surface2));
 }
 
 /* Volume control in game header */
