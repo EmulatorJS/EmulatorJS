@@ -95,13 +95,14 @@ export class PSPEmulator {
   // ── launch ──────────────────────────────────────────────────────────────────
 
   async launch(opts: LaunchOptions): Promise<void> {
-    if (this._state === "loading" || this._state === "running" || this._state === "paused") {
-      this._emitError(
-        this._state === "paused"
-          ? "A game is currently paused. Click Resume to continue, or reload the page to start a different game."
-          : "Emulator is already running. Use Reset to restart, or return to the library to load a different game."
-      );
+    if (this._state === "loading") {
+      this._emitError("Emulator is already loading. Please wait.");
       return;
+    }
+
+    // Tear down the previous session so a new game can be launched from the library.
+    if (this._state === "running" || this._state === "paused") {
+      this._teardown();
     }
 
     const system = getSystemById(opts.systemId);
@@ -213,9 +214,7 @@ export class PSPEmulator {
   }
 
   dispose(): void {
-    this._revokeBlobUrl();
-    this._setState("idle");
-    this._currentSystem = null;
+    this._teardown();
   }
 
   // ── Private ─────────────────────────────────────────────────────────────────
@@ -271,6 +270,23 @@ export class PSPEmulator {
       "• Update your GPU drivers."
     );
     return false;
+  }
+
+  /**
+   * Tear down the current EJS session so a new game can be launched.
+   * Removes the injected loader script, clears the player element, and
+   * resets all EJS globals so the loader re-initialises cleanly.
+   */
+  private _teardown(): void {
+    this._revokeBlobUrl();
+    document.querySelector("script[data-ejs-loader]")?.remove();
+    const playerEl = document.getElementById(this._playerId);
+    if (playerEl) playerEl.innerHTML = "";
+    delete window.EJS_emulator;
+    delete window.EJS_ready;
+    delete window.EJS_onGameStart;
+    this._currentSystem = null;
+    this._setState("idle");
   }
 
   private _revokeBlobUrl(): void {

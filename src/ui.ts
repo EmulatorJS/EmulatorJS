@@ -234,14 +234,20 @@ export function initUI(opts: UIOptions): void {
     dropZone.classList.add("drag-over");
   });
   document.addEventListener("dragleave", (e) => {
-    if (!(e.relatedTarget as Element | null)?.closest) return;
+    // Only remove the highlight when the drag leaves the browser window entirely.
+    if (e.relatedTarget !== null) return;
     dropZone.classList.remove("drag-over");
   });
   document.addEventListener("drop", (e) => {
     e.preventDefault();
     dropZone.classList.remove("drag-over");
     const file = e.dataTransfer?.files[0];
-    if (file && emulator.state !== "running" && emulator.state !== "paused") handleFileChosen(file);
+    if (!file) return;
+    if (emulator.state === "running") {
+      showError("Return to the library first (Esc or ← Library) before loading a new game.");
+      return;
+    }
+    handleFileChosen(file);
   });
 
   // ── Error banner ──────────────────────────────────────────────────────────

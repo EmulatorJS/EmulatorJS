@@ -118,17 +118,14 @@ function main(): void {
 
   // 6b. Wire "return to library" — pauses and hides the emulator, shows library
   const onReturnToLibrary = (): void => {
-    if (emulator.state !== "running") return;
-    emulator.pause();
+    if (emulator.state !== "running" && emulator.state !== "paused") return;
+    if (emulator.state === "running") emulator.pause();
     hideEjsContainer();
     showLanding();
     document.title = "RetroVault";
 
     void renderLibrary(library, settings, onLaunchGame);
-    const headerActions = document.getElementById("header-actions");
-    if (headerActions) {
-      document.dispatchEvent(new CustomEvent("retrovault:returnToLibrary"));
-    }
+    document.dispatchEvent(new CustomEvent("retrovault:returnToLibrary"));
   };
 
   // 7. Wire UI

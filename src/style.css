@@ -841,15 +841,6 @@ body {
   background: color-mix(in srgb, var(--c-danger) 12%, var(--c-surface2));
 }
 
-.btn--primary {
-  border-color: var(--c-accent);
-  color: var(--c-accent);
-}
-
-.btn--primary:hover {
-  background: color-mix(in srgb, var(--c-accent) 12%, var(--c-surface2));
-}
-
 /* Volume control in game header */
 .vol-control {
   gap: 6px;
