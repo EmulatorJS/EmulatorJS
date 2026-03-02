@@ -241,7 +241,7 @@ export function initUI(opts: UIOptions): void {
     e.preventDefault();
     dropZone.classList.remove("drag-over");
     const file = e.dataTransfer?.files[0];
-    if (file && emulator.state !== "running") handleFileChosen(file);
+    if (file && emulator.state !== "running" && emulator.state !== "paused") handleFileChosen(file);
   });
 
   // ── Error banner ──────────────────────────────────────────────────────────
@@ -265,6 +265,18 @@ export function initUI(opts: UIOptions): void {
     document.title = `${name} — RetroVault`;
     buildInGameControls(emulator, settings, onSettingsChange, onReturnToLibrary);
   };
+
+  // ── Resume game (triggered by "▶ Resume" button via retrovault:resumeGame) ─
+  document.addEventListener("retrovault:resumeGame", () => {
+    showEjsContainer();
+    hideLanding();
+    const sys  = emulator.currentSystem;
+    const name = settings.lastGameName ?? "Unknown";
+    document.title = `${name} — RetroVault`;
+    setStatusSystem(sys ? sys.shortName : "—");
+    setStatusGame(name);
+    buildInGameControls(emulator, settings, onSettingsChange, onReturnToLibrary);
+  });
 
   // ── Keyboard shortcuts ────────────────────────────────────────────────────
   document.addEventListener("keydown", (e) => {
@@ -703,7 +715,7 @@ function updateStatusDot(state: EmulatorState): void {
   if (!dot || !label) return;
 
   const labels: Record<EmulatorState, string> = {
-    idle: "Idle", loading: "Loading", running: "Running", error: "Error",
+    idle: "Idle", loading: "Loading", running: "Running", paused: "Paused", error: "Error",
   };
   dot.className     = `status-dot ${state}`;
   label.textContent = labels[state];
