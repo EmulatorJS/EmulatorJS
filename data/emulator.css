@@ -1700,6 +1700,7 @@
     color: #fff;
     cursor: pointer;
     touch-action: manipulation;
+    -webkit-user-select: none;
     user-select: none;
     display: flex;
     align-items: center;
@@ -1784,6 +1785,7 @@
     outline: 2px dashed rgba(255, 255, 255, 0.9);
     outline-offset: 2px;
     opacity: 0.9;
+    -webkit-user-select: none;
     user-select: none;
     overflow: visible;
 }
@@ -1886,6 +1888,7 @@
 
 .ejs_edit_overlay_element span {
     pointer-events: none;
+    -webkit-user-select: none;
     user-select: none;
 }
 
