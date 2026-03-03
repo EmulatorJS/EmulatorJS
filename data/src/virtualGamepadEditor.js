@@ -1,4 +1,17 @@
 /**
+ * @typedef {Object} ElementState
+ * @property {number} left - Horizontal offset from parent in pixels
+ * @property {number} top - Vertical offset from parent in pixels
+ * @property {number} width - Element width in pixels
+ * @property {number} height - Element height in pixels
+ */
+
+/**
+ * @typedef {Object<string, ElementState>} LayoutSnapshot
+ * A mapping of element IDs (e.g. "b_A", "b_dpad") to their position/size state.
+ */
+
+/**
  * Manages undo/redo using full layout snapshots.
  *
  * @class EJS_HistoryManager
@@ -16,6 +29,11 @@ class EJS_HistoryManager {
         this.applySnapshot = applySnapshot;
     }
 
+    /**
+     * Creates a deep clone of a layout snapshot.
+     * @param {LayoutSnapshot} snapshot
+     * @returns {LayoutSnapshot} Cloned snapshot
+     */
     cloneSnapshot(snapshot) {
         const clone = {};
         if (!snapshot) return clone;
@@ -31,6 +49,13 @@ class EJS_HistoryManager {
         return clone;
     }
 
+    /**
+     * Compares two snapshots for approximate equality.
+     * @param {LayoutSnapshot} a - First snapshot
+     * @param {LayoutSnapshot} b - Second snapshot
+     * @param {number} [epsilon=0.5] - Maximum allowed difference per property
+     * @returns {boolean} True if snapshots are equal within epsilon
+     */
     snapshotsEqual(a, b, epsilon = 0.5) {
         const keysA = Object.keys(a || {});
         const keysB = Object.keys(b || {});
@@ -48,6 +73,10 @@ class EJS_HistoryManager {
         return true;
     }
 
+    /**
+     * Sets the initial snapshot and resets undo/redo history.
+     * @param {LayoutSnapshot} snapshot - The starting layout snapshot
+     */
     setInitial(snapshot) {
         this.present = this.cloneSnapshot(snapshot);
         this.past = [];
@@ -55,6 +84,10 @@ class EJS_HistoryManager {
         this.onUpdate();
     }
 
+    /**
+     * Pushes a new snapshot onto the history stack, clearing any redo history.
+     * @param {LayoutSnapshot} snapshot - The new layout snapshot to record
+     */
     push(snapshot) {
         const next = this.cloneSnapshot(snapshot);
         if (this.present && this.snapshotsEqual(this.present, next)) return;
@@ -66,6 +99,9 @@ class EJS_HistoryManager {
         this.onUpdate();
     }
 
+    /**
+     * Reverts to the previous snapshot in the history stack.
+     */
     undo() {
         if (!this.canUndo()) return;
         const previous = this.past[this.past.length - 1];
@@ -81,6 +117,9 @@ class EJS_HistoryManager {
         }
     }
 
+    /**
+     * Re-applies the next snapshot from the redo stack.
+     */
     redo() {
         if (!this.canRedo()) return;
         const next = this.future[this.future.length - 1];
@@ -96,6 +135,9 @@ class EJS_HistoryManager {
         }
     }
 
+    /**
+     * Clears all history and resets the present snapshot.
+     */
     clear() {
         this.past = [];
         this.future = [];
@@ -103,7 +145,16 @@ class EJS_HistoryManager {
         this.onUpdate();
     }
 
+    /**
+     * Whether there are previous states to undo to.
+     * @returns {boolean}
+     */
     canUndo() { return this.past.length > 0; }
+
+    /**
+     * Whether there are future states to redo to.
+     * @returns {boolean}
+     */
     canRedo() { return this.future.length > 0; }
 }
 
@@ -323,7 +374,7 @@ class EJS_OverlayElement {
 
     /**
      * Captures the current position and size state of the overlay.
-     * @returns {{left: number, top: number, width: number, height: number}} Current state
+     * @returns {ElementState} Current state
      */
     captureState() {
         return {
@@ -372,7 +423,7 @@ class EJS_OverlayElement {
 
     /**
      * Applies a position/size state to the overlay.
-     * @param {{left?: number, top?: number, width?: number, height?: number}} state - State to apply
+     * @param {Partial<ElementState>} state - State to apply
      */
     setState(state) {
         if (state.left !== undefined) this.overlay.style.left = state.left + "px";
@@ -722,6 +773,10 @@ class EJS_VirtualGamepadEditor {
         return btn;
     }
 
+    /**
+     * Captures the current position/size state of all overlay elements.
+     * @returns {LayoutSnapshot}
+     */
     captureSnapshot() {
         const snapshot = {};
         this.elements.forEach((el) => {
@@ -730,6 +785,10 @@ class EJS_VirtualGamepadEditor {
         return snapshot;
     }
 
+    /**
+     * Applies a layout snapshot to all overlay elements.
+     * @param {LayoutSnapshot} snapshot
+     */
     applySnapshot(snapshot) {
         if (!snapshot) return;
         this.elements.forEach((el) => {
@@ -738,6 +797,9 @@ class EJS_VirtualGamepadEditor {
         });
     }
 
+    /**
+     * Captures and pushes the current state onto the history stack.
+     */
     commitSnapshot() {
         this.history.push(this.captureSnapshot());
     }
