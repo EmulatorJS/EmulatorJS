@@ -5,10 +5,12 @@ class EJS_SETUP {
         this.debug = this.EJS.debug;
     }
     log() {
+        if (!this.debug) return;
         const args = Array.from(arguments);
         console.log.apply(console, ["[EJS_SETUP]", ...args]);
     }
     checkDeprecatedSettings() {
+        if (!this.debug) return;
         this.log("Checking Deprecated Settings");
         const config = this.EJS.config;
         if (config.cacheLimit) {
