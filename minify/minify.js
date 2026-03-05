@@ -1,8 +1,8 @@
 import path from "path";
 import { fileURLToPath } from "url";
-import minify from "@node-minify/core";
-import terser from "@node-minify/terser";
-import cleanCSS from "@node-minify/clean-css";
+import { minify } from "@node-minify/core";
+import { terser } from "@node-minify/terser";
+import { cleanCss } from '@node-minify/clean-css';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -14,25 +14,27 @@ async function doMinify() {
         input: path.join(rootPath, "data/src/*.js"),
         output: path.join(rootPath, "data/emulator.min.js"),
     })
-        .catch(function (err) {
+        .catch((err) => {
             console.error(err);
         })
-        .then(function() {
+        .then(() => {
             console.log("Minified JS");
         });
     await minify({
-        compressor: cleanCSS,
+        compressor: cleanCss,
         input: path.join(rootPath, "data/emulator.css"),
         output: path.join(rootPath, "data/emulator.min.css"),
     })
-        .catch(function (err) {
+        .catch((err) => {
             console.error(err);
         })
-        .then(function() {
+        .then(() => {
             console.log("Minified CSS");
         });
 }
 
 console.log("Minifying");
-await doMinify();
-console.log("Minifying Done!");
+(async () => {
+    await doMinify();
+    console.log("Minifying Done!");
+})();

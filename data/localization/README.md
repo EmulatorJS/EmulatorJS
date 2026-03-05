@@ -20,6 +20,7 @@ Supported languages
 `tr.json`: `tr-TR` - Turkish (Turkey)<br>
 `fa.json`: `fa-AF` - Persian (Afghanistan)<br>
 `ro.json`: `ro-RO` - Romanian (Romania)<br>
+`km.json`: `km-KH` - Khmer (Cambodia)<br>
 `vi.json`: `vi-VN` - Vietnamese (Vietnam)<br>
 
 default: `en-US`
@@ -44,6 +45,7 @@ Translated for `fa-AF` by [@rezamohdev](https://github.com/rezamohdev) <br>
 Translated for `fr-FR` by [@t3chnob0y](https://github.com/t3chnob0y) <br>
 Translated for `ro-RO` by [@jurcaalexandrucristian](https://github.com/jurcaalexandrucristian) <br>
 Translated for `ja-JP` by [@noel-forester](https://github.com/noel-forester) <br>
+Translated for `km-KH` by [@novsochetra](https://github.com/novsochetra) <br>
 Translated for `vi-VN` by [@TimKieu](https://github.com/TimKieu) <br>
 Translated for `hi-IN`, `ar-SA`, `jv-iD`, `bn-BD`, `ru-RU`, `de-DE`, `ko-KR` by [@allancoding](https://github.com/allancoding), using a translate application <br>
 

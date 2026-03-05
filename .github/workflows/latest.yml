@@ -25,6 +25,8 @@ jobs:
       - name: Minify Files
         run: |
           cd /mnt/HDD/public/.EmulatorJS/
+          rm -f "minify/package-lock.json"
+          rm -rf "minify/node_modules/" "./node_modules"
           npm i
           npm run minify
       - name: Zip Minified Files
@@ -35,4 +37,8 @@ jobs:
         run: |
           cd /mnt/HDD/public/.EmulatorJS/
           rm -f "minify/package-lock.json"
-          rm -rf "minify/node_modules/"
+          rm -rf "minify/node_modules/" "./node_modules"
+      - name: Copy to nightly folder
+        run: |
+          cd /mnt/HDD/public/
+          rsync -auv --exclude .EmulatorJS/data/cores/ .EmulatorJS/ nightly/

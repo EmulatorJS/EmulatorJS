@@ -298,5 +298,6 @@
     "DPAD_UP": "DPAD_SU",
     "DPAD_DOWN": "DPAD_GIU",
     "DPAD_LEFT": "DPAD_SINISTRA",
-    "DPAD_RIGHT": "DPAD_DESTRA"
+    "DPAD_RIGHT": "DPAD_DESTRA",
+    "Autofire": "Autofire"
 }
