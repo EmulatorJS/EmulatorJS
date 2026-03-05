@@ -336,5 +336,10 @@
     "Menu Bar Button": "Menu Bar Button",
     "visible": "visible",
     "hidden": "hidden",
-    "Autofire": "Autofire"
+    "Autofire": "Autofire",
+    "Edit Virtual Gamepad": "Edit Virtual Gamepad",
+    "Undo": "Undo",
+    "Redo": "Redo",
+    "Reset to Default": "Reset to Default",
+    "Save & Close": "Save & Close"
 }
