@@ -27,7 +27,7 @@ jobs:
           cd /mnt/HDD/public/.EmulatorJS/
           rm -f "minify/package-lock.json"
           rm -rf "minify/node_modules/" "./node_modules"
-          npm i
+          npm ci
           npm run minify
       - name: Zip Minified Files
         run: |
