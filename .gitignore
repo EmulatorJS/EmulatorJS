@@ -1,5 +1,4 @@
 node_modules/
-package-lock.json
 yarn.lock
 roms/
 data/emulator.min.*
