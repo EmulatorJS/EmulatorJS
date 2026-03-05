@@ -9,7 +9,8 @@
         "gamepad.js",
         "GameManager.js",
         "socket.io.min.js",
-        "compression.js"
+        "compression.js",
+        "setup.js"
     ];
 
     const folderPath = (path) => path.substring(0, path.length - path.split("/").pop().length);

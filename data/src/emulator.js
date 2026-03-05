@@ -256,56 +256,15 @@ class EmulatorJS {
         this.netplayEnabled = true;
         this.utils = new EJS_UTILS();
         this.config = config;
-        // set cache configuration defaults
-        const cacheConfigDefaults = {
-            enabled: true,
-            cacheMaxSizeMB: 4096,
-            cacheMaxAgeMins: 7200
-        };
-        // cacheLimit is deprecated but if it's set, use it to configure the cache - value is an integer representing bytes
-        // if both cacheLimit and cacheConfig are set - cacheConfig should win
-        // regardless of configuration, cacheLimit should display a deprecation notice if set
-        if (this.config.cacheLimit) {
-            console.warn("EJS_cacheLimit is deprecated and support will be removed in a future release. Please use EJS_cacheConfig instead.");
-            // set the default for cacheConfig to match cacheLimit
-            cacheConfigDefaults.cacheMaxSizeMB = Math.floor(this.config.cacheLimit / 1048576);
-        }
 
-        // Overwrite invalid or missing values in this.config.cacheConfig with defaults
-        if (this.config.cacheConfig === undefined || typeof this.config.cacheConfig !== "object") {
-            this.config.cacheConfig = cacheConfigDefaults;
-        } else {
-            if (!this.config.cacheConfig || typeof this.config.cacheConfig !== "object") {
-                this.config.cacheConfig = {};
-            }
-            if (typeof this.config.cacheConfig.enabled !== "boolean") {
-                this.config.cacheConfig.enabled = cacheConfigDefaults.enabled;
-            }
-            if (typeof this.config.cacheConfig.cacheMaxSizeMB !== "number" || this.config.cacheConfig.cacheMaxSizeMB <= 0) {
-                this.config.cacheConfig.cacheMaxSizeMB = cacheConfigDefaults.cacheMaxSizeMB;
-            }
-            if (typeof this.config.cacheConfig.cacheMaxAgeMins !== "number" || this.config.cacheConfig.cacheMaxAgeMins <= 0) {
-                this.config.cacheConfig.cacheMaxAgeMins = cacheConfigDefaults.cacheMaxAgeMins;
-            }
-        }
+        this.setup = new EJS_SETUP(this);
+        this.setup.checkDeprecatedSettings();
+        this.setup.cacheDefaults();
+        this.setup.browserMode();
+        
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
-        switch (this.config.browserMode) {
-            case 1: // Force mobile
-            case "1":
-            case "mobile":
-                if (this.debug) { console.log("Force mobile mode is enabled"); }
-                this.config.browserMode = 1;
-                break;
-            case 2: // Force desktop
-            case "2":
-            case "desktop":
-                if (this.debug) { console.log("Force desktop mode is enabled"); }
-                this.config.browserMode = 2;
-                break;
-            default: // Auto detect
-                config.browserMode = undefined;
-        }
+
         this.currentPopup = null;
         this.isFastForward = false;
         this.isSlowMotion = false;
