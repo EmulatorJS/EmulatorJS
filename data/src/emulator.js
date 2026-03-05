@@ -1,3 +1,15 @@
+import { EJS_Cache, EJS_CacheItem, EJS_FileItem, EJS_Download } from "./cache.js";
+import { EJS_COMPRESSION } from "./compression.js";
+import { EJS_GameManager } from "./GameManager.js";
+import { GamepadHandler } from "./gamepad.js";
+import { EJS_SHADERS } from "./shaders.js";
+import { EJS_STORAGE, EJS_DUMMYSTORAGE } from "./storage.js";
+import { EJS_UTILS } from "./utils.js";
+import { EJS_SETUP } from "./setup.js";
+
+import "./vendor/nipplejs.js";
+import "./vendor/socket.io.min.js";
+
 class EmulatorJS {
     getCores() {
         let rv = {
@@ -399,7 +411,7 @@ class EmulatorJS {
         }
 
         // Initialize storage cache
-        this.storageCache = new window.EJS_Cache(
+        this.storageCache = new EJS_Cache(
             this.config.cacheConfig.enabled,
             "EmulatorJS-Cache",
             this.config.cacheConfig.cacheMaxSizeMB,
@@ -408,10 +420,10 @@ class EmulatorJS {
         );
 
         // Initialize downloader with cache
-        this.downloader = new window.EJS_Download(this.storageCache, this);
+        this.downloader = new EJS_Download(this.storageCache, this);
         
         // This is not cache. This is save data
-        this.storage.states = new window.EJS_STORAGE("EmulatorJS-states", "states");
+        this.storage.states = new EJS_STORAGE("EmulatorJS-states", "states");
 
         this.game.classList.add("ejs_game");
         if (typeof this.config.backgroundImg === "string") {
@@ -680,7 +692,7 @@ class EmulatorJS {
                 // Data is still compressed, need to decompress
                 console.log("[EJS Core] Data needs decompression");
                 if (!this.compression) {
-                    this.compression = new window.EJS_COMPRESSION(this);
+                    this.compression = new EJS_COMPRESSION(this);
                 }
                 
                 this.textElem.innerText = this.localization("Decompress Game Core");
@@ -874,7 +886,7 @@ class EmulatorJS {
         }
 
         if (!this.compression) {
-            this.compression = new window.EJS_COMPRESSION(this);
+            this.compression = new EJS_COMPRESSION(this);
         }
 
         return new Promise(async (resolve, reject) => {
@@ -1003,7 +1015,7 @@ class EmulatorJS {
      * Initialize GameManager and load external files and file systems
      */
     async initializeGameManager() {
-        this.gameManager = new window.EJS_GameManager(this.Module, this);
+        this.gameManager = new EJS_GameManager(this.Module, this);
         await this.gameManager.loadExternalFiles();
         await this.gameManager.mountFileSystems();
         this.callEvent("saveDatabaseLoaded", this.gameManager.FS);

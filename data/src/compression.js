@@ -5,7 +5,7 @@
  * This class provides functionality to detect compressed file formats and extract
  * their contents using web workers for better performance.
  */
-class EJSCompression {
+class EJS_COMPRESSION {
     /**
      * Creates a new compression handler instance.
      *
@@ -210,4 +210,4 @@ class EJSCompression {
     }
 }
 
-window.EJS_COMPRESSION = EJSCompression;
+export { EJS_COMPRESSION };

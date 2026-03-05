@@ -488,4 +488,4 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     }
 }
 
-window.EJS_GameManager = EJS_GameManager;
+export { EJS_GameManager };

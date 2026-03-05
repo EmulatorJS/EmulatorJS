@@ -71,3 +71,5 @@ class EJS_SETUP {
         }
     }
 }
+
+export { EJS_SETUP };

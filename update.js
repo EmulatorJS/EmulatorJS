@@ -21,9 +21,9 @@ try {
 
 const updateDependencies = async () => {
     const socket_io = path.resolve('node_modules', 'socket.io', 'client-dist', 'socket.io.min.js');
-    const ejs_socket_io = path.resolve('data', 'src', 'socket.io.min.js');
+    const ejs_socket_io = path.resolve('data', 'src', 'vendor', 'socket.io.min.js');
     const nipplejs = path.resolve('node_modules', 'nipplejs', 'dist', 'nipplejs.js');
-    const ejs_nipplejs = path.resolve('data', 'src', 'nipplejs.js');
+    const ejs_nipplejs = path.resolve('data', 'src', 'vendor', 'nipplejs.js');
 
     try {
         fs.copyFileSync(socket_io, ejs_socket_io);

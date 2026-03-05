@@ -2,8 +2,7 @@ node_modules/
 package-lock.json
 yarn.lock
 roms/
-data/emulator.min.js
-data/emulator.min.css
+data/emulator.min.*
 data/cores/*
 !data/cores/README.md
 !data/cores/core-README.md

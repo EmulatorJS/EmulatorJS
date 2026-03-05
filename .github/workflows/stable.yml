@@ -57,7 +57,8 @@ jobs:
       - name: Zip Stable
         run: |
           cd /mnt/HDD/public/stable/data/
-          zip emulator.min.zip emulator.min.js emulator.min.css
+          rm -f emulator.min.zip
+          zip emulator.min.zip *.min.*
       - name: Update Version
         run: |
           cd /mnt/HDD/public/

@@ -23,7 +23,6 @@
     "dependencies": {
         "@node-minify/clean-css": "^10.4.0",
         "@node-minify/core": "^10.4.0",
-        "@node-minify/terser": "^10.4.0",
         "http-server": "^14.1.1",
         "node-7z": "^3.0.0"
     },
@@ -31,10 +30,12 @@
         "@emulatorjs/cores": "latest"
     },
     "devDependencies": {
+        "@rollup/plugin-terser": "^1.0.0",
         "eslint": "^10.0.2",
         "jsdoc": "^4.0.5",
         "nipplejs": "^0.10.2",
         "node-fetch": "^3.3.2",
+        "rollup": "^4.59.0",
         "socket.io": "^4.8.3"
     }
 }

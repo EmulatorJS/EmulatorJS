@@ -161,4 +161,4 @@ class GamepadHandler {
     }
 }
 
-window.GamepadHandler = GamepadHandler;
+export { GamepadHandler };

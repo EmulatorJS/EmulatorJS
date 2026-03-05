@@ -1,7 +1,7 @@
 /**
  * EJS Utility Functions
  */
-class EJS_UTILS {
+export class EJS_UTILS {
     /**
      * Computes a simple hash of the given data array.
      * @param {Uint8Array} dataArray 

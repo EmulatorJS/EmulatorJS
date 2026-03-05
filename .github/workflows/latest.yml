@@ -32,7 +32,8 @@ jobs:
       - name: Zip Minified Files
         run: |
           cd /mnt/HDD/public/.EmulatorJS/data/
-          zip emulator.min.zip emulator.min.js emulator.min.css
+          rm -f emulator.min.zip
+          zip emulator.min.zip *.min.*
       - name: Clean Up Minify
         run: |
           cd /mnt/HDD/public/.EmulatorJS/

@@ -1,3 +1,6 @@
+import { EJS_UTILS } from "./utils.js";
+import { EJS_STORAGE } from "./storage.js";
+
 /**
  * EJS Download Manager
  * Downloads files from a given URL when a download is requested.
@@ -629,7 +632,4 @@ class EJS_FileItem {
     }
 }
 
-window.EJS_Cache = EJS_Cache;
-window.EJS_CacheItem = EJS_CacheItem;
-window.EJS_FileItem = EJS_FileItem;
-window.EJS_Download = EJS_Download;
+export { EJS_Cache, EJS_CacheItem, EJS_FileItem, EJS_Download };
