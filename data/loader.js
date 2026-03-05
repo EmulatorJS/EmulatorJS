@@ -100,6 +100,7 @@
     config.fullscreenOnLoad = window.EJS_fullscreenOnLoaded;
     config.filePaths = window.EJS_paths;
     config.loadState = window.EJS_loadStateURL;
+    config.cacheLimit = window.EJS_CacheLimit;
     config.cacheConfig = window.EJS_cacheConfig;
     config.cheats = window.EJS_cheats;
     config.defaultOptions = window.EJS_defaultOptions;
