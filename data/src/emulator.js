@@ -222,7 +222,7 @@ class EmulatorJS {
         this.extensions = [];
         this.allSettings = {};
         this.initControlVars();
-        this.debug = (window.EJS_DEBUG_XX === true);
+        this.debug = config.debug;
         if (this.debug || (window.location && ["localhost", "127.0.0.1"].includes(location.hostname))) {
             this.checkForUpdates();
         }
@@ -7780,4 +7780,5 @@ class EmulatorJS {
         })
     }
 }
-window.EmulatorJS = EmulatorJS;
+
+export default EmulatorJS;
