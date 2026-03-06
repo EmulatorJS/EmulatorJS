@@ -253,6 +253,65 @@
   font-size: 0.9em;
 }
 
+.ejs_netplay_chat_log {
+    height: 120px;
+    overflow-y: auto;
+    padding: 8px;
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: left;
+    line-height: 1.35;
+    font-size: 13px;
+    white-space: pre-wrap;
+    color: #efefef;
+    margin-bottom: 10px;
+}
+
+.ejs_netplay_chat_row {
+    display: flex;
+    gap: 8px;
+    margin-top: 6px;
+    align-items: center;
+}
+
+@media (min-width: 768px) {
+    .ejs_netplay_chat_container {
+        max-width: 500px;
+        margin: 10px auto 0 auto; 
+    }
+}
+
+.ejs_netplay_chat_to, 
+.ejs_netplay_chat_input {
+    background: #1a1a1a !important;
+    border: 1px solid #444 !important;
+    color: #fff !important;
+    border-radius: 4px;
+    padding: 0 10px;
+    height: 34px;
+    outline: none;
+}
+
+.ejs_netplay_chat_to:focus, 
+.ejs_netplay_chat_input:focus {
+    border-color: rgba(var(--ejs-primary-color), 1) !important;
+}
+
+.ejs_netplay_chat_to {
+    width: 130px;
+    cursor: pointer;
+}
+
+.ejs_netplay_chat_input {
+    flex: 1;
+}
+
+.ejs_netplay_table td {
+    padding: 8px 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
 .ejs_context_menu {
     position: absolute;
     display: none;
@@ -1625,6 +1684,45 @@
 
 .ejs_netplay_table_row:hover {
     background-color: #2d2d2d;
+}
+
+.ejs_netplay_dialog_label {
+    margin-bottom: 15px;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.ejs_netplay_error_box {
+    padding: 12px;
+    margin-bottom: 15px;
+    background-color: rgba(255, 80, 80, 0.2);
+    border: 1px solid rgba(255, 80, 80, 0.5);
+    border-radius: 4px;
+    color: #ff6b6b;
+    font-size: 14px;
+}
+
+.ejs_netplay_dialog_buttons {
+    margin-top: 15px;
+    text-align: center;
+}
+
+.ejs_netplay_dialog_buttons .ejs_button_button {
+    margin: 5px 10px;
+}
+
+.ejs_netplay_header input[type="password"] {
+    font-size: 1rem;
+    padding: .4rem;
+    max-width: 100%;
+    color: #000 !important;
+    background-color: #fff !important;
+    margin: 0;
+    height: 2rem;
+    display: block;
+    font-family: Arial;
+    border: 0px;
+    width: 100%;
 }
 
 .ejs_gamepad_dropdown {
