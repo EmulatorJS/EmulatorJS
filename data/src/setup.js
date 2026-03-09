@@ -1,3 +1,4 @@
+import { EJS_SHADERS } from "./shaders.js";
 
 class EJS_SETUP {
     constructor(EJS) {
@@ -71,6 +72,11 @@ class EJS_SETUP {
             default: // Auto detect
                 config.browserMode = undefined;
         }
+    }
+    shaders() {
+        this.log("Setting shaders");
+        const config = this.EJS.config;
+        this.EJS.shaders = Object.assign({}, EJS_SHADERS, config.additionalShaders || {});
     }
 }
 

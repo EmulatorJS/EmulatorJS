@@ -2,7 +2,6 @@ import { EJS_Cache, EJS_CacheItem, EJS_FileItem, EJS_Download } from "./cache.js
 import { EJS_COMPRESSION } from "./compression.js";
 import { EJS_GameManager } from "./GameManager.js";
 import { GamepadHandler } from "./gamepad.js";
-import { EJS_SHADERS } from "./shaders.js";
 import { EJS_STORAGE, EJS_DUMMYSTORAGE } from "./storage.js";
 import { EJS_UTILS } from "./utils.js";
 import { EJS_SETUP } from "./setup.js";
@@ -234,6 +233,7 @@ class EmulatorJS {
         this.setup.checkDeprecatedSettings();
         this.setup.cacheDefaults();
         this.setup.browserMode();
+        this.setup.shaders();
         
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
         this.config.settingsLanguage = window.EJS_settingsLanguage || false;
@@ -5229,7 +5229,7 @@ class EmulatorJS {
 
         const graphicsOptions = createSettingParent(true, "Graphics Settings", home);
 
-        if (this.config.shaders) {
+        if (this.shaders) {
             const builtinShaders = {
                 "2xScaleHQ.glslp": this.localization("2xScaleHQ"),
                 "4xScaleHQ.glslp": this.localization("4xScaleHQ"),
@@ -5249,7 +5249,7 @@ class EmulatorJS {
             let shaderMenu = {
                 "disabled": this.localization("Disabled"),
             };
-            for (const shaderName in this.config.shaders) {
+            for (const shaderName in this.shaders) {
                 if (builtinShaders[shaderName]) {
                     shaderMenu[shaderName] = builtinShaders[shaderName];
                 } else {
@@ -7499,12 +7499,12 @@ class EmulatorJS {
             this.Module.FS.unlink("/shader/shader.glslp");
         } catch(e) {}
 
-        if (name === "disabled" || !this.config.shaders[name]) {
+        if (name === "disabled" || !this.shaders[name]) {
             this.gameManager.toggleShader(0);
             return;
         }
 
-        const shaderConfig = this.config.shaders[name];
+        const shaderConfig = this.shaders[name];
 
         if (typeof shaderConfig === "string") {
             this.Module.FS.writeFile("/shader/shader.glslp", shaderConfig, {}, "w+");

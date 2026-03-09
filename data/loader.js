@@ -36,6 +36,7 @@ async function loadScript(file) {
         const module = await import(script);
         return module.default;
     } catch(e) {
+        if (debug) console.error(e);
         const module = await filesMissing(file);
         return module.default;
     }
@@ -195,7 +196,7 @@ const config = {
     videoRotation: window.EJS_videoRotation,
     hideSettings: window.EJS_hideSettings,
     browserMode: window.EJS_browserMode,
-    shaders: Object.assign({}, window.EJS_SHADERS, window.EJS_shaders ? window.EJS_shaders : {}),
+    additionalShaders: window.EJS_shaders,
     fixedSaveInterval: window.EJS_fixedSaveInterval,
     disableAutoUnload: window.EJS_disableAutoUnload,
     disableBatchBootup: window.EJS_disableBatchBootup
