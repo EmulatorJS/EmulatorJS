@@ -1,203 +1,80 @@
-<div align = center>
+<div align="center">
 
-<img width = 300 src = docs/Logo-light.png#gh-dark-mode-only>
-<img width = 300 src = docs/Logo.png#gh-light-mode-only> 
- 
-<br>
-<br>
-
-[![Badge License]][License]
-
-Self-hosted **Javascript** emulation for various systems.
+<img width="300" src="docs/Logo-light.png#gh-dark-mode-only" alt="EmulatorJS Dark Mode Logo">
+<img width="300" src="docs/Logo.png#gh-light-mode-only" alt="EmulatorJS Light Mode Logo">
 
 <br>
 
-[![Button Website]][Website]
-[![Button Usage]][Usage]<br>
-[![Button Configurator]][Configurator]<br>
-[![Button Demo]][Demo]<br>
-[![Button Contributors]][Contributors]
+Self-hosted **JavaScript** emulation for various systems.
+
+[![License: GPLv3][Badge License]][Link License]
+[![Website][Badge Website]][Link Website]
+[![Usage Docs][Badge Usage]][Link Usage]
+[![Configurator][Badge Configurator]][Link Configurator]
+[![Live Demo][Badge Demo]][Link Demo]
+[![Contributors][Badge Contributors]][Link Contributors]
 
 Join our Discord server:
 
-[![Join our Discord server!](https://invidget.switchblade.xyz/6akryGkETU)](https://discord.gg/6akryGkETU)
+[![Discord Badge](https://invidget.switchblade.xyz/6akryGkETU)](https://discord.gg/6akryGkETU)
 
 </div>
 
-<br>
+---
 
-> [!NOTE]  
-> **As of EmulatorJS version 4.0, this project is no longer a reverse-engineered version of the emulatorjs.com project. It is now a complete rewrite.**
+## Getting Started
 
-> [!WARNING]  
-> As of version 4.0.9 cores and minified files are no longer included in the repository. You will need to get them separately. You can get it from [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the \* new CDN (see [this](#CDN) for more info). There is also a new version system that we will be using. (read [here](#Versioning) for more info).
+### Supported Systems
+EmulatorJS supports a wide variety of legacy consoles and arcade machines. For the complete list of supported cores, please visit our [Cores Documentation](https://emulatorjs.org/docs4devs/cores).
 
-> [!TIP]
-> Cloning the repository is no longer recommended for production use. You should use [releases](https://github.com/EmulatorJS/EmulatorJS/releases) or the [CDN](https://cdn.emulatorjs.org/) instead.
+### Versioning Guide
+We use a specific versioning system to help you choose the right build for your needs:
 
-<br>
+1.  **Stable** - The most current release. Both code and cores are tested before release. Updated when new versions are released on GitHub. This is the default version on the Demo.
+2.  **Latest** - Contains the latest code but uses stable cores. Updated whenever the `main` branch is updated. **This version will often be more broken than nightly**
+3.  **Nightly** - Contains the latest code and the latest cores. Cores are updated daily. **This version is not recommended for production use as it is the main development branch.**
 
-### Ads
+### CDN Integration
+EmulatorJS provides a public CDN at `https://cdn.emulatorjs.org/`. You can access any version by setting the data path and loader.js accordingly.
 
-*This project has no ads.* <br>
-*Although, the demo page currently has an ad to help fund this project.* <br>
-*Ads on the demo page may come and go depending on how many people are* <br>
-*funding this project.* <br>
+```javascript
+// Example Configuration
+const EJS_pathToData = 'https://cdn.emulatorjs.org/<version>/data/';
+// Replace <version> with: stable, latest, nightly, etc.
+```
 
-*You can help fund this project on* ***[patreon]***
+### Development
+To run the project locally for development:
 
-<br>
+1.  Open a terminal in the root directory.
+2.  Install dependencies:
+    ```sh
+    npm i
+    ```
+3.  Start the server/minification:
+    ```sh
+    npm run start
+    ```
+4.  Open `http://localhost:8080/` to view the demo.
 
-### Issues
+> **Note:** Minify your script files before deploying to a production server to optimize load times and bandwidth. See [Minification Docs](minify/README.md).
 
-*If something doesn't work, please consider opening an* ***[Issue]*** <br>
-*with as many details as possible, as well as the console log.*
+---
 
-<br>
+## Community & Support
 
-### 3rd Party Projects
+### 3rd Party Integrations
+EmulatorJS is built as a library/plugin, not a standalone website (therefore, no Docker container). For projects that utilize EmulatorJS, check out our [3rd Party Integration List](https://emulatorjs.org/docs/3rd-party).
 
-EmulatorJS itself is built to be a plugin, rather than an entire website. This is why there is no docker container of this project. However, there are several projects you can use that use EmulatorJS!
+### Issues & Reporting
+If you encounter an issue, please open an [Issue](https://github.com/EmulatorJS/EmulatorJS/issues) on GitHub. Include as many details as possible, including your browser console logs.
 
-Looking for projects that integrate EmulatorJS? Check out https://emulatorjs.org/docs/3rd-party
+> **When reporting bugs, please specify the version you are using (Stable/Latest/Nightly).**
 
-<br>
+### Support the Project
+This project is free and ad-free. The demo page may show occasional ads to help with hosting costs, but you can support development directly via [Patreon][Link Patreon].
 
-### Versioning
-
-There are three different version names that you need to be aware of:
-
-1. **stable** - This will be the most stable version of the emulator both code and cores will be tested before release. It will be updated every time a new version is released on GitHub. This is the default version on the Demo.
-2. **latest** - This will contain the latest code but use the stable cores. This will be updated every time the *main* branch is updated.
-3. **nightly** - This will contain the latest code and the latest cores. The cores will be updated every day, so this is considered alpha.
-
-<br>
-
-### CDN
-
-**EmulatorJS provides a CDN** at `https://cdn.emulatorjs.org/`, allowing access to any version of the emulator.
-
-To use it, set `EJS_pathtodata` to `https://cdn.emulatorjs.org/<version>/data/`, replacing `<version>` with `stable`, `latest`, `nightly`, or another main release.
-
-Be sure to also update the `loader.js` path to:
-`https://cdn.emulatorjs.org/<version>/data/loader.js`
-
-<br>
-
-### Development:
-
-*Run a local server with:* 
-
-1. Open a terminal in the root of the project.
-
-2. Install the dependencies with:
-
-   ```sh
-   npm i
-   ```
-
-3. Start the minification with:
-
-   ```sh
-   node start
-   ```
-
-4. Open your browser and go to `http://localhost:8080/` to see the demo page.
-
-<br>
-
-<br>
-
-#### Minifying
-
-Before pushing the script files onto your production server it is recommended to minify them to save on load times as well as bandwidth.
-
-Read the [minifying](minify/README.md) documentation for more info.
-
-<br>
-
-#### Localization
-
-If you want to help with localization, please check out the [localization](data/localization/README.md) documentation.
-
-<br>
-
-**>> When reporting bugs, please specify what version you are using**
-
-<br>
-<br>
-<br>
-
-<h1 align = center>Supported Systems</h1>
-
-<br>
-
-<div align = center>
-
-### Nintendo
-
-**[Game Boy Advance][Nintendo Game Boy Advance]**   | 
-**[Famicom / NES][NES / Famicom]**   | 
-**[Virtual Boy][Virtual Boy]**
-    
-**[Game Boy][Nintendo Game Boy]**   | 
-**[SNES]**   | 
-**[DS][Nintendo DS]**   | 
-**[64][Nintendo 64]**
-
-<br>
-<br>
-
-### Sega
-
-**[Master System][Sega Master System]**   | 
-**[Mega Drive][Sega Mega Drive]**   | 
-**[Game Gear][Sega Game Gear]**
-    
-**[Saturn][Sega Saturn]**   | 
-**[32X][Sega 32X]**   | 
-**[CD][Sega CD]**
-
-<br>
-<br>
-
-### Atari
-
-**[2600][Atari 2600]**   | 
-**[5200][Atari 5200]**   | 
-**[7800][Atari 7800]**   | 
-**[Lynx][Atari Lynx]**   | 
-**[Jaguar][Atari Jaguar]**
-
-<br>
-<br>
-
-### Commodore
-
-**[Commodore 64]** |
-**[Commodore 128]** |
-**[Commodore Amiga]**
-
-**[Commodore PET]** |
-**[Commodore Plus/4]** |
-**[Commodore VIC-20]**
-
-<br>
-<br>
-
-### Other
-
-**[PlayStation]**   | 
-**[PlayStation Portable]**   | 
-**[Arcade]**    
-
-**[3DO]** |
-**[MAME 2003]** |
-**[ColecoVision]**
-
-</div>
-
-<br>
+---
 
 ## Star History
 
@@ -209,73 +86,20 @@ If you want to help with localization, please check out the [localization](data/
  </picture>
 </a>
 
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
+<!-- Link Definitions -->
+[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge&logo=opensourceinitiative
+[Badge Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
+[Badge Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
+[Badge Configurator]: https://img.shields.io/badge/Config-992cb3?style=for-the-badge
+[Badge Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
+[Badge Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
+[Discord Badge]: https://invidget.switchblade.xyz/6akryGkETU
 
-[License]: LICENSE
-[Issue]: https://github.com/ethanaobrien/emulatorjs/issues
-[patreon]: https://patreon.com/EmulatorJS
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮   Quicklinks   🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[Configurator]: https://emulatorjs.org/editor
-[Contributors]: docs/contributors.md
-[Website]: https://emulatorjs.org/
-[Usage]: https://emulatorjs.org/docs/
-[Demo]: https://demo.emulatorjs.org/
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Systems  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 -->
-
-[Nintendo Game Boy Advance]: https://emulatorjs.org/docs/systems/nintendo-game-boy-advance
-[Nintendo Game Boy]: https://emulatorjs.org/docs/systems/nintendo-game-boy
-[Nintendo 64]: https://emulatorjs.org/docs/systems/nintendo-64
-[Nintendo DS]: https://emulatorjs.org/docs/systems/nintendo-ds
-
-[Sega Master System]: https://emulatorjs.org/docs/systems/sega-master-system
-[Sega Mega Drive]: https://emulatorjs.org/docs/systems/sega-mega-drive
-[Sega Game Gear]: https://emulatorjs.org/docs/systems/sega-game-gear
-[Sega Saturn]: https://emulatorjs.org/docs/systems/sega-saturn
-[Sega 32X]: https://emulatorjs.org/docs/systems/sega-32x
-[Sega CD]: https://emulatorjs.org/docs/systems/sega-cd
-
-[Atari Jaguar]: https://emulatorjs.org/docs/systems/atari-jaguar
-[Atari Lynx]: https://emulatorjs.org/docs/systems/atari-lynx
-[Atari 7800]: https://emulatorjs.org/docs/systems/atari-7800
-[Atari 2600]: https://emulatorjs.org/docs/systems/atari-2600
-[Atari 5200]: https://emulatorjs.org/docs/systems/atari-5200
-
-[NES / Famicom]: https://emulatorjs.org/docs/systems/nes-famicom
-[SNES]: https://emulatorjs.org/docs/systems/snes
-
-<!--
-[TurboGrafs-16 / PC Engine]: https://emulatorjs.org/systems/TurboGrafx-16
-[MSX]: https://emulatorjs.org/systems/MSX
-[WanderSwan / Color]: https://emulatorjs.org/systems/WonderSwan
-[Neo Geo Poket]: https://emulatorjs.org/systems/Neo%20Geo%20Pocket
---->
-[PlayStation]: https://emulatorjs.org/docs/systems/playstation
-[PlayStation Portable]: https://emulatorjs.org/docs/systems/psp
-[Virtual Boy]: https://emulatorjs.org/docs/systems/virtual-boy
-[Arcade]: https://emulatorjs.org/docs/systems/arcade
-[3DO]: https://emulatorjs.org/docs/systems/3do
-[MAME 2003]: https://emulatorjs.org/docs/systems/mame-2003
-[ColecoVision]: https://emulatorjs.org/docs/systems/colecovision
-
-[Commodore 64]: https://emulatorjs.org/docs/systems/commodore-64
-[Commodore 128]: https://emulatorjs.org/docs/systems/commodore-128
-[Commodore Amiga]: https://emulatorjs.org/docs/systems/commodore-amiga
-[Commodore PET]: https://emulatorjs.org/docs/systems/commodore-pet
-[Commodore Plus/4]: https://emulatorjs.org/docs/systems/commodore-plus4
-[Commodore VIC-20]: https://emulatorjs.org/docs/systems/commodore-vic20
-
-
-<!-- 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮  Badges  🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 🎮 --->
-
-[Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge
-
-[Button Configurator]: https://img.shields.io/badge/Code%20Generator-992cb3?style=for-the-badge
-[Button Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
-[Button Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
-[Button Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
-[Button Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
-[Button Beta]: https://img.shields.io/badge/Beta-bb044f?style=for-the-badge
+[Link License]: LICENSE
+[Link Website]: https://emulatorjs.org/
+[Link Usage]: https://emulatorjs.org/docs/
+[Link Configurator]: https://emulatorjs.org/editor
+[Link Demo]: https://demo.emulatorjs.org/
+[Link Contributors]: docs/contributors.md
+[Link Issue]: https://github.com/emulatorjs/emulatorjs/issues
+[Link Patreon]: https://patreon.com/EmulatorJS
