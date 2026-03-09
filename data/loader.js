@@ -2,9 +2,17 @@ const folderPath = (path) => {
     const filename = path.split("/").pop();
     return path.substring(0, path.length - filename.length);
 };
+function isAbsoluteUrl(path) {
+    return /^[a-zA-Z][\w.+-]*:\/\//i.test(path);
+}
+
 let scriptPath = (typeof window.EJS_pathtodata === "string") ? window.EJS_pathtodata : folderPath((new URL(document.currentScript.src)).pathname);
-if (!scriptPath.endsWith("/")) scriptPath += "/";
-if (!scriptPath.startsWith("/")) scriptPath = "../" + scriptPath;
+if (!scriptPath.endsWith("/")) {
+    scriptPath += "/";
+}
+if (!scriptPath.startsWith("/") && !isAbsoluteUrl(scriptPath)) {
+    scriptPath = "../" + scriptPath;
+}
 
 const debug = window.EJS_DEBUG_XX === true;
 
