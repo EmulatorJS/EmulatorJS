@@ -1,5 +1,6 @@
 import { EJS_UTILS } from "./utils.js";
 import { EJS_STORAGE } from "./storage.js";
+import { EJS_COMPRESSION } from "./compression.js";
 
 /**
  * EJS Download Manager
@@ -230,7 +231,7 @@ class EJS_Download {
                     if (["zip", "7z", "rar"].includes(ext) || forceExtract) {
                         if (onProgress) onProgress("decompressing", 0, 0, 0);
                         try {
-                            const compression = new window.EJS_COMPRESSION(this.EJS);
+                            const compression = new EJS_COMPRESSION(this.EJS);
                             await compression.decompress(data, (msg, isProgress) => {
                                 if (onProgress && isProgress) {
                                     const percent = parseInt(msg);
