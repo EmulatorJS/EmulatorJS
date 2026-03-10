@@ -1,0 +1,45 @@
+name: Make Latest Folder On EmulatorJS CDN
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  run:
+    if: github.repository == 'EmulatorJS/EmulatorJS'
+    runs-on: emulatorjs-server
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set Permissions
+        run: |
+          cd /mnt/HDD/public
+          chmod -R 775 .EmulatorJS/
+      - name: Update Latest
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/
+          git fetch --all
+          git reset --hard origin/main
+          git pull
+      - name: Minify Files
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/
+          rm -f "minify/package-lock.json"
+          rm -rf "minify/node_modules/" "./node_modules"
+          npm ci
+          npm run minify
+      - name: Zip Minified Files
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/data/
+          rm -f emulator.min.zip
+          zip emulator.min.zip *.min.*
+      - name: Clean Up Minify
+        run: |
+          cd /mnt/HDD/public/.EmulatorJS/
+          rm -f "minify/package-lock.json"
+          rm -rf "minify/node_modules/" "./node_modules"
+      - name: Copy to nightly folder
+        run: |
+          cd /mnt/HDD/public/
+          rsync -auv --exclude .EmulatorJS/data/cores/ .EmulatorJS/ nightly/

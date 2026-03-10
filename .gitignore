@@ -1,0 +1,17 @@
+node_modules/
+yarn.lock
+roms/
+data/emulator.min.*
+data/cores/*
+!data/cores/README.md
+!data/cores/core-README.md
+!data/cores/package.json
+!data/cores/.npmignore
+.DS_Store
+.hintrc
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+*.tgz
+dist/
+jsdoc/

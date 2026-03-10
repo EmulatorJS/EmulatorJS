@@ -1,0 +1,67 @@
+name: Publish Package to npmjs
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+jobs:
+  build:
+    if: github.repository == 'EmulatorJS/EmulatorJS'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Get latest release tag (if workflow_dispatch)
+        if: ${{ github.event_name == 'workflow_dispatch' }}
+        run: |
+          LATEST_TAG=$(curl -s https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name')
+          echo "LATEST_TAG=$LATEST_TAG" >> $GITHUB_ENV
+      - name: Download cores
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG_NAME=${{ github.event.release.tag_name || env.LATEST_TAG }}
+          TRIMMED_TAG=${TAG_NAME#v}
+          echo "TRIMMED_TAG=$TRIMMED_TAG" >> $GITHUB_ENV
+          gh release download "$TAG_NAME" \
+            --repo ${{ github.repository }} \
+            --pattern "$TRIMMED_TAG.7z"
+      - name: Extract cores
+        run: |
+          7z x -y "$TRIMMED_TAG.7z" "data/cores/*" -o./
+          rm "$TRIMMED_TAG.7z"
+      - run: npm i
+      - name: Make @emulatorjs/emulatorjs
+        run: |
+          node build.js --npm=emulatorjs
+          npm ci
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Get cores list
+        run: |
+          echo "CORES=$(node build.js --npm=get-cores | jq -r '. | join(" ")')" >> $GITHUB_ENV
+      - name: Setup cores
+        run: |
+          node build.js --npm=cores
+      - name: Publish each core
+        run: |
+          cd data/cores
+          for core in $CORES; do
+            echo "Processing core: $core"
+            cd $core
+            npm publish --access public
+            cd ..
+          done
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Make @emulatorjs/cores
+        run: |
+          cd data/cores
+          npm i
+          npm ci
+          npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
