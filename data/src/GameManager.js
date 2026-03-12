@@ -175,10 +175,10 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
         return filename;
     }
     initShaders() {
-        if (!this.EJS.config.shaders) return;
+        if (!this.EJS.shaders) return;
         this.mkdir("/shader");
-        for (const shaderFileName in this.EJS.config.shaders) {
-            const shader = this.EJS.config.shaders[shaderFileName];
+        for (const shaderFileName in this.EJS.shaders) {
+            const shader = this.EJS.shaders[shaderFileName];
             if (typeof shader === "string") {
                 this.FS.writeFile(`/shader/${shaderFileName}`, shader);
             }

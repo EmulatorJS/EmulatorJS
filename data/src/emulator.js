@@ -7512,7 +7512,7 @@ class EmulatorJS {
         } else {
             const shader = shaderConfig.shader;
             this.Module.FS.writeFile("/shader/shader.glslp", shader.type === "base64" ? atob(shader.value) : shader.value, {}, "w+");
-            if (shaderConfig.resources && shaderConfig.resources.length) {
+            if (Array.isArray(shaderConfig.resources)) {
                 shaderConfig.resources.forEach(resource => {
                     this.Module.FS.writeFile(`/shader/${resource.name}`, resource.type === "base64" ? atob(resource.value) : resource.value, {}, "w+");
                 });
