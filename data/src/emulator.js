@@ -1614,7 +1614,7 @@ class EmulatorJS {
         this.elements.contextmenu.classList.add("ejs_context_menu");
         this.addEventListener(this.game, "contextmenu", (e) => {
             e.preventDefault();
-            if ((this.config.buttonOpts && this.config.buttonOpts.rightClick === false) || !this.started) return;
+            if ((this.config.buttonOpts && this.config.buttonOpts.rightClick === false) || !this.started || this.lightgunActive) return;
             const parentRect = this.elements.parent.getBoundingClientRect();
             this.elements.contextmenu.style.display = "block";
             const rect = this.elements.contextmenu.getBoundingClientRect();
@@ -1629,6 +1629,19 @@ class EmulatorJS {
         this.addEventListener(this.elements.contextmenu, "contextmenu", (e) => e.preventDefault());
         this.addEventListener(this.elements.parent, "contextmenu", (e) => e.preventDefault());
         this.addEventListener(this.game, "mousedown touchend", hideMenu);
+        // Prevent mouse buttons 4/5 (back/forward) from navigating away
+        // when used as lightgun Start/Select. Works in Chromium-based
+        // browsers; Firefox handles back/forward navigation before page
+        // event handlers fire, so this has no effect there.
+        // See: https://support.mozilla.org/en-US/questions/1319892
+        for (const evtName of ["mousedown", "mouseup", "auxclick"]) {
+            this.addEventListener(this.game, evtName, (e) => {
+                if (this.lightgunActive && (e.button === 3 || e.button === 4)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
         const parent = this.createElement("ul");
         const addButton = (title, hidden, functi0n) => {
             //<li><a href="#" onclick="return false">'+title+'</a></li>
@@ -4768,6 +4781,27 @@ class EmulatorJS {
             this.enableMouseLock = (value === "enabled");
         } else if (option === "autofireInterval") {
             this.defaultAutoFireInterval = parseInt(value);
+        } else if (option.startsWith("controller-port-device-p")) {
+            const port = parseInt(option.replace("controller-port-device-p", "")) - 1;
+            const deviceId = parseInt(value);
+            this.gameManager.setControllerPortDevice(port, deviceId);
+            /* RETRO_DEVICE_LIGHTGUN = 4; subclass mask = 0xFF */
+            const isLightgun = (deviceId & 0xFF) === 4;
+            if (isLightgun) {
+                this.lightgunActive = true;
+            } else {
+                /* Re-check all ports */
+                this.lightgunActive = false;
+                for (const k in this.allSettings) {
+                    if (k.startsWith("controller-port-device-p")) {
+                        const v = parseInt(this.allSettings[k]);
+                        if ((v & 0xFF) === 4) this.lightgunActive = true;
+                    }
+                }
+            }
+            if (this.canvas) {
+                this.canvas.style.cursor = this.lightgunActive ? "none" : "";
+            }
         }
     }
     menuOptionChanged(option, value) {
@@ -5442,6 +5476,39 @@ class EmulatorJS {
         }, "100", inputOptions, true);
 
         checkForEmptyMenu(inputOptions);
+
+        let controllerPortInfo;
+        try {
+            controllerPortInfo = this.gameManager.getControllerPortInfo();
+        } catch(e) {
+            if (this.debug) console.warn("getControllerPortInfo not available:", e);
+        }
+        if (controllerPortInfo) {
+            // Parse the port info: each line is "port:deviceId:description"
+            const ports = {};
+            controllerPortInfo.split("\n").forEach(line => {
+                if (!line.trim()) return;
+                const parts = line.split(":");
+                if (parts.length < 3) return;
+                const port = parseInt(parts[0]);
+                const deviceId = parts[1];
+                const desc = parts.slice(2).join(":");
+                if (!ports[port]) ports[port] = {};
+                ports[port][deviceId] = this.localization(desc);
+            });
+            const portKeys = Object.keys(ports);
+            if (portKeys.length > 0) {
+                const controllerDeviceOpts = createSettingParent(true, "Controller Port Devices", home);
+                for (const port of portKeys) {
+                    const portNum = parseInt(port) + 1;
+                    if (Object.keys(ports[port]).length <= 1) continue;
+                    addToMenu(this.localization("Port") + " " + portNum,
+                        "controller-port-device-p" + portNum,
+                        ports[port], "1", controllerDeviceOpts, true);
+                }
+                checkForEmptyMenu(controllerDeviceOpts);
+            }
+        }
 
         if (this.saveInBrowserSupported()) {
             const saveStateOpts = createSettingParent(true, "Save States", home);
