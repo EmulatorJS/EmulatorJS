@@ -5,6 +5,7 @@ import { GamepadHandler } from "./gamepad.js";
 import { EJS_STORAGE, EJS_DUMMYSTORAGE } from "./storage.js";
 import { EJS_UTILS } from "./utils.js";
 import { EJS_SETUP } from "./setup.js";
+import { netplayMethods } from "./netplay.js";
 import { EJS_license } from "./license.js";
 import * as CONSTS from "./consts.js";
 
@@ -2238,21 +2239,83 @@ class EmulatorJS {
 
         this.setVolume = (volume) => {
             this.saveSettings();
-            this.muted = (volume === 0);
+            this.muted = volume === 0;
             volumeSlider.value = volume;
             volumeSlider.setAttribute("aria-valuenow", volume * 100);
-            volumeSlider.setAttribute("aria-valuetext", (volume * 100).toFixed(1) + "%");
-            volumeSlider.setAttribute("style", "--value: " + volume * 100 + "%;margin-left: 5px;position: relative;z-index: 2;");
-            if (this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.sources) {
-                this.Module.AL.currentCtx.sources.forEach(e => {
-                    e.gain.gain.value = volume;
-                })
+            volumeSlider.setAttribute(
+                "aria-valuetext",
+                (volume * 100).toFixed(1) + "%",
+            );
+            volumeSlider.setAttribute(
+                "style",
+                "--value: " +
+                    volume * 100 +
+                    "%;margin-left: 5px;position: relative;z-index: 2;",
+            );
+
+            const isNetplayGuest =
+                this.isNetplay && this.netplay && !this.netplay.owner;
+
+            if (isNetplayGuest) {
+                if (this.netplay.remoteGainNode) {
+                    this.netplay.remoteGainNode.gain.value = volume;
+                }
+
+                const audioElements = document.querySelectorAll(
+                    'audio[id^="ejs-remote-audio-"]',
+                );
+                audioElements.forEach(function (el) {
+                    el.volume = Math.max(0, Math.min(1, volume));
+                    el.muted = volume === 0;
+                });
+            } else {
+                if (
+                    this.Module &&
+                    this.Module.AL &&
+                    this.Module.AL.currentCtx
+                ) {
+                    const ctx = this.Module.AL.currentCtx;
+
+                    if (ctx.gain && ctx.gain.gain) {
+                        ctx.gain.gain.value = volume;
+                    }
+
+                    const sources = ctx.sources || {};
+                    for (const k in sources) {
+                        const s = sources[k];
+                        if (s && s.gain && s.gain.gain) {
+                            s.gain.gain.value = volume;
+                        }
+                    }
+                }
+
+                if (
+                    this.isNetplay &&
+                    this.netplay &&
+                    this.netplay.owner &&
+                    this.netplay.streamCompensationGain
+                ) {
+                    const compensation = volume > 0.01 ? 1.0 / volume : 1.0;
+                    this.netplay.streamCompensationGain.gain.value = Math.min(
+                        compensation,
+                        20,
+                    );
+                    if (this.debug)
+                        console.log(
+                            "Stream compensation adjusted: " +
+                                this.netplay.streamCompensationGain.gain.value,
+                        );
+                }
             }
-            if (!this.config.buttonOpts || this.config.buttonOpts.mute !== false) {
-                unmuteButton.style.display = (volume === 0) ? "" : "none";
-                muteButton.style.display = (volume === 0) ? "none" : "";
+
+            if (
+                !this.config.buttonOpts ||
+                this.config.buttonOpts.mute !== false
+            ) {
+                unmuteButton.style.display = volume === 0 ? "" : "none";
+                muteButton.style.display = volume === 0 ? "none" : "";
             }
-        }
+        };
 
         this.addEventListener(volumeSlider, "change mousemove touchmove mousedown touchstart mouseup", (e) => {
             setTimeout(() => {
@@ -5573,1873 +5636,349 @@ class EmulatorJS {
         if (hidden) popup.setAttribute("hidden", "");
         popup.appendChild(popupMsg);
         return [popup, popupMsg];
-    }
-
-    updateNetplayUI(isJoining) {
-        if (!this.elements.bottomBar) return;
-
-        const bar = this.elements.bottomBar;
-        const isClient = !this.netplay.owner;
-        const shouldHideButtons = isJoining && isClient;
-        const elementsToToggle = [
-            ...(bar.playPause || []),
-            ...(bar.restart || []),
-            ...(bar.saveState || []),
-            ...(bar.loadState || []),
-            ...(bar.cheat || []),
-            ...(bar.saveSavFiles || []),
-            ...(bar.loadSavFiles || []),
-            ...(bar.exit || []),
-            ...(bar.contextMenu || []),
-            ...(bar.cacheManager || [])
-        ];
-        
-        // Add the parent containers to the same logic
-        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
-            elementsToToggle.push(bar.settings[0].parentElement);
-        }
-        if (this.diskParent) {
-            elementsToToggle.push(this.diskParent);
-        }
-
-        elementsToToggle.forEach(el => {
-            if (el) {
-                el.classList.toggle('netplay-hidden', shouldHideButtons);
-            }
-        });
-    }
-    createNetplayMenu() {
-        const body = this.createPopup("Netplay", {
-            "Create a Room": () => {
-                if (typeof this.netplay.updateList !== "function")
-                    this.defineNetplayFunctions();
-                if (this.isNetplay) {
-                    this.netplay.leaveRoom();
-                } else {
-                    this.netplay.showOpenRoomDialog();
-                }
-            },
-            "Close": () => {
-                this.netplayMenu.style.display = "none";
-                if (this.netplay.updateList) {
-                    this.netplay.updateList.stop();
-                }
-            }
-        }, true);
-        this.netplayMenu = body.parentElement;
-        const createButton = this.netplayMenu.getElementsByTagName("a")[0];
-        const rooms = this.createElement("div");
-        const title = this.createElement("strong");
-        title.innerText = this.localization("Rooms");
-        const table = this.createElement("table");
-        table.classList.add("ejs_netplay_table");
-        table.style.width = "100%";
-        table.setAttribute("cellspacing", "0");
-        const thead = this.createElement("thead");
-        const row = this.createElement("tr");
-        const addToHeader = (text) => {
-            const item = this.createElement("td");
-            item.innerText = text;
-            item.style["text-align"] = "center";
-            row.appendChild(item);
-            return item;
-        };
-        thead.appendChild(row);
-        addToHeader("Room Name").style["text-align"] = "left";
-        addToHeader("Players").style.width = "80px";
-        addToHeader("").style.width = "80px";
-        table.appendChild(thead);
-        const tbody = this.createElement("tbody");
-
-        table.appendChild(tbody);
-        rooms.appendChild(title);
-        rooms.appendChild(table);
-
-        const joined = this.createElement("div");
-        const title2 = this.createElement("strong");
-        title2.innerText = "{roomname}";
-        const password = this.createElement("div");
-        password.innerText = "Password: ";
-        const table2 = this.createElement("table");
-        table2.classList.add("ejs_netplay_table");
-        table2.style.width = "100%";
-        table2.setAttribute("cellspacing", "0");
-        const thead2 = this.createElement("thead");
-        const row2 = this.createElement("tr");
-        const addToHeader2 = (text) => {
-            const item = this.createElement("td");
-            item.innerText = text;
-            row2.appendChild(item);
-            return item;
-        };
-        thead2.appendChild(row2);
-        addToHeader2("Player").style.width = "80px";
-        addToHeader2("Name");
-        addToHeader2("").style.width = "80px";
-        table2.appendChild(thead2);
-        const tbody2 = this.createElement("tbody");
-
-        table2.appendChild(tbody2);
-        joined.appendChild(title2);
-        joined.appendChild(password);
-        joined.appendChild(table2);
-
-        joined.style.display = "none";
-        body.appendChild(rooms);
-        body.appendChild(joined);
-
-        this.openNetplayMenu = () => {
-            if (this.netplayShowTurnWarning && !this.netplayWarningShown) {
-                const warningDiv = this.createElement("div");
-                warningDiv.className = "ejs_netplay_warning";
-                warningDiv.innerText = "Warning: No TURN server configured. Netplay connections may fail.";
-                const menuBody = this.netplayMenu.querySelector(".ejs_popup_body");
-                if (menuBody) {
-                    menuBody.prepend(warningDiv);
-                    this.netplayWarningShown = true;
-                }
-            }
-            this.netplayMenu.style.display = "";
-            if (!this.netplay || (this.netplay && !this.netplay.name)) {
-                this.netplay = {
-                    table: tbody,
-                    playerTable: tbody2,
-                    passwordElem: password,
-                    roomNameElem: title2,
-                    createButton: createButton,
-                    tabs: [rooms, joined],
-                    ...this.netplay 
-                };
-                const popups = this.createSubPopup();
-                this.netplayMenu.appendChild(popups[0]);
-                popups[1].classList.add("ejs_cheat_parent");
-                const popup = popups[1];
-
-                const header = this.createElement("div");
-                const title = this.createElement("h2");
-                title.innerText = this.localization("Set Player Name");
-                title.classList.add("ejs_netplay_name_heading");
-                header.appendChild(title);
-                popup.appendChild(header);
-
-                const main = this.createElement("div");
-                main.classList.add("ejs_netplay_header");
-                const head = this.createElement("strong");
-                head.innerText = this.localization("Player Name");
-                const input = this.createElement("input");
-                input.type = "text";
-                input.setAttribute("maxlength", 20);
-
-                main.appendChild(head);
-                main.appendChild(this.createElement("br"));
-                main.appendChild(input);
-                popup.appendChild(main);
-
-                popup.appendChild(this.createElement("br"));
-                const submit = this.createElement("button");
-                submit.classList.add("ejs_button_button");
-                submit.classList.add("ejs_popup_submit");
-                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-                submit.innerText = this.localization("Submit");
-                popup.appendChild(submit);
-                this.addEventListener(submit, "click", (e) => {
-                    if (!input.value.trim())
-                        return;
-                    this.netplay.name = input.value.trim();
-                    popups[0].remove();
-                });
-            }
-            if (typeof this.netplay.updateList !== "function") {
-                this.defineNetplayFunctions();
-            }
-            this.netplay.updateList.start();
-        };
-    }
-
-    defineNetplayFunctions() {
-        const EJS_INSTANCE = this;
-
-        function guidGenerator() {
-            const S4 = function () {
-                return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-            };
-            return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-        }
-        this.getNativeResolution = function () {
-            if (this.Module && this.Module.getNativeResolution) {
-                try {
-                    const res = this.Module.getNativeResolution();
-                    console.log("Native resolution from Module:", res);
-                    return res;
-                } catch (error) {
-                    console.error("Failed to get native resolution:", error);
-                    return {
-                        width: 640,
-                        height: 480
-                    };
-                }
-            }
-            return {
-                width: 640,
-                height: 480
-            };
-        };
-
-        this.netplayGetUserIndex = function () {
-            if (!this.isNetplay || !this.netplay.players || !this.netplay.playerID) {
-                console.warn("netplayGetUserIndex: Netplay not active or players/playerID undefined");
-                return 0;
-            }
-            const playerIds = Object.keys(this.netplay.players);
-            const index = playerIds.indexOf(this.netplay.playerID);
-            return index === -1 ? 0 : index;
-        };
-
-        this.netplay.simulateInput = (player, index, value) => {
-            console.log("netplay.simulateInput called:", {
-                player,
-                index,
-                value,
-                playerIndex: this.netplayGetUserIndex()
-            });
-            if (!this.isNetplay || !this.gameManager || !this.gameManager.functions || !this.gameManager.functions.simulateInput) {
-                console.error("Cannot simulate input: Netplay not active or gameManager.functions.simulateInput undefined");
-                return;
-            }
-            const playerIndex = this.netplayGetUserIndex();
-            let frame = this.netplay.currentFrame || 0;
-            if (this.netplay.owner) {
-                if (!this.netplay.inputsData[frame])
-                    this.netplay.inputsData[frame] = [];
-                this.netplay.inputsData[frame].push({
-                    frame: frame,
-                    connected_input: [playerIndex, index, value]
-                });
-                this.gameManager.functions.simulateInput(playerIndex, index, value);
-            } else {
-                this.gameManager.functions.simulateInput(playerIndex, index, value);
-                if (this.netplaySendMessage) {
-                    this.netplaySendMessage({
-                        "sync-control": [{
-                                frame: frame + 20,
-                                connected_input: [playerIndex, index, value]
-                            }
-                        ]
-                    });
-                } else {
-                    console.error("netplaySendMessage is undefined");
-                }
-            }
-        };
-
-        this.netplayUpdateTableList = async () => {
-            if (!this.netplay || !this.netplay.table) {
-                console.error("netplay or netplay.table is undefined");
-                return;
-            }
-
-            const addToTable = (id, name, current, max, hasPassword) => {
-                const row = this.createElement("tr");
-                row.classList.add("ejs_netplay_table_row");
-                const addCell = (text) => {
-                    const item = this.createElement("td");
-                    item.innerText = text;
-                    item.style.padding = "10px 0";
-                    item.style["text-align"] = "center";
-                    row.appendChild(item);
-                    return item;
-                };
-                addCell(name).style["text-align"] = "left";
-                addCell(current + "/" + max).style.width = "80px";
-                const parent = addCell("");
-                parent.style.width = "80px";
-                this.netplay.table.appendChild(row);
-
-                if (current < max) {
-                    const join = this.createElement("button");
-                    join.classList.add("ejs_netplay_join_button", "ejs_button_button");
-                    join.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-                    join.innerText = this.localization("Join");
-                    parent.appendChild(join);
-
-                    this.addEventListener(join, "click", () => {
-                        if (hasPassword) {
-                            let password = prompt("Please enter the room password:");
-                            if (password !== null) {
-                                password = password.trim();
-                                this.netplayJoinRoom(id, name, max, password);
-                            }
-                        } else {
-                            this.netplayJoinRoom(id, name, max, null);
-                        }
-                    });
-                }
-            };
-
-            try {
-                const open = await this.netplayGetOpenRooms();
-                this.netplay.table.innerHTML = "";
-                for (const k in open) {
-                    addToTable(k, open[k].room_name, open[k].current, open[k].max, open[k].hasPassword);
-                }
-            } catch (e) {
-                console.error("Could not update room list:", e);
-            }
-        };
-
-        this.netplayGetOpenRooms = async () => {
-            if (!this.netplay.url) {
-                console.error("netplay.url is undefined");
-                return {};
-            }
-            try {
-                const response = await fetch(this.netplay.url + "/list?domain=" + window.location.host + "&game_id=" + this.config.gameId);
-                const data = await response.text();
-                console.log("Fetched open rooms:", data);
-                return JSON.parse(data);
-            } catch (error) {
-                console.error("Error fetching open rooms:", error);
-                return {};
-            }
-        };
-
-        this.netplayUpdateListStart = () => {
-            if (!this.netplayUpdateTableList) {
-                console.error("netplayUpdateTableList is undefined");
-                return;
-            }
-            this.netplay.updateListInterval = setInterval(this.netplayUpdateTableList.bind(this), 1000);
-        };
-
-        this.netplayUpdateListStop = () => {
-            clearInterval(this.netplay.updateListInterval);
-        };
-
-        this.netplayShowOpenRoomDialog = () => {
-            if (!this.createSubPopup || !this.createElement || !this.localization || !this.addEventListener) {
-                console.error("Required methods for netplayShowOpenRoomDialog are undefined");
-                return;
-            }
-            this.originalControls = JSON.parse(JSON.stringify(this.controls));
-            const popups = this.createSubPopup();
-            this.netplayMenu.appendChild(popups[0]);
-            popups[1].classList.add("ejs_cheat_parent");
-            const popup = popups[1];
-
-            const header = this.createElement("div");
-            const title = this.createElement("h2");
-            title.innerText = this.localization("Create a room");
-            title.classList.add("ejs_netplay_name_heading");
-            header.appendChild(title);
-            popup.appendChild(header);
-
-            const main = this.createElement("div");
-            main.classList.add("ejs_netplay_header");
-            const rnhead = this.createElement("strong");
-            rnhead.innerText = this.localization("Room Name");
-            const rninput = this.createElement("input");
-            rninput.type = "text";
-            rninput.setAttribute("maxlength", "20");
-
-            const maxhead = this.createElement("strong");
-            maxhead.innerText = this.localization("Max Players");
-            const maxinput = this.createElement("select");
-            const playerCounts = ["2", "3", "4"];
-            playerCounts.forEach(count => {
-                const option = this.createElement("option");
-                option.value = count;
-                option.innerText = count;
-                option.classList.add("option-enabled");
-                maxinput.appendChild(option);
-            });
-
-            const pwhead = this.createElement("strong");
-            pwhead.innerText = this.localization("Password (optional)");
-            const pwinput = this.createElement("input");
-            pwinput.type = "text";
-            pwinput.setAttribute("maxlength", "20");
-
-            main.appendChild(rnhead);
-            main.appendChild(this.createElement("br"));
-            main.appendChild(rninput);
-            main.appendChild(maxhead);
-            main.appendChild(this.createElement("br"));
-            main.appendChild(maxinput);
-            main.appendChild(pwhead);
-            main.appendChild(this.createElement("br"));
-            main.appendChild(pwinput);
-            popup.appendChild(main);
-
-            popup.appendChild(this.createElement("br"));
-            const submit = this.createElement("button");
-            submit.classList.add("ejs_button_button", "ejs_popup_submit");
-            submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-            submit.style.margin = "0 10px";
-            submit.innerText = this.localization("Submit");
-            popup.appendChild(submit);
-            this.addEventListener(submit, "click", () => {
-                console.log("Submit button clicked");
-                if (!rninput.value.trim()) {
-                    console.log("Room name is empty, aborting");
-                    return;
-                }
-                const roomName = rninput.value.trim();
-                const maxPlayers = parseInt(maxinput.value);
-                const password = pwinput.value.trim();
-                console.log("Creating room with:", {
-                    roomName,
-                    maxPlayers,
-                    password
-                });
-                this.netplayOpenRoom(roomName, maxPlayers, password);
-                popups[0].remove();
-            });
-            const close = this.createElement("button");
-            close.classList.add("ejs_button_button", "ejs_popup_submit");
-            close.style.margin = "0 10px";
-            close.innerText = this.localization("Close");
-            popup.appendChild(close);
-            this.addEventListener(close, "click", () => popups[0].remove());
-        };
-
-        this.netplayInitWebRTCStream = async () => {
-            if (this.netplay.localStream)
-                return;
-            console.log("Initializing WebRTC stream for owner...");
-            const { width: nativeWidth, height: nativeHeight } = this.getNativeResolution();
-            if (this.canvas) {
-                this.canvas.width = nativeWidth;
-                this.canvas.height = nativeHeight;
-            }
-            if (this.netplay.owner && this.Module && this.Module.setCanvasSize) {
-                this.Module.setCanvasSize(nativeWidth, nativeHeight);
-                console.log("Set emulator canvas size to native:", {
-                    width: nativeWidth,
-                    height: nativeHeight
-                });
-            }
-
-            const stream = this.collectScreenRecordingMediaTracks(this.canvas, 30);
-            if (!stream || !stream.getTracks().length) {
-                console.error("Failed to capture stream:", stream);
-                this.displayMessage("Failed to initialize video stream", 5000);
-                return;
-            }
-            const videoTrack = stream.getVideoTracks()[0];
-            if (videoTrack) {
-                videoTrack.applyConstraints({
-                    width: {
-                        ideal: nativeWidth
-                    },
-                    height: {
-                        ideal: nativeHeight
-                    },
-                    frameRate: {
-                        ideal: 30,
-                        max: 30
-                    }
-                }).catch(err => console.error("Constraint error:", err));
-                console.log("Track settings:", videoTrack.getSettings());
-            }
-            stream.getTracks().forEach(track => {
-                console.log("Track:", {
-                    kind: track.kind,
-                    enabled: track.enabled,
-                    muted: track.muted
-                });
-                track.onmute = () => console.warn("Track muted:", track.id);
-                track.onended = () => console.warn("Track ended:", track.id);
-            });
-            this.netplay.localStream = stream;
-        };
-
-        this.netplayCreatePeerConnection = (peerId) => {
-            const pc = new RTCPeerConnection({
-                iceServers: this.config.netplayICEServers,
-                iceCandidatePoolSize: 10
-            });
-
-            let dataChannel;
-
-            if (this.netplay.owner) {
-                dataChannel = pc.createDataChannel('inputs');
-                dataChannel.onopen = () => console.log(`Data channel opened for peer ${peerId}`);
-                dataChannel.onmessage = (event) => {
-                    const data = JSON.parse(event.data);
-                    if (data.type === "host-left") {
-                        this.displayMessage("Host left. Restarting...", 3000);
-                        this.netplayLeaveRoom();
-                        return;
-                    }
-                    const playerIndex = data.player;
-                    const frame = this.netplay.currentFrame || 0;
-
-                    if (!this.netplay.inputsData[frame]) {
-                        this.netplay.inputsData[frame] = [];
-                    }
-                    this.netplay.inputsData[frame].push({
-                        frame: frame,
-                        connected_input: [playerIndex, data.index, data.value]
-                    });
-                    if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                        this.gameManager.functions.simulateInput(playerIndex, data.index, data.value);
-                    } else {
-                        console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
-                    }
-                };
-            } else {
-                pc.ondatachannel = (event) => {
-                    dataChannel = event.channel;
-                    dataChannel.onopen = () => console.log(`Data channel opened for peer ${peerId}`);
-                    dataChannel.onmessage = (event) => {
-                        const data = JSON.parse(event.data);
-                        if (data.type === "host-left") {
-                            this.displayMessage("Host left. Restarting...", 3000);
-                            this.netplayLeaveRoom();
-                            return;
-                        }
-                        console.log(`Received input from host ${peerId}:`, data);
-                        if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                            this.gameManager.functions.simulateInput(data.player, data.index, data.value);
-                        } else {
-                            console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
-                        }
-                    };
-                };
-            }
-
-            if (this.netplay.owner && this.netplay.localStream) {
-                this.netplay.localStream.getTracks().forEach(track => {
-                    pc.addTrack(track, this.netplay.localStream);
-                });
-
-                const codecs = RTCRtpSender.getCapabilities('video').codecs;
-                const preferredCodecs = codecs.filter(codec => ['video/H264', 'video/VP8'].includes(codec.mimeType));
-                const transceiver = pc.getTransceivers().find(t => t.sender && t.sender.track && t.sender.track.kind === 'video');
-                if (transceiver && preferredCodecs.length) {
-                    try {
-                        transceiver.setCodecPreferences(preferredCodecs);
-                    } catch (error) {
-                        console.error("Failed to set codec preferences:", error);
-                    }
-                }
-            } else {
-                pc.addTransceiver('video', {
-                    direction: 'recvonly'
-                });
-            }
-
-            this.netplay.peerConnections[peerId] = {
-                pc,
-                dataChannel
-            };
-
-            let streamReceived = false;
-            const streamTimeout = setTimeout(() => {
-                if (!streamReceived && !this.netplay.owner) {
-                    this.displayMessage("Failed to receive video stream. Check your network and try again.", 5000);
-                    this.netplayLeaveRoom();
-                }
-            }, 10000);
-
-            pc.onicecandidate = (event) => {
-                if (event.candidate) {
-                    this.netplay.socket.emit("webrtc-signal", {
-                        target: peerId,
-                        candidate: event.candidate
-                    });
-                }
-            };
-
-            pc.onicecandidateerror = (event) => {
-                console.error("ICE candidate error for peer", peerId, ":", event);
-            };
-
-            pc.onconnectionstatechange = () => {
-                if (pc.connectionState === "connected") {
-                    this.netplay.webRtcReady = true;
-                } else if (pc.connectionState === "failed" || pc.connectionState === "disconnected") {
-                    this.displayMessage("Connection with player lost. Attempting to reconnect...", 3000);
-                    clearTimeout(streamTimeout);
-                    pc.close();
-                    delete this.netplay.peerConnections[peerId];
-                    setTimeout(() => this.netplayCreatePeerConnection(peerId), 2000);
-                }
-            };
-
-            pc.ontrack = (event) => {
-                if (!this.netplay.owner) {
-                    streamReceived = true;
-                    clearTimeout(streamTimeout);
-                    const stream = event.streams[0];
-                    if (!this.netplay.video) {
-                        this.netplay.video = document.createElement('video');
-                        this.netplay.video.muted = true;
-                        this.netplay.video.playsInline = true;
-                    }
-                    this.netplay.video.srcObject = stream;
-                    this.netplay.video.play().catch(() => {
-                        if (this.isMobile) {
-                            this.promptUserInteraction(this.netplay.video);
-                        }
-                    });
-                    this.drawVideoToCanvas();
-                }
-            };
-
-            if (this.netplay.owner && this.netplay.localStream) {
-                pc.createOffer()
-                .then(offer => {
-                    offer.sdp = offer.sdp.replace(/profile-level-id=[0-9a-fA-F]+/, 'profile-level-id=42e01f');
-                    return pc.setLocalDescription(offer);
-                })
-                .then(() => {
-                    this.netplay.socket.emit("webrtc-signal", {
-                        target: peerId,
-                        offer: pc.localDescription
-                    });
-                })
-                .catch(error => console.error("Error creating offer:", error));
-            }
-
-            return pc;
-        };
-
-        this.showVideoOverlay = () => {
-            const videoElement = this.netplay.video;
-            if (!videoElement) {
-                console.error("showVideoOverlay: videoElement is not initialized");
-                return;
-            }
-            console.log("showVideoOverlay called, videoElement exists:", videoElement);
-
-            if (videoElement.parentElement) {
-                console.log("Removing video element from current parent:", videoElement.parentElement);
-                videoElement.parentElement.removeChild(videoElement);
-            }
-
-            videoElement.style.position = "absolute";
-            if (this.isMobile) {
-                videoElement.style.top = "0";
-                videoElement.style.left = "0";
-                videoElement.style.width = "100vw";
-                videoElement.style.height = "100vh";
-                videoElement.style.maxHeight = "100vh";
-            } else {
-                videoElement.style.top = "0";
-                videoElement.style.left = "0";
-                videoElement.style.width = "100%";
-                videoElement.style.height = "100%";
-            }
-            videoElement.style.border = "1px solid white";
-            videoElement.style.zIndex = "1";
-            videoElement.style.display = "";
-            videoElement.style.objectFit = "contain";
-            document.body.appendChild(videoElement);
-            console.log("Video overlay added to DOM, styles:", videoElement.style.cssText);
-
-            const playVideo = async() => {
-                console.log("Attempting to play video, readyState:", videoElement.readyState, "Paused:", videoElement.paused, "Ended:", videoElement.ended, "Muted:", videoElement.muted);
-                try {
-                    await videoElement.play();
-                    console.log("Video playback started successfully, currentTime:", videoElement.currentTime);
-                } catch (error) {
-                    console.error("Video play error:", error);
-                    if (this.isMobile) {
-                        this.promptUserInteraction(videoElement);
-                    } else {
-                        console.log("Autoplay failed on desktop, but user interaction not required for muted video");
-                    }
-                }
-                if (videoElement.videoWidth === 0 || videoElement.videoHeight === 0) {
-                    console.warn("Video element has zero dimensions, likely no valid frame:", {
-                        videoWidth: videoElement.videoWidth,
-                        videoHeight: videoElement.videoHeight
-                    });
-                } else {
-                    console.log("Video dimensions:", {
-                        videoWidth: videoElement.videoWidth,
-                        videoHeight: videoElement.videoHeight
-                    });
-                }
-            };
-            playVideo();
-        };
-
-        this.drawVideoToCanvas = () => {
-            const videoElement = this.netplay.video;
-            const canvas = this.netplayCanvas;
-            if (!canvas) {
-                console.error("drawVideoToCanvas: Missing canvas!");
-            }
-            const ctx = canvas.getContext('2d', {
-                alpha: false,
-                willReadFrequently: true
-            });
-
-            if (!videoElement || !ctx) {
-                console.error("drawVideoToCanvas: Missing video, or context!");
-                return;
-            }
-
-            const { width: nativeWidth, height: nativeHeight } = this.getNativeResolution() || {
-                width: 720,
-                height: 700
-            };
-            canvas.width = nativeWidth;
-            canvas.height = nativeHeight;
-
-            const ensureVideoPlaying = async() => {
-                let retries = 0;
-                const maxRetries = 5;
-                while (retries < maxRetries) {
-                    if (videoElement.paused || videoElement.ended) {
-                        try {
-                            await videoElement.play();
-                        } catch (error) {
-                            if (this.isMobile)
-                                this.promptUserInteraction(videoElement);
-                        }
-                    }
-                    if (videoElement.videoWidth > 0 && videoElement.videoHeight > 0) {
-                        if (!this.netplay.lockedAspectRatio) {
-                            this.netplay.lockedAspectRatio = videoElement.videoWidth / videoElement.videoHeight;
-                            console.log("Locked aspect ratio:", this.netplay.lockedAspectRatio);
-                        }
-                        break;
-                    }
-                    retries++;
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                }
-
-                if (retries >= maxRetries) {
-                    this.displayMessage("Failed to initialize video stream", 5000);
-                    this.netplayLeaveRoom();
-                }
-            };
-
-            const drawFrame = () => {
-                if (!this.isNetplay || this.netplay.owner)
-                    return;
-
-                const aspect = this.netplay.lockedAspectRatio || (videoElement.videoWidth / videoElement.videoHeight) || (nativeWidth / nativeHeight);
-
-                if (videoElement.readyState >= videoElement.HAVE_CURRENT_DATA && videoElement.videoWidth > 0) {
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-                    const canvasAspect = nativeWidth / nativeHeight;
-                    let drawWidth,
-                    drawHeight,
-                    offsetX,
-                    offsetY;
-
-                    if (aspect > canvasAspect) {
-                        drawWidth = nativeWidth;
-                        drawHeight = nativeWidth / aspect;
-                        offsetX = 0;
-                        offsetY = 0;
-                    } else {
-                        drawHeight = nativeHeight;
-                        drawWidth = nativeHeight * aspect;
-                        offsetX = (nativeWidth - drawWidth) / 2;
-                        offsetY = 0;
-                    }
-
-                    ctx.drawImage(videoElement, 0, 0, videoElement.videoWidth, videoElement.videoHeight, offsetX, offsetY, drawWidth, drawHeight);
-                }
-
-                requestAnimationFrame(drawFrame);
-            };
-
-            videoElement.addEventListener('loadeddata', () => {
-                ensureVideoPlaying().then(drawFrame);
-            }, {
-                once: true
-            });
-
-            ensureVideoPlaying();
-        };
-
-        this.netplayStartSocketIO = (callback) => {
-            if (!this.netplay.previousPlayers) {
-                this.netplay.previousPlayers = {};
-            }
-            
-            if (typeof io === "undefined") {
-                console.error("Socket.IO client library not loaded. Please include <script src='https://cdn.socket.io/4.5.0/socket.io.min.js'></script>");
-                this.displayMessage("Socket.IO not available", 5000);
-                return;
-            }
-            if (this.netplay.socket && this.netplay.socket.connected) {
-                console.log("Socket already connected, reusing:", this.netplay.socket.id);
-                callback();
-                return;
-            }
-            if (!this.netplay.url) {
-                console.error("Cannot initialize Socket.IO: netplay.url is undefined");
-                this.displayMessage("Network configuration error", 5000);
-                return;
-            }
-            console.log("Initializing new Socket.IO connection to:", this.netplay.url);
-            this.netplay.socket = io(this.netplay.url);
-            this.netplay.socket.on("connect", () => {
-                console.log("Socket.IO connected:", this.netplay.socket.id);
-                callback();
-            });
-            this.netplay.socket.on("connect_error", (error) => {
-                console.error("Socket.IO connection error:", error.message);
-                this.displayMessage("Failed to connect to server: " + error.message, 5000);
-            });
-            this.netplay.socket.on("users-updated", (users) => {
-                const currentPlayers = users || {};
-                const previousPlayerIds = Object.keys(this.netplay.previousPlayers);
-                const currentPlayerIds = Object.keys(currentPlayers);
-
-                // Find who joined
-                currentPlayerIds.forEach(id => {
-                    if (!previousPlayerIds.includes(id) && id !== this.netplay.playerID) {
-                        const playerName = currentPlayers[id].player_name || 'A player';
-                        this.displayMessage(`${playerName} has joined the room.`);
-                    }
-                });
-
-                // Find who left
-                previousPlayerIds.forEach(id => {
-                    if (!currentPlayerIds.includes(id)) {
-                        const playerName = this.netplay.previousPlayers[id].player_name || 'A player';
-                        this.displayMessage(`${playerName} has left the room.`);
-                    }
-                });
-
-                this.netplay.previousPlayers = currentPlayers;
-                
-                console.log("Users updated:", users);
-                this.netplay.players = users;
-                this.netplayUpdatePlayersTable();
-                if (this.netplay.owner) {
-                    console.log("Owner setting up WebRTC for updated users...");
-                    this.netplayInitWebRTCStream().then(() => {
-                        Object.keys(users).forEach(playerId => {
-                            if (playerId !== this.netplay.playerID) {
-                                const socketId = this.netplay.players[playerId].socketId;
-                                if (!socketId) {
-                                    console.error("No socketId for player", playerId, "- WebRTC may fail");
-                                    return;
-                                }
-                                const peerId = socketId;
-                                if (!this.netplay.peerConnections[peerId]) {
-                                    console.log("Creating peer connection for", peerId);
-                                    this.netplayCreatePeerConnection(peerId);
-                                }
-                            }
-                        });
-                    }).catch(error => console.error("Failed to initialize WebRTC stream in users-updated:", error));
-                }
-            });
-            this.netplay.socket.on("disconnect", () => this.netplayLeaveRoom());
-            this.netplay.socket.on("data-message", (data) => this.netplayDataMessage(data));
-            this.netplay.socket.on("webrtc-signal", async(data) => {
-                const { sender, offer, candidate, answer, requestRenegotiate } = data;
-                console.log(`Received WebRTC signal from ${sender}:`, {
-                    offer: !!offer,
-                    answer: !!answer,
-                    candidate: !!candidate,
-                    requestRenegotiate
-                });
-                if (!sender && !requestRenegotiate) {
-                    console.warn("Ignoring signal with no sender and no renegotiation request", data);
-                    return;
-                }
-                if (requestRenegotiate && !sender) {
-                    console.warn("Ignoring renegotiation request with undefined sender", data);
-                    this.netplay.socket.emit("webrtc-signal-error", {
-                        error: "Renegotiation request missing sender",
-                        data
-                    });
-                    return;
-                }
-                let pcData = sender ? this.netplay.peerConnections[sender] : null;
-
-                if (pcData && !pcData.iceCandidateQueue) {
-                    pcData.iceCandidateQueue = [];
-                }
-
-                if (!pcData && sender) {
-                    console.log("No existing peer connection for", sender, "- creating new one");
-                    pcData = {
-                        pc: this.netplayCreatePeerConnection(sender),
-                        dataChannel: null,
-                        iceCandidateQueue: []
-                    }; 
-                    this.netplay.peerConnections[sender] = pcData;
-                }
-                const pc = pcData.pc;
-                try {
-                    if (offer) {
-                        console.log("Processing offer from", sender);
-                        await pc.setRemoteDescription(new RTCSessionDescription(offer));
-
-                        if (pcData.iceCandidateQueue.length > 0) {
-                            console.log(`Processing ${pcData.iceCandidateQueue.length} queued ICE candidates.`);
-                            for (const queuedCandidate of pcData.iceCandidateQueue) {
-                                await pc.addIceCandidate(new RTCIceCandidate(queuedCandidate));
-                            }
-                            pcData.iceCandidateQueue = []; 
-                        }
-
-                        const answer = await pc.createAnswer();
-                        await pc.setLocalDescription(answer);
-                        console.log("Sending answer to", sender);
-                        this.netplay.socket.emit("webrtc-signal", {
-                            target: sender,
-                            answer: pc.localDescription
-                        });
-                    } else if (answer) {
-                        console.log("Processing answer from", sender);
-                        await pc.setRemoteDescription(new RTCSessionDescription(answer));
-
-                        if (pcData.iceCandidateQueue.length > 0) {
-                            console.log(`Processing ${pcData.iceCandidateQueue.length} queued ICE candidates.`);
-                            for (const queuedCandidate of pcData.iceCandidateQueue) {
-                                await pc.addIceCandidate(new RTCIceCandidate(queuedCandidate));
-                            }
-                            pcData.iceCandidateQueue = []; 
-                        }
-
-                    } else if (candidate) {
-                        if (pc.remoteDescription) {
-                            console.log("Adding ICE candidate from", sender);
-                            await pc.addIceCandidate(new RTCIceCandidate(candidate));
-                        } else {
-                            console.log("Remote description not set. Queueing ICE candidate from", sender);
-                            pcData.iceCandidateQueue.push(candidate);
-                        }
-                    } else if (requestRenegotiate && this.netplay.owner) {
-                        console.log("Owner handling renegotiation request...");
-                        Object.keys(this.netplay.peerConnections).forEach(peerId => {
-                            if (peerId && this.netplay.peerConnections[peerId]) {
-                                const peerConn = this.netplay.peerConnections[peerId].pc;
-                                console.log("Closing and recreating peer connection for", peerId);
-                                peerConn.close();
-                                delete this.netplay.peerConnections[peerId];
-                                this.netplayCreatePeerConnection(peerId);
-                            }
-                        });
-                    }
-                } catch (error) {
-                    console.error("WebRTC signaling error:", error);
-                }
-            });
-        };
-
-        this.netplayUpdatePlayersTable = () => {
-            if (!this.netplay.playerTable) {
-                console.error("netplay.playerTable is undefined");
-                return;
-            }
-            const table = this.netplay.playerTable;
-            table.innerHTML = "";
-
-            const playerCount = Object.keys(this.netplay.players).length;
-            const maxPlayers = this.netplay.maxPlayers || "?";
-
-            const addToTable = (playerNumber, playerName, statusText) => {
-                const row = this.createElement("tr");
-                const addCell = (text) => {
-                    const item = this.createElement("td");
-                    item.innerText = text;
-                    row.appendChild(item);
-                    return item;
-                };
-                addCell(playerNumber).style.width = "80px";
-                addCell(playerName);
-                addCell(statusText).style.width = "80px";
-                table.appendChild(row);
-            };
-
-            let i = 0;
-            for (const k in this.netplay.players) {
-                const playerNumber = i + 1;
-                const playerName = this.netplay.players[k].player_name || "Unknown";
-                const statusText = (i === 0) ? `${playerCount}/${maxPlayers}` : "";
-                addToTable(playerNumber, playerName, statusText);
-                i++;
-            }
-        };
-
-        this.netplayOpenRoom = (roomName, maxPlayers, password) => {
-            const sessionid = guidGenerator();
-            this.netplay.playerID = guidGenerator();
-            this.netplay.players = {};
-            this.netplay.maxPlayers = maxPlayers;
-            this.netplay.extra = {
-                domain: window.location.host,
-                game_id: this.config.gameId,
-                room_name: roomName,
-                player_name: this.netplay.name,
-                userid: this.netplay.playerID,
-                sessionid: sessionid
-            };
-            this.netplay.players[this.netplay.playerID] = this.netplay.extra;
-            this.netplay.owner = true;
-            this.netplayStartSocketIO(() => {
-                this.netplay.socket.emit("open-room", {
-                    extra: this.netplay.extra,
-                    maxPlayers: maxPlayers,
-                    password: password
-                }, (error) => {
-                    if (error) {
-                        console.error("Error opening room:", error);
-                        this.displayMessage("Failed to create room: " + error, 5000);
-                        return;
-                    }
-                    this.netplayRoomJoined(true, roomName, password, sessionid);
-                });
-            });
-        };
-
-        this.netplayJoinRoom = (sessionid, roomName, maxPlayers, password) => {
-            this.netplay.playerID = guidGenerator();
-            this.netplay.players = {};
-            this.netplay.maxPlayers = maxPlayers;
-            this.netplay.extra = {
-                domain: window.location.host,
-                game_id: this.config.gameId,
-                room_name: roomName,
-                player_name: this.netplay.name,
-                userid: this.netplay.playerID,
-                sessionid: sessionid
-            };
-            this.netplay.players[this.netplay.playerID] = this.netplay.extra;
-            this.netplay.owner = false;
-            this.netplayStartSocketIO(() => {
-                this.netplay.socket.emit("join-room", {
-                    extra: this.netplay.extra,
-                    password: password 
-                }, (error, users) => {
-                    if (error) {
-                        console.error("Error joining room:", error);
-                        alert("Error joining room: " + error);
-                        return;
-                    }
-                    this.netplay.players = users;
-                    this.netplayRoomJoined(false, roomName, password, sessionid);
-                });
-            });
-        };
-
-        this.netplayRoomJoined = (isOwner, roomName, password, roomId) => {
-            EJS_INSTANCE.updateNetplayUI(true);
-
-            if (!this.netplay || !this.canvas || !this.elements || !this.elements.parent) {
-                console.error("netplayRoomJoined: Required objects are undefined", {
-                    netplay: !!this.netplay,
-                    canvas: !!this.canvas,
-                    elements: !!this.elements,
-                    parent: !!(this.elements && this.elements.parent)
-                });
-                this.displayMessage("Failed to initialize netplay room", 5000);
-                return;
-            }
-
-            if (!this.netplayCanvas) {
-                this.netplayCanvas = this.createElement("canvas");
-                this.netplayCanvas.classList.add("ejs_canvas");
-                this.netplayCanvas.style.display = "none";
-                this.netplayCanvas.style.position = "absolute";
-                this.netplayCanvas.style.top = "0";
-                this.netplayCanvas.style.left = "0";
-                this.netplayCanvas.style.zIndex = "5";
-                this.netplayCanvas.style.objectFit = "contain";
-                this.netplayCanvas.style.width = "100%";
-                this.netplayCanvas.style.height = "100%";
-                this.netplayCanvas.style.objectPosition = "top";
-            }
-
-            this.isNetplay = true;
-            this.netplay.inputs = {};
-            this.netplay.owner = isOwner;
-            console.log("Room joined with extra:", this.netplay.extra);
-
-            if (this.netplay.roomNameElem) {
-                this.netplay.roomNameElem.innerText = roomName;
-            }
-            if (this.netplay.tabs && this.netplay.tabs[0] && this.netplay.tabs[1]) {
-                this.netplay.tabs[0].style.display = "none";
-                this.netplay.tabs[1].style.display = "";
-            }
-            if (this.netplay.passwordElem) {
-                if (password) {
-                    this.netplay.passwordElem.style.display = "";
-                    this.netplay.passwordElem.innerText = this.localization("Password") + ": " + password;
-                } else {
-                    this.netplay.passwordElem.style.display = "none";
-                }
-            }
-            if (this.netplay.createButton) {
-                this.netplay.createButton.innerText = this.localization("Leave Room");
-            }
-            this.netplayUpdatePlayersTable();
-
-            this.elements.parent.style.width = "100vw";
-            this.elements.parent.style.height = "100vh";
-            this.elements.parent.style.position = "relative";
-
-            const { width: nativeWidth, height: nativeHeight } = this.getNativeResolution() || {
-                width: 700,
-                height: 720
-            };
-
-            if (!this.netplay.owner) {
-                this.canvas.style.display = "none";
-                if (!this.netplayCanvas.parentElement) {
-                    this.elements.parent.appendChild(this.netplayCanvas);
-                    console.log("Appended netplayCanvas to this.elements.parent:", this.elements.parent);
-                }
-                this.netplayCanvas.width = nativeWidth;
-                this.netplayCanvas.height = nativeHeight;
-                Object.assign(this.netplayCanvas.style, {
-                    position: 'absolute', 
-                    top: '0',
-                    left: '0',
-                    width: '100%',
-                    height: 'auto',
-                    maxHeight: '100%',
-                    zIndex: '5',
-                    display: 'block',
-                    pointerEvents: 'none'
-                });
-
-                const parentStyles = window.getComputedStyle(this.elements.parent);
-                console.log("Parent container styles:", {
-                    display: parentStyles.display,
-                    visibility: parentStyles.visibility,
-                    opacity: parentStyles.opacity,
-                    position: parentStyles.position,
-                    zIndex: parentStyles.zIndex
-                });
-
-                if (this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
-                    this.netplay.oldStyles = [this.elements.bottomBar.cheat[0].style.display];
-                    this.elements.bottomBar.cheat[0].style.display = "none";
-                }
-                if (this.gameManager && this.gameManager.resetCheat) {
-                    this.gameManager.resetCheat();
-                }
-                console.log("Player 2 joined, awaiting WebRTC stream...");
-                this.elements.parent.focus();
-
-                if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                    const originalSimulateInput = this.gameManager.functions.simulateInput;
-                    this.gameManager.functions.simulateInput = (player, index, value) => {
-                        const playerIndex = this.netplayGetUserIndex();
-                        console.log("Player 2 input:", {
-                            player,
-                            index,
-                            value,
-                            playerIndex
-                        });
-                       Object.values(this.netplay.peerConnections).forEach((pcData) => {
-                        if (
-                            pcData.pc &&
-                            pcData.pc.connectionState === "connected" &&
-                            pcData.dataChannel && 
-                            pcData.dataChannel.readyState === "open"
-                        ) {
-                        pcData.dataChannel.send(
-                        JSON.stringify({
-                            player: playerIndex,
-                            index,
-                            value,
-                                }));
-                            }
-                        });
-                    };
-                    this.netplayLeaveRoom = (originalLeaveRoom => {
-                        return function () {
-                            originalLeaveRoom.call(this);
-                            this.gameManager.functions.simulateInput = originalSimulateInput;
-                            if (this.netplay.video && this.netplay.video.parentElement) {
-                                this.netplay.video.parentElement.removeChild(this.netplay.video);
-                            }
-                        };
-                    })(this.netplayLeaveRoom);
-                } else {
-                    console.error("Cannot override simulateInput: gameManager.functions.simulateInput is undefined");
-                }
-
-                if (this.isMobile && this.gamepadElement) {
-                    const newGamepad = this.gamepadElement.cloneNode(true);
-                    this.gamepadElement.parentNode.replaceChild(newGamepad, this.gamepadElement);
-                    this.gamepadElement = newGamepad;
-                    Object.assign(this.gamepadElement.style, {
-                        zIndex: "1000",
-                        position: "absolute",
-                        pointerEvents: "auto"
-                    });
-
-                    this.gamepadElement.addEventListener("touchstart", (e) => {
-                        e.preventDefault();
-                        const button = e.target.closest('[data-button]');
-                        if (button && this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                            this.gameManager.functions.simulateInput(0, button.dataset.button, 1);
-                        }
-                    }, {
-                        passive: false
-                    });
-
-                    this.gamepadElement.addEventListener("touchend", (e) => {
-                        e.preventDefault();
-                        const button = e.target.closest('[data-button]');
-                        if (button && this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                            this.gameManager.functions.simulateInput(0, button.dataset.button, 0);
-                        }
-                    }, {
-                        passive: false
-                    });
-
-                    this.gamepadElement.focus();
-                }
-                const updateGamepadStyles = () => {
-                    if (this.isMobile && this.gamepadElement) {
-                        Object.assign(this.gamepadElement.style, {
-                            zIndex: "1000",
-                            position: "absolute",
-                            pointerEvents: "auto"
-                        });
-                        this.netplayCanvas.style.pointerEvents = "none";
-                        this.netplayCanvas.width = nativeWidth;
-                        this.netplayCanvas.height = nativeHeight;
-                        this.netplayCanvas.style.width = "100%";
-                        this.netplayCanvas.style.height = "100%";
-                    }
-                };
-                document.addEventListener("fullscreenchange", updateGamepadStyles);
-                document.addEventListener("webkitfullscreenchange", updateGamepadStyles);
-
-                setTimeout(() => {
-                    if (!this.netplay.webRtcReady) {
-                        console.error("WebRTC connection not established after timeout");
-                        this.displayMessage("Failed to connect to Player 1. Please check your network and try again.", 5000);
-                        if (this.interactionOverlay) {
-                            this.interactionOverlay.remove();
-                            this.interactionOverlay = null;
-                        }
-                        this.netplayLeaveRoom();
-                    }
-                }, 10000);
-            } else {
-                if (this.canvas) {
-                    this.canvas.width = nativeWidth;
-                    this.canvas.height = nativeHeight;
-                    this.canvas.style.display = "block";
-                    this.canvas.style.objectFit = "contain";
-                }
-                if (this.netplayCanvas) {
-                    this.netplayCanvas.style.display = "none";
-                }
-                if (this.netplay.videoContainer) {
-                    this.netplay.videoContainer.style.display = "none";
-                }
-                if (this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
-                    this.netplay.oldStyles = [this.elements.bottomBar.cheat[0].style.display];
-                }
-
-                if (this.netplay.owner && this.Module && this.Module.setCanvasSize) {
-                    this.Module.setCanvasSize(nativeWidth, nativeHeight);
-                }
-
-                this.netplay.lockedAspectRatio = nativeWidth / nativeHeight;
-                const resizeCanvasWithAspect = () => {
-                    const aspect = this.netplay.lockedAspectRatio;
-                    const vw = window.innerWidth;
-                    const vh = window.innerHeight;
-                    let newWidth,
-                    newHeight;
-
-                    if (vw / vh > aspect) {
-                        newHeight = vh;
-                        newWidth = vh * aspect;
-                    } else {
-                        newWidth = vw;
-                        newHeight = vw / aspect;
-                    }
-
-                    if (this.canvas) {
-                        Object.assign(this.canvas.style, {
-                            width: `${newWidth}px`,
-                            height: `${newHeight}px`,
-                            display: "block",
-                            objectFit: "contain"
-                        });
-
-                        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
-
-                        if (isFullscreen) {
-                            Object.assign(this.canvas.style, {
-                                position: "absolute",
-                                top: "0",
-                                left: "50%",
-                                transform: "translateX(-50%)"
-                            });
-                        } else {
-                            Object.assign(this.canvas.style, {
-                                position: "",
-                                left: "",
-                                top: "",
-                                transform: ""
-                            });
-                        }
-                    }
-                };
-                this._netplayResizeCanvas = resizeCanvasWithAspect;
-                window.addEventListener("resize", resizeCanvasWithAspect);
-                document.addEventListener("fullscreenchange", resizeCanvasWithAspect);
-                document.addEventListener("webkitfullscreenchange", resizeCanvasWithAspect);
-                resizeCanvasWithAspect();
-                window.dispatchEvent(new Event('resize'));
-            }
-        };
-
-        this.netplayLeaveRoom = () => {
-            EJS_INSTANCE.updateNetplayUI(false);
-
-            console.log("Leaving netplay room...");
-
-            if (this.netplay.owner && this.netplaySendMessage) {
-                this.netplaySendMessage({
-                    type: "host-left"
-                });
-            }
-
-            if (this.netplay.socket && this.netplay.socket.connected) {
-                this.netplay.socket.emit('leave-room');
-            }
-
-            if (this.netplay.socket) {
-                this.netplay.socket.disconnect();
-                this.netplay.socket = null;
-            }
-
-            if (this.netplay.localStream) {
-                this.netplay.localStream.getTracks().forEach(track => track.stop());
-                this.netplay.localStream = null;
-            }
-
-            if (this.netplay.peerConnections) {
-                Object.values(this.netplay.peerConnections).forEach(pcData => {
-                    if (pcData.pc)
-                        pcData.pc.close();
-                });
-                this.netplay.peerConnections = {};
-            }
-
-            if (this.netplayCanvas && this.netplayCanvas.parentElement) {
-                this.netplayCanvas.parentElement.removeChild(this.netplayCanvas);
-                this.netplayCanvas.style.display = "none";
-            }
-            if (this.netplay.video && this.netplay.video.parentElement) {
-                this.netplay.video.parentElement.removeChild(this.netplay.video);
-                this.netplay.video.srcObject = null;
-                this.netplay.video = null;
-            }
-            if (this.netplay.videoContainer) {
-                this.netplay.videoContainer.style.display = "none";
-            }
-
-            if (this.canvas) {
-                Object.assign(this.canvas.style, {
-                    display: "block",
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "contain",
-                    position: "absolute",
-                    top: "0",
-                    left: "0",
-                    transform: "none"
-                });
-            }
-
-            if (this.netplay.createButton) {
-                this.netplay.createButton.innerText = this.localization("Create Room");
-            }
-            if (this.netplay.tabs) {
-                this.netplay.tabs[0].style.display = "";
-                this.netplay.tabs[1].style.display = "none";
-            }
-            if (this.netplay.roomNameElem) {
-                this.netplay.roomNameElem.innerText = "";
-            }
-            if (this.netplay.passwordElem) {
-                this.netplay.passwordElem.style.display = "none";
-                this.netplay.passwordElem.innerText = "";
-            }
-            if (this.netplay.playerTable) {
-                this.netplay.playerTable.innerHTML = "";
-            }
-
-            if (this.netplay.oldStyles && this.elements.bottomBar && this.elements.bottomBar.cheat && this.elements.bottomBar.cheat[0]) {
-                this.elements.bottomBar.cheat[0].style.display = this.netplay.oldStyles[0] || "";
-            }
-
-            if (this._netplayResizeCanvas) {
-                window.removeEventListener("resize", this._netplayResizeCanvas);
-                document.removeEventListener("fullscreenchange", this._netplayResizeCanvas);
-                document.removeEventListener("webkitfullscreenchange", this._netplayResizeCanvas);
-                this._netplayResizeCanvas = null;
-            }
-
-            // Restore the original input function when leaving the room
-            if (this.netplay.originalSimulateInput && this.gameManager && this.gameManager.functions) {
-                this.gameManager.functions.simulateInput = this.netplay.originalSimulateInput;
-                this.netplay.originalSimulateInput = null;
-            }
-
-            this.isNetplay = false;
-            this.netplay.owner = false;
-            this.netplay.players = {};
-            this.netplay.playerID = null;
-            this.netplay.inputs = {};
-            this.netplay.inputsData = {};
-            this.netplay.webRtcReady = false;
-            this.netplay.lockedAspectRatio = null;
-            this.player = 1;
-
-            if (this.originalControls) {
-                this.controls = JSON.parse(JSON.stringify(this.originalControls));
-                this.originalControls = null;
-            }
-
-            if (this.isMobile && this.gamepadElement) {
-                Object.assign(this.gamepadElement.style, {
-                    zIndex: "1000",
-                    position: "absolute",
-                    pointerEvents: "auto"
-                });
-            }
-
-            if (this.gameManager && this.gameManager.restart) {
-                this.gameManager.restart();
-            } else if (this.startGame) {
-                this.startGame();
-            }
-
-            this.displayMessage("Left the room", 3000);
-        };
-
-        this.netplayDataMessage = function (data) {
-            if (data["sync-control"]) {
-                data["sync-control"].forEach((value) => {
-                    let inFrame = parseInt(value.frame);
-                    if (!value.connected_input || value.connected_input[0] < 0)
-                        return;
-                    this.netplay.inputsData[inFrame] = this.netplay.inputsData[inFrame] || [];
-                    this.netplay.inputsData[inFrame].push(value);
-                    this.netplaySendMessage({
-                        frameAck: inFrame
-                    });
-                    if (this.netplay.owner) {
-                        console.log("Owner processing input:", value.connected_input);
-                        if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                            this.gameManager.functions.simulateInput(
-                                value.connected_input[0],
-                                value.connected_input[1],
-                                value.connected_input[2]);
-                        } else {
-                            console.error("Cannot process input: gameManager.functions.simulateInput is undefined");
-                        }
-                    }
-                });
-            }
-            if (data.frameData) {
-                console.log("Received frame data on Player 2:", data.frameData);
-                if (!this.canvas) {
-                    console.error("Canvas unavailable for frame data processing");
-                    return;
-                }
-                const ctx = this.canvas.getContext('2d');
-                if (!ctx) {
-                    console.error("Canvas context unavailable for frame data processing");
-                    return;
-                }
-                if (data.frameData.pixelSample.every(v => v === 0)) {
-                    console.warn("Frame data indicates black screen, attempting reconstruction");
-                    if (this.reconstructFrame) {
-                        this.reconstructFrame(data.frameData.inputs);
-                    } else {
-                        console.error("reconstructFrame is undefined");
-                    }
-                } else {
-                    console.log("Frame data indicates content, relying on WebRTC stream");
-                }
-            }
-        };
-
-        this.netplaySendMessage = (data) => {
-            if (this.netplay.socket && this.netplay.socket.connected) {
-                this.netplay.socket.emit("data-message", data);
-                console.log("Sent data message:", data);
-            } else {
-                console.error("Cannot send message: Socket is not connected");
-            }
-        };
-
-        this.netplayReset = () => {
-            this.netplay.init_frame = this.gameManager ? this.gameManager.getFrameNum() : 0;
-            this.netplay.currentFrame = 0;
-            this.netplay.inputsData = {};
-            this.netplay.syncing = false;
-        };
-
-        this.netplayInitModulePostMainLoop = () => {
-            if (this.isNetplay && !this.netplay.owner) {
-                return; 
-            }
-
-            this.netplay.currentFrame = parseInt(this.gameManager ? this.gameManager.getFrameNum() : 0) - (this.netplay.init_frame || 0);
-            if (!this.isNetplay)
-                return;
-
-            if (this.netplay.owner) {
-                let to_send = [];
-                let i = this.netplay.currentFrame;
-                if (this.netplay.inputsData[i]) {
-                    this.netplay.inputsData[i].forEach((value) => {
-                        if (this.gameManager && this.gameManager.functions && this.gameManager.functions.simulateInput) {
-                            this.gameManager.functions.simulateInput(
-                                value.connected_input[0],
-                                value.connected_input[1],
-                                value.connected_input[2]);
-                        }
-                        value.frame = this.netplay.currentFrame + 20;
-                        to_send.push(value);
-                    });
-                    this.netplaySendMessage({
-                        "sync-control": to_send
-                    });
-                    delete this.netplay.inputsData[i];
-                }
-            }
-        };
-
-        this.netplay.updateList = {
-            start: this.netplayUpdateListStart,
-            stop: this.netplayUpdateListStop
-        };
-        this.netplay.showOpenRoomDialog = this.netplayShowOpenRoomDialog;
-        this.netplay.openRoom = this.netplayOpenRoom;
-        this.netplay.joinRoom = this.netplayJoinRoom;
-        this.netplay.leaveRoom = this.netplayLeaveRoom;
-        this.netplay.sendMessage = this.netplaySendMessage;
-        this.netplay.updatePlayersTable = this.netplayUpdatePlayersTable;
-        this.netplay.createPeerConnection = this.netplayCreatePeerConnection;
-        this.netplay.initWebRTCStream = this.netplayInitWebRTCStream;
-        this.netplay.roomJoined = this.netplayRoomJoined;
-
-        this.netplay = this.netplay || {};
-        this.netplay.init_frame = 0;
-        this.netplay.currentFrame = 0;
-        this.netplay.inputsData = {};
-        this.netplay.syncing = false;
-        this.netplay.ready = 0;
-        this.netplay.webRtcReady = false;
-        this.netplay.peerConnections = this.netplay.peerConnections || {};
-
-        this.netplay.url = this.config.netplayUrl || window.EJS_netplayUrl;
-
-        if (!this.netplay.url) {
-            if (this.debug) console.error("netplayUrl is not defined. Please set it in EJS_config or as a global EJS_netplayUrl variable.");
-            this.displayMessage("Network configuration error: netplay URL is not set.", 5000);
-            return; 
-        }
-
-        while (this.netplay.url.endsWith("/")) {
-            this.netplay.url = this.netplay.url.substring(0, this.netplay.url.length - 1);
-        }
-        this.netplay.current_frame = 0;
-
-        if (this.gameManager && this.gameManager.Module) {
-            this.gameManager.Module.postMainLoop = this.netplayInitModulePostMainLoop.bind(this);
-        } else if (this.Module) {
-            this.Module.postMainLoop = this.netplayInitModulePostMainLoop.bind(this);
-        } else if (this.debug) {
-            console.warn("Module is undefined. postMainLoop will not be set.");
-        }
-    }
+    }   
     createCheatsMenu() {
-        const body = this.createPopup("Cheats", {
-            "Add Cheat": () => {
-                const popups = this.createSubPopup();
-                this.cheatMenu.appendChild(popups[0]);
-                popups[1].classList.add("ejs_cheat_parent");
-                popups[1].style.width = "100%";
-                const popup = popups[1];
-                const header = this.createElement("div");
-                header.classList.add("ejs_cheat_header");
-                const title = this.createElement("h2");
-                title.innerText = this.localization("Add Cheat Code");
-                title.classList.add("ejs_cheat_heading");
-                const close = this.createElement("button");
-                close.classList.add("ejs_cheat_close");
-                header.appendChild(title);
-                header.appendChild(close);
-                popup.appendChild(header);
-                this.addEventListener(close, "click", (e) => {
-                    popups[0].remove();
-                })
-
-                let cheatDB = {};
-                const systemKey = this.getCore(true);
-                const cleanRomTags = (name) => {
-                    return name.replace(/\([^)]+\)/g, '').replace(/\[[^\]]+\]/g, '').trim();
-                };
-
-                const normalizeAndConvertNumerals = (name) => {
-                    let normalized = name.toLowerCase();
-                    normalized = normalized.replace(/ iv/g, ' 4');
-                    normalized = normalized.replace(/ iii/g, ' 3');
-                    normalized = normalized.replace(/ ii/g, ' 2');
-                    normalized = normalized.replace(/ v/g, ' 5');
-                    normalized = normalized.replace(/ i/g, ' 1');
-
-                    return normalized.replace(/[^a-z0-9]/g, '');
-                };
-
-                const createSelect = (labelText) => {
-                    const div = this.createElement("div");
-                    const label = this.createElement("strong");
-                    label.innerText = this.localization(labelText);
-                    div.appendChild(label);
-                    div.appendChild(this.createElement("br"));
-                    const select = this.createElement("select");
-                    select.style.width = "100%";
-                    select.classList.add("ejs_cheat_code");
-                    div.appendChild(select);
-                    return {
-                        container: div,
-                        select: select
-                    };
-                };
-
-                const importDiv = this.createElement("div");
-                importDiv.classList.add("ejs_cheat_main");
-                importDiv.style.borderBottom = "1px solid #555";
-                importDiv.style.paddingBottom = "10px";
-                importDiv.style.display = 'none';
-
-                const importTitle = this.createElement("h3");
-                importTitle.innerText = this.localization("Import from Database") + (systemKey ? ` (${systemKey.toUpperCase()})` : "");
-                importTitle.style.marginTop = "0px";
-                importDiv.appendChild(importTitle);
-
-                const gameSelectUI = createSelect("Game");
-                const cheatSelectUI = createSelect("Cheat");
-
-                importDiv.appendChild(gameSelectUI.container);
-                importDiv.appendChild(cheatSelectUI.container);
-
-                popup.appendChild(importDiv);
-
-                const main = this.createElement("div");
-                main.classList.add("ejs_cheat_main");
-                const header3 = this.createElement("strong");
-                header3.innerText = this.localization("Manual Entry - Code");
-                main.appendChild(header3);
-                main.appendChild(this.createElement("br"));
-
-                const manualCodeTextarea = this.createElement("textarea");
-                manualCodeTextarea.classList.add("ejs_cheat_code");
-                manualCodeTextarea.style.width = "100%";
-                manualCodeTextarea.style.height = "80px";
-                main.appendChild(manualCodeTextarea);
-                main.appendChild(this.createElement("br"));
-
-                const header2 = this.createElement("strong");
-                header2.innerText = this.localization("Manual Entry - Description");
-                main.appendChild(header2);
-                main.appendChild(this.createElement("br"));
-
-                const manualDescriptionInput = this.createElement("input");
-                manualDescriptionInput.type = "text";
-                manualDescriptionInput.classList.add("ejs_cheat_code");
-                manualDescriptionInput.style.width = "100%";
-                main.appendChild(manualDescriptionInput);
-                main.appendChild(this.createElement("br"));
-                popup.appendChild(main);
-
-
-                const loadCheatList = (gameName) => {
-                    cheatSelectUI.select.innerHTML = "";
-
-                    const defaultOpt = this.createElement("option");
-                    defaultOpt.value = "";
-                    defaultOpt.innerText = "--- " + this.localization("Select a Cheat") + " ---";
-                    cheatSelectUI.select.appendChild(defaultOpt);
-
-                    manualCodeTextarea.value = "";
-                    manualDescriptionInput.value = "";
-
-                    if (!gameName || !cheatDB[gameName]) return;
-
-                    const cheats = cheatDB[gameName];
-                    cheats.forEach(cheat => {
-                        const opt = this.createElement("option");
-                        opt.value = cheat.desc;
-                        opt.innerText = cheat.desc;
-                        cheatSelectUI.select.appendChild(opt);
+        const body = this.createPopup(
+            "Cheats",
+            {
+                "Add Cheat": () => {
+                    const popups = this.createSubPopup();
+                    this.cheatMenu.appendChild(popups[0]);
+                    popups[1].classList.add("ejs_cheat_parent");
+                    popups[1].style.width = "100%";
+                    const popup = popups[1];
+                    const header = this.createElement("div");
+                    header.classList.add("ejs_cheat_header");
+                    const title = this.createElement("h2");
+                    title.innerText = this.localization("Add Cheat Code");
+                    title.classList.add("ejs_cheat_heading");
+                    const close = this.createElement("button");
+                    close.classList.add("ejs_cheat_close");
+                    header.appendChild(title);
+                    header.appendChild(close);
+                    popup.appendChild(header);
+                    this.addEventListener(close, "click", (e) => {
+                        popups[0].remove();
                     });
 
-                    if (cheats.length > 0) {
-                        cheatSelectUI.select.value = cheats[0].desc;
-                        manualCodeTextarea.value = cheats[0].code;
-                        manualDescriptionInput.value = cheats[0].desc;
-                    }
-                };
+                    let cheatDB = {};
+                    const systemKey = this.getCore(true);
+                    const cleanRomTags = (name) => {
+                        return name
+                            .replace(/\([^)]+\)/g, "")
+                            .replace(/\[[^\]]+\]/g, "")
+                            .trim();
+                    };
 
-                const loadCheatDatabase = async (system) => {
-                    gameSelectUI.select.innerHTML = "";
-                    cheatSelectUI.select.innerHTML = "";
+                    const normalizeAndConvertNumerals = (name) => {
+                        let normalized = name.toLowerCase();
+                        normalized = normalized.replace(/ iv/g, " 4");
+                        normalized = normalized.replace(/ iii/g, " 3");
+                        normalized = normalized.replace(/ ii/g, " 2");
+                        normalized = normalized.replace(/ v/g, " 5");
+                        normalized = normalized.replace(/ i/g, " 1");
 
-                    const defaultGameOpt = this.createElement("option");
-                    defaultGameOpt.value = "";
-                    defaultGameOpt.innerText = "--- " + this.localization("Select a Game") + " ---";
-                    gameSelectUI.select.appendChild(defaultGameOpt);
+                        return normalized.replace(/[^a-z0-9]/g, "");
+                    };
 
-                    if (!this.config.cheatPath) {
-                        if (this.debug) console.error("Cheat file load error: EJS_cheatPath is not configured.");
-                        importDiv.style.display = 'none';
-                        return;
-                    }
+                    const createSelect = (labelText) => {
+                        const div = this.createElement("div");
+                        const label = this.createElement("strong");
+                        label.innerText = this.localization(labelText);
+                        div.appendChild(label);
+                        div.appendChild(this.createElement("br"));
+                        const select = this.createElement("select");
+                        select.style.width = "100%";
+                        select.classList.add("ejs_cheat_code");
+                        div.appendChild(select);
+                        return {
+                            container: div,
+                            select: select,
+                        };
+                    };
 
-                    const url = this.config.cheatPath + system + ".json";
+                    const importDiv = this.createElement("div");
+                    importDiv.classList.add("ejs_cheat_main");
+                    importDiv.style.borderBottom = "1px solid #555";
+                    importDiv.style.paddingBottom = "10px";
+                    importDiv.style.display = "none";
 
-                    try {
-                        const res = await this.downloadFile(url, null, true, {
-                            responseType: "text",
-                            method: "GET"
-                        });
+                    const importTitle = this.createElement("h3");
+                    importTitle.innerText =
+                        this.localization("Import from Database") +
+                        (systemKey ? ` (${systemKey.toUpperCase()})` : "");
+                    importTitle.style.marginTop = "0px";
+                    importDiv.appendChild(importTitle);
 
-                        let data;
-                        if (res === -1) {
-                            throw new Error("Cheat JSON not found. Create a file at: " + url);
-                        } else {
-                            data = res.data;
-                        }
+                    const gameSelectUI = createSelect("Game");
+                    const cheatSelectUI = createSelect("Cheat");
 
-                        cheatDB = data;
-                        importDiv.style.display = '';
+                    importDiv.appendChild(gameSelectUI.container);
+                    importDiv.appendChild(cheatSelectUI.container);
 
-                        const gameNames = Object.keys(cheatDB).sort();
-                        gameNames.forEach(name => {
-                            const opt = this.createElement("option");
-                            opt.value = name;
-                            opt.innerText = name;
-                            gameSelectUI.select.appendChild(opt);
-                        });
+                    popup.appendChild(importDiv);
 
-                        let currentFileBaseName = this.getBaseFileName(true);
-                        currentFileBaseName = currentFileBaseName.replace(/\.[^/.]+$/, "");
-                        const cleanedFileName = cleanRomTags(currentFileBaseName);
-                        const normalizedFile = normalizeAndConvertNumerals(cleanedFileName);
-                        let matchedGameName = null;
-                        if (this.config.gameName && gameNames.includes(this.config.gameName)) {
-                            matchedGameName = this.config.gameName;
-                        }
+                    const main = this.createElement("div");
+                    main.classList.add("ejs_cheat_main");
+                    const header3 = this.createElement("strong");
+                    header3.innerText = this.localization(
+                        "Manual Entry - Code",
+                    );
+                    main.appendChild(header3);
+                    main.appendChild(this.createElement("br"));
 
-                        if (!matchedGameName) {
-                            for (const name of gameNames) {
-                                if (normalizeAndConvertNumerals(name) === normalizedFile) {
-                                    matchedGameName = name;
-                                    break;
-                                }
-                            }
-                        }
+                    const manualCodeTextarea = this.createElement("textarea");
+                    manualCodeTextarea.classList.add("ejs_cheat_code");
+                    manualCodeTextarea.style.width = "100%";
+                    manualCodeTextarea.style.height = "80px";
+                    main.appendChild(manualCodeTextarea);
+                    main.appendChild(this.createElement("br"));
 
-                        if (matchedGameName) {
-                            gameSelectUI.select.value = matchedGameName;
-                        }
+                    const header2 = this.createElement("strong");
+                    header2.innerText = this.localization(
+                        "Manual Entry - Description",
+                    );
+                    main.appendChild(header2);
+                    main.appendChild(this.createElement("br"));
 
-                        loadCheatList(gameSelectUI.select.value);
+                    const manualDescriptionInput = this.createElement("input");
+                    manualDescriptionInput.type = "text";
+                    manualDescriptionInput.classList.add("ejs_cheat_code");
+                    manualDescriptionInput.style.width = "100%";
+                    main.appendChild(manualDescriptionInput);
+                    main.appendChild(this.createElement("br"));
+                    popup.appendChild(main);
 
-                    } catch (e) {
-                        if (this.debug) console.error("Cheat file load error:", e.message);
-                        importDiv.style.display = 'none';
-                        cheatDB = {};
-                        loadCheatList(null);
-                    }
-                };
+                    const loadCheatList = (gameName) => {
+                        cheatSelectUI.select.innerHTML = "";
 
-                gameSelectUI.select.addEventListener("change", () => {
-                    loadCheatList(gameSelectUI.select.value);
-                });
+                        const defaultOpt = this.createElement("option");
+                        defaultOpt.value = "";
+                        defaultOpt.innerText =
+                            "--- " +
+                            this.localization("Select a Cheat") +
+                            " ---";
+                        cheatSelectUI.select.appendChild(defaultOpt);
 
-                cheatSelectUI.select.addEventListener("change", () => {
-                    const game = gameSelectUI.select.value;
-                    const cheatDesc = cheatSelectUI.select.value;
-
-                    if (!game || !cheatDesc) {
                         manualCodeTextarea.value = "";
                         manualDescriptionInput.value = "";
-                        return;
+
+                        if (!gameName || !cheatDB[gameName]) return;
+
+                        const cheats = cheatDB[gameName];
+                        cheats.forEach((cheat) => {
+                            const opt = this.createElement("option");
+                            opt.value = cheat.desc;
+                            opt.innerText = cheat.desc;
+                            cheatSelectUI.select.appendChild(opt);
+                        });
+
+                        if (cheats.length > 0) {
+                            cheatSelectUI.select.value = cheats[0].desc;
+                            manualCodeTextarea.value = cheats[0].code;
+                            manualDescriptionInput.value = cheats[0].desc;
+                        }
+                    };
+
+                    const loadCheatDatabase = async (system) => {
+                        gameSelectUI.select.innerHTML = "";
+                        cheatSelectUI.select.innerHTML = "";
+
+                        const defaultGameOpt = this.createElement("option");
+                        defaultGameOpt.value = "";
+                        defaultGameOpt.innerText =
+                            "--- " +
+                            this.localization("Select a Game") +
+                            " ---";
+                        gameSelectUI.select.appendChild(defaultGameOpt);
+
+                        if (!this.config.cheatPath) {
+                            if (this.debug)
+                                console.error(
+                                    "Cheat file load error: EJS_cheatPath is not configured.",
+                                );
+                            importDiv.style.display = "none";
+                            return;
+                        }
+
+                        const globalUrl = this.config.cheatPath + "cheats.json";
+                        const systemUrl =
+                            this.config.cheatPath + system + ".json";
+
+                        try {
+                            let response = await fetch(globalUrl);
+                            if (!response.ok) {
+                                if (this.debug)
+                                    console.log(
+                                        `[Cheats] cheats.json not found. Trying ${system}.json fallback...`,
+                                    );
+                                response = await fetch(systemUrl);
+                                if (!response.ok) {
+                                    throw new Error(
+                                        `Cheat JSON not found at ${globalUrl} or ${systemUrl}`,
+                                    );
+                                }
+                            }
+
+                            let data = await response.json();
+                            if (
+                                data &&
+                                data.data &&
+                                typeof data.data === "object" &&
+                                !Array.isArray(data.data)
+                            ) {
+                                data = data.data;
+                            }
+                            if (data && data.systems && data.systems[system]) {
+                                cheatDB = data.systems[system];
+                            } else if (data && data[system]) {
+                                cheatDB = data[system];
+                            } else {
+                                cheatDB = data;
+                            }
+
+                            importDiv.style.display = "";
+
+                            const gameNames = Object.keys(cheatDB).sort();
+                            gameNames.forEach((name) => {
+                                const opt = this.createElement("option");
+                                opt.value = name;
+                                opt.innerText = name;
+                                gameSelectUI.select.appendChild(opt);
+                            });
+
+                            let currentFileBaseName =
+                                this.getBaseFileName(true);
+                            currentFileBaseName = currentFileBaseName.replace(
+                                /\.[^/.]+$/,
+                                "",
+                            );
+                            const cleanedFileName =
+                                cleanRomTags(currentFileBaseName);
+                            const normalizedFile =
+                                normalizeAndConvertNumerals(cleanedFileName);
+
+                            let matchedGameName = null;
+                            if (
+                                this.config.gameName &&
+                                gameNames.includes(this.config.gameName)
+                            ) {
+                                matchedGameName = this.config.gameName;
+                            }
+
+                            if (!matchedGameName) {
+                                for (const name of gameNames) {
+                                    if (
+                                        normalizeAndConvertNumerals(name) ===
+                                        normalizedFile
+                                    ) {
+                                        matchedGameName = name;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (matchedGameName) {
+                                gameSelectUI.select.value = matchedGameName;
+                            }
+
+                            loadCheatList(gameSelectUI.select.value);
+                        } catch (e) {
+                            if (this.debug)
+                                console.error(
+                                    "Cheat file load error:",
+                                    e.message,
+                                );
+                            importDiv.style.display = "none";
+                            cheatDB = {};
+                            loadCheatList(null);
+                        }
+                    };
+
+                    gameSelectUI.select.addEventListener("change", () => {
+                        loadCheatList(gameSelectUI.select.value);
+                    });
+
+                    cheatSelectUI.select.addEventListener("change", () => {
+                        const game = gameSelectUI.select.value;
+                        const cheatDesc = cheatSelectUI.select.value;
+
+                        if (!game || !cheatDesc) {
+                            manualCodeTextarea.value = "";
+                            manualDescriptionInput.value = "";
+                            return;
+                        }
+
+                        const cheat = cheatDB[game].find(
+                            (c) => c.desc === cheatDesc,
+                        );
+                        if (cheat) {
+                            manualCodeTextarea.value = cheat.code;
+                            manualDescriptionInput.value = cheat.desc;
+                        }
+                    });
+
+                    if (systemKey) {
+                        loadCheatDatabase(systemKey).catch((e) => {
+                            if (this.debug)
+                                console.error("Initial cheat load failed:", e);
+                        });
+                    } else {
+                        importDiv.style.display = "none";
                     }
 
-                    const cheat = cheatDB[game].find(c => c.desc === cheatDesc);
-                    if (cheat) {
-                        manualCodeTextarea.value = cheat.code;
-                        manualDescriptionInput.value = cheat.desc;
-                    }
-                });
+                    const footer = this.createElement("footer");
+                    const submit = this.createElement("button");
+                    const closeButton = this.createElement("button");
+                    submit.innerText = this.localization("Submit");
+                    closeButton.innerText = this.localization("Close");
+                    submit.classList.add("ejs_button_button");
+                    closeButton.classList.add("ejs_button_button");
+                    submit.classList.add("ejs_popup_submit");
+                    closeButton.classList.add("ejs_popup_submit");
+                    submit.style["background-color"] =
+                        "rgba(var(--ejs-primary-color),1)";
+                    footer.appendChild(submit);
+                    const span = this.createElement("span");
+                    span.innerText = " ";
+                    footer.appendChild(span);
+                    footer.appendChild(closeButton);
+                    popup.appendChild(footer);
 
-                if (systemKey) {
-                    loadCheatDatabase(systemKey).catch(e => {
-                        if (this.debug) console.error("Initial cheat load failed:", e);
+                    this.addEventListener(submit, "click", (e) => {
+                        if (
+                            !manualCodeTextarea.value.trim() ||
+                            !manualDescriptionInput.value.trim()
+                        )
+                            return;
+                        popups[0].remove();
+                        this.cheats.push({
+                            code: manualCodeTextarea.value,
+                            desc: manualDescriptionInput.value,
+                            checked: false,
+                        });
+                        this.updateCheatUI();
+                        this.saveSettings();
                     });
-                } else {
-                    importDiv.style.display = 'none';
-                }
-
-                const footer = this.createElement("footer");
-                const submit = this.createElement("button");
-                const closeButton = this.createElement("button");
-                submit.innerText = this.localization("Submit");
-                closeButton.innerText = this.localization("Close");
-                submit.classList.add("ejs_button_button");
-                closeButton.classList.add("ejs_button_button");
-                submit.classList.add("ejs_popup_submit");
-                closeButton.classList.add("ejs_popup_submit");
-                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-                footer.appendChild(submit);
-                const span = this.createElement("span");
-                span.innerText = " ";
-                footer.appendChild(span);
-                footer.appendChild(closeButton);
-                popup.appendChild(footer);
-
-                this.addEventListener(submit, "click", (e) => {
-                    if (!manualCodeTextarea.value.trim() || !manualDescriptionInput.value.trim()) return;
-                    popups[0].remove();
-                    this.cheats.push({
-                        code: manualCodeTextarea.value,
-                        desc: manualDescriptionInput.value,
-                        checked: false
+                    this.addEventListener(closeButton, "click", (e) => {
+                        popups[0].remove();
                     });
-                    this.updateCheatUI();
-                    this.saveSettings();
-                })
-                this.addEventListener(closeButton, "click", (e) => {
-                    popups[0].remove();
-                })
+                },
+                Close: () => {
+                    this.cheatMenu.style.display = "none";
+                },
             },
-            "Close": () => {
-                this.cheatMenu.style.display = "none";
-            }
-        }, true);
+            true,
+        );
         this.cheatMenu = body.parentElement;
-        this.cheatMenu.getElementsByTagName("h4")[0].style["padding-bottom"] = "0px";
+        this.cheatMenu.getElementsByTagName("h4")[0].style["padding-bottom"] =
+            "0px";
         const msg = this.createElement("div");
         msg.style["padding-top"] = "0px";
         msg.style["padding-bottom"] = "15px";
-        msg.innerText = this.localization("Note that some cheats require a restart to disable");
+        msg.innerText = this.localization(
+            "Note that some cheats require a restart to disable",
+        );
         body.appendChild(msg);
         const rows = this.createElement("div");
         body.appendChild(rows);
@@ -7468,7 +6007,7 @@ class EmulatorJS {
                 this.cheats[i].checked = input.checked;
                 this.cheatChanged(input.checked, code, i);
                 this.saveSettings();
-            })
+            });
             if (!is_permanent) {
                 const close = this.createElement("a");
                 close.classList.add("ejs_cheat_row_button");
@@ -7479,14 +6018,20 @@ class EmulatorJS {
                     this.cheats.splice(i, 1);
                     this.updateCheatUI();
                     this.saveSettings();
-                })
+                });
             }
             this.elements.cheatRows.appendChild(row);
             this.cheatChanged(checked, code, i);
-        }
+        };
         this.gameManager.resetCheat();
         for (let i = 0; i < this.cheats.length; i++) {
-            addToMenu(this.cheats[i].desc, this.cheats[i].checked, this.cheats[i].code, this.cheats[i].is_permanent, i);
+            addToMenu(
+                this.cheats[i].desc,
+                this.cheats[i].checked,
+                this.cheats[i].code,
+                this.cheats[i].is_permanent,
+                i,
+            );
         }
     }
     cheatChanged(checked, code, index) {
@@ -7498,7 +6043,7 @@ class EmulatorJS {
         if (!this.gameManager) return;
         try {
             this.Module.FS.unlink("/shader/shader.glslp");
-        } catch(e) {}
+        } catch (e) {}
 
         if (name === "disabled" || !this.shaders[name]) {
             this.gameManager.toggleShader(0);
@@ -7508,13 +6053,30 @@ class EmulatorJS {
         const shaderConfig = this.shaders[name];
 
         if (typeof shaderConfig === "string") {
-            this.Module.FS.writeFile("/shader/shader.glslp", shaderConfig, {}, "w+");
+            this.Module.FS.writeFile(
+                "/shader/shader.glslp",
+                shaderConfig,
+                {},
+                "w+",
+            );
         } else {
             const shader = shaderConfig.shader;
-            this.Module.FS.writeFile("/shader/shader.glslp", shader.type === "base64" ? atob(shader.value) : shader.value, {}, "w+");
-            if (Array.isArray(shaderConfig.resources)) {
-                shaderConfig.resources.forEach(resource => {
-                    this.Module.FS.writeFile(`/shader/${resource.name}`, resource.type === "base64" ? atob(resource.value) : resource.value, {}, "w+");
+            this.Module.FS.writeFile(
+                "/shader/shader.glslp",
+                shader.type === "base64" ? atob(shader.value) : shader.value,
+                {},
+                "w+",
+            );
+            if (shaderConfig.resources && shaderConfig.resources.length) {
+                shaderConfig.resources.forEach((resource) => {
+                    this.Module.FS.writeFile(
+                        `/shader/${resource.name}`,
+                        resource.type === "base64"
+                            ? atob(resource.value)
+                            : resource.value,
+                        {},
+                        "w+",
+                    );
                 });
             }
         }
@@ -7523,27 +6085,41 @@ class EmulatorJS {
     }
 
     screenshot(callback, source, format, upscale) {
-        const imageFormat = format || this.getSettingValue("screenshotFormat") || this.capture.photo.format;
-        const imageUpscale = upscale || parseInt(this.getSettingValue("screenshotUpscale") || this.capture.photo.upscale);
-        const screenshotSource = source || this.getSettingValue("screenshotSource") || this.capture.photo.source;
-        const videoRotation = parseInt(this.getSettingValue("videoRotation") || 0);
-        const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
+        const imageFormat =
+            format ||
+            this.getSettingValue("screenshotFormat") ||
+            this.capture.photo.format;
+        const imageUpscale =
+            upscale ||
+            parseInt(
+                this.getSettingValue("screenshotUpscale") ||
+                    this.capture.photo.upscale,
+            );
+        const screenshotSource =
+            source ||
+            this.getSettingValue("screenshotSource") ||
+            this.capture.photo.source;
+        const videoRotation = parseInt(
+            this.getSettingValue("videoRotation") || 0,
+        );
+        const aspectRatio =
+            this.gameManager.getVideoDimensions("aspect") || 1.333333;
         const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
         const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
-        const videoTurned = (videoRotation === 1 || videoRotation === 3);
+        const videoTurned = videoRotation === 1 || videoRotation === 3;
         let width = this.canvas.width;
         let height = this.canvas.height;
         let scaleHeight = imageUpscale;
         let scaleWidth = imageUpscale;
         let scale = 1;
-        
+
         if (screenshotSource === "retroarch") {
             if (width >= height) {
                 width = height * aspectRatio;
             } else if (width < height) {
                 height = width / aspectRatio;
             }
-            this.gameManager.screenshot().then(screenshot => {
+            this.gameManager.screenshot().then((screenshot) => {
                 const blob = new Blob([screenshot], { type: "image/png" });
                 if (imageUpscale === 0) {
                     callback(blob, "png");
@@ -7560,13 +6136,17 @@ class EmulatorJS {
                         ctx.imageSmoothingEnabled = false;
                         ctx.scale(scaleWidth, scaleHeight);
                         ctx.drawImage(img, 0, 0, width, height);
-                        canvas.toBlob((blob) => {
-                            callback(blob, imageFormat);
-                            img.remove();
-                            URL.revokeObjectURL(screenshotUrl);
-                            canvas.remove();
-                        }, "image/" + imageFormat, 1);
-                    }
+                        canvas.toBlob(
+                            (blob) => {
+                                callback(blob, imageFormat);
+                                img.remove();
+                                URL.revokeObjectURL(screenshotUrl);
+                                canvas.remove();
+                            },
+                            "image/" + imageFormat,
+                            1,
+                        );
+                    };
                 }
             });
         } else if (screenshotSource === "canvas") {
@@ -7575,9 +6155,9 @@ class EmulatorJS {
             } else if (width < height && !videoTurned) {
                 height = width / aspectRatio;
             } else if (width >= height && videoTurned) {
-                width = height * (1/aspectRatio);
+                width = height * (1 / aspectRatio);
             } else if (width < height && videoTurned) {
-                width = height / (1/aspectRatio);
+                width = height / (1 / aspectRatio);
             }
             if (imageUpscale === 0) {
                 scale = gameHeight / height;
@@ -7604,11 +6184,21 @@ class EmulatorJS {
                 offsetY = (this.canvas.height - height) / -2;
             }
             const drawNextFrame = () => {
-                captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
-                captureCanvas.toBlob((blob) => {
-                    callback(blob, imageFormat);
-                    captureCanvas.remove();
-                }, "image/" + imageFormat, 1);
+                captureCtx.drawImage(
+                    this.canvas,
+                    offsetX,
+                    offsetY,
+                    this.canvas.width,
+                    this.canvas.height,
+                );
+                captureCanvas.toBlob(
+                    (blob) => {
+                        callback(blob, imageFormat);
+                        captureCanvas.remove();
+                    },
+                    "image/" + imageFormat,
+                    1,
+                );
             };
             requestAnimationFrame(drawNextFrame);
         }
@@ -7616,65 +6206,244 @@ class EmulatorJS {
 
     takeScreenshot(source, format, upscale) {
         return new Promise((resolve) => {
-            this.screenshot(async (blob, returnFormat) => {
-                const arrayBuffer = await blob.arrayBuffer();
-                const uint8 = new Uint8Array(arrayBuffer);
-                resolve({ screenshot: uint8, format: returnFormat });
-            }, source, format, upscale);
+            this.screenshot(
+                async (blob, returnFormat) => {
+                    const arrayBuffer = await blob.arrayBuffer();
+                    const uint8 = new Uint8Array(arrayBuffer);
+                    resolve({ screenshot: uint8, format: returnFormat });
+                },
+                source,
+                format,
+                upscale,
+            );
         });
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {
+        if (this.debug) console.log("collectScreenRecordingMediaTracks");
+        if (this.debug)
+            console.log("Canvas: " + canvasEl.width + "x" + canvasEl.height);
+
         let videoTrack = null;
         const videoTracks = canvasEl.captureStream(fps).getVideoTracks();
+        if (this.debug)
+            console.log(
+                "Video tracks from captureStream: " + videoTracks.length,
+            );
+
         if (videoTracks.length !== 0) {
             videoTrack = videoTracks[0];
+            if (this.debug)
+                console.log(
+                    "Video track: " +
+                        videoTrack.label +
+                        " " +
+                        videoTrack.readyState,
+                );
         } else {
             if (this.debug) console.error("Unable to capture video stream");
             return null;
         }
 
         let audioTrack = null;
-        if (this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.audioCtx) {
+
+        if (
+            this.Module &&
+            this.Module.AL &&
+            this.Module.AL.currentCtx &&
+            this.Module.AL.currentCtx.audioCtx
+        ) {
             const alContext = this.Module.AL.currentCtx;
             const audioContext = alContext.audioCtx;
 
-            const gainNodes = [];
-            for (let sourceIdx in alContext.sources) {
-                gainNodes.push(alContext.sources[sourceIdx].gain);
+            if (this.debug)
+                console.log("AL AudioContext state: " + audioContext.state);
+            if (this.debug)
+                console.log(
+                    "AL sources: " +
+                        Object.keys(alContext.sources || {}).length,
+                );
+
+            if (audioContext.state === "suspended") {
+                audioContext.resume().catch((e) => {
+                    if (this.debug)
+                        console.error("Failed to resume AudioContext:", e);
+                });
             }
 
-            const merger = audioContext.createChannelMerger(gainNodes.length);
-            gainNodes.forEach(node => node.connect(merger));
+            const gainNodes = [];
+            if (alContext.sources) {
+                for (const sourceIdx in alContext.sources) {
+                    const source = alContext.sources[sourceIdx];
+                    if (source && source.gain) gainNodes.push(source.gain);
+                }
+            }
+            if (this.debug)
+                console.log("Gain nodes collected: " + gainNodes.length);
 
-            const destination = audioContext.createMediaStreamDestination();
-            merger.connect(destination);
+            const masterGain =
+                alContext.gain || alContext.masterGain || alContext.outputGain;
 
-            const audioTracks = destination.stream.getAudioTracks();
-            if (audioTracks.length !== 0) {
-                audioTrack = audioTracks[0];
+            if (masterGain || gainNodes.length > 0) {
+                try {
+                    this.netplay = this.netplay || {};
+
+                    const destination =
+                        this.netplay.audioDestination ||
+                        audioContext.createMediaStreamDestination();
+                    this.netplay.audioDestination = destination;
+
+                    const streamGain =
+                        this.netplay.streamCompensationGain ||
+                        audioContext.createGain();
+                    this.netplay.streamCompensationGain = streamGain;
+
+                    const currentVolume =
+                        typeof this.volume === "number" && this.volume > 0.01
+                            ? this.volume
+                            : 1.0;
+                    streamGain.gain.value = 1.0 / currentVolume;
+                    if (this.debug)
+                        console.log(
+                            "Stream compensation gain: " +
+                                streamGain.gain.value +
+                                " (local volume: " +
+                                currentVolume +
+                                ")",
+                        );
+
+                    if (!this.netplay._streamGainConnectedToDest) {
+                        streamGain.connect(destination);
+                        this.netplay._streamGainConnectedToDest = true;
+                    }
+
+                    if (!this.netplay._audioTapRetryStarted) {
+                        this.netplay._audioTapRetryStarted = true;
+                        this.netplay._connectedSourceGains =
+                            this.netplay._connectedSourceGains || new WeakSet();
+
+                        const self = this;
+                        const tryTap = function () {
+                            const masterGain =
+                                alContext.gain ||
+                                alContext.masterGain ||
+                                alContext.outputGain;
+                            if (
+                                masterGain &&
+                                typeof masterGain.connect === "function"
+                            ) {
+                                if (!self.netplay._alMasterConnected) {
+                                    if (self.debug)
+                                        console.log(
+                                            "Using OpenAL master gain tap for stream audio",
+                                        );
+                                    try {
+                                        masterGain.connect(streamGain);
+                                    } catch (e) {}
+                                    self.netplay._alMasterConnected = true;
+                                }
+                                return true;
+                            }
+
+                            const sources = alContext.sources || {};
+                            let connectedAny = false;
+                            for (const k in sources) {
+                                const s = sources[k];
+                                const g = s && s.gain;
+                                if (
+                                    g &&
+                                    !self.netplay._connectedSourceGains.has(g)
+                                ) {
+                                    try {
+                                        g.connect(streamGain);
+                                    } catch (e) {}
+                                    self.netplay._connectedSourceGains.add(g);
+                                    connectedAny = true;
+                                }
+                            }
+                            return connectedAny;
+                        };
+
+                        tryTap();
+                        clearInterval(this.netplay._audioTapRetryTimer);
+                        this.netplay._audioTapRetryTimer = setInterval(
+                            function () {
+                                if (self.netplay._alMasterConnected) {
+                                    clearInterval(
+                                        self.netplay._audioTapRetryTimer,
+                                    );
+                                    self.netplay._audioTapRetryTimer = null;
+                                    return;
+                                }
+                                tryTap();
+                            },
+                            500,
+                        );
+                    }
+
+                    const audioTracks = destination.stream.getAudioTracks();
+                    if (this.debug)
+                        console.log(
+                            "Audio tracks created: " + audioTracks.length,
+                        );
+
+                    if (audioTracks.length !== 0) {
+                        audioTrack = audioTracks[0];
+                        if (this.debug)
+                            console.log(
+                                "Audio track: " +
+                                    audioTrack.label +
+                                    " readyState: " +
+                                    audioTrack.readyState +
+                                    " muted: " +
+                                    audioTrack.muted,
+                            );
+                    }
+                } catch (e) {
+                    if (this.debug)
+                        console.error("Error creating audio destination:", e);
+                }
             }
         }
 
         const stream = new MediaStream();
-        if (videoTrack && videoTrack.readyState === "live") {
+        if (videoTrack && videoTrack.readyState === "live")
             stream.addTrack(videoTrack);
-        }
-        if (audioTrack && audioTrack.readyState === "live") {
+        if (audioTrack && audioTrack.readyState === "live")
             stream.addTrack(audioTrack);
-        }
+
+        if (this.debug)
+            console.log(
+                "Final stream - video tracks: " +
+                    stream.getVideoTracks().length +
+                    " audio tracks: " +
+                    stream.getAudioTracks().length,
+            );
         return stream;
     }
 
     screenRecord() {
-        const captureFps = this.getSettingValue("screenRecordingFPS") || this.capture.video.fps;
-        const captureFormat = this.getSettingValue("screenRecordFormat") || this.capture.video.format;
-        const captureUpscale = this.getSettingValue("screenRecordUpscale") || this.capture.video.upscale;
-        const captureVideoBitrate = this.getSettingValue("screenRecordVideoBitrate") || this.capture.video.videoBitrate;
-        const captureAudioBitrate = this.getSettingValue("screenRecordAudioBitrate") || this.capture.video.audioBitrate;
-        const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
-        const videoRotation = parseInt(this.getSettingValue("videoRotation") || 0);
-        const videoTurned = (videoRotation === 1 || videoRotation === 3);
+        const captureFps =
+            this.getSettingValue("screenRecordingFPS") ||
+            this.capture.video.fps;
+        const captureFormat =
+            this.getSettingValue("screenRecordFormat") ||
+            this.capture.video.format;
+        const captureUpscale =
+            this.getSettingValue("screenRecordUpscale") ||
+            this.capture.video.upscale;
+        const captureVideoBitrate =
+            this.getSettingValue("screenRecordVideoBitrate") ||
+            this.capture.video.videoBitrate;
+        const captureAudioBitrate =
+            this.getSettingValue("screenRecordAudioBitrate") ||
+            this.capture.video.audioBitrate;
+        const aspectRatio =
+            this.gameManager.getVideoDimensions("aspect") || 1.333333;
+        const videoRotation = parseInt(
+            this.getSettingValue("videoRotation") || 0,
+        );
+        const videoTurned = videoRotation === 1 || videoRotation === 3;
         let width = 800;
         let height = 600;
         let frameAspect = this.canvas.width / this.canvas.height;
@@ -7686,29 +6455,31 @@ class EmulatorJS {
         const captureCtx = captureCanvas.getContext("2d", { alpha: false });
         captureCtx.fillStyle = "#000";
         captureCtx.imageSmoothingEnabled = false;
+
+        const self = this;
         const updateSize = () => {
-            width = this.canvas.width;
-            height = this.canvas.height;
-            frameAspect = width / height
+            width = self.canvas.width;
+            height = self.canvas.height;
+            frameAspect = width / height;
             if (width >= height && !videoTurned) {
                 width = height * aspectRatio;
             } else if (width < height && !videoTurned) {
                 height = width / aspectRatio;
             } else if (width >= height && videoTurned) {
-                width = height * (1/aspectRatio);
+                width = height * (1 / aspectRatio);
             } else if (width < height && videoTurned) {
-                width = height / (1/aspectRatio);
+                width = height / (1 / aspectRatio);
             }
             canvasAspect = width / height;
             captureCanvas.width = width * captureUpscale;
             captureCanvas.height = height * captureUpscale;
             captureCtx.scale(captureUpscale, captureUpscale);
             if (frameAspect > canvasAspect) {
-                offsetX = (this.canvas.width - width) / -2;
+                offsetX = (self.canvas.width - width) / -2;
             } else if (frameAspect < canvasAspect) {
-                offsetY = (this.canvas.height - height) / -2;
+                offsetY = (self.canvas.height - height) / -2;
             }
-        }
+        };
         updateSize();
         this.addEventListener(this.canvas, "resize", () => {
             updateSize();
@@ -7717,7 +6488,13 @@ class EmulatorJS {
         let animation = true;
 
         const drawNextFrame = () => {
-            captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
+            captureCtx.drawImage(
+                self.canvas,
+                offsetX,
+                offsetY,
+                self.canvas.width,
+                self.canvas.height,
+            );
             if (animation) {
                 requestAnimationFrame(drawNextFrame);
             }
@@ -7725,13 +6502,16 @@ class EmulatorJS {
         requestAnimationFrame(drawNextFrame);
 
         const chunks = [];
-        const tracks = this.collectScreenRecordingMediaTracks(captureCanvas, captureFps);
+        const tracks = this.collectScreenRecordingMediaTracks(
+            captureCanvas,
+            captureFps,
+        );
         const recorder = new MediaRecorder(tracks, {
             videoBitsPerSecond: captureVideoBitrate,
             audioBitsPerSecond: captureAudioBitrate,
-            mimeType: "video/" + captureFormat
+            mimeType: "video/" + captureFormat,
         });
-        recorder.addEventListener("dataavailable", e => {
+        recorder.addEventListener("dataavailable", (e) => {
             chunks.push(e.data);
         });
         recorder.addEventListener("stop", () => {
@@ -7740,7 +6520,16 @@ class EmulatorJS {
             const date = new Date();
             const a = document.createElement("a");
             a.href = url;
-            a.download = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() + "." + captureFormat;
+            a.download =
+                this.getBaseFileName() +
+                "-" +
+                date.getMonth() +
+                "-" +
+                date.getDate() +
+                "-" +
+                date.getFullYear() +
+                "." +
+                captureFormat;
             a.click();
 
             animation = false;
@@ -7754,7 +6543,9 @@ class EmulatorJS {
     enableSaveUpdateEvent() {
         function withGameSaveHash(saveFile, callback) {
             if (saveFile) {
-                this.utils.cyrb53(saveFile).then(digest => callback(digest, saveFile));
+                this.utils
+                    .cyrb53(saveFile)
+                    .then((digest) => callback(digest, saveFile));
             } else {
                 console.warn("Save file not found when attempting to hash");
                 callback(null, null);
@@ -7762,24 +6553,34 @@ class EmulatorJS {
         }
 
         var recentHash = null;
-        if (this.gameManager) { withGameSaveHash(this.gameManager.getSaveFile(false), (hash, _) => { recentHash = hash }) }
+        if (this.gameManager) {
+            withGameSaveHash(this.gameManager.getSaveFile(false), (hash, _) => {
+                recentHash = hash;
+            });
+        }
 
-        this.on("saveSaveFiles", saveFile => {
+        this.on("saveSaveFiles", (saveFile) => {
             withGameSaveHash(saveFile, (newHash, fileContents) => {
                 if (newHash && fileContents && newHash !== recentHash) {
                     recentHash = newHash;
-                    this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale).then(({ screenshot, format }) => {
+                    this.takeScreenshot(
+                        this.capture.photo.source,
+                        this.capture.photo.format,
+                        this.capture.photo.upscale,
+                    ).then(({ screenshot, format }) => {
                         this.callEvent("saveUpdate", {
                             hash: newHash,
                             save: fileContents,
                             screenshot: screenshot,
-                            format: format
+                            format: format,
                         });
-                    })
+                    });
                 }
-            })
-        })
+            });
+        });
     }
 }
+
+Object.assign(EmulatorJS.prototype, netplayMethods);
 
 export default EmulatorJS;
