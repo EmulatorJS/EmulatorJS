@@ -1,4 +1,4 @@
-import { EJS_UTILS } from "./utils.js";
+import { simpleHash } from "./utils.js";
 import { EJS_STORAGE } from "./storage.js";
 import { EJS_COMPRESSION } from "./compression.js";
 
@@ -308,8 +308,6 @@ class EJS_Cache {
         this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
         this.debug = debug;
 
-        this.utils = new EJS_UTILS();
-
         /**
         * Indicates whether the startup cleanup has been completed.
         */
@@ -374,7 +372,7 @@ class EJS_Cache {
      * @returns {string} The generated cache key.
      */
     generateCacheKey(dataArray) {
-        let hash = this.utils.simpleHash(dataArray);
+        let hash = simpleHash(dataArray);
         const compressionCacheKey = "Obj-" + hash + "-" + dataArray.length;
         return compressionCacheKey;
     }

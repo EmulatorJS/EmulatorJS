@@ -3,7 +3,7 @@ import { EJS_COMPRESSION } from "./compression.js";
 import { EJS_GameManager } from "./GameManager.js";
 import { GamepadHandler } from "./gamepad.js";
 import { EJS_STORAGE, EJS_DUMMYSTORAGE } from "./storage.js";
-import { EJS_UTILS } from "./utils.js";
+import { cyrb53 } from "./utils.js";
 import { EJS_SETUP } from "./setup.js";
 import { EJS_license } from "./license.js";
 import * as CONSTS from "./consts.js";
@@ -227,7 +227,6 @@ class EmulatorJS {
             this.checkForUpdates();
         }
         this.netplayEnabled = true;
-        this.utils = new EJS_UTILS();
         this.config = config;
 
         this.setup = new EJS_SETUP(this);
@@ -7754,7 +7753,7 @@ class EmulatorJS {
     enableSaveUpdateEvent() {
         function withGameSaveHash(saveFile, callback) {
             if (saveFile) {
-                this.utils.cyrb53(saveFile).then(digest => callback(digest, saveFile));
+                cyrb53(saveFile).then(digest => callback(digest, saveFile));
             } else {
                 console.warn("Save file not found when attempting to hash");
                 callback(null, null);
