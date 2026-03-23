@@ -6243,7 +6243,7 @@ class EmulatorJS {
     enableSaveUpdateEvent() {
         function withGameSaveHash(saveFile, callback) {
             if (saveFile) {
-                cyrb53(saveFile).then(digest => callback(digest, saveFile));
+                this.utils.cyrb53(saveFile).then(digest => callback(digest, saveFile));
             } else {
                 console.warn("Save file not found when attempting to hash");
                 callback(null, null);
