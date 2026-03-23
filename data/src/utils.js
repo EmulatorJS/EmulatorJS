@@ -14,7 +14,6 @@ export class EJS_UTILS {
         }
         return hash;
     }
-
     /**
      * Cyrb53 hash function adapted for buffers.
      * @param {*} charBuffer 
@@ -34,12 +33,11 @@ export class EJS_UTILS {
         h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909);
         h2  = Math.imul(h2 ^ (h2 >>> 16), 2246822507);
         h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-
         // Cyrb53 is a 53-bit hash; we need 14 hex characters to represent it, and the first char will
         // always be 0 or 1 (since it is only 1 bit)
         return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, "0");
     };
-        /**
+    /**
      * Generate a random GUID string.
      * @returns {string} A GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
      */
