@@ -158,8 +158,14 @@ export class Netplay {
         /** @type {number|null} Disconnected-state debounce timer. */
         this._dcTimer = null;
 
+        /** @type {MediaStream|null} Raw stream from canvas.captureStream (host). */
+        this._hostRawStream = null;
+
         /** @type {MediaStream|null} Final composed output stream (host). */
         this._hostOutStream = null;
+
+        /** @type {HTMLVideoElement|null} Off-screen source video element (host). */
+        this._hostSourceVideo = null;
 
         /** @type {boolean} Whether the guest audio-unlock listeners are armed. */
         this._audioUnlockArmed = false;
@@ -828,13 +834,9 @@ export class Netplay {
     /* ------------------------------------------------------------------ */
 
     /**
-     * Set up the host's outgoing WebRTC media stream.
-     *
-     * Creates a fixed-resolution off-screen canvas and draws the emulator
-     * canvas into it every frame, handling aspect ratio differences and
-     * resolution changes (e.g. fullscreen) automatically since it reads
-     * the emulator canvas dimensions each frame.  Audio track collection
-     * is handled by {@link collectStreamMediaTracks}.
+     * Capture the emulator canvas into a fixed-resolution MediaStream
+     * suitable for WebRTC transmission.  Audio track collection is handled
+     * by {@link collectStreamMediaTracks}.
      *
      * @returns {Promise<void>}
      */
@@ -857,7 +859,27 @@ export class Netplay {
             const { w: outW, h: outH, fps } = chosen;
             const outAspect = outW / outH;
 
-            this._log("HOST", `Init stream (direct ${chosen.mode}) ${outW}x${outH} @ ${fps}fps`);
+            this._log("HOST", `Init stream (decoupled ${chosen.mode}) ${outW}x${outH} @ ${fps}fps`);
+
+            let rawStream = null;
+            try { rawStream = emuCanvas.captureStream(fps); } catch (_) { /* ignore */ }
+            if (!rawStream?.getVideoTracks?.()?.[0]) {
+                if (this.emu.debug) console.error("[NETPLAY HOST] No video track from canvas.captureStream()");
+                resolve();
+                return;
+            }
+            this._hostRawStream = rawStream;
+
+            const srcVideo = document.createElement("video");
+            srcVideo.muted = true;
+            srcVideo.autoplay = true;
+            srcVideo.playsInline = true;
+            srcVideo.classList.add("ejs_netplay_offscreen");
+            document.body.appendChild(srcVideo);
+            this._hostSourceVideo = srcVideo;
+
+            srcVideo.srcObject = rawStream;
+            srcVideo.play().catch((err) => this._log("HOST", "source video play() warning:", err));
 
             const cap = document.createElement("canvas");
             cap.width = outW;
@@ -875,9 +897,9 @@ export class Netplay {
                 capCtx.fillStyle = "#000";
                 capCtx.fillRect(0, 0, outW, outH);
 
-                if (emuCanvas.width > 0 && emuCanvas.height > 0) {
-                    const srcW = emuCanvas.width;
-                    const srcH = emuCanvas.height;
+                if (srcVideo.readyState >= 2 && srcVideo.videoWidth > 0 && srcVideo.videoHeight > 0) {
+                    const srcW = srcVideo.videoWidth;
+                    const srcH = srcVideo.videoHeight;
                     const srcAspect = srcW / srcH;
 
                     let sx = 0, sy = 0, sw = srcW, sh = srcH;
@@ -895,7 +917,7 @@ export class Netplay {
                     }
 
                     capCtx.imageSmoothingEnabled = true;
-                    capCtx.drawImage(emuCanvas, sx, sy, sw, sh, 0, 0, outW, outH);
+                    capCtx.drawImage(srcVideo, sx, sy, sw, sh, 0, 0, outW, outH);
                 }
 
                 requestAnimationFrame(drawToFixedCanvas);
@@ -1488,9 +1510,20 @@ export class Netplay {
         }
         this.captureCanvas = null;
 
-        if (this._hostOutStream) {
-            try { this._hostOutStream.getTracks().forEach((tr) => tr.stop()); } catch (_) { /* ignore */ }
+        if (this._hostSourceVideo) {
+            try { this._hostSourceVideo.srcObject = null; } catch (_) { /* ignore */ }
+            if (this._hostSourceVideo.parentNode) {
+                try { this._hostSourceVideo.parentNode.removeChild(this._hostSourceVideo); } catch (_) { /* ignore */ }
+            }
+            this._hostSourceVideo = null;
         }
+
+        for (const stream of [this._hostRawStream, this._hostOutStream]) {
+            if (stream) {
+                try { stream.getTracks().forEach((tr) => tr.stop()); } catch (_) { /* ignore */ }
+            }
+        }
+        this._hostRawStream = null;
         this._hostOutStream = null;
 
         this.restoreGuestUIZ();
