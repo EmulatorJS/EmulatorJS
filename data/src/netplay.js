@@ -4,13 +4,13 @@ import { EJS_UTILS } from "./utils.js";
  * Netplay — owns all netplay state and logic.
  *
  * Receives a reference to the host EmulatorJS instance so it can read
- * config, canvas, gameManager, etc.  Nothing is bolted onto EmulatorJS's
+ * config, canvas, gameManager, etc. Nothing is bolted onto EmulatorJS's
  * prototype; the emulator simply holds `this.netplay = new Netplay(this)`.
  */
 export class Netplay {
 
     /* ------------------------------------------------------------------ */
-    /*  Construction                                                       */
+    /* Construction                                                        */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -50,7 +50,7 @@ export class Netplay {
         /** @type {Object|null} Socket.IO socket instance. */
         this.socket = null;
 
-        /** @type {Object<string, {pc: RTCPeerConnection, dataChannel?: RTCDataChannel, iceCandidateQueue?: Array}>} */
+        /** @type {Object<string, {pc: RTCPeerConnection, dataChannel?: RTCDataChannel, iceCandidateQueue?: Array, senders?: RTCRtpSender[]}>} */
         this.peerConnections = {};
 
         /** @type {boolean} True once a WebRTC connection is established. */
@@ -220,10 +220,28 @@ export class Netplay {
 
         /** @type {boolean} Whether the TURN warning has already been shown in the menu. */
         this._turnWarningShown = false;
+
+        /** @type {number} The chosen stream width, cached for resize checks. */
+        this._streamW = 0;
+
+        /** @type {number} The chosen stream height, cached for resize checks. */
+        this._streamH = 0;
+
+        /** @type {number} The chosen stream fps, cached for the capture loop. */
+        this._streamFps = 30;
+
+        /** @type {number|null} Last host draw timestamp for frame-rate governing. */
+        this._lastHostDrawTime = 0;
+
+        /** @type {MediaStream|null} The stream captured from the fixed capture canvas. */
+        this._captureCanvasStream = null;
+
+        /** @type {number|null} Interval handle for host sender parameter enforcement. */
+        this._senderParamInterval = null;
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Logging                                                            */
+    /* Logging                                                             */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -244,7 +262,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  URL bootstrap                                                      */
+    /* URL bootstrap                                                       */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -266,7 +284,7 @@ export class Netplay {
 
     /**
      * Inspect the configured ICE servers and set {@link showTurnWarning}
-     * if no TURN server is present.  Logs a console warning in debug mode.
+     * if no TURN server is present. Logs a console warning in debug mode.
      */
     checkTurnConfig() {
         const iceServers = this.emu.config.netplayICEServers || window.EJS_netplayICEServers || [];
@@ -300,7 +318,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  UI helpers (bottom-bar visibility)                                  */
+    /* UI helpers (bottom-bar visibility)                                   */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -341,23 +359,20 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Volume                                                             */
+    /* Volume                                                              */
     /* ------------------------------------------------------------------ */
 
     /**
      * Apply a volume change during an active netplay session.
-     *
      * For guests this adjusts remote audio elements and the remote gain node,
-     * and returns `true` to signal that the caller should skip local emulator
+     * and returns true to signal that the caller should skip local emulator
      * audio adjustments.
-     *
      * For hosts this adjusts the stream compensation gain so the outgoing
      * stream level stays constant regardless of local volume, and returns
-     * `false` because local audio still needs to be adjusted by the caller.
-     *
+     * false because local audio still needs to be adjusted by the caller.
      * @param {number} volume - Volume level between 0 and 1.
      * @returns {boolean} True if the caller should skip local audio (guest),
-     *                     false if local audio should still be adjusted (host).
+     *                    false if local audio should still be adjusted (host).
      */
     setVolume(volume) {
         const isGuest = this.emu.isNetplay && !this.owner;
@@ -392,7 +407,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Resolution / stream sizing                                         */
+    /* Resolution / stream sizing                                          */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -458,7 +473,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Anchor / overlay                                                   */
+    /* Anchor / overlay                                                    */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -596,7 +611,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Guest UI z-index boost / restore                                   */
+    /* Guest UI z-index boost / restore                                    */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -659,7 +674,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Guest freeze / unfreeze                                            */
+    /* Guest freeze / unfreeze                                             */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -744,11 +759,11 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Remote audio                                                       */
+    /* Remote audio                                                        */
     /* ------------------------------------------------------------------ */
 
     /**
-     * Get or create a hidden `<audio>` element for a specific peer,
+     * Get or create a hidden <audio> element for a specific peer,
      * configured for autoplay with the current volume.
      * @param {string} peerId - The remote peer's socket/connection ID.
      * @returns {HTMLAudioElement}
@@ -830,14 +845,18 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  WebRTC stream init (host)                                          */
+    /* WebRTC stream init (host) — FULLSCREEN FIX                          */
     /* ------------------------------------------------------------------ */
 
     /**
      * Capture the emulator canvas into a fixed-resolution MediaStream
-     * suitable for WebRTC transmission.  Audio track collection is handled
-     * by {@link collectStreamMediaTracks}.
+     * suitable for WebRTC transmission. The capture pipeline is fully
+     * decoupled from the emulator canvas resolution: we capture the
+     * fixed-size intermediate canvas (not the emulator canvas) so that
+     * entering/exiting fullscreen has zero effect on the encoded stream
+     * resolution or frame rate.
      *
+     * Audio track collection is handled by {@link collectStreamMediaTracks}.
      * @returns {Promise<void>}
      */
     initWebRTCStream() {
@@ -859,28 +878,18 @@ export class Netplay {
             const { w: outW, h: outH, fps } = chosen;
             const outAspect = outW / outH;
 
-            this._log("HOST", `Init stream (decoupled ${chosen.mode}) ${outW}x${outH} @ ${fps}fps`);
+            this._streamW = outW;
+            this._streamH = outH;
+            this._streamFps = fps;
 
-            let rawStream = null;
-            try { rawStream = emuCanvas.captureStream(fps); } catch (_) { /* ignore */ }
-            if (!rawStream?.getVideoTracks?.()?.[0]) {
-                if (this.emu.debug) console.error("[NETPLAY HOST] No video track from canvas.captureStream()");
-                resolve();
-                return;
-            }
-            this._hostRawStream = rawStream;
+            this._log("HOST", "Init stream (decoupled " + chosen.mode + ") " + outW + "x" + outH + " @ " + fps + "fps");
 
-            const srcVideo = document.createElement("video");
-            srcVideo.muted = true;
-            srcVideo.autoplay = true;
-            srcVideo.playsInline = true;
-            srcVideo.classList.add("ejs_netplay_offscreen");
-            document.body.appendChild(srcVideo);
-            this._hostSourceVideo = srcVideo;
-
-            srcVideo.srcObject = rawStream;
-            srcVideo.play().catch((err) => this._log("HOST", "source video play() warning:", err));
-
+            /**
+             * Create the fixed-size intermediate canvas. This canvas is
+             * ALWAYS outW×outH regardless of whether the emulator canvas
+             * is 320×240 or 1920×1080 (fullscreen). The WebRTC stream is
+             * captured from THIS canvas, not from the emulator canvas.
+             */
             const cap = document.createElement("canvas");
             cap.width = outW;
             cap.height = outH;
@@ -891,39 +900,62 @@ export class Netplay {
             const capCtx = cap.getContext("2d", { alpha: false });
             this.captureRunning = true;
 
-            const drawToFixedCanvas = () => {
+            const frameInterval = 1000 / fps;
+            this._lastHostDrawTime = 0;
+
+            /**
+             * Frame-rate-governed draw loop. Reads directly from the
+             * emulator canvas (at whatever resolution it currently is)
+             * and draws into the fixed-size capture canvas with
+             * aspect-ratio-correct letterboxing. Because we read from
+             * the emulator canvas directly (not via captureStream),
+             * the source resolution can change freely without affecting
+             * the output stream dimensions.
+             * @param {number} now - The current rAF timestamp.
+             */
+            const drawToFixedCanvas = (now) => {
                 if (!this.captureRunning) return;
 
-                capCtx.fillStyle = "#000";
-                capCtx.fillRect(0, 0, outW, outH);
+                const elapsed = now - this._lastHostDrawTime;
+                if (elapsed >= frameInterval * 0.95) {
+                    this._lastHostDrawTime = now;
 
-                if (srcVideo.readyState >= 2 && srcVideo.videoWidth > 0 && srcVideo.videoHeight > 0) {
-                    const srcW = srcVideo.videoWidth;
-                    const srcH = srcVideo.videoHeight;
-                    const srcAspect = srcW / srcH;
+                    capCtx.fillStyle = "#000";
+                    capCtx.fillRect(0, 0, outW, outH);
 
-                    let sx = 0, sy = 0, sw = srcW, sh = srcH;
+                    const src = emuCanvas;
+                    const srcW = src.width;
+                    const srcH = src.height;
 
-                    if (srcAspect > outAspect) {
-                        sw = srcH * outAspect;
-                        sx = (srcW - sw) / 2;
-                    } else if (srcAspect < outAspect) {
-                        sh = srcW / outAspect;
-                        const portraitish = (srcH / srcW) >= 1.25;
-                        sy = portraitish ? 0 : (srcH - sh) / 2;
-                        if (sy < 0) sy = 0;
-                        if (sy + sh > srcH) sy = srcH - sh;
-                        if (sy < 0) sy = 0;
+                    if (srcW > 0 && srcH > 0) {
+                        const srcAspect = srcW / srcH;
+
+                        let dx = 0, dy = 0, dw = outW, dh = outH;
+
+                        if (srcAspect > outAspect) {
+                            dh = Math.round(outW / srcAspect);
+                            dy = Math.round((outH - dh) / 2);
+                        } else if (srcAspect < outAspect) {
+                            dw = Math.round(outH * srcAspect);
+                            dx = Math.round((outW - dw) / 2);
+                        }
+
+                        capCtx.imageSmoothingEnabled = true;
+                        capCtx.imageSmoothingQuality = "medium";
+                        capCtx.drawImage(src, 0, 0, srcW, srcH, dx, dy, dw, dh);
                     }
-
-                    capCtx.imageSmoothingEnabled = true;
-                    capCtx.drawImage(srcVideo, sx, sy, sw, sh, 0, 0, outW, outH);
                 }
 
                 requestAnimationFrame(drawToFixedCanvas);
             };
             requestAnimationFrame(drawToFixedCanvas);
 
+            /**
+             * Capture the stream from the FIXED capture canvas. This is
+             * the key to the fullscreen fix: captureStream is called on
+             * the intermediate canvas (always outW×outH), not on the
+             * emulator canvas whose resolution changes with fullscreen.
+             */
             const finalStream = this.collectStreamMediaTracks(cap, fps);
             if (finalStream) {
                 try {
@@ -937,6 +969,7 @@ export class Netplay {
             } else {
                 this._log("HOST", "Fallback to video-only stream");
                 const fallback = cap.captureStream(fps);
+                this._captureCanvasStream = fallback;
                 this.localStream = fallback;
                 this._hostOutStream = fallback;
             }
@@ -947,12 +980,10 @@ export class Netplay {
 
     /**
      * Capture video and audio tracks from a canvas element for WebRTC streaming.
-     *
-     * Creates a video track via `captureStream` and taps into the emulator's
-     * OpenAL audio graph to produce an audio track.  A compensation gain node
+     * Creates a video track via captureStream and taps into the emulator's
+     * OpenAL audio graph to produce an audio track. A compensation gain node
      * is inserted so the outgoing stream level stays constant regardless of
      * the host's local volume setting.
-     *
      * @param {HTMLCanvasElement} canvasEl - The canvas to capture video from.
      * @param {number} fps - Frames per second for the video capture.
      * @returns {MediaStream|null} A stream with video (and optionally audio) tracks, or null on failure.
@@ -964,7 +995,9 @@ export class Netplay {
 
         /* --- Video --- */
         let videoTrack = null;
-        const videoTracks = canvasEl.captureStream(fps).getVideoTracks();
+        const capturedStream = canvasEl.captureStream(fps);
+        this._captureCanvasStream = capturedStream;
+        const videoTracks = capturedStream.getVideoTracks();
         this._log("HOST", "Video tracks from captureStream: " + videoTracks.length);
 
         if (videoTracks.length === 0) {
@@ -1078,10 +1111,31 @@ export class Netplay {
 
         this._log("HOST", "Final stream - video: " + stream.getVideoTracks().length + " audio: " + stream.getAudioTracks().length);
         return stream;
+    }
 
     /* ------------------------------------------------------------------ */
-    /*  WebRTC peer connection                                             */
+    /* WebRTC peer connection                                              */
     /* ------------------------------------------------------------------ */
+
+    /**
+     * Apply encoding parameters to the video sender of a peer connection
+     * to ensure consistent bitrate and resolution. Called once after
+     * connection and periodically to counteract browser renegotiation.
+     * @param {RTCPeerConnection} pc - The peer connection to configure.
+     * @private
+     */
+    _enforceVideoSenderParams(pc) {
+        try {
+            const sender = pc.getSenders().find((s) => s.track?.kind === "video");
+            if (!sender) return;
+            const p = sender.getParameters();
+            if (!p.encodings?.length) p.encodings = [{}];
+            p.degradationPreference = "maintain-resolution";
+            p.encodings[0].maxBitrate = 5_000_000;
+            p.encodings[0].scaleResolutionDownBy = 1.0;
+            sender.setParameters(p).catch(() => {});
+        } catch (_) { /* ignore */ }
+    }
 
     /**
      * Build a new RTCPeerConnection for a remote peer, attach data channels,
@@ -1118,8 +1172,8 @@ export class Netplay {
             pc.ondatachannel = (e) => {
                 dc = e.channel;
                 if (this.peerConnections[peerId]) this.peerConnections[peerId].dataChannel = dc;
-                dc.onmessage = (e) => {
-                    const d = JSON.parse(e.data);
+                dc.onmessage = (ev) => {
+                    const d = JSON.parse(ev.data);
                     if (d.type === "host-left") {
                         this.emu.displayMessage("Host left", 3000);
                         this.leaveRoom();
@@ -1134,23 +1188,13 @@ export class Netplay {
             this._log("HOST", "Adding " + tracks.length + " tracks");
             for (const t of tracks) pc.addTrack(t, this.localStream);
 
-            try {
-                const sender = pc.getSenders().find((s) => s.track?.kind === "video");
-                if (sender) {
-                    const p = sender.getParameters();
-                    p.degradationPreference = "maintain-resolution";
-                    if (!p.encodings?.length) p.encodings = [{}];
-                    p.encodings[0].maxBitrate = 5_000_000;
-                    p.encodings[0].scaleResolutionDownBy = 1.0;
-                    sender.setParameters(p).catch(() => {});
-                }
-            } catch (_) { /* ignore */ }
+            this._enforceVideoSenderParams(pc);
         } else {
             pc.addTransceiver("video", { direction: "recvonly" });
             pc.addTransceiver("audio", { direction: "recvonly" });
         }
 
-        this.peerConnections[peerId] = { pc, dataChannel: dc };
+        this.peerConnections[peerId] = { pc, dataChannel: dc, senders: [] };
 
         let gotStream = false;
         const streamTimeout = setTimeout(() => {
@@ -1175,6 +1219,10 @@ export class Netplay {
                 this.webRtcReady = true;
                 clearTimeout(this.connectionTimeout);
                 if (this._dcTimer) { clearTimeout(this._dcTimer); this._dcTimer = null; }
+
+                if (this.owner) {
+                    this._enforceVideoSenderParams(pc);
+                }
                 return;
             }
 
@@ -1280,11 +1328,50 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Guest draw loop                                                    */
+    /* Host sender parameter enforcement                                   */
     /* ------------------------------------------------------------------ */
 
     /**
-     * Start a `requestAnimationFrame` loop that draws the received video
+     * Start a periodic interval that re-applies video encoding parameters
+     * to all active peer connections. This prevents the browser from
+     * silently downscaling the stream when the source canvas changes
+     * (e.g. fullscreen toggle causes internal renegotiation).
+     * @private
+     */
+    _startSenderParamEnforcement() {
+        if (this._senderParamInterval) return;
+        this._senderParamInterval = setInterval(() => {
+            if (!this.emu.isNetplay || !this.owner) {
+                clearInterval(this._senderParamInterval);
+                this._senderParamInterval = null;
+                return;
+            }
+            for (const key in this.peerConnections) {
+                const pd = this.peerConnections[key];
+                if (pd?.pc?.connectionState === "connected") {
+                    this._enforceVideoSenderParams(pd.pc);
+                }
+            }
+        }, 3000);
+    }
+
+    /**
+     * Stop the sender parameter enforcement interval.
+     * @private
+     */
+    _stopSenderParamEnforcement() {
+        if (this._senderParamInterval) {
+            clearInterval(this._senderParamInterval);
+            this._senderParamInterval = null;
+        }
+    }
+
+    /* ------------------------------------------------------------------ */
+    /* Guest draw loop                                                     */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Start a requestAnimationFrame loop that draws the received video
      * onto the guest's overlay canvas, maintaining the host's aspect ratio.
      * @private
      */
@@ -1359,7 +1446,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Room join / leave                                                  */
+    /* Room join / leave                                                   */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1400,6 +1487,7 @@ export class Netplay {
             if (emu.gameManager) {
                 try { emu.gameManager.toggleMainLoop(1); } catch (_) { /* ignore */ }
             }
+            this._startSenderParamEnforcement();
         }
     }
 
@@ -1487,7 +1575,7 @@ export class Netplay {
     }
 
     /**
-     * Cleanly leave the current netplay room.  Tears down WebRTC connections,
+     * Cleanly leave the current netplay room. Tears down WebRTC connections,
      * stops media streams, removes the overlay, unfreezes the guest emulator,
      * and resets all netplay state.
      */
@@ -1505,10 +1593,17 @@ export class Netplay {
         this.unfreezeGuest();
         this.captureRunning = false;
 
+        this._stopSenderParamEnforcement();
+
         if (this.captureCanvas?.parentNode) {
             try { this.captureCanvas.parentNode.removeChild(this.captureCanvas); } catch (_) { /* ignore */ }
         }
         this.captureCanvas = null;
+
+        if (this._captureCanvasStream) {
+            try { this._captureCanvasStream.getTracks().forEach((tr) => tr.stop()); } catch (_) { /* ignore */ }
+            this._captureCanvasStream = null;
+        }
 
         if (this._hostSourceVideo) {
             try { this._hostSourceVideo.srcObject = null; } catch (_) { /* ignore */ }
@@ -1625,6 +1720,10 @@ export class Netplay {
         this._connectedSourceGains = null;
         this._alMasterConnected = false;
 
+        this._streamW = 0;
+        this._streamH = 0;
+        this._lastHostDrawTime = 0;
+
         if (emu.originalControls) {
             emu.controls = JSON.parse(JSON.stringify(emu.originalControls));
             emu.originalControls = null;
@@ -1636,11 +1735,11 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Input simulation                                                   */
+    /* Input simulation                                                    */
     /* ------------------------------------------------------------------ */
 
     /**
-     * Send or apply an input event.  Hosts apply locally and buffer for
+     * Send or apply an input event. Hosts apply locally and buffer for
      * broadcast; guests forward over the data channel.
      * @param {number} player - Player index.
      * @param {number} index - Button/axis index.
@@ -1664,7 +1763,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Chat                                                               */
+    /* Chat                                                                */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1740,7 +1839,7 @@ export class Netplay {
 
     /**
      * Attach click and keydown listeners to the chat send button and input
-     * field.  Safe to call multiple times — only binds once.
+     * field. Safe to call multiple times — only binds once.
      */
     bindChatUI() {
         if (this._chatBound) return;
@@ -1757,7 +1856,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Room list                                                          */
+    /* Room list                                                           */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1837,7 +1936,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Players table                                                      */
+    /* Players table                                                       */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -1867,7 +1966,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Dialogs                                                            */
+    /* Dialogs                                                             */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -2078,7 +2177,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Socket.IO                                                          */
+    /* Socket.IO                                                           */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -2204,7 +2303,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Data messages                                                      */
+    /* Data messages                                                       */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -2264,7 +2363,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Open / Join room                                                   */
+    /* Open / Join room                                                    */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -2340,7 +2439,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Frame loop (postMainLoop hook)                                     */
+    /* Frame loop (postMainLoop hook)                                      */
     /* ------------------------------------------------------------------ */
 
     /**
@@ -2353,7 +2452,7 @@ export class Netplay {
     }
 
     /**
-     * Called every frame by the emulator's main loop.  Tracks the current
+     * Called every frame by the emulator's main loop. Tracks the current
      * frame offset and, on the host, applies buffered inputs and broadcasts
      * them to connected guests.
      */
@@ -2376,7 +2475,7 @@ export class Netplay {
     }
 
     /* ------------------------------------------------------------------ */
-    /*  Wire postMainLoop into emulator Module                             */
+    /* Wire postMainLoop into emulator Module                              */
     /* ------------------------------------------------------------------ */
 
     /**
