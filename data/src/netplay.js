@@ -890,33 +890,40 @@ export class Netplay {
             const capCtx = cap.getContext("2d", { alpha: false });
             this.captureRunning = true;
 
-            const drawToFixedCanvas = () => {
+            const frameInterval = 1000 / fps;
+            let lastFrameTime = 0;
+
+            const drawToFixedCanvas = (timestamp) => {
                 if (!this.captureRunning) return;
 
-                capCtx.fillStyle = "#000";
-                capCtx.fillRect(0, 0, outW, outH);
+                if (timestamp - lastFrameTime >= frameInterval) {
+                    lastFrameTime = timestamp;
 
-                if (srcVideo.readyState >= 2 && srcVideo.videoWidth > 0 && srcVideo.videoHeight > 0) {
-                    const srcW = srcVideo.videoWidth;
-                    const srcH = srcVideo.videoHeight;
-                    const srcAspect = srcW / srcH;
+                    capCtx.fillStyle = "#000";
+                    capCtx.fillRect(0, 0, outW, outH);
 
-                    let sx = 0, sy = 0, sw = srcW, sh = srcH;
+                    if (srcVideo.readyState >= 2 && srcVideo.videoWidth > 0 && srcVideo.videoHeight > 0) {
+                        const srcW = srcVideo.videoWidth;
+                        const srcH = srcVideo.videoHeight;
+                        const srcAspect = srcW / srcH;
 
-                    if (srcAspect > outAspect) {
-                        sw = srcH * outAspect;
-                        sx = (srcW - sw) / 2;
-                    } else if (srcAspect < outAspect) {
-                        sh = srcW / outAspect;
-                        const portraitish = (srcH / srcW) >= 1.25;
-                        sy = portraitish ? 0 : (srcH - sh) / 2;
-                        if (sy < 0) sy = 0;
-                        if (sy + sh > srcH) sy = srcH - sh;
-                        if (sy < 0) sy = 0;
+                        let sx = 0, sy = 0, sw = srcW, sh = srcH;
+
+                        if (srcAspect > outAspect) {
+                            sw = srcH * outAspect;
+                            sx = (srcW - sw) / 2;
+                        } else if (srcAspect < outAspect) {
+                            sh = srcW / outAspect;
+                            const portraitish = (srcH / srcW) >= 1.25;
+                            sy = portraitish ? 0 : (srcH - sh) / 2;
+                            if (sy < 0) sy = 0;
+                            if (sy + sh > srcH) sy = srcH - sh;
+                            if (sy < 0) sy = 0;
+                        }
+
+                        capCtx.imageSmoothingEnabled = true;
+                        capCtx.drawImage(srcVideo, sx, sy, sw, sh, 0, 0, outW, outH);
                     }
-
-                    capCtx.imageSmoothingEnabled = true;
-                    capCtx.drawImage(srcVideo, sx, sy, sw, sh, 0, 0, outW, outH);
                 }
 
                 requestAnimationFrame(drawToFixedCanvas);
