@@ -3,9 +3,9 @@ import { EJS_COMPRESSION } from "./compression.js";
 import { EJS_GameManager } from "./GameManager.js";
 import { GamepadHandler } from "./gamepad.js";
 import { EJS_STORAGE, EJS_DUMMYSTORAGE } from "./storage.js";
-import { EJS_UTILS } from "./utils.js";
+import { cyrb53 } from "./utils.js";
 import { EJS_SETUP } from "./setup.js";
-import { netplayMethods } from "./netplay.js";
+import { Netplay } from "./netplay.js";
 import { EJS_license } from "./license.js";
 import * as CONSTS from "./consts.js";
 
@@ -228,7 +228,6 @@ class EmulatorJS {
             this.checkForUpdates();
         }
         this.netplayEnabled = true;
-        this.utils = new EJS_UTILS();
         this.config = config;
 
         this.setup = new EJS_SETUP(this);
@@ -318,21 +317,8 @@ class EmulatorJS {
         this.capture.video.videoBitrate = (typeof this.capture.video.videoBitrate === "number") ? this.capture.video.videoBitrate : 2.5 * 1024 * 1024;
         this.capture.video.audioBitrate = (typeof this.capture.video.audioBitrate === "number") ? this.capture.video.audioBitrate : 192 * 1024;
         this.bindListeners();
-        // Additions for Netplay
-        this.netplayCanvas = null; 
-        this.netplayShowTurnWarning = false;
-        this.netplayWarningShown = false;
         if (this.netplayEnabled) {
-            const iceServers = this.config.netplayICEServers || window.EJS_netplayICEServers || [];
-            const hasTurnServer = iceServers.some(server => 
-                server && typeof server.urls === 'string' && server.urls.startsWith('turn:')
-            );
-            if (!hasTurnServer) {
-                this.netplayShowTurnWarning = true;
-            }
-            if (this.netplayShowTurnWarning && this.debug) {
-                console.warn("WARNING: No TURN addresses are configured! Many clients may fail to connect!");
-            }
+            this.netplay = new Netplay(this);
         }
 
         if ((this.isMobile || this.hasTouchScreen) && this.virtualGamepad) {
@@ -2239,83 +2225,24 @@ class EmulatorJS {
 
         this.setVolume = (volume) => {
             this.saveSettings();
-            this.muted = volume === 0;
+            this.muted = (volume === 0);
             volumeSlider.value = volume;
             volumeSlider.setAttribute("aria-valuenow", volume * 100);
-            volumeSlider.setAttribute(
-                "aria-valuetext",
-                (volume * 100).toFixed(1) + "%",
-            );
-            volumeSlider.setAttribute(
-                "style",
-                "--value: " +
-                    volume * 100 +
-                    "%;margin-left: 5px;position: relative;z-index: 2;",
-            );
+            volumeSlider.setAttribute("aria-valuetext", (volume * 100).toFixed(1) + "%");
+            volumeSlider.setAttribute("style", "--value: " + volume * 100 + "%;margin-left: 5px;position: relative;z-index: 2;");
 
-            const isNetplayGuest =
-                this.isNetplay && this.netplay && !this.netplay.owner;
+            const skipLocalAudio = this.isNetplay && this.netplay && this.netplay.setVolume(volume);
 
-            if (isNetplayGuest) {
-                if (this.netplay.remoteGainNode) {
-                    this.netplay.remoteGainNode.gain.value = volume;
-                }
-
-                const audioElements = document.querySelectorAll(
-                    'audio[id^="ejs-remote-audio-"]',
-                );
-                audioElements.forEach(function (el) {
-                    el.volume = Math.max(0, Math.min(1, volume));
-                    el.muted = volume === 0;
-                });
-            } else {
-                if (
-                    this.Module &&
-                    this.Module.AL &&
-                    this.Module.AL.currentCtx
-                ) {
-                    const ctx = this.Module.AL.currentCtx;
-
-                    if (ctx.gain && ctx.gain.gain) {
-                        ctx.gain.gain.value = volume;
-                    }
-
-                    const sources = ctx.sources || {};
-                    for (const k in sources) {
-                        const s = sources[k];
-                        if (s && s.gain && s.gain.gain) {
-                            s.gain.gain.value = volume;
-                        }
-                    }
-                }
-
-                if (
-                    this.isNetplay &&
-                    this.netplay &&
-                    this.netplay.owner &&
-                    this.netplay.streamCompensationGain
-                ) {
-                    const compensation = volume > 0.01 ? 1.0 / volume : 1.0;
-                    this.netplay.streamCompensationGain.gain.value = Math.min(
-                        compensation,
-                        20,
-                    );
-                    if (this.debug)
-                        console.log(
-                            "Stream compensation adjusted: " +
-                                this.netplay.streamCompensationGain.gain.value,
-                        );
-                }
+            if (!skipLocalAudio && this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.sources) {
+                this.Module.AL.currentCtx.sources.forEach(e => {
+                    e.gain.gain.value = volume;
+                })
             }
-
-            if (
-                !this.config.buttonOpts ||
-                this.config.buttonOpts.mute !== false
-            ) {
-                unmuteButton.style.display = volume === 0 ? "" : "none";
-                muteButton.style.display = volume === 0 ? "none" : "";
+            if (!this.config.buttonOpts || this.config.buttonOpts.mute !== false) {
+                unmuteButton.style.display = (volume === 0) ? "" : "none";
+                muteButton.style.display = (volume === 0) ? "none" : "";
             }
-        };
+        }
 
         this.addEventListener(volumeSlider, "change mousemove touchmove mousedown touchstart mouseup", (e) => {
             setTimeout(() => {
@@ -5636,7 +5563,41 @@ class EmulatorJS {
         if (hidden) popup.setAttribute("hidden", "");
         popup.appendChild(popupMsg);
         return [popup, popupMsg];
-    }   
+    }
+
+    updateNetplayUI(isJoining) {
+        if (!this.elements.bottomBar) return;
+
+        const bar = this.elements.bottomBar;
+        const isClient = !this.netplay.owner;
+        const shouldHideButtons = isJoining && isClient;
+        const elementsToToggle = [
+            ...(bar.playPause || []),
+            ...(bar.restart || []),
+            ...(bar.saveState || []),
+            ...(bar.loadState || []),
+            ...(bar.cheat || []),
+            ...(bar.saveSavFiles || []),
+            ...(bar.loadSavFiles || []),
+            ...(bar.exit || []),
+            ...(bar.contextMenu || []),
+            ...(bar.cacheManager || [])
+        ];
+        
+        // Add the parent containers to the same logic
+        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
+            elementsToToggle.push(bar.settings[0].parentElement);
+        }
+        if (this.diskParent) {
+            elementsToToggle.push(this.diskParent);
+        }
+
+        elementsToToggle.forEach(el => {
+            if (el) {
+                el.classList.toggle('netplay-hidden', shouldHideButtons);
+            }
+        });
+    }    
     createCheatsMenu() {
         const body = this.createPopup(
             "Cheats",
@@ -6085,41 +6046,27 @@ class EmulatorJS {
     }
 
     screenshot(callback, source, format, upscale) {
-        const imageFormat =
-            format ||
-            this.getSettingValue("screenshotFormat") ||
-            this.capture.photo.format;
-        const imageUpscale =
-            upscale ||
-            parseInt(
-                this.getSettingValue("screenshotUpscale") ||
-                    this.capture.photo.upscale,
-            );
-        const screenshotSource =
-            source ||
-            this.getSettingValue("screenshotSource") ||
-            this.capture.photo.source;
-        const videoRotation = parseInt(
-            this.getSettingValue("videoRotation") || 0,
-        );
-        const aspectRatio =
-            this.gameManager.getVideoDimensions("aspect") || 1.333333;
+        const imageFormat = format || this.getSettingValue("screenshotFormat") || this.capture.photo.format;
+        const imageUpscale = upscale || parseInt(this.getSettingValue("screenshotUpscale") || this.capture.photo.upscale);
+        const screenshotSource = source || this.getSettingValue("screenshotSource") || this.capture.photo.source;
+        const videoRotation = parseInt(this.getSettingValue("videoRotation") || 0);
+        const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
         const gameWidth = this.gameManager.getVideoDimensions("width") || 256;
         const gameHeight = this.gameManager.getVideoDimensions("height") || 224;
-        const videoTurned = videoRotation === 1 || videoRotation === 3;
+        const videoTurned = (videoRotation === 1 || videoRotation === 3);
         let width = this.canvas.width;
         let height = this.canvas.height;
         let scaleHeight = imageUpscale;
         let scaleWidth = imageUpscale;
         let scale = 1;
-
+        
         if (screenshotSource === "retroarch") {
             if (width >= height) {
                 width = height * aspectRatio;
             } else if (width < height) {
                 height = width / aspectRatio;
             }
-            this.gameManager.screenshot().then((screenshot) => {
+            this.gameManager.screenshot().then(screenshot => {
                 const blob = new Blob([screenshot], { type: "image/png" });
                 if (imageUpscale === 0) {
                     callback(blob, "png");
@@ -6136,17 +6083,13 @@ class EmulatorJS {
                         ctx.imageSmoothingEnabled = false;
                         ctx.scale(scaleWidth, scaleHeight);
                         ctx.drawImage(img, 0, 0, width, height);
-                        canvas.toBlob(
-                            (blob) => {
-                                callback(blob, imageFormat);
-                                img.remove();
-                                URL.revokeObjectURL(screenshotUrl);
-                                canvas.remove();
-                            },
-                            "image/" + imageFormat,
-                            1,
-                        );
-                    };
+                        canvas.toBlob((blob) => {
+                            callback(blob, imageFormat);
+                            img.remove();
+                            URL.revokeObjectURL(screenshotUrl);
+                            canvas.remove();
+                        }, "image/" + imageFormat, 1);
+                    }
                 }
             });
         } else if (screenshotSource === "canvas") {
@@ -6155,9 +6098,9 @@ class EmulatorJS {
             } else if (width < height && !videoTurned) {
                 height = width / aspectRatio;
             } else if (width >= height && videoTurned) {
-                width = height * (1 / aspectRatio);
+                width = height * (1/aspectRatio);
             } else if (width < height && videoTurned) {
-                width = height / (1 / aspectRatio);
+                width = height / (1/aspectRatio);
             }
             if (imageUpscale === 0) {
                 scale = gameHeight / height;
@@ -6184,21 +6127,11 @@ class EmulatorJS {
                 offsetY = (this.canvas.height - height) / -2;
             }
             const drawNextFrame = () => {
-                captureCtx.drawImage(
-                    this.canvas,
-                    offsetX,
-                    offsetY,
-                    this.canvas.width,
-                    this.canvas.height,
-                );
-                captureCanvas.toBlob(
-                    (blob) => {
-                        callback(blob, imageFormat);
-                        captureCanvas.remove();
-                    },
-                    "image/" + imageFormat,
-                    1,
-                );
+                captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
+                captureCanvas.toBlob((blob) => {
+                    callback(blob, imageFormat);
+                    captureCanvas.remove();
+                }, "image/" + imageFormat, 1);
             };
             requestAnimationFrame(drawNextFrame);
         }
@@ -6206,244 +6139,65 @@ class EmulatorJS {
 
     takeScreenshot(source, format, upscale) {
         return new Promise((resolve) => {
-            this.screenshot(
-                async (blob, returnFormat) => {
-                    const arrayBuffer = await blob.arrayBuffer();
-                    const uint8 = new Uint8Array(arrayBuffer);
-                    resolve({ screenshot: uint8, format: returnFormat });
-                },
-                source,
-                format,
-                upscale,
-            );
+            this.screenshot(async (blob, returnFormat) => {
+                const arrayBuffer = await blob.arrayBuffer();
+                const uint8 = new Uint8Array(arrayBuffer);
+                resolve({ screenshot: uint8, format: returnFormat });
+            }, source, format, upscale);
         });
     }
 
     collectScreenRecordingMediaTracks(canvasEl, fps) {
-        if (this.debug) console.log("collectScreenRecordingMediaTracks");
-        if (this.debug)
-            console.log("Canvas: " + canvasEl.width + "x" + canvasEl.height);
-
         let videoTrack = null;
         const videoTracks = canvasEl.captureStream(fps).getVideoTracks();
-        if (this.debug)
-            console.log(
-                "Video tracks from captureStream: " + videoTracks.length,
-            );
-
         if (videoTracks.length !== 0) {
             videoTrack = videoTracks[0];
-            if (this.debug)
-                console.log(
-                    "Video track: " +
-                        videoTrack.label +
-                        " " +
-                        videoTrack.readyState,
-                );
         } else {
             if (this.debug) console.error("Unable to capture video stream");
             return null;
         }
 
         let audioTrack = null;
-
-        if (
-            this.Module &&
-            this.Module.AL &&
-            this.Module.AL.currentCtx &&
-            this.Module.AL.currentCtx.audioCtx
-        ) {
+        if (this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.audioCtx) {
             const alContext = this.Module.AL.currentCtx;
             const audioContext = alContext.audioCtx;
 
-            if (this.debug)
-                console.log("AL AudioContext state: " + audioContext.state);
-            if (this.debug)
-                console.log(
-                    "AL sources: " +
-                        Object.keys(alContext.sources || {}).length,
-                );
-
-            if (audioContext.state === "suspended") {
-                audioContext.resume().catch((e) => {
-                    if (this.debug)
-                        console.error("Failed to resume AudioContext:", e);
-                });
-            }
-
             const gainNodes = [];
-            if (alContext.sources) {
-                for (const sourceIdx in alContext.sources) {
-                    const source = alContext.sources[sourceIdx];
-                    if (source && source.gain) gainNodes.push(source.gain);
-                }
+            for (let sourceIdx in alContext.sources) {
+                gainNodes.push(alContext.sources[sourceIdx].gain);
             }
-            if (this.debug)
-                console.log("Gain nodes collected: " + gainNodes.length);
 
-            const masterGain =
-                alContext.gain || alContext.masterGain || alContext.outputGain;
+            const merger = audioContext.createChannelMerger(gainNodes.length);
+            gainNodes.forEach(node => node.connect(merger));
 
-            if (masterGain || gainNodes.length > 0) {
-                try {
-                    this.netplay = this.netplay || {};
+            const destination = audioContext.createMediaStreamDestination();
+            merger.connect(destination);
 
-                    const destination =
-                        this.netplay.audioDestination ||
-                        audioContext.createMediaStreamDestination();
-                    this.netplay.audioDestination = destination;
-
-                    const streamGain =
-                        this.netplay.streamCompensationGain ||
-                        audioContext.createGain();
-                    this.netplay.streamCompensationGain = streamGain;
-
-                    const currentVolume =
-                        typeof this.volume === "number" && this.volume > 0.01
-                            ? this.volume
-                            : 1.0;
-                    streamGain.gain.value = 1.0 / currentVolume;
-                    if (this.debug)
-                        console.log(
-                            "Stream compensation gain: " +
-                                streamGain.gain.value +
-                                " (local volume: " +
-                                currentVolume +
-                                ")",
-                        );
-
-                    if (!this.netplay._streamGainConnectedToDest) {
-                        streamGain.connect(destination);
-                        this.netplay._streamGainConnectedToDest = true;
-                    }
-
-                    if (!this.netplay._audioTapRetryStarted) {
-                        this.netplay._audioTapRetryStarted = true;
-                        this.netplay._connectedSourceGains =
-                            this.netplay._connectedSourceGains || new WeakSet();
-
-                        const self = this;
-                        const tryTap = function () {
-                            const masterGain =
-                                alContext.gain ||
-                                alContext.masterGain ||
-                                alContext.outputGain;
-                            if (
-                                masterGain &&
-                                typeof masterGain.connect === "function"
-                            ) {
-                                if (!self.netplay._alMasterConnected) {
-                                    if (self.debug)
-                                        console.log(
-                                            "Using OpenAL master gain tap for stream audio",
-                                        );
-                                    try {
-                                        masterGain.connect(streamGain);
-                                    } catch (e) {}
-                                    self.netplay._alMasterConnected = true;
-                                }
-                                return true;
-                            }
-
-                            const sources = alContext.sources || {};
-                            let connectedAny = false;
-                            for (const k in sources) {
-                                const s = sources[k];
-                                const g = s && s.gain;
-                                if (
-                                    g &&
-                                    !self.netplay._connectedSourceGains.has(g)
-                                ) {
-                                    try {
-                                        g.connect(streamGain);
-                                    } catch (e) {}
-                                    self.netplay._connectedSourceGains.add(g);
-                                    connectedAny = true;
-                                }
-                            }
-                            return connectedAny;
-                        };
-
-                        tryTap();
-                        clearInterval(this.netplay._audioTapRetryTimer);
-                        this.netplay._audioTapRetryTimer = setInterval(
-                            function () {
-                                if (self.netplay._alMasterConnected) {
-                                    clearInterval(
-                                        self.netplay._audioTapRetryTimer,
-                                    );
-                                    self.netplay._audioTapRetryTimer = null;
-                                    return;
-                                }
-                                tryTap();
-                            },
-                            500,
-                        );
-                    }
-
-                    const audioTracks = destination.stream.getAudioTracks();
-                    if (this.debug)
-                        console.log(
-                            "Audio tracks created: " + audioTracks.length,
-                        );
-
-                    if (audioTracks.length !== 0) {
-                        audioTrack = audioTracks[0];
-                        if (this.debug)
-                            console.log(
-                                "Audio track: " +
-                                    audioTrack.label +
-                                    " readyState: " +
-                                    audioTrack.readyState +
-                                    " muted: " +
-                                    audioTrack.muted,
-                            );
-                    }
-                } catch (e) {
-                    if (this.debug)
-                        console.error("Error creating audio destination:", e);
-                }
+            const audioTracks = destination.stream.getAudioTracks();
+            if (audioTracks.length !== 0) {
+                audioTrack = audioTracks[0];
             }
         }
 
         const stream = new MediaStream();
-        if (videoTrack && videoTrack.readyState === "live")
+        if (videoTrack && videoTrack.readyState === "live") {
             stream.addTrack(videoTrack);
-        if (audioTrack && audioTrack.readyState === "live")
+        }
+        if (audioTrack && audioTrack.readyState === "live") {
             stream.addTrack(audioTrack);
-
-        if (this.debug)
-            console.log(
-                "Final stream - video tracks: " +
-                    stream.getVideoTracks().length +
-                    " audio tracks: " +
-                    stream.getAudioTracks().length,
-            );
+        }
         return stream;
     }
 
     screenRecord() {
-        const captureFps =
-            this.getSettingValue("screenRecordingFPS") ||
-            this.capture.video.fps;
-        const captureFormat =
-            this.getSettingValue("screenRecordFormat") ||
-            this.capture.video.format;
-        const captureUpscale =
-            this.getSettingValue("screenRecordUpscale") ||
-            this.capture.video.upscale;
-        const captureVideoBitrate =
-            this.getSettingValue("screenRecordVideoBitrate") ||
-            this.capture.video.videoBitrate;
-        const captureAudioBitrate =
-            this.getSettingValue("screenRecordAudioBitrate") ||
-            this.capture.video.audioBitrate;
-        const aspectRatio =
-            this.gameManager.getVideoDimensions("aspect") || 1.333333;
-        const videoRotation = parseInt(
-            this.getSettingValue("videoRotation") || 0,
-        );
-        const videoTurned = videoRotation === 1 || videoRotation === 3;
+        const captureFps = this.getSettingValue("screenRecordingFPS") || this.capture.video.fps;
+        const captureFormat = this.getSettingValue("screenRecordFormat") || this.capture.video.format;
+        const captureUpscale = this.getSettingValue("screenRecordUpscale") || this.capture.video.upscale;
+        const captureVideoBitrate = this.getSettingValue("screenRecordVideoBitrate") || this.capture.video.videoBitrate;
+        const captureAudioBitrate = this.getSettingValue("screenRecordAudioBitrate") || this.capture.video.audioBitrate;
+        const aspectRatio = this.gameManager.getVideoDimensions("aspect") || 1.333333;
+        const videoRotation = parseInt(this.getSettingValue("videoRotation") || 0);
+        const videoTurned = (videoRotation === 1 || videoRotation === 3);
         let width = 800;
         let height = 600;
         let frameAspect = this.canvas.width / this.canvas.height;
@@ -6455,31 +6209,29 @@ class EmulatorJS {
         const captureCtx = captureCanvas.getContext("2d", { alpha: false });
         captureCtx.fillStyle = "#000";
         captureCtx.imageSmoothingEnabled = false;
-
-        const self = this;
         const updateSize = () => {
-            width = self.canvas.width;
-            height = self.canvas.height;
-            frameAspect = width / height;
+            width = this.canvas.width;
+            height = this.canvas.height;
+            frameAspect = width / height
             if (width >= height && !videoTurned) {
                 width = height * aspectRatio;
             } else if (width < height && !videoTurned) {
                 height = width / aspectRatio;
             } else if (width >= height && videoTurned) {
-                width = height * (1 / aspectRatio);
+                width = height * (1/aspectRatio);
             } else if (width < height && videoTurned) {
-                width = height / (1 / aspectRatio);
+                width = height / (1/aspectRatio);
             }
             canvasAspect = width / height;
             captureCanvas.width = width * captureUpscale;
             captureCanvas.height = height * captureUpscale;
             captureCtx.scale(captureUpscale, captureUpscale);
             if (frameAspect > canvasAspect) {
-                offsetX = (self.canvas.width - width) / -2;
+                offsetX = (this.canvas.width - width) / -2;
             } else if (frameAspect < canvasAspect) {
-                offsetY = (self.canvas.height - height) / -2;
+                offsetY = (this.canvas.height - height) / -2;
             }
-        };
+        }
         updateSize();
         this.addEventListener(this.canvas, "resize", () => {
             updateSize();
@@ -6488,13 +6240,7 @@ class EmulatorJS {
         let animation = true;
 
         const drawNextFrame = () => {
-            captureCtx.drawImage(
-                self.canvas,
-                offsetX,
-                offsetY,
-                self.canvas.width,
-                self.canvas.height,
-            );
+            captureCtx.drawImage(this.canvas, offsetX, offsetY, this.canvas.width, this.canvas.height);
             if (animation) {
                 requestAnimationFrame(drawNextFrame);
             }
@@ -6502,16 +6248,13 @@ class EmulatorJS {
         requestAnimationFrame(drawNextFrame);
 
         const chunks = [];
-        const tracks = this.collectScreenRecordingMediaTracks(
-            captureCanvas,
-            captureFps,
-        );
+        const tracks = this.collectScreenRecordingMediaTracks(captureCanvas, captureFps);
         const recorder = new MediaRecorder(tracks, {
             videoBitsPerSecond: captureVideoBitrate,
             audioBitsPerSecond: captureAudioBitrate,
-            mimeType: "video/" + captureFormat,
+            mimeType: "video/" + captureFormat
         });
-        recorder.addEventListener("dataavailable", (e) => {
+        recorder.addEventListener("dataavailable", e => {
             chunks.push(e.data);
         });
         recorder.addEventListener("stop", () => {
@@ -6520,16 +6263,7 @@ class EmulatorJS {
             const date = new Date();
             const a = document.createElement("a");
             a.href = url;
-            a.download =
-                this.getBaseFileName() +
-                "-" +
-                date.getMonth() +
-                "-" +
-                date.getDate() +
-                "-" +
-                date.getFullYear() +
-                "." +
-                captureFormat;
+            a.download = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() + "." + captureFormat;
             a.click();
 
             animation = false;
@@ -6543,9 +6277,7 @@ class EmulatorJS {
     enableSaveUpdateEvent() {
         function withGameSaveHash(saveFile, callback) {
             if (saveFile) {
-                this.utils
-                    .cyrb53(saveFile)
-                    .then((digest) => callback(digest, saveFile));
+                cyrb53(saveFile).then(digest => callback(digest, saveFile));
             } else {
                 console.warn("Save file not found when attempting to hash");
                 callback(null, null);
@@ -6553,34 +6285,24 @@ class EmulatorJS {
         }
 
         var recentHash = null;
-        if (this.gameManager) {
-            withGameSaveHash(this.gameManager.getSaveFile(false), (hash, _) => {
-                recentHash = hash;
-            });
-        }
+        if (this.gameManager) { withGameSaveHash(this.gameManager.getSaveFile(false), (hash, _) => { recentHash = hash }) }
 
-        this.on("saveSaveFiles", (saveFile) => {
+        this.on("saveSaveFiles", saveFile => {
             withGameSaveHash(saveFile, (newHash, fileContents) => {
                 if (newHash && fileContents && newHash !== recentHash) {
                     recentHash = newHash;
-                    this.takeScreenshot(
-                        this.capture.photo.source,
-                        this.capture.photo.format,
-                        this.capture.photo.upscale,
-                    ).then(({ screenshot, format }) => {
+                    this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale).then(({ screenshot, format }) => {
                         this.callEvent("saveUpdate", {
                             hash: newHash,
                             save: fileContents,
                             screenshot: screenshot,
-                            format: format,
+                            format: format
                         });
-                    });
+                    })
                 }
-            });
-        });
+            })
+        })
     }
 }
-
-Object.assign(EmulatorJS.prototype, netplayMethods);
 
 export default EmulatorJS;
