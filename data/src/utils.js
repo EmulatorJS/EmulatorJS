@@ -39,4 +39,12 @@ export class EJS_UTILS {
         // always be 0 or 1 (since it is only 1 bit)
         return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, "0");
     };
+        /**
+     * Generate a random GUID string.
+     * @returns {string} A GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+     */
+    guid() {
+        const s4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+        return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+    }
 }
