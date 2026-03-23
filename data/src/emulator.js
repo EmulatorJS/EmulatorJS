@@ -5564,40 +5564,6 @@ class EmulatorJS {
         popup.appendChild(popupMsg);
         return [popup, popupMsg];
     }
-
-    updateNetplayUI(isJoining) {
-        if (!this.elements.bottomBar) return;
-
-        const bar = this.elements.bottomBar;
-        const isClient = !this.netplay.owner;
-        const shouldHideButtons = isJoining && isClient;
-        const elementsToToggle = [
-            ...(bar.playPause || []),
-            ...(bar.restart || []),
-            ...(bar.saveState || []),
-            ...(bar.loadState || []),
-            ...(bar.cheat || []),
-            ...(bar.saveSavFiles || []),
-            ...(bar.loadSavFiles || []),
-            ...(bar.exit || []),
-            ...(bar.contextMenu || []),
-            ...(bar.cacheManager || [])
-        ];
-        
-        // Add the parent containers to the same logic
-        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
-            elementsToToggle.push(bar.settings[0].parentElement);
-        }
-        if (this.diskParent) {
-            elementsToToggle.push(this.diskParent);
-        }
-
-        elementsToToggle.forEach(el => {
-            if (el) {
-                el.classList.toggle('netplay-hidden', shouldHideButtons);
-            }
-        });
-    }    
     createCheatsMenu() {
         const body = this.createPopup(
             "Cheats",
