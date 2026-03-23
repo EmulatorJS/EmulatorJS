@@ -347,11 +347,17 @@ export class Netplay {
     /**
      * Apply a volume change during an active netplay session.
      *
-     * For guests this adjusts remote audio elements and the remote gain node.
+     * For guests this adjusts remote audio elements and the remote gain node,
+     * and returns `true` to signal that the caller should skip local emulator
+     * audio adjustments.
+     *
      * For hosts this adjusts the stream compensation gain so the outgoing
-     * stream level stays constant regardless of local volume.
+     * stream level stays constant regardless of local volume, and returns
+     * `false` because local audio still needs to be adjusted by the caller.
      *
      * @param {number} volume - Volume level between 0 and 1.
+     * @returns {boolean} True if the caller should skip local audio (guest),
+     *                     false if local audio should still be adjusted (host).
      */
     setVolume(volume) {
         const isGuest = this.emu.isNetplay && !this.owner;
@@ -368,7 +374,7 @@ export class Netplay {
                 el.volume = Math.max(0, Math.min(1, volume));
                 el.muted = volume === 0;
             });
-            return;
+            return true;
         }
 
         if (this.emu.isNetplay && this.owner && this.streamCompensationGain) {
@@ -381,6 +387,8 @@ export class Netplay {
                 );
             }
         }
+
+        return false;
     }
 
     /* ------------------------------------------------------------------ */
