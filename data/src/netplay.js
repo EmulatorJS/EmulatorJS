@@ -1,4 +1,4 @@
-import { EJS_UTILS } from "./utils.js";
+this.utils = { guid, simpleHash, cyrb53 };
 
 /**
  * Netplay — owns all netplay state and logic.
