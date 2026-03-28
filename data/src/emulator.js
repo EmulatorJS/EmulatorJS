@@ -1242,8 +1242,7 @@ class EmulatorJS {
         this.createContextMenu();
         this.createBottomMenuBar();
         this.createControlSettingMenu();
-        this.createCheatsMenu()
-        this.createNetplayMenu();
+        this.createCheatsMenu();
         this.setVirtualGamepad();
         this.addEventListener(this.elements.parent, "keydown keyup", this.keyChange.bind(this));
         this.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
@@ -1884,7 +1883,10 @@ class EmulatorJS {
         })
     }
     isPopupOpen() {
-        return this.cheatMenu.style.display !== "none" || this.netplayMenu.style.display !== "none" || this.controlMenu.style.display !== "none" || this.currentPopup !== null;
+        return (this.cheatMenu && this.cheatMenu.style.display !== "none") || 
+               (this.netplay && this.netplay.menu && this.netplay.menu.style.display !== "none") ||
+               (this.controlMenu && this.controlMenu.style.display !== "none") || 
+               this.currentPopup !== null;
     }
     isChild(first, second) {
         if (!first || !second) return false;
