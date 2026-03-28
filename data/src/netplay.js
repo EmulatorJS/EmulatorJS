@@ -1,4 +1,4 @@
-this.utils = { guid, simpleHash, cyrb53 };
+import { guid, simpleHash, cyrb53 } from "./utils.js";
 
 /**
  * Netplay — owns all netplay state and logic.
@@ -21,7 +21,7 @@ export class Netplay {
         this.emu = emu;
 
         /** @type {EJS_UTILS} */
-        this.utils = new EJS_UTILS();
+        this.utils = { guid, simpleHash, cyrb53 };
 
         /** @type {string|null} Player display name. */
         this.name = null;
