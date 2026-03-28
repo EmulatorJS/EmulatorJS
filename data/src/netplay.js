@@ -2494,4 +2494,236 @@ export class Netplay {
             this.emu.Module.postMainLoop = hook;
         }
     }
+    /* ------------------------------------------------------------------ */
+    /* Netplay menu UI                                                     */
+    /* ------------------------------------------------------------------ */
+
+    /**
+     * Build the netplay popup menu (called once on first open) and wire up
+     * openNetplayMenu so subsequent clicks just show the cached popup.
+     */
+    createNetplayMenu() {
+        const emu = this.emu;
+
+        const t = emu.createPopup("Netplay", {
+            "Create a Room": () => {
+                this.unlockMobileAudio();
+                emu.isNetplay ? this.leaveRoom() : this.showOpenRoomDialog();
+            },
+            "Close": () => {
+                emu.netplayMenu.style.display = "none";
+                this.stopListUpdates();
+            }
+        }, true);
+
+        emu.netplayMenu = t.parentElement;
+        const createButton = emu.netplayMenu.getElementsByTagName("a")[0];
+
+        // --- Rooms tab ---
+        const roomsDiv = emu.createElement("div");
+        const roomsLabel = emu.createElement("strong");
+        roomsLabel.innerText = emu.localization("Rooms");
+        const roomsTable = emu.createElement("table");
+        roomsTable.classList.add("ejs_netplay_table");
+        roomsTable.style.width = "100%";
+        roomsTable.setAttribute("cellspacing", "0");
+        const roomsThead = emu.createElement("thead");
+        const roomsHeaderRow = emu.createElement("tr");
+        const addRoomsCol = (text) => {
+            const td = emu.createElement("td");
+            td.innerText = text;
+            td.style.textAlign = "center";
+            roomsHeaderRow.appendChild(td);
+            return td;
+        };
+        roomsThead.appendChild(roomsHeaderRow);
+        addRoomsCol("Room Name").style.textAlign = "left";
+        addRoomsCol("Players").style.width = "80px";
+        addRoomsCol("").style.width = "80px";
+        roomsTable.appendChild(roomsThead);
+        const roomsTbody = emu.createElement("tbody");
+        roomsTable.appendChild(roomsTbody);
+        roomsDiv.appendChild(roomsLabel);
+        roomsDiv.appendChild(roomsTable);
+
+        // --- Joined tab ---
+        const joinedDiv = emu.createElement("div");
+        const roomNameElem = emu.createElement("strong");
+        roomNameElem.innerText = "{roomname}";
+        const passwordElem = emu.createElement("div");
+        passwordElem.innerText = "Password: ";
+        const playersTable = emu.createElement("table");
+        playersTable.classList.add("ejs_netplay_table");
+        playersTable.style.width = "100%";
+        playersTable.setAttribute("cellspacing", "0");
+        const playersThead = emu.createElement("thead");
+        const playersHeaderRow = emu.createElement("tr");
+        const addPlayersCol = (text) => {
+            const td = emu.createElement("td");
+            td.innerText = text;
+            playersHeaderRow.appendChild(td);
+            return td;
+        };
+        playersThead.appendChild(playersHeaderRow);
+        addPlayersCol("Player").style.width = "80px";
+        addPlayersCol("Name");
+        addPlayersCol("").style.width = "80px";
+        playersTable.appendChild(playersThead);
+        const playersTbody = emu.createElement("tbody");
+        playersTable.appendChild(playersTbody);
+        joinedDiv.appendChild(roomNameElem);
+        joinedDiv.appendChild(passwordElem);
+        joinedDiv.appendChild(playersTable);
+
+        // --- Chat ---
+        const chatWrap = emu.createElement("div");
+        chatWrap.classList.add("ejs_netplay_chat_container");
+        chatWrap.style.marginTop = "10px";
+        const chatHeaderRow = emu.createElement("div");
+        chatHeaderRow.classList.add("ejs_netplay_chat_header_row");
+        chatWrap.appendChild(chatHeaderRow);
+        const chatLabel = emu.createElement("strong");
+        chatLabel.innerText = emu.localization("Chat");
+        chatHeaderRow.appendChild(chatLabel);
+        const chatHint = emu.createElement("span");
+        chatHint.classList.add("ejs_netplay_chat_hint");
+        chatHint.innerText = emu.localization("Everyone or private");
+        chatHeaderRow.appendChild(chatHint);
+        const chatLog = emu.createElement("div");
+        chatLog.classList.add("ejs_netplay_chat_log");
+        chatWrap.appendChild(chatLog);
+        const chatRow = emu.createElement("div");
+        chatRow.classList.add("ejs_netplay_chat_row");
+        chatWrap.appendChild(chatRow);
+        const chatTo = emu.createElement("select");
+        chatTo.classList.add("ejs_netplay_chat_to");
+        const everyoneOpt = document.createElement("option");
+        everyoneOpt.value = "all";
+        everyoneOpt.innerText = emu.localization("Everyone");
+        chatTo.appendChild(everyoneOpt);
+        chatRow.appendChild(chatTo);
+        const chatInput = emu.createElement("input");
+        chatInput.type = "text";
+        chatInput.maxLength = 300;
+        chatInput.placeholder = emu.localization("Type a message...");
+        chatInput.classList.add("ejs_netplay_chat_input");
+        chatRow.appendChild(chatInput);
+        const chatSendBtn = emu.createElement("button");
+        chatSendBtn.classList.add("ejs_button_button");
+        chatSendBtn.style.height = "34px";
+        chatSendBtn.style.minWidth = "70px";
+        chatSendBtn.innerText = emu.localization("Send");
+        chatRow.appendChild(chatSendBtn);
+        joinedDiv.appendChild(chatWrap);
+        joinedDiv.style.display = "none";
+
+        t.appendChild(roomsDiv);
+        t.appendChild(joinedDiv);
+
+        // Wire up the UI element references on this Netplay instance
+        this.table = roomsTbody;
+        this.playerTable = playersTbody;
+        this.passwordElem = passwordElem;
+        this.roomNameElem = roomNameElem;
+        this.createButton = createButton;
+        this.tabs = [roomsDiv, joinedDiv];
+        this.chatWrap = chatWrap;
+        this.chatLog = chatLog;
+        this.chatTo = chatTo;
+        this.chatInput = chatInput;
+        this.chatSendBtn = chatSendBtn;
+        this._chatBound = false;
+    }
+
+    /**
+     * Open the netplay menu popup, creating it first if needed.
+     * Shows a name prompt on first use, then starts room list polling.
+     */
+    openNetplayMenu() {
+        const emu = this.emu;
+
+        if (!emu.netplayMenu) {
+            this.createNetplayMenu();
+        }
+
+        this.checkTurnConfig();
+        this.showTurnWarningIfNeeded(emu.netplayMenu);
+
+        emu.netplayMenu.style.display = "";
+
+        if (!this.name) {
+            const popups = emu.createSubPopup();
+            emu.netplayMenu.appendChild(popups[0]);
+            popups[1].classList.add("ejs_cheat_parent");
+            const popup = popups[1];
+
+            const wrapper = emu.createElement("div");
+            const heading = emu.createElement("h2");
+            heading.innerText = emu.localization("Set Player Name");
+            heading.classList.add("ejs_netplay_name_heading");
+            wrapper.appendChild(heading);
+            popup.appendChild(wrapper);
+
+            const form = emu.createElement("div");
+            form.classList.add("ejs_netplay_header");
+            const label = emu.createElement("strong");
+            label.innerText = emu.localization("Player Name");
+            const nameInput = emu.createElement("input");
+            nameInput.type = "text";
+            nameInput.setAttribute("maxlength", 20);
+            form.appendChild(label);
+            form.appendChild(emu.createElement("br"));
+            form.appendChild(nameInput);
+            popup.appendChild(form);
+            popup.appendChild(emu.createElement("br"));
+
+            const btnRow = emu.createElement("div");
+            btnRow.style.display = "flex";
+            btnRow.style.justifyContent = "center";
+            btnRow.style.gap = "10px";
+            popup.appendChild(btnRow);
+
+            const submitBtn = emu.createElement("button");
+            submitBtn.classList.add("ejs_button_button", "ejs_popup_submit");
+            submitBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
+            submitBtn.innerText = emu.localization("Submit");
+            btnRow.appendChild(submitBtn);
+
+            const cancelBtn = emu.createElement("button");
+            cancelBtn.classList.add("ejs_button_button", "ejs_popup_submit");
+            cancelBtn.innerText = emu.localization("Cancel");
+            btnRow.appendChild(cancelBtn);
+
+            const removePopup = () => popups[0].remove();
+
+            emu.addEventListener(submitBtn, "click", () => {
+                if (nameInput.value.trim()) {
+                    this.name = nameInput.value.trim();
+                    removePopup();
+                    this.bindChatUI();
+                    this.chatRefreshRecipients();
+                    this.configure();
+                    this.updateTableList();
+                    this.startListUpdates();
+                }
+            });
+            emu.addEventListener(cancelBtn, "click", () => {
+                removePopup();
+                emu.netplayMenu.style.display = "none";
+                this.stopListUpdates();
+            });
+            emu.addEventListener(nameInput, "keydown", (e) => {
+                if (e.key === "Enter") { e.preventDefault(); submitBtn.click(); }
+                else if (e.key === "Escape") { e.preventDefault(); cancelBtn.click(); }
+            });
+            setTimeout(() => nameInput.focus(), 0);
+            return;
+        }
+
+        this.bindChatUI();
+        this.chatRefreshRecipients();
+        this.configure();
+        this.updateTableList();
+        this.startListUpdates();
+    }
 }
