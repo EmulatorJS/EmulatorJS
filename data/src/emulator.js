@@ -1884,7 +1884,7 @@ class EmulatorJS {
     }
     isPopupOpen() {
         return (this.cheatMenu && this.cheatMenu.style.display !== "none") || 
-               (this.netplay && this.netplay.menu && this.netplay.menu.style.display !== "none") ||
+               (this.netplay && this.netplay._menuElement && this.netplay._menuElement.style.display !== "none") ||
                (this.controlMenu && this.controlMenu.style.display !== "none") || 
                this.currentPopup !== null;
     }
@@ -2178,7 +2178,12 @@ class EmulatorJS {
             this.gameManager.loadSaveFiles();
         });
         const netplay = addButton(this.config.buttonOpts.netplay, async () => {
-            this.openNetplayMenu();
+            if (this.netplay) {
+                if (!this.netplay._menuElement) {
+                    this.netplay.createNetplayMenu();
+                }
+                this.openNetplayMenu(); 
+            }
         });
         
         // add custom buttons
