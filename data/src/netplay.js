@@ -1,12 +1,13 @@
 /**
- * Netplay module for EmulatorJS
- * Handles peer-to-peer multiplayer functionality
+ * Netplay - WebRTC-based multiplayer for EmulatorJS
+ * Handles room creation, peer connections, video/audio streaming, and input sync
  */
 export class Netplay {
     constructor(emu) {
         if (!emu) throw new Error("Netplay requires an EmulatorJS instance");
         this.emu = emu;
 
+        // Connection state
         this.owner = false;
         this.connected = false;
         this.room = null;
@@ -18,29 +19,30 @@ export class Netplay {
         this.name = null;
         this.extra = null;
         this.maxPlayers = 4;
+
+        // Input synchronization
         this.inputs = {};
         this.inputsData = {};
         this.init_frame = 0;
         this.currentFrame = 0;
+
+        // WebRTC state
         this.webRtcReady = false;
         this.video = null;
         this.frozen = null;
         this.previousPlayers = {};
         this.captureCanvas = null;
+        this._captureCtx = null;
+        this._captureLoopRunning = false;
         this.captureRunning = false;
+
+        // Audio handling
         this.remoteAudioElements = {};
         this.remoteAudioContext = null;
         this.remoteGainNode = null;
-        this._overlay = null;
-        this._overlaySync = null;
-        this._vvSync = null;
-        this._fsSync = null;
-        this._overlayRO = null;
-        this._hostRawStream = null;
-        this._hostOutStream = null;
-        this._hostSourceVideo = null;
+
+        // UI restoration state
         this._restoreParentPosition = null;
-        this._uiZBoosted = null;
         this._gotVideoEver = false;
         this._audioUnlockArmed = false;
         this._audioUnlockCleanup = null;
@@ -53,6 +55,7 @@ export class Netplay {
         this.originalSimulateInput = null;
         this.oldCheatDisplay = null;
 
+        // UI element references
         this.table = null;
         this.playerTable = null;
         this.passwordElem = null;
@@ -64,43 +67,38 @@ export class Netplay {
         this.chatTo = null;
         this.chatInput = null;
         this.chatSendBtn = null;
+        this._hostCanvasOrigSize = null;
 
+        // Server configuration
         this.url = this.emu.config.netplayUrl || window.EJS_netplayUrl || null;
         if (this.url) {
             while (this.url.endsWith("/")) this.url = this.url.slice(0, -1);
         }
+
+        this.iceServers = this.emu.config.netplayICEServers || window.EJS_netplayICEServers || [];
+
+        if (this.iceServers.length === 0) {
+            console.warn("[NETPLAY] No ICE servers configured. Connections will only work on LAN.");
+        }
     }
 
-    // --- UI ---
-
+    /** Toggle visibility of UI elements based on host/guest role */
     updateNetplayUI(isJoining) {
         if (!this.emu.elements.bottomBar) return;
-
         const bar = this.emu.elements.bottomBar;
         const shouldHide = isJoining && !this.owner;
         const elems = [
-            ...(bar.playPause || []),
-            ...(bar.restart || []),
-            ...(bar.saveState || []),
-            ...(bar.loadState || []),
-            ...(bar.cheat || []),
-            ...(bar.saveSavFiles || []),
-            ...(bar.loadSavFiles || []),
-            ...(bar.exit || []),
-            ...(bar.contextMenu || []),
+            ...(bar.playPause || []), ...(bar.restart || []), ...(bar.saveState || []),
+            ...(bar.loadState || []), ...(bar.cheat || []), ...(bar.saveSavFiles || []),
+            ...(bar.loadSavFiles || []), ...(bar.exit || []), ...(bar.contextMenu || []),
             ...(bar.cacheManager || [])
         ];
-
-        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) {
-            elems.push(bar.settings[0].parentElement);
-        }
+        if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) elems.push(bar.settings[0].parentElement);
         if (this.emu.diskParent) elems.push(this.emu.diskParent);
-
-        elems.forEach((el) => {
-            if (el) el.classList.toggle("netplay-hidden", shouldHide);
-        });
+        elems.forEach((el) => { if (el) el.classList.toggle("netplay-hidden", shouldHide); });
     }
 
+    /** Build the netplay menu popup with room list, chat, and player table */
     createNetplayMenu() {
         const body = this.emu.createPopup("Netplay", {
             "Create a Room": () => {
@@ -118,6 +116,7 @@ export class Netplay {
         this._menuElement = body.parentElement;
         this.createButton = this._menuElement.getElementsByTagName("a")[0];
 
+        // Room list section
         const rooms = this.emu.createElement("div");
         const title = this.emu.createElement("strong");
         title.innerText = this.emu.localization("Rooms");
@@ -144,10 +143,10 @@ export class Netplay {
 
         const tbody = this.emu.createElement("tbody");
         table.appendChild(tbody);
-
         rooms.appendChild(title);
         rooms.appendChild(table);
 
+        // Joined room section
         const joined = this.emu.createElement("div");
         const title2 = this.emu.createElement("strong");
         title2.innerText = "{roomname}";
@@ -176,11 +175,11 @@ export class Netplay {
 
         const tbody2 = this.emu.createElement("tbody");
         table2.appendChild(tbody2);
-
         joined.appendChild(title2);
         joined.appendChild(password);
         joined.appendChild(table2);
 
+        // Chat UI
         const chatWrap = this.emu.createElement("div");
         chatWrap.classList.add("ejs_netplay_chat_container");
         chatWrap.style.marginTop = "10px";
@@ -229,11 +228,11 @@ export class Netplay {
         chatRow.appendChild(chatSend);
 
         joined.appendChild(chatWrap);
-
         joined.style.display = "none";
         body.appendChild(rooms);
         body.appendChild(joined);
 
+        // Store references
         this._roomsDiv = rooms;
         this._joinedDiv = joined;
         this._tbody = tbody;
@@ -247,6 +246,7 @@ export class Netplay {
         this._chatSend = chatSend;
 
         this.openMenu = () => {
+            // Show TURN warning if needed
             if (this.emu.netplayShowTurnWarning && !this._warningShown) {
                 const warningDiv = this.emu.createElement("div");
                 warningDiv.className = "ejs_netplay_warning";
@@ -259,7 +259,6 @@ export class Netplay {
             }
 
             this._menuElement.style.display = "";
-
             this.table = this._tbody;
             this.playerTable = this._tbody2;
             this.passwordElem = this._password;
@@ -271,6 +270,7 @@ export class Netplay {
             this.chatInput = this._chatInput;
             this.chatSendBtn = this._chatSend;
 
+            // Prompt for player name if not set
             if (!this.name) {
                 const popups = this.emu.createSubPopup();
                 this._menuElement.appendChild(popups[0]);
@@ -296,7 +296,6 @@ export class Netplay {
                 main.appendChild(this.emu.createElement("br"));
                 main.appendChild(input);
                 popup.appendChild(main);
-
                 popup.appendChild(this.emu.createElement("br"));
 
                 const buttonRow = this.emu.createElement("div");
@@ -344,74 +343,57 @@ export class Netplay {
             }
 
             if (!this.updateList) this.defineNetplayFunctions();
-
             this.bindChatUI();
             this.chatRefreshRecipients();
-
             this.updateList.start();
         };
     }
 
-    // --- Core ---
-
+    /** Initialize update list and hook into emulator's main loop */
     defineNetplayFunctions() {
-        this.updateList = {
-            start: () => this._updateListStart(),
-            stop: () => this._updateListStop()
-        };
-
+        this.updateList = { start: () => this._updateListStart(), stop: () => this._updateListStop() };
         if (!this.url) {
             this.emu.displayMessage("Netplay URL not configured", 5000);
             return;
         }
-
-        const Module = (this.emu.gameManager && this.emu.gameManager.Module)
-            ? this.emu.gameManager.Module
-            : this.emu.Module;
-
+        const Module = (this.emu.gameManager && this.emu.gameManager.Module) ? this.emu.gameManager.Module : this.emu.Module;
         if (Module) {
-            // Save the original postMainLoop so initWebRTCStream can chain it
             this._origPostMainLoop = Module.postMainLoop || null;
             Module.postMainLoop = () => this._initModulePostMainLoop();
         }
     }
 
-    // --- Utility ---
-
+    /** Generate a unique identifier */
     _guid() {
         const s4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
         return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
     }
 
+    /** Debug logging helper */
     _log(role, ...args) {
         if (this.emu.debug) console.log("[NETPLAY " + role + "]", ...args);
     }
 
+    /** Get emulator's native resolution for aspect ratio calculations */
     getNativeResolution() {
         try {
-            if (this.emu.Module && this.emu.Module.getNativeResolution) {
-                return this.emu.Module.getNativeResolution();
-            }
+            if (this.emu.Module && this.emu.Module.getNativeResolution) return this.emu.Module.getNativeResolution();
         } catch (e) {}
         return { width: 640, height: 480 };
     }
 
+    /** Get current player's index in the player list */
     getUserIndex() {
         if (!this.emu.isNetplay || !this.players || !this.playerID) return 0;
         const idx = Object.keys(this.players).indexOf(this.playerID);
         return idx === -1 ? 0 : idx;
     }
 
-    // --- Audio ---
-
+    /** Unlock audio context on mobile devices (requires user gesture) */
     _unlockMobileAudio() {
         const ctx = this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx;
         if (!ctx) return;
-
-        try {
-            if (ctx.state !== "running") ctx.resume().catch(() => {});
-        } catch (e) {}
-
+        try { if (ctx.state !== "running") ctx.resume().catch(() => {}); } catch (e) {}
         try {
             const b = ctx.createBuffer(1, 1, ctx.sampleRate);
             const s = ctx.createBufferSource();
@@ -422,12 +404,11 @@ export class Netplay {
         } catch (e) {}
     }
 
+    /** Create or get existing audio element for remote peer */
     ensureRemoteAudioElement(peerId) {
         this.remoteAudioElements = this.remoteAudioElements || {};
-
         const id = "ejs-remote-audio-" + peerId;
         let el = this.remoteAudioElements[peerId] || document.getElementById(id);
-
         if (!el) {
             el = document.createElement("audio");
             el.id = id;
@@ -437,31 +418,25 @@ export class Netplay {
             document.body.appendChild(el);
             this.remoteAudioElements[peerId] = el;
         }
-
         el.muted = false;
         el.volume = this.emu.muted ? 0 : (typeof this.emu.volume === "number" ? this.emu.volume : 1);
-
         return el;
     }
 
+    /** Sync volume to remote audio elements */
     setVolume(vol) {
         if (!this.emu.isNetplay) return false;
-
         if (this.remoteAudioElements) {
             for (const peerId in this.remoteAudioElements) {
-                try {
-                    this.remoteAudioElements[peerId].volume = vol;
-                } catch (e) {}
+                try { this.remoteAudioElements[peerId].volume = vol; } catch (e) {}
             }
         }
-
         return !this.owner;
     }
 
+    /** Set up audio unlock on user interaction for guests */
     armGuestAudioUnlock() {
-        if (!this.emu.isNetplay || this.owner) return;
-        if (this._audioUnlockArmed) return;
-
+        if (!this.emu.isNetplay || this.owner || this._audioUnlockArmed) return;
         this._audioUnlockArmed = true;
 
         const tryPlayAll = () => {
@@ -487,280 +462,12 @@ export class Netplay {
         document.addEventListener("pointerdown", tryPlayAll, true);
         document.addEventListener("touchend", tryPlayAll, true);
         document.addEventListener("keydown", tryPlayAll, true);
-
         this._audioUnlockCleanup = cleanup;
     }
 
-    // --- Stream Size ---
-
-    chooseStreamSize() {
-        const fps = (this.emu.config && this.emu.config.netplayFps) || window.EJS_netplayFps || 30;
-
-        const override = (this.emu.config && this.emu.config.netplayStream) || window.EJS_netplayStream;
-        if (override && typeof override === "string") {
-            const m = override.trim().match(/^(\d+)\s*x\s*(\d+)$/i);
-            if (m) {
-                let ow = Math.max(2, parseInt(m[1], 10));
-                let oh = Math.max(2, parseInt(m[2], 10));
-                if (ow % 2) ow++;
-                if (oh % 2) oh++;
-                return { w: ow, h: oh, fps, mode: "override" };
-            }
-        }
-
-        const n = this.getNativeResolution();
-        const aw = (n && n.width) ? n.width : 640;
-        const ah = (n && n.height) ? n.height : 480;
-        let aspect = aw / ah;
-        if (!isFinite(aspect) || aspect <= 0) aspect = 4 / 3;
-        if (aspect < 1.1) aspect = 1.1;
-        if (aspect > 2.0) aspect = 2.0;
-
-        let H = 720;
-        let W = Math.round(H * aspect);
-
-        if (W > 1280) {
-            W = 1280;
-            H = Math.round(W / aspect);
-        }
-
-        if (W % 2) W++;
-        if (H % 2) H++;
-
-        return { w: W, h: H, fps, mode: "auto" };
-    }
-
-    // --- Overlay ---
-
-    getAnchorElement() {
-        try {
-            if (this.emu.config && this.emu.config.player) {
-                const el = document.querySelector(this.emu.config.player);
-                if (el) return el;
-            }
-        } catch (e) {}
-        return this.emu.canvas || null;
-    }
-
-    ensureOverlay() {
-        if (this._overlay && this._overlay.parentNode) return;
-
-        const parent = this.emu.elements.parent;
-        if (!parent) return;
-
-        // Ensure parent is a positioning context
-        const cs = window.getComputedStyle(parent);
-        if (cs.position === "static") {
-            this._restoreParentPosition = parent.style.position;
-            parent.style.position = "relative";
-        }
-
-        const ov = document.createElement("div");
-        ov.id = "ejs-netplay-overlay";
-        ov.classList.add("ejs_netplay_overlay");
-        ov.style.position = "absolute";
-        ov.style.top = "0";
-        ov.style.left = "0";
-        ov.style.width = "100%";
-        ov.style.height = "100%";
-        ov.style.pointerEvents = "none";
-        ov.style.zIndex = "10000";
-        ov.style.overflow = "hidden";
-        parent.appendChild(ov);
-        this._overlay = ov;
-
-        this._overlaySync = () => this.syncOverlay(false);
-        window.addEventListener("resize", this._overlaySync, true);
-        window.addEventListener("scroll", this._overlaySync, true);
-        window.addEventListener("orientationchange", this._overlaySync, true);
-
-        if (window.visualViewport) {
-            this._vvSync = () => this.syncOverlay(false);
-            window.visualViewport.addEventListener("resize", this._vvSync, true);
-            window.visualViewport.addEventListener("scroll", this._vvSync, true);
-        }
-
-        this._fsSync = () => {
-            setTimeout(() => this.syncOverlay(true), 50);
-            setTimeout(() => this.syncOverlay(true), 200);
-        };
-        document.addEventListener("fullscreenchange", this._fsSync, true);
-        document.addEventListener("webkitfullscreenchange", this._fsSync, true);
-
-        if (!this._overlayRO && window.ResizeObserver) {
-            this._overlayRO = new ResizeObserver(() => this.syncOverlay(false));
-            try {
-                const anchor = this.getAnchorElement();
-                if (anchor) this._overlayRO.observe(anchor);
-                if (anchor && anchor.parentElement) this._overlayRO.observe(anchor.parentElement);
-                if (parent) this._overlayRO.observe(parent);
-            } catch (e) {}
-        }
-
-        this.syncOverlay(true);
-    }
-
-    syncOverlay(force) {
-        if (!this.emu.netplayCanvas || !this._overlay) return;
-
-        const anchor = this.getAnchorElement();
-        if (!anchor || !anchor.getBoundingClientRect) return;
-
-        const parent = this.emu.elements.parent;
-        if (!parent) return;
-
-        const anchorRect = anchor.getBoundingClientRect();
-        const parentRect = parent.getBoundingClientRect();
-
-        if (!anchorRect || anchorRect.width <= 0 || anchorRect.height <= 0) return;
-        if (!parentRect || parentRect.width <= 0 || parentRect.height <= 0) return;
-
-        const dpr = window.devicePixelRatio || 1;
-
-        // Position relative to parent, not viewport
-        let left = anchorRect.left - parentRect.left + parent.scrollLeft;
-        let top = anchorRect.top - parentRect.top + parent.scrollTop;
-        let cssW = Math.max(1, Math.round(anchorRect.width));
-        let cssH = Math.max(1, Math.round(anchorRect.height));
-
-        // Clamp within parent
-        if (left < 0) { cssW += left; left = 0; }
-        if (top < 0) { cssH += top; top = 0; }
-        cssW = Math.max(1, Math.min(cssW, Math.round(parentRect.width - left)));
-        cssH = Math.max(1, Math.min(cssH, Math.round(parentRect.height - top)));
-
-        this.guestDisplayWidth = cssW;
-        this.guestDisplayHeight = cssH;
-
-        if (this.emu.netplayCanvas.parentNode !== this._overlay) {
-            this._overlay.appendChild(this.emu.netplayCanvas);
-        }
-
-        this.emu.netplayCanvas.style.position = "absolute";
-        this.emu.netplayCanvas.style.left = left + "px";
-        this.emu.netplayCanvas.style.top = top + "px";
-        this.emu.netplayCanvas.style.width = cssW + "px";
-        this.emu.netplayCanvas.style.height = cssH + "px";
-        this.emu.netplayCanvas.style.zIndex = "10000";
-        this.emu.netplayCanvas.style.pointerEvents = "none";
-        this.emu.netplayCanvas.style.background = "#000";
-        this.emu.netplayCanvas.style.imageRendering = "pixelated";
-
-        const pxW = Math.max(1, Math.round(cssW * dpr));
-        const pxH = Math.max(1, Math.round(cssH * dpr));
-        if (force || this.emu.netplayCanvas.width !== pxW || this.emu.netplayCanvas.height !== pxH) {
-            this.emu.netplayCanvas.width = pxW;
-            this.emu.netplayCanvas.height = pxH;
-        }
-    }
-
-    destroyOverlay() {
-        if (this._overlaySync) {
-            window.removeEventListener("resize", this._overlaySync, true);
-            window.removeEventListener("scroll", this._overlaySync, true);
-            window.removeEventListener("orientationchange", this._overlaySync, true);
-            this._overlaySync = null;
-        }
-        if (this._vvSync && window.visualViewport) {
-            window.visualViewport.removeEventListener("resize", this._vvSync, true);
-            window.visualViewport.removeEventListener("scroll", this._vvSync, true);
-            this._vvSync = null;
-        }
-        if (this._fsSync) {
-            document.removeEventListener("fullscreenchange", this._fsSync, true);
-            document.removeEventListener("webkitfullscreenchange", this._fsSync, true);
-            this._fsSync = null;
-        }
-        if (this._overlayRO) {
-            try { this._overlayRO.disconnect(); } catch (e) {}
-            this._overlayRO = null;
-        }
-        if (this._overlay && this._overlay.parentNode) {
-            try { this._overlay.parentNode.removeChild(this._overlay); } catch (e) {}
-        }
-        this._overlay = null;
-
-        if (this._restoreParentPosition !== undefined && this._restoreParentPosition !== null) {
-            try {
-                const parent = this.emu.elements.parent;
-                if (parent) parent.style.position = this._restoreParentPosition;
-            } catch (e) {}
-            this._restoreParentPosition = null;
-        }
-    }
-
-    // --- Guest UI Z-Index ---
-
-    boostGuestUIZ() {
-        if (!this.emu.isNetplay || this.owner) return;
-        if (this._uiZBoosted) return;
-
-        this._uiZBoosted = [];
-        let root = null;
-
-        if (!this.emu.msgElem && typeof this.emu.displayMessage === "function") {
-            this.emu.displayMessage("", 1);
-        }
-
-        try {
-            root = (this.emu.config && this.emu.config.player) ? document.querySelector(this.emu.config.player) : null;
-        } catch (e) {}
-        if (!root) root = document;
-
-        const sel = [
-            ".ejs_message",
-            ".ejs_menu_bar",
-            ".ejs_settings_parent",
-            ".ejs_context_menu",
-            ".ejs_popup_container",
-            ".ejs_popup_container_box",
-            ".ejs_virtualGamepad_parent",
-            ".ejs_virtualGamepad_top",
-            ".ejs_virtualGamepad_left",
-            ".ejs_virtualGamepad_right",
-            ".ejs_virtualGamepad_bottom",
-            ".ejs_virtualGamepad_open"
-        ].join(",");
-
-        const nodes = root.querySelectorAll(sel);
-
-        for (let i = 0; i < nodes.length; i++) {
-            const el = nodes[i];
-            const cs = window.getComputedStyle(el);
-
-            this._uiZBoosted.push({
-                el,
-                z: el.style.zIndex,
-                pos: el.style.position,
-                pe: el.style.pointerEvents
-            });
-
-            if (cs.position === "static") el.style.position = "relative";
-            el.style.zIndex = "10002";
-            el.style.pointerEvents = "auto";
-        }
-    }
-
-    restoreGuestUIZ() {
-        const list = this._uiZBoosted;
-        if (!list) return;
-
-        for (let i = 0; i < list.length; i++) {
-            const item = list[i];
-            if (!item || !item.el) continue;
-            item.el.style.zIndex = item.z || "";
-            item.el.style.position = item.pos || "";
-            item.el.style.pointerEvents = item.pe || "";
-        }
-
-        this._uiZBoosted = null;
-    }
-
-    // --- Freeze / Unfreeze ---
-
+    /** Stop local emulation for guests (they watch host's stream instead) */
     freezeGuest() {
         this._log("GUEST", "Freezing emulator...");
-
         this.frozen = this.frozen || { originals: {} };
         const orig = this.frozen.originals;
 
@@ -774,14 +481,16 @@ export class Netplay {
             try { this.emu.Module.pauseMainLoop(); } catch (e) {}
         }
 
+        // Prevent resize from affecting guest canvas
         if (this.emu.handleResize && !orig.handleResize) {
             orig.handleResize = this.emu.handleResize;
             this.emu.handleResize = (...args) => {
+                if (this.emu.isNetplay && !this.owner) return;
                 try { orig.handleResize.apply(this.emu, args); } catch (e) {}
-                if (this.emu.isNetplay && !this.owner) this.syncOverlay(true);
             };
         }
 
+        // Silence local audio
         if (this.emu.gameManager && this.emu.gameManager.audioNode) {
             try { this.emu.gameManager.audioNode.disconnect(); } catch (e) {}
         }
@@ -794,10 +503,10 @@ export class Netplay {
             }
             if (ctx.audioCtx) ctx.audioCtx.suspend().catch(() => {});
         }
-
         this._log("GUEST", "Emulator frozen");
     }
 
+    /** Restore local emulation after leaving room */
     unfreezeGuest() {
         if (!this.frozen) return;
         this._log("GUEST", "Unfreezing emulator...");
@@ -805,6 +514,7 @@ export class Netplay {
         const orig = this.frozen.originals || {};
         if (orig.handleResize) this.emu.handleResize = orig.handleResize;
 
+        // Restore audio
         if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx) {
             this.emu.Module.AL.currentCtx.audioCtx.resume().catch(() => {});
             const vol = this.emu.muted ? 0 : this.emu.volume;
@@ -818,6 +528,7 @@ export class Netplay {
             try { this.emu.gameManager.audioNode.connect(this.emu.gameManager.audioContext.destination); } catch (e) {}
         }
 
+        // Resume emulation
         if (this.emu.Module && this.emu.Module.resumeMainLoop) {
             try { this.emu.Module.resumeMainLoop(); } catch (e) {}
         }
@@ -829,18 +540,24 @@ export class Netplay {
         this._log("GUEST", "Emulator unfrozen");
     }
 
-    // --- Renegotiation ---
-
+    /** Request peer connection renegotiation (for reconnection) */
     requestRenegotiate(peerId, reason) {
         try {
             if (!this.socket || !this.socket.connected) return;
             this._log(this.owner ? "HOST" : "GUEST", "Request renegotiate (" + (reason || "unknown") + ") with " + peerId);
+            
+            if (!this.owner) {
+                if (this.peerConnections[peerId]) {
+                    try { this.peerConnections[peerId].pc.close(); } catch(e) {}
+                    delete this.peerConnections[peerId];
+                }
+            }
+
             this.socket.emit("webrtc-signal", { target: peerId, requestRenegotiate: true, reason: reason || "" });
         } catch (e) {}
     }
 
-    // --- WebRTC Stream ---
-
+    /** Initialize WebRTC stream from emulator canvas (host only) */
     initWebRTCStream() {
         if (this.localStream) return Promise.resolve();
 
@@ -849,147 +566,97 @@ export class Netplay {
         }
 
         return new Promise((resolve) => {
-            if (!this.emu.canvas || !this.emu.canvas.captureStream) {
-                if (this.emu.debug) console.error("[NETPLAY HOST] canvas.captureStream unavailable");
-                resolve();
-                return;
-            }
+            try {
+                const emuCanvas = this.emu.canvas;
+                if (!emuCanvas || !emuCanvas.captureStream) { resolve(); return; }
 
-            const chosen = this.chooseStreamSize();
-            const outW = chosen.w;
-            const outH = chosen.h;
-            const fps = chosen.fps;
-            const outAspect = outW / outH;
-
-            this._log("HOST", "Init stream (" + chosen.mode + ") " + outW + "x" + outH + " @ " + fps + "fps");
-
-            // Lock the aspect ratio at stream creation time
-            const initialW = this.emu.canvas.width || 640;
-            const initialH = this.emu.canvas.height || 480;
-            let lockedAspect = initialW / initialH;
-            if (!isFinite(lockedAspect) || lockedAspect <= 0) lockedAspect = 4 / 3;
-
-            this._log("HOST", "Locked source aspect: " + lockedAspect.toFixed(4) +
-                      " (initial " + initialW + "x" + initialH + ")");
-
-            // Create a stable output canvas at fixed resolution
-            const stableCanvas = document.createElement("canvas");
-            stableCanvas.width = outW;
-            stableCanvas.height = outH;
-            stableCanvas.classList.add("ejs_netplay_offscreen_canvas");
-            document.body.appendChild(stableCanvas);
-            this.captureCanvas = stableCanvas;
-
-            const stableCtx = stableCanvas.getContext("2d", { alpha: false });
-            this.captureRunning = true;
-
-            // Draw initial black frame
-            stableCtx.fillStyle = "#000";
-            stableCtx.fillRect(0, 0, outW, outH);
-
-            let hasDrawnFrame = false;
-            let lastDrawTime = 0;
-            const frameInterval = 1000 / fps;
-
-            const drawToStableCanvas = (timestamp) => {
-                if (!this.captureRunning) return;
-
-                // Throttle to target fps - reduces CPU load especially in fullscreen
-                if (timestamp - lastDrawTime < frameInterval * 0.9) {
-                    requestAnimationFrame(drawToStableCanvas);
-                    return;
-                }
-                lastDrawTime = timestamp;
-
-                const srcCanvas = this.emu.canvas;
-                if (srcCanvas && srcCanvas.width > 0 && srcCanvas.height > 0) {
-                    const srcW = srcCanvas.width;
-                    const srcH = srcCanvas.height;
-                    const srcAspect = srcW / srcH;
-
-                    // Calculate source region with locked aspect ratio
-                    let sx = 0, sy = 0, sw = srcW, sh = srcH;
-
-                    if (Math.abs(srcAspect - lockedAspect) > 0.01) {
-                        if (srcAspect > lockedAspect) {
-                            sw = Math.round(srcH * lockedAspect);
-                            sx = Math.round((srcW - sw) / 2);
-                        } else {
-                            sh = Math.round(srcW / lockedAspect);
-                            sy = Math.round((srcH - sh) / 2);
-                        }
-                    }
-
-                    // Clamp bounds
-                    sx = Math.max(0, Math.min(sx, srcW - 1));
-                    sy = Math.max(0, Math.min(sy, srcH - 1));
-                    sw = Math.max(1, Math.min(sw, srcW - sx));
-                    sh = Math.max(1, Math.min(sh, srcH - sy));
-
-                    // Calculate destination with letterboxing
-                    let dx = 0, dy = 0, dw = outW, dh = outH;
-
-                    if (lockedAspect > outAspect) {
-                        dh = Math.round(outW / lockedAspect);
-                        dy = Math.round((outH - dh) / 2);
-                    } else if (lockedAspect < outAspect) {
-                        dw = Math.round(outH * lockedAspect);
-                        dx = Math.round((outW - dw) / 2);
-                    }
-
-                    dw = Math.max(1, dw);
-                    dh = Math.max(1, dh);
-
-                    // Clear and draw directly from emulator canvas
-                    stableCtx.fillStyle = "#000";
-                    stableCtx.fillRect(0, 0, outW, outH);
-                    stableCtx.imageSmoothingEnabled = true;
-                    stableCtx.drawImage(srcCanvas, sx, sy, sw, sh, dx, dy, dw, dh);
-
-                    hasDrawnFrame = true;
-                } else if (!hasDrawnFrame) {
-                    stableCtx.fillStyle = "#000";
-                    stableCtx.fillRect(0, 0, outW, outH);
-                }
-
-                requestAnimationFrame(drawToStableCanvas);
-            };
-            requestAnimationFrame(drawToStableCanvas);
-
-            if (typeof this.emu.collectScreenRecordingMediaTracks === "function") {
-                const finalStream = this.emu.collectScreenRecordingMediaTracks(stableCanvas, fps);
-
+                // Capture directly from emulator canvas at 30fps
+                let rawStream;
                 try {
-                    const outVideoTrack = finalStream.getVideoTracks()[0];
-                    if (outVideoTrack) outVideoTrack.contentHint = "detail";
-                } catch (e) {}
+                    rawStream = emuCanvas.captureStream(30);
+                } catch (e) {
+                    resolve(); return;
+                }
 
-                this.localStream = finalStream;
-                this._hostOutStream = finalStream;
+                if (!rawStream || rawStream.getVideoTracks().length === 0) { resolve(); return; }
 
-                this._log("HOST", "Stream ready - Video: " + finalStream.getVideoTracks().length + ", Audio: " + finalStream.getAudioTracks().length);
-            } else {
-                if (this.emu.debug) console.warn("[NETPLAY HOST] collectScreenRecordingMediaTracks missing, video only fallback");
-                const fallbackStream = stableCanvas.captureStream(fps);
-                this.localStream = fallbackStream;
-                this._hostOutStream = fallbackStream;
+                try { rawStream.getVideoTracks()[0].contentHint = "detail"; } catch (e) {}
+
+                // Attach emulator audio if available
+                if (typeof this.emu.collectScreenRecordingMediaTracks === "function") {
+                    try {
+                        const tempCanvas = document.createElement("canvas");
+                        tempCanvas.width = 2; tempCanvas.height = 2;
+
+                        const audioOnlyStream = this.emu.collectScreenRecordingMediaTracks(tempCanvas);
+                        const finalStream = new MediaStream();
+
+                        rawStream.getVideoTracks().forEach(t => finalStream.addTrack(t));
+                        if (audioOnlyStream) audioOnlyStream.getAudioTracks().forEach(t => finalStream.addTrack(t));
+
+                        this.localStream = finalStream;
+                    } catch (e) {
+                        this.localStream = rawStream;
+                    }
+                } else {
+                    this.localStream = rawStream;
+                }
+
+                this.captureRunning = true;
+                resolve();
+            } catch (e) {
+                resolve();
             }
-
-            resolve();
         });
     }
 
-    // --- Room Joined ---
+    /** Capture loop for offscreen canvas (currently unused - direct capture preferred) */
+    _startCaptureLoop() {
+        if (this._captureLoopRunning) return;
+        this._captureLoopRunning = true;
 
+        const emuCanvas    = this.emu.canvas;
+        const captureCanvas = this.captureCanvas;
+        const captureCtx   = this._captureCtx;
+        if (!emuCanvas || !captureCanvas || !captureCtx) return;
+
+        const INTERVAL = 1000 / 62;
+        let lastTime = 0;
+
+        const loop = (now) => {
+            if (!this._captureLoopRunning || !this.captureRunning) return;
+
+            if (now - lastTime >= INTERVAL) {
+                try {
+                    const sw = emuCanvas.width;
+                    const sh = emuCanvas.height;
+                    if (sw > 0 && sh > 0) {
+                        if (captureCanvas.width !== sw || captureCanvas.height !== sh) {
+                            captureCanvas.width  = sw;
+                            captureCanvas.height = sh;
+                        }
+                        captureCtx.drawImage(emuCanvas, 0, 0);
+                    }
+                } catch (e) {}
+                lastTime = now;
+            }
+
+            requestAnimationFrame(loop);
+        };
+
+        requestAnimationFrame(loop);
+    }
+
+    /** Handle successful room join for both host and guest */
     roomJoined(isOwner, roomName, password, roomId) {
         this._log(isOwner ? "HOST" : "GUEST", "Room joined: " + roomName);
 
         this.updateNetplayUI(true);
-
         this.emu.isNetplay = true;
         this.inputs = {};
         this.owner = isOwner;
 
+        // Update UI
         if (this.roomNameElem) this.roomNameElem.innerText = roomName;
         if (this.tabs && this.tabs[0]) {
             this.tabs[0].style.display = "none";
@@ -1004,53 +671,70 @@ export class Netplay {
         this.updatePlayersTable();
 
         if (!isOwner) {
-            const anchor = this.getAnchorElement();
-            const rect = (anchor && anchor.getBoundingClientRect)
-                ? anchor.getBoundingClientRect()
-                : (this.emu.canvas ? this.emu.canvas.getBoundingClientRect() : { width: 640, height: 480 });
-
-            const cssW = Math.max(1, Math.round(rect.width));
-            const cssH = Math.max(1, Math.round(rect.height));
-            const dpr = window.devicePixelRatio || 1;
-
-            this._log("GUEST", "Display rect: " + cssW + "x" + cssH);
-
+            // Guest setup: freeze local emulation and show remote stream
+            this._log("GUEST", "Setting up as guest...");
+            
             this.freezeGuest();
 
-            this._restoreCanvasStyle = {
-                opacity: this.emu.canvas ? this.emu.canvas.style.opacity : "",
-                pointerEvents: this.emu.canvas ? this.emu.canvas.style.pointerEvents : "",
-                visibility: this.emu.canvas ? this.emu.canvas.style.visibility : ""
-            };
-
-            this.emu.netplayCanvas = document.createElement("canvas");
-            this.emu.netplayCanvas.id = "ejs-netplay-canvas";
-            this.emu.netplayCanvas.width = Math.max(1, Math.round(cssW * dpr));
-            this.emu.netplayCanvas.height = Math.max(1, Math.round(cssH * dpr));
-            this.emu.netplayCanvas.classList.add("ejs_netplay_canvas");
-            this.emu.netplayCanvas.style.width = cssW + "px";
-            this.emu.netplayCanvas.style.height = cssH + "px";
-
-            this.ensureOverlay();
-            this.syncOverlay(true);
-
-            this.boostGuestUIZ();
-
             if (this.emu.canvas) {
-                this.emu.canvas.style.opacity = "0";
-                this.emu.canvas.style.visibility = "visible";
-                this.emu.canvas.style.pointerEvents = "";
+                this.emu.canvas.classList.add("ejs_netplay_offscreen_canvas");
             }
 
-            const ctx = this.emu.netplayCanvas.getContext("2d", { alpha: false });
+            // Create overlay canvas for remote video
+            if (!this.emu.netplayCanvas) {
+                this.emu.netplayCanvas = this.emu.createElement("canvas");
+                this.emu.netplayCanvas.classList.add("ejs_canvas");
+            }
+
+            Object.assign(this.emu.netplayCanvas.style, {
+                position: "absolute",
+                top: "0",
+                left: "0",
+                width: "100%",
+                height: "100%",
+                zIndex: "5",
+                display: "block",
+                objectFit: "contain",
+                objectPosition: "center",
+                pointerEvents: "none"
+            });
+
+            if (!this.emu.netplayCanvas.parentElement) {
+                this.emu.elements.parent.appendChild(this.emu.netplayCanvas);
+            }
+
+            const parentCs = window.getComputedStyle(this.emu.elements.parent);
+            if (parentCs.position === "static") {
+                this._restoreParentPosition = this.emu.elements.parent.style.position;
+                this.emu.elements.parent.style.position = "relative";
+            }
+
+            // Hide cheat button for guests
+            if (this.emu.elements.bottomBar && this.emu.elements.bottomBar.cheat && this.emu.elements.bottomBar.cheat[0]) {
+                this.oldCheatDisplay = this.emu.elements.bottomBar.cheat[0].style.display;
+                this.emu.elements.bottomBar.cheat[0].style.display = "none";
+            }
+            if (this.emu.gameManager && this.emu.gameManager.resetCheat) {
+                this.emu.gameManager.resetCheat();
+            }
+
+            // Show "Connecting..." message
+            const ctx = this.emu.netplayCanvas.getContext("2d", { alpha: false, willReadFrequently: true });
+            const nativeRes = this.getNativeResolution();
+            const nativeW = (nativeRes && nativeRes.width) ? nativeRes.width : 640;
+            const nativeH = (nativeRes && nativeRes.height) ? nativeRes.height : 480;
+            this.emu.netplayCanvas.width = nativeW;
+            this.emu.netplayCanvas.height = nativeH;
+            
             ctx.fillStyle = "#000";
-            ctx.fillRect(0, 0, this.emu.netplayCanvas.width, this.emu.netplayCanvas.height);
+            ctx.fillRect(0, 0, nativeW, nativeH);
             ctx.fillStyle = "#fff";
-            ctx.font = (20 * dpr) + "px sans-serif";
+            ctx.font = "20px sans-serif";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText("Connecting...", this.emu.netplayCanvas.width / 2, this.emu.netplayCanvas.height / 2);
+            ctx.fillText("Connecting...", nativeW / 2, nativeH / 2);
 
+            // Redirect local inputs to send over network
             if (this.emu.gameManager && this.emu.gameManager.functions && this.emu.gameManager.functions.simulateInput) {
                 this.originalSimulateInput = this.emu.gameManager.functions.simulateInput;
                 this.emu.gameManager.functions.simulateInput = (player, index, value) => {
@@ -1064,13 +748,9 @@ export class Netplay {
                 };
             }
 
-            if (this.emu.elements.bottomBar && this.emu.elements.bottomBar.cheat && this.emu.elements.bottomBar.cheat[0]) {
-                this.oldCheatDisplay = this.emu.elements.bottomBar.cheat[0].style.display;
-                this.emu.elements.bottomBar.cheat[0].style.display = "none";
-            }
-
             this._gotVideoEver = false;
 
+            // Connection timeout fallback
             this.connectionTimeout = setTimeout(() => {
                 if (!this.webRtcReady && !this._gotVideoEver) {
                     this.emu.displayMessage("Connection failed", 5000);
@@ -1078,18 +758,16 @@ export class Netplay {
                 }
             }, 15000);
 
-            this._log("GUEST", "Setup complete - waiting for stream");
+            this.emu.elements.parent.focus();
         } else {
             this._log("HOST", "Setup complete");
-
             if (this.emu.gameManager) {
                 try { this.emu.gameManager.toggleMainLoop(1); } catch (e) {}
             }
         }
     }
 
-    // --- Draw Video ---
-
+    /** Draw remote video stream to guest's overlay canvas */
     drawVideoToCanvas() {
         const video = this.video;
         const canvas = this.emu.netplayCanvas;
@@ -1098,82 +776,95 @@ export class Netplay {
         const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx) return;
 
-        this._log("GUEST", "Starting draw loop");
-
         let running = true;
-        let lockedAspect = null;
-        let lastVideoSize = "";
-
         const draw = () => {
-            if (!running || !this.emu.isNetplay || this.owner) return;
-            if (!canvas.parentNode) return;
-
-            this.syncOverlay(false);
-
-            const W = canvas.width;
-            const H = canvas.height;
-
-            ctx.fillStyle = "#000";
-            ctx.fillRect(0, 0, W, H);
+            if (!running || !this.emu.isNetplay || this.owner || !canvas.parentNode) return;
 
             if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
-                const vs = video.videoWidth + "x" + video.videoHeight;
-                if (vs !== lastVideoSize) {
-                    lastVideoSize = vs;
-                    this._log("GUEST", "Video size: " + vs);
+                const vw = video.videoWidth;
+                const vh = video.videoHeight;
+                
+                // Calculate aspect ratio correction
+                const nativeRes = this.getNativeResolution();
+                let nativeAspect = 4 / 3;
+                if (nativeRes && nativeRes.width && nativeRes.height) {
+                    nativeAspect = nativeRes.width / nativeRes.height;
+                }
+                
+                const videoAspect = vw / vh;
+                let srcX = 0, srcY = 0, srcW = vw, srcH = vh;
+
+                // Crop to correct aspect ratio if needed
+                if (videoAspect > nativeAspect + 0.05) {
+                    srcH = vh;
+                    srcW = vh * nativeAspect;
+                    srcX = (vw - srcW) / 2;
+                } 
+                else if (videoAspect < nativeAspect - 0.05) {
+                    srcW = vw;
+                    srcH = vw / nativeAspect;
+                    srcY = 0; 
                 }
 
-                if (lockedAspect === null) {
-                    lockedAspect = video.videoWidth / video.videoHeight;
-                    this._log("GUEST", "Aspect locked: " + lockedAspect.toFixed(4));
+                srcX = Math.round(srcX);
+                srcY = Math.round(srcY);
+                srcW = Math.max(1, Math.round(srcW));
+                srcH = Math.max(1, Math.round(srcH));
+
+                if (canvas.width !== srcW || canvas.height !== srcH) {
+                    canvas.width = srcW;
+                    canvas.height = srcH;
                 }
-
-                const guestAspect = W / H;
-                let drawW, drawH, ox, oy;
-
-                if (lockedAspect > guestAspect) {
-                    drawW = W;
-                    drawH = W / lockedAspect;
-                    ox = 0;
-                    oy = (H - drawH) / 2;
-                } else {
-                    drawH = H;
-                    drawW = H * lockedAspect;
-                    ox = (W - drawW) / 2;
-                    oy = 0;
-                }
-
-                ctx.imageSmoothingEnabled = true;
-                ctx.drawImage(video, ox, oy, drawW, drawH);
+                
+                ctx.fillStyle = "#000";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(video, srcX, srcY, srcW, srcH, 0, 0, canvas.width, canvas.height);
             }
-
             requestAnimationFrame(draw);
         };
 
-        video.onloadeddata = () => {
-            this._log("GUEST", "Video loadeddata");
-            requestAnimationFrame(draw);
-        };
-
+        video.onloadeddata = () => { requestAnimationFrame(draw); };
         if (video.readyState >= 2) requestAnimationFrame(draw);
-
         this.stopDrawLoop = () => { running = false; };
     }
 
-    // --- Peer Connection ---
-
+    /** Create WebRTC peer connection with video/audio/data channels */
     createPeerConnection(peerId) {
         const role = this.owner ? "HOST" : "GUEST";
+        let iceServers = null;
 
-        this._log(role, "Creating peer connection: " + peerId);
+        // Get ICE servers from config
+        if (this.emu.config && this.emu.config.netplayICEServers && this.emu.config.netplayICEServers.length > 0) {
+            iceServers = this.emu.config.netplayICEServers;
+        } else if (window.EJS_netplayICEServers && window.EJS_netplayICEServers.length > 0) {
+            iceServers = window.EJS_netplayICEServers;
+        } else if (this.iceServers && this.iceServers.length > 0) {
+            iceServers = this.iceServers;
+        } else {
+            iceServers = [];
+        }
 
-        const pc = new RTCPeerConnection({
-            iceServers: this.emu.config.netplayICEServers,
-            iceCandidatePoolSize: 10
-        });
+        const pc = new RTCPeerConnection({ iceServers: iceServers, iceCandidatePoolSize: 10 });
+        let usingRelay = false;
+        let bitrateAdjusted = false;
 
+        pc.onicecandidate = (e) => {
+            if (e.candidate) {
+                if (e.candidate.type === "relay") usingRelay = true;
+                this.socket.emit("webrtc-signal", { target: peerId, candidate: e.candidate });
+            }
+        };
+
+        pc.oniceconnectionstatechange = () => {
+            if (this.owner && pc.iceConnectionState === "connected" && !bitrateAdjusted) {
+                bitrateAdjusted = true;
+                this.adjustVideoBitrate(pc, usingRelay);
+            }
+        };
+
+        // Set up data channel for inputs
         let dc;
-
         if (this.owner) {
             dc = pc.createDataChannel("inputs");
             dc.onmessage = (e) => {
@@ -1204,21 +895,20 @@ export class Netplay {
             };
         }
 
+        // Add media tracks (host sends, guest receives)
         if (this.owner && this.localStream) {
-            const tracks = this.localStream.getTracks();
-            this._log("HOST", "Adding " + tracks.length + " tracks");
-            for (let i = 0; i < tracks.length; i++) {
-                pc.addTrack(tracks[i], this.localStream);
-            }
+            this.localStream.getTracks().forEach((t) => pc.addTrack(t, this.localStream));
+
+            this._preferH264(pc);
 
             try {
                 const sender = pc.getSenders().find((s) => s.track && s.track.kind === "video");
                 if (sender) {
                     const p = sender.getParameters();
-                    p.degradationPreference = "maintain-resolution";
+                    p.degradationPreference = "maintain-framerate";
                     if (!p.encodings || !p.encodings.length) p.encodings = [{}];
-                    p.encodings[0].maxBitrate = 5000000;
-                    p.encodings[0].scaleResolutionDownBy = 1.0;
+                    p.encodings[0].maxBitrate = 1200000;
+                    p.encodings[0].maxFramerate = 30;
                     sender.setParameters(p).catch(() => {});
                 }
             } catch (e) {}
@@ -1227,39 +917,26 @@ export class Netplay {
             pc.addTransceiver("audio", { direction: "recvonly" });
         }
 
-        this.peerConnections[peerId] = { pc, dataChannel: dc };
-
+        this.peerConnections[peerId] = { pc, dataChannel: dc, usingRelay: false };
         let gotStream = false;
+
         const streamTimeout = setTimeout(() => {
-            if (!gotStream && !this.owner) {
-                this._log("GUEST", "Stream timeout -> request renegotiate");
-                this.requestRenegotiate(peerId, "stream-timeout");
-            }
+            if (!gotStream && !this.owner) this.requestRenegotiate(peerId, "stream-timeout");
         }, 15000);
 
-        pc.onicecandidate = (e) => {
-            if (e.candidate) {
-                this.socket.emit("webrtc-signal", { target: peerId, candidate: e.candidate });
-            }
-        };
-
+        // Handle connection state changes
         pc.onconnectionstatechange = () => {
-            this._log(role, "Connection: " + pc.connectionState);
-
             if (pc.connectionState === "connected") {
                 this.webRtcReady = true;
                 clearTimeout(this.connectionTimeout);
-                if (this._dcTimer) {
-                    clearTimeout(this._dcTimer);
-                    this._dcTimer = null;
-                }
+                if (this.peerConnections[peerId]) this.peerConnections[peerId].usingRelay = usingRelay;
+                if (this._dcTimer) { clearTimeout(this._dcTimer); this._dcTimer = null; }
                 return;
             }
 
             if (!this.owner) {
                 if (pc.connectionState === "failed") {
                     this.requestRenegotiate(peerId, "pc-failed");
-                    return;
                 }
                 if (pc.connectionState === "disconnected") {
                     if (this._dcTimer) clearTimeout(this._dcTimer);
@@ -1281,28 +958,19 @@ export class Netplay {
             }
         };
 
+        // Handle incoming media tracks (guest only)
         pc.ontrack = (e) => {
             if (this.owner) return;
-
             const t = e.track;
-            this._log("GUEST", "Track received: " + t.kind);
 
             if (t.kind === "audio") {
                 try {
                     const stream = (e.streams && e.streams[0]) ? e.streams[0] : new MediaStream([t]);
                     const audioEl = this.ensureRemoteAudioElement(peerId);
                     audioEl.srcObject = stream;
-
                     const p = audioEl.play();
-                    if (p && p.catch) {
-                        p.catch(() => {
-                            this._log("GUEST", "Audio autoplay blocked, arming unlock");
-                            this.armGuestAudioUnlock();
-                        });
-                    }
-                } catch (err) {
-                    if (this.emu.debug) console.error("[NETPLAY GUEST] Audio element error:", err);
-                }
+                    if (p && p.catch) { p.catch(() => { this.armGuestAudioUnlock(); }); }
+                } catch (err) {}
                 return;
             }
 
@@ -1320,69 +988,119 @@ export class Netplay {
                     this.video.playsInline = true;
                     this.video.style.display = "none";
                 }
-
                 this.video.srcObject = (e.streams && e.streams[0]) ? e.streams[0] : new MediaStream([t]);
-                this.video.play().catch((err) => {
-                    this._log("GUEST", "video.play() warning:", err);
-                });
-
+                this.monitorVideoFrames(t);
+                this.video.play().catch(() => {});
                 this.drawVideoToCanvas();
 
-                t.onended = () => {
-                    if (this.emu.isNetplay) this.requestRenegotiate(peerId, "video-track-ended");
-                };
+                t.onended = () => { if (this.emu.isNetplay) this.requestRenegotiate(peerId, "video-track-ended"); };
             }
         };
 
+        // Host initiates offer
         if (this.owner && this.localStream) {
-            this._log("HOST", "Creating offer...");
             pc.createOffer()
                 .then((o) => pc.setLocalDescription(o))
-                .then(() => {
-                    this.socket.emit("webrtc-signal", { target: peerId, offer: pc.localDescription });
-                })
-                .catch((err) => {
-                    if (this.emu.debug) console.error("[NETPLAY HOST] Offer error:", err);
-                });
+                .then(() => { this.socket.emit("webrtc-signal", { target: peerId, offer: pc.localDescription }); })
+                .catch(() => {});
         }
 
         return pc;
     }
 
-    // --- Chat ---
+    /** Adjust video bitrate based on connection type (relay vs direct) */
+    adjustVideoBitrate(pc, usingRelay) {
+        if (!this.owner) return;
+        try {
+            const sender = pc.getSenders().find((s) => s.track && s.track.kind === "video");
+            if (!sender) return;
 
+            const p = sender.getParameters();
+            if (!p.encodings || !p.encodings.length) p.encodings = [{}];
+
+            p.degradationPreference = "maintain-framerate";
+            p.encodings[0].maxFramerate = 30;
+
+            if (usingRelay) {
+                p.encodings[0].maxBitrate = 900000;   // Conservative for relay
+            } else {
+                p.encodings[0].maxBitrate = 2000000;  // Higher for direct
+            }
+
+            sender.setParameters(p).catch(() => {});
+        } catch (e) {}
+    }
+    
+    /** Prefer H264 codec for hardware encoding (better performance) */
+    _preferH264(pc) {
+        try {
+            if (!window.RTCRtpSender || !RTCRtpSender.getCapabilities) return;
+            const caps = RTCRtpSender.getCapabilities("video");
+            if (!caps || !caps.codecs) return;
+
+            const h264 = caps.codecs.filter(c => (c.mimeType || "").toLowerCase() === "video/h264");
+            if (!h264.length) return;
+
+            const trans = pc.getTransceivers().find(t => t && t.sender && t.sender.track && t.sender.track.kind === "video");
+            if (trans && trans.setCodecPreferences) {
+                const rest = caps.codecs.filter(c => (c.mimeType || "").toLowerCase() !== "video/h264");
+                trans.setCodecPreferences([...h264, ...rest]);
+            }
+        } catch (e) {}
+    }
+
+    /** Monitor video frames for stall detection */
+    monitorVideoFrames(track) {
+        if (!track || typeof track.getSettings !== "function") return;
+        let noFrameCount = 0;
+        const checkFrames = () => {
+            if (!this.emu.isNetplay || this.owner) return;
+            try {
+                if (this.video && this.video.readyState >= 2) {
+                    const currentTime = this.video.currentTime;
+                    if (this._lastVideoTime !== undefined) {
+                        if (currentTime === this._lastVideoTime) {
+                            noFrameCount++;
+                            if (noFrameCount >= 10) noFrameCount = 0;
+                        } else {
+                            noFrameCount = 0;
+                        }
+                    }
+                    this._lastVideoTime = currentTime;
+                }
+            } catch (e) {}
+            if (this.emu.isNetplay && !this.owner) setTimeout(checkFrames, 200);
+        };
+        setTimeout(checkFrames, 1000);
+    }
+
+    /** Append message to chat log */
     chatAppend(payload) {
         if (!this.chatLog) return;
-
         const name = payload && payload.player_name ? payload.player_name : "Player";
         const msg = payload && payload.message ? payload.message : "";
         const to = payload && payload.to ? payload.to : "all";
-
         const line = document.createElement("div");
-
         if (to && to !== "all") {
             line.textContent = name + " (private): " + msg;
             line.style.opacity = "0.95";
         } else {
             line.textContent = name + ": " + msg;
         }
-
         this.chatLog.appendChild(line);
         this.chatLog.scrollTop = this.chatLog.scrollHeight;
     }
 
+    /** Refresh chat recipient dropdown with current players */
     chatRefreshRecipients() {
         if (!this.chatTo) return;
-
         const sel = this.chatTo;
         const prev = sel.value || "all";
-
         sel.innerHTML = "";
         const optAll = document.createElement("option");
         optAll.value = "all";
         optAll.innerText = this.emu.localization("Everyone");
         sel.appendChild(optAll);
-
         const players = this.players || {};
         Object.keys(players).forEach((userid) => {
             const p = players[userid];
@@ -1391,128 +1109,104 @@ export class Netplay {
             opt.innerText = p.player_name || "Player";
             sel.appendChild(opt);
         });
-
         const stillExists = Array.from(sel.options).some((o) => o.value === prev);
         sel.value = stillExists ? prev : "all";
     }
 
+    /** Send chat message to selected recipient(s) */
     chatSendMessage() {
-        if (!this.socket || !this.socket.connected) return;
-        if (!this.chatInput || !this.chatTo) return;
-
+        if (!this.socket || !this.socket.connected || !this.chatInput || !this.chatTo) return;
         const message = String(this.chatInput.value || "").trim();
         if (!message) return;
-
         const to = this.chatTo.value || "all";
         this.chatInput.value = "";
-
-        const chatPayload = {
-            player_name: this.name || "Player",
-            message,
-            to,
-            from: this.playerID
-        };
-
+        const chatPayload = { player_name: this.name || "Player", message, to, from: this.playerID };
         this.chatAppend(chatPayload);
         this.sendMessage({ "chat-message": chatPayload });
     }
 
+    /** Bind event listeners to chat UI elements */
     bindChatUI() {
         if (this._chatBound) return;
         if (!this._chatSend || !this._chatInput) return;
-
         this._chatBound = true;
-
-        this.emu.addEventListener(this._chatSend, "click", () => {
-            this.chatSendMessage();
-        });
+        this.emu.addEventListener(this._chatSend, "click", () => { this.chatSendMessage(); });
         this.emu.addEventListener(this._chatInput, "keydown", (e) => {
-            if (e.key === "Enter") {
-                e.preventDefault();
-                this.chatSendMessage();
-            }
+            if (e.key === "Enter") { e.preventDefault(); this.chatSendMessage(); }
         });
     }
 
-    // --- Leave Room ---
-
+    /** Clean up and leave the current room */
     leaveRoom() {
+        // Restore module hooks
         if (this._prevPostMainLoop || this._origPostMainLoop) {
-            const Module = (this.emu.gameManager && this.emu.gameManager.Module)
-                ? this.emu.gameManager.Module
-                : this.emu.Module;
-            if (Module) {
-                Module.postMainLoop = this._origPostMainLoop || null;
-            }
+            const Module = (this.emu.gameManager && this.emu.gameManager.Module) ? this.emu.gameManager.Module : this.emu.Module;
+            if (Module) Module.postMainLoop = this._origPostMainLoop || null;
             this._prevPostMainLoop = null;
             this._origPostMainLoop = null;
         }
         this._copyFrameToCapture = null;
+
+        this._captureLoopRunning = false;
+        this._captureCtx = null;
+        this.captureCanvas = null;
+
         if (this._leaving) return;
         this._leaving = true;
-
-        this._log(this.owner ? "HOST" : "GUEST", "Leaving room");
 
         this.updateNetplayUI(false);
         clearTimeout(this.connectionTimeout);
         if (this.stopDrawLoop) this.stopDrawLoop();
 
-        this.unfreezeGuest();
-
         this.captureRunning = false;
 
-        if (this.captureCanvas && this.captureCanvas.parentNode) {
-            try { this.captureCanvas.parentNode.removeChild(this.captureCanvas); } catch (e) {}
-        }
-        this.captureCanvas = null;
-
-        if (this._hostOutStream) {
-            try { this._hostOutStream.getTracks().forEach((tr) => tr.stop()); } catch (e) {}
-            this._hostOutStream = null;
+        // Stop local stream
+        if (this.localStream) {
+            try { this.localStream.getTracks().forEach((tr) => tr.stop()); } catch (e) {}
+            this.localStream = null;
         }
 
-        this.restoreGuestUIZ();
-        this.destroyOverlay();
-
+        // Remove netplay canvas
         if (this.emu.netplayCanvas && this.emu.netplayCanvas.parentNode) {
             try { this.emu.netplayCanvas.parentNode.removeChild(this.emu.netplayCanvas); } catch (e) {}
         }
         this.emu.netplayCanvas = null;
 
-        if (this.emu.canvas && this._restoreCanvasStyle) {
-            this.emu.canvas.style.opacity = this._restoreCanvasStyle.opacity || "";
-            this.emu.canvas.style.pointerEvents = this._restoreCanvasStyle.pointerEvents || "";
-            this.emu.canvas.style.visibility = this._restoreCanvasStyle.visibility || "";
-            this._restoreCanvasStyle = null;
-        } else if (this.emu.canvas) {
-            this.emu.canvas.style.opacity = "";
+        // Show original emulator canvas
+        if (this.emu.canvas) {
+            this.emu.canvas.classList.remove("ejs_netplay_offscreen_canvas");
         }
 
-        if (this.remoteAudioContext) {
-            try { this.remoteAudioContext.close(); } catch (e) {}
-            this.remoteAudioContext = null;
-            this.remoteGainNode = null;
+        if (!this.owner) {
+            this.unfreezeGuest();
         }
 
+        // Restore parent position
+        if (this._restoreParentPosition !== undefined && this._restoreParentPosition !== null) {
+            try {
+                const parent = this.emu.elements.parent;
+                if (parent) parent.style.position = this._restoreParentPosition;
+            } catch (e) {}
+            this._restoreParentPosition = null;
+        }
+
+        // Clean up remote audio elements
         try {
             const els = document.querySelectorAll("audio[id^=\"ejs-remote-audio-\"]");
             els.forEach((a) => {
-                try { a.pause(); } catch (e) {}
-                try { a.srcObject = null; } catch (e) {}
-                try { a.remove(); } catch (e) {}
+                try { a.pause(); a.srcObject = null; a.remove(); } catch (e) {}
             });
         } catch (e) {}
         if (this.remoteAudioElements) this.remoteAudioElements = {};
-        if (this._audioUnlockCleanup) {
-            try { this._audioUnlockCleanup(); } catch (e) {}
-            this._audioUnlockCleanup = null;
-        }
+        if (this._audioUnlockCleanup) { try { this._audioUnlockCleanup(); } catch (e) {} this._audioUnlockCleanup = null; }
         this._audioUnlockArmed = false;
 
+        // Notify peers if host
         if (this.owner && this.sendMessage) {
             try { this.sendMessage({ type: "host-left" }); } catch (e) {}
         }
 
+        // Disconnect socket
         if (this.socket) {
             try {
                 if (this.socket.connected) this.socket.emit("leave-room");
@@ -1521,16 +1215,10 @@ export class Netplay {
             this.socket = null;
         }
 
-        if (this.localStream) {
-            try { this.localStream.getTracks().forEach((tr) => tr.stop()); } catch (e) {}
-            this.localStream = null;
-        }
-
+        // Close peer connections
         const pcs = this.peerConnections || {};
         for (const key in pcs) {
-            if (pcs[key] && pcs[key].pc) {
-                try { pcs[key].pc.close(); } catch (e) {}
-            }
+            if (pcs[key] && pcs[key].pc) { try { pcs[key].pc.close(); } catch (e) {} }
         }
         this.peerConnections = {};
 
@@ -1539,6 +1227,7 @@ export class Netplay {
             this.video = null;
         }
 
+        // Reset UI
         if (this.createButton) this.createButton.innerText = this.emu.localization("Create Room");
         if (this.tabs) {
             this.tabs[0].style.display = "";
@@ -1552,10 +1241,12 @@ export class Netplay {
             this.emu.elements.bottomBar.cheat[0].style.display = this.oldCheatDisplay || "";
         }
 
+        // Restore original input handler
         if (this.originalSimulateInput && this.emu.gameManager && this.emu.gameManager.functions) {
             this.emu.gameManager.functions.simulateInput = this.originalSimulateInput;
         }
 
+        // Reset state
         this.emu.isNetplay = false;
         this.owner = false;
         this.players = {};
@@ -1567,18 +1258,12 @@ export class Netplay {
             this.emu.originalControls = null;
         }
 
-        // Removed: _hostCanvasRO cleanup (no longer needed since we don't lock canvas)
-
-        setTimeout(() => {
-            if (this.emu.handleResize) this.emu.handleResize();
-        }, 100);
-
+        setTimeout(() => { if (this.emu.handleResize) this.emu.handleResize(); }, 100);
         this.emu.displayMessage("Left room", 3000);
         this._leaving = false;
     }
 
-    // --- Simulate Input ---
-
+    /** Process and send input to network */
     simulateInput(player, index, value) {
         if (!this.emu.isNetplay || !this.emu.gameManager || !this.emu.gameManager.functions || !this.emu.gameManager.functions.simulateInput) return;
         const pidx = this.getUserIndex();
@@ -1593,8 +1278,7 @@ export class Netplay {
         }
     }
 
-    // --- Room List ---
-
+    /** Fetch available rooms from server */
     getOpenRooms() {
         if (!this.url) return Promise.resolve({});
         return fetch(this.url + "/list?domain=" + window.location.host + "&game_id=" + this.emu.config.gameId)
@@ -1603,6 +1287,7 @@ export class Netplay {
             .catch(() => ({}));
     }
 
+    /** Update room list table */
     updateTableList() {
         if (!this.table) return Promise.resolve();
         return this.getOpenRooms().then((rooms) => {
@@ -1612,13 +1297,9 @@ export class Netplay {
                     const row = this.emu.createElement("tr");
                     row.classList.add("ejs_netplay_table_row");
                     const c1 = this.emu.createElement("td");
-                    c1.innerText = r.room_name;
-                    c1.style.textAlign = "left";
-                    c1.style.padding = "10px 0";
+                    c1.innerText = r.room_name; c1.style.textAlign = "left"; c1.style.padding = "10px 0";
                     const c2 = this.emu.createElement("td");
-                    c2.innerText = r.current + "/" + r.max;
-                    c2.style.width = "80px";
-                    c2.style.textAlign = "center";
+                    c2.innerText = r.current + "/" + r.max; c2.style.width = "80px"; c2.style.textAlign = "center";
                     const c3 = this.emu.createElement("td");
                     c3.style.width = "80px";
                     if (r.current < r.max) {
@@ -1628,32 +1309,21 @@ export class Netplay {
                         btn.innerText = this.emu.localization("Join");
                         c3.appendChild(btn);
                         this.emu.addEventListener(btn, "click", () => {
-                            if (r.hasPassword) {
-                                this.showJoinPasswordDialog(id, r.room_name, r.max);
-                            } else {
-                                this.joinRoom(id, r.room_name, r.max, null);
-                            }
+                            if (r.hasPassword) this.showJoinPasswordDialog(id, r.room_name, r.max);
+                            else this.joinRoom(id, r.room_name, r.max, null);
                         });
                     }
-                    row.appendChild(c1);
-                    row.appendChild(c2);
-                    row.appendChild(c3);
+                    row.appendChild(c1); row.appendChild(c2); row.appendChild(c3);
                     this.table.appendChild(row);
                 })(k, rooms[k]);
             }
         }).catch(() => {});
     }
 
-    _updateListStart() {
-        this.updateListInterval = setInterval(() => { this.updateTableList(); }, 1000);
-    }
+    _updateListStart() { this.updateListInterval = setInterval(() => { this.updateTableList(); }, 1000); }
+    _updateListStop() { clearInterval(this.updateListInterval); }
 
-    _updateListStop() {
-        clearInterval(this.updateListInterval);
-    }
-
-    // --- Dialogs ---
-
+    /** Show dialog to create a new room */
     showOpenRoomDialog() {
         if (!this.emu.createSubPopup) return;
         this.emu.originalControls = JSON.parse(JSON.stringify(this.emu.controls));
@@ -1666,25 +1336,14 @@ export class Netplay {
         popups[1].appendChild(title);
         const form = this.emu.createElement("div");
         form.classList.add("ejs_netplay_header");
-        const ni = this.emu.createElement("input");
-        ni.type = "text";
-        ni.maxLength = 20;
+        const ni = this.emu.createElement("input"); ni.type = "text"; ni.maxLength = 20;
         const ms = this.emu.createElement("select");
-        ["2", "3", "4"].forEach((v) => {
-            const o = document.createElement("option");
-            o.value = v;
-            o.innerText = v;
-            ms.appendChild(o);
-        });
-        const pw = this.emu.createElement("input");
-        pw.type = "text";
-        pw.maxLength = 20;
+        ["2", "3", "4"].forEach((v) => { const o = document.createElement("option"); o.value = v; o.innerText = v; ms.appendChild(o); });
+        const pw = this.emu.createElement("input"); pw.type = "text"; pw.maxLength = 20;
         [["Room Name", ni], ["Max Players", ms], ["Password (optional)", pw]].forEach((item) => {
             const s = this.emu.createElement("strong");
             s.innerText = this.emu.localization(item[0]);
-            form.appendChild(s);
-            form.appendChild(this.emu.createElement("br"));
-            form.appendChild(item[1]);
+            form.appendChild(s); form.appendChild(this.emu.createElement("br")); form.appendChild(item[1]);
         });
         popups[1].appendChild(form);
         const sub = this.emu.createElement("button");
@@ -1694,61 +1353,45 @@ export class Netplay {
         sub.innerText = this.emu.localization("Submit");
         this.emu.addEventListener(sub, "click", () => {
             const n = ni.value.trim();
-            if (n) {
-                this.openRoom(n, parseInt(ms.value, 10), pw.value.trim());
-                popups[0].remove();
-            }
+            if (n) { this.openRoom(n, parseInt(ms.value, 10), pw.value.trim()); popups[0].remove(); }
         });
         const cls = this.emu.createElement("button");
         cls.classList.add("ejs_button_button", "ejs_popup_submit");
         cls.style.margin = "10px";
         cls.innerText = this.emu.localization("Close");
         this.emu.addEventListener(cls, "click", () => { popups[0].remove(); });
-        popups[1].appendChild(sub);
-        popups[1].appendChild(cls);
+        popups[1].appendChild(sub); popups[1].appendChild(cls);
     }
 
+    /** Show password dialog for protected rooms */
     showJoinPasswordDialog(roomId, roomName, maxPlayers) {
         if (!this.emu.createSubPopup) return;
-
         const popups = this.emu.createSubPopup();
         this._menuElement.appendChild(popups[0]);
         popups[1].classList.add("ejs_cheat_parent");
-
         const title = this.emu.createElement("h2");
         title.innerText = this.emu.localization("Enter Password");
         title.classList.add("ejs_netplay_name_heading");
         popups[1].appendChild(title);
-
         const form = this.emu.createElement("div");
         form.classList.add("ejs_netplay_header");
-
         const roomLabel = this.emu.createElement("div");
         roomLabel.classList.add("ejs_netplay_dialog_label");
         roomLabel.innerText = this.emu.localization("Room") + ": " + roomName;
         form.appendChild(roomLabel);
-
         const pwLabel = this.emu.createElement("strong");
         pwLabel.innerText = this.emu.localization("Password");
-        form.appendChild(pwLabel);
-        form.appendChild(this.emu.createElement("br"));
-
+        form.appendChild(pwLabel); form.appendChild(this.emu.createElement("br"));
         const pwInput = this.emu.createElement("input");
-        pwInput.type = "password";
-        pwInput.maxLength = 20;
-        pwInput.placeholder = this.emu.localization("Enter room password");
+        pwInput.type = "password"; pwInput.maxLength = 20; pwInput.placeholder = this.emu.localization("Enter room password");
         form.appendChild(pwInput);
-
         popups[1].appendChild(form);
-
         const buttonRow = this.emu.createElement("div");
         buttonRow.classList.add("ejs_netplay_dialog_buttons");
-
         const joinBtn = this.emu.createElement("button");
         joinBtn.classList.add("ejs_button_button", "ejs_popup_submit");
         joinBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
         joinBtn.innerText = this.emu.localization("Join");
-
         const cancelBtn = this.emu.createElement("button");
         cancelBtn.classList.add("ejs_button_button", "ejs_popup_submit");
         cancelBtn.innerText = this.emu.localization("Cancel");
@@ -1758,9 +1401,7 @@ export class Netplay {
             popups[0].remove();
             if (pw) this.joinRoom(roomId, roomName, maxPlayers, pw);
         });
-
         this.emu.addEventListener(cancelBtn, "click", () => { popups[0].remove(); });
-
         this.emu.addEventListener(pwInput, "keydown", (e) => {
             if (e.key === "Enter") {
                 e.preventDefault();
@@ -1770,44 +1411,34 @@ export class Netplay {
             }
             if (e.key === "Escape") popups[0].remove();
         });
-
-        buttonRow.appendChild(joinBtn);
-        buttonRow.appendChild(cancelBtn);
-        popups[1].appendChild(buttonRow);
-
+        buttonRow.appendChild(joinBtn); buttonRow.appendChild(cancelBtn); popups[1].appendChild(buttonRow);
         setTimeout(() => pwInput.focus(), 50);
     }
 
+    /** Show error dialog when join fails */
     showJoinErrorDialog(roomId, roomName, maxPlayers, errorMessage, hadPassword) {
         if (!this.emu.createSubPopup) {
             this.emu.displayMessage(this.emu.localization("Join error") + ": " + errorMessage, 5000);
             return;
         }
-
         const popups = this.emu.createSubPopup();
         this._menuElement.appendChild(popups[0]);
         popups[1].classList.add("ejs_cheat_parent");
-
         const title = this.emu.createElement("h2");
         title.innerText = this.emu.localization("Unable to Join");
         title.classList.add("ejs_netplay_name_heading");
         popups[1].appendChild(title);
-
         const content = this.emu.createElement("div");
         content.classList.add("ejs_netplay_header");
-
         const roomLabel = this.emu.createElement("div");
         roomLabel.classList.add("ejs_netplay_dialog_label");
         roomLabel.innerText = this.emu.localization("Room") + ": " + roomName;
         content.appendChild(roomLabel);
-
         const errorBox = this.emu.createElement("div");
         errorBox.classList.add("ejs_netplay_error_box");
         errorBox.innerText = errorMessage;
         content.appendChild(errorBox);
-
         popups[1].appendChild(content);
-
         const buttonRow = this.emu.createElement("div");
         buttonRow.classList.add("ejs_netplay_dialog_buttons");
 
@@ -1816,57 +1447,36 @@ export class Netplay {
             retryBtn.classList.add("ejs_button_button", "ejs_popup_submit");
             retryBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
             retryBtn.innerText = this.emu.localization("Try Again");
-
             this.emu.addEventListener(retryBtn, "click", () => {
                 popups[0].remove();
                 this.showJoinPasswordDialog(roomId, roomName, maxPlayers);
             });
-
             buttonRow.appendChild(retryBtn);
         }
 
         const closeBtn = this.emu.createElement("button");
         closeBtn.classList.add("ejs_button_button", "ejs_popup_submit");
         closeBtn.innerText = this.emu.localization("Close");
-
         this.emu.addEventListener(closeBtn, "click", () => { popups[0].remove(); });
-
         buttonRow.appendChild(closeBtn);
         popups[1].appendChild(buttonRow);
     }
 
-    // --- Socket.IO ---
-
+    /** Initialize Socket.IO connection and set up event handlers */
     startSocketIO(cb) {
         this._unlockMobileAudio();
-
-        if (typeof io === "undefined") {
-            this.emu.displayMessage("Socket.IO unavailable", 5000);
-            return;
-        }
-        if (this.socket && this.socket.connected) {
-            cb();
-            return;
-        }
-        if (!this.url) {
-            this.emu.displayMessage("Network error", 5000);
-            return;
-        }
+        if (typeof io === "undefined") { this.emu.displayMessage("Socket.IO unavailable", 5000); return; }
+        if (this.socket && this.socket.connected) { cb(); return; }
+        if (!this.url) { this.emu.displayMessage("Network error", 5000); return; }
 
         this.previousPlayers = {};
         this.socket = io(this.url);
 
-        this.socket.on("connect", () => {
-            this.bindChatUI();
-            cb();
-        });
-
-        this.socket.on("connect_error", (e) => {
-            this.emu.displayMessage("Connect error: " + e.message, 5000);
-        });
-
+        this.socket.on("connect", () => { this.bindChatUI(); cb(); });
+        this.socket.on("connect_error", (e) => { this.emu.displayMessage("Connect error: " + e.message, 5000); });
         this.socket.on("disconnect", () => { this.leaveRoom(); });
 
+        // Handle player list updates
         this.socket.on("users-updated", (users) => {
             const pv = Object.keys(this.previousPlayers || {});
             const cu = Object.keys(users || {});
@@ -1883,18 +1493,16 @@ export class Netplay {
 
             this.previousPlayers = users;
             this.players = users;
-
             this.updatePlayersTable();
             this.chatRefreshRecipients();
 
+            // Host creates peer connections for new players
             if (this.owner) {
                 this.initWebRTCStream().then(() => {
                     Object.keys(users).forEach((pid) => {
                         if (pid !== this.playerID) {
                             const sid = users[pid].socketId;
-                            if (sid && !this.peerConnections[sid]) {
-                                this.createPeerConnection(sid);
-                            }
+                            if (sid && !this.peerConnections[sid]) this.createPeerConnection(sid);
                         }
                     });
                 });
@@ -1902,7 +1510,8 @@ export class Netplay {
         });
 
         this.socket.on("data-message", (d) => { this.dataMessage(d); });
-
+        
+        // Handle WebRTC signaling
         this.socket.on("webrtc-signal", (data) => {
             const sender = data.sender;
             const offer = data.offer;
@@ -1911,14 +1520,10 @@ export class Netplay {
             const requestRenegotiate = data.requestRenegotiate;
 
             if (requestRenegotiate && this.owner && sender) {
-                if (this.emu.debug) console.log("[NETPLAY HOST] Renegotiate requested by " + sender + " (" + (data.reason || "") + ")");
                 try {
-                    if (this.peerConnections[sender] && this.peerConnections[sender].pc) {
-                        this.peerConnections[sender].pc.close();
-                    }
+                    if (this.peerConnections[sender] && this.peerConnections[sender].pc) this.peerConnections[sender].pc.close();
                 } catch (e) {}
                 delete this.peerConnections[sender];
-
                 this.initWebRTCStream().then(() => { this.createPeerConnection(sender); });
                 return;
             }
@@ -1926,36 +1531,42 @@ export class Netplay {
             if (!sender) return;
 
             let pd = this.peerConnections[sender];
-            if (!pd) {
+            
+            if (offer) {
+                if (pd && !this.owner) {
+                    try { pd.pc.close(); } catch(e) {}
+                    delete this.peerConnections[sender];
+                    pd = null;
+                }
+                if (!pd) {
+                    pd = { pc: this.createPeerConnection(sender), iceCandidateQueue: [] };
+                    this.peerConnections[sender] = pd;
+                }
+            } else if (!pd) {
                 pd = { pc: this.createPeerConnection(sender), iceCandidateQueue: [] };
                 this.peerConnections[sender] = pd;
             }
-            pd.iceCandidateQueue = pd.iceCandidateQueue || [];
+            
             const pc = pd.pc;
 
             if (offer) {
                 pc.setRemoteDescription(new RTCSessionDescription(offer)).then(() => {
-                    pd.iceCandidateQueue.forEach((c) => { pc.addIceCandidate(new RTCIceCandidate(c)); });
+                    pd.iceCandidateQueue.forEach((c) => { pc.addIceCandidate(new RTCIceCandidate(c)).catch(() => {}); });
                     pd.iceCandidateQueue = [];
                     return pc.createAnswer();
                 }).then((ans) => pc.setLocalDescription(ans))
-                .then(() => {
-                    this.socket.emit("webrtc-signal", { target: sender, answer: pc.localDescription });
-                }).catch((err) => {
-                    if (this.emu.debug) console.error("[NETPLAY GUEST] Answer error:", err);
-                });
-
+                .then(() => { this.socket.emit("webrtc-signal", { target: sender, answer: pc.localDescription }); })
+                .catch(() => {});
             } else if (answer) {
                 pc.setRemoteDescription(new RTCSessionDescription(answer)).then(() => {
-                    pd.iceCandidateQueue.forEach((c) => { pc.addIceCandidate(new RTCIceCandidate(c)); });
+                    pd.iceCandidateQueue.forEach((c) => { pc.addIceCandidate(new RTCIceCandidate(c)).catch(() => {}); });
                     pd.iceCandidateQueue = [];
-                }).catch((err) => {
-                    if (this.emu.debug) console.error("[NETPLAY HOST] Set answer error:", err);
-                });
-
+                }).catch(() => {});
             } else if (candidate) {
                 if (pc.remoteDescription) {
-                    pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(() => {});
+                    pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {
+                        if (this.emu.debug) console.warn("Ignored ICE candidate error:", e.message);
+                    });
                 } else {
                     pd.iceCandidateQueue.push(candidate);
                 }
@@ -1963,8 +1574,7 @@ export class Netplay {
         });
     }
 
-    // --- Players Table ---
-
+    /** Refresh player table UI */
     updatePlayersTable() {
         if (!this.playerTable) return;
         this.playerTable.innerHTML = "";
@@ -1984,11 +1594,9 @@ export class Netplay {
         this.chatRefreshRecipients();
     }
 
-    // --- Open / Join Room ---
-
+    /** Create and host a new room */
     openRoom(rn, mp, pw) {
         this._unlockMobileAudio();
-
         if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx) {
             this.emu.Module.AL.currentCtx.audioCtx.resume().catch(() => {});
         }
@@ -2010,15 +1618,13 @@ export class Netplay {
 
         this.startSocketIO(() => {
             this.socket.emit("open-room", { extra: this.extra, maxPlayers: mp, password: pw }, (e) => {
-                if (e) {
-                    this.emu.displayMessage("Room error: " + e, 5000);
-                    return;
-                }
+                if (e) { this.emu.displayMessage("Room error: " + e, 5000); return; }
                 this.roomJoined(true, rn, pw, sid);
             });
         });
     }
 
+    /** Join an existing room */
     joinRoom(sid, rn, mp, pw) {
         this._unlockMobileAudio();
         this.playerID = this._guid();
@@ -2037,37 +1643,30 @@ export class Netplay {
 
         this.startSocketIO(() => {
             this.socket.emit("join-room", { extra: this.extra, password: pw }, (e, u) => {
-                if (e) {
-                    this.showJoinErrorDialog(sid, rn, mp, e, !!pw);
-                    return;
-                }
+                if (e) { this.showJoinErrorDialog(sid, rn, mp, e, !!pw); return; }
                 this.players = u;
                 this.roomJoined(false, rn, pw, sid);
             });
         });
     }
 
-    // --- Data Message ---
-
+    /** Handle incoming data messages (chat, inputs, game state) */
     dataMessage(d) {
         if (d.pause) this.emu.pause(true);
         if (d.play) this.emu.play(true);
         if (d.restart) this.emu.gameManager.restart();
+        
         if (d["chat-message"]) {
             const chat = d["chat-message"];
             const to = chat.to || "all";
             const from = chat.from || "";
-
             if (to !== "all" && to !== this.playerID) return;
             if (from === this.playerID) return;
-
             this.chatAppend(chat);
-
             try {
                 const name = chat.player_name || "Player";
                 const msg = chat.message || "";
                 const typing = this.chatInput && document.activeElement === this.chatInput;
-
                 if (!typing && this.emu.displayMessage) {
                     const prefix = (to !== "all") ? "(private) " : "";
                     this.emu.displayMessage(prefix + name + ": " + msg, 4500);
@@ -2076,6 +1675,7 @@ export class Netplay {
             return;
         }
 
+        // Handle input sync messages
         if (d["sync-control"]) {
             d["sync-control"].forEach((v) => {
                 const f = parseInt(v.frame, 10);
@@ -2090,27 +1690,31 @@ export class Netplay {
         }
     }
 
-    // --- Send Message ---
-
+    /** Send data message via socket */
     sendMessage(d) {
         if (this.socket && this.socket.connected) {
             this.socket.emit("data-message", d);
         }
     }
 
-    // --- Reset / Post Main Loop ---
-
+    /** Reset frame counters and input data */
     reset() {
         this.init_frame = this.emu.gameManager ? this.emu.gameManager.getFrameNum() : 0;
         this.currentFrame = 0;
         this.inputsData = {};
     }
 
+    /** Post-frame hook for input synchronization (host only) */
     _initModulePostMainLoop() {
+        if (this._origPostMainLoop) {
+            try { this._origPostMainLoop(); } catch (e) {}
+        }
+
         if (this.emu.isNetplay && !this.owner) return;
         this.currentFrame = (this.emu.gameManager ? this.emu.gameManager.getFrameNum() : 0) - (this.init_frame || 0);
         if (!this.emu.isNetplay || !this.owner) return;
-
+        
+        // Process and broadcast inputs for current frame
         const i = this.currentFrame;
         if (this.inputsData[i]) {
             const ts = this.inputsData[i].map((v) => {
