@@ -1132,10 +1132,13 @@ export class Netplay {
                 const sender = pc.getSenders().find((s) => s.track && s.track.kind === "video");
                 if (sender) {
                     const p = sender.getParameters();
-                    p.degradationPreference = "maintain-framerate";
+                    p.degradationPreference = "maintain-resolution";
                     if (!p.encodings || !p.encodings.length) p.encodings = [{}];
-                    p.encodings[0].maxBitrate = 1200000;
+                    p.encodings[0].maxBitrate = 2500000;
                     p.encodings[0].maxFramerate = 30;
+                    p.encodings[0].priority = "high";
+                    p.encodings[0].networkPriority = "high";
+                    p.encodings[0].scaleResolutionDownBy = 1.0;
                     sender.setParameters(p).catch(() => {});
                 }
             } catch (e) {}
@@ -1270,15 +1273,16 @@ export class Netplay {
             const p = sender.getParameters();
             if (!p.encodings || !p.encodings.length) p.encodings = [{}];
 
-            p.degradationPreference = "maintain-framerate";
+            p.degradationPreference = "maintain-resolution";
             p.encodings[0].maxFramerate = 30;
 
             if (usingRelay) {
-                p.encodings[0].maxBitrate = 900000;   // Conservative for relay
+                p.encodings[0].maxBitrate = 1500000;
             } else {
-                p.encodings[0].maxBitrate = 2000000;  // Higher for direct
+                p.encodings[0].maxBitrate = 4000000;
             }
 
+            p.encodings[0].scaleResolutionDownBy = 1.0;
             sender.setParameters(p).catch(() => {});
         } catch (e) {}
     }
