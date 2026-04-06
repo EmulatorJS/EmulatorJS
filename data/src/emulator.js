@@ -3786,13 +3786,19 @@ class EmulatorJS {
         if (gamepadIndex < 0) {
             return; // Gamepad not set anywhere
         }
-        const value = function (value) {
-            if (value > 0.5 || value < -0.5) {
-                return (value > 0) ? 1 : -1;
-            } else {
-                return 0;
-            }
-        }(e.value || 0);
+
+        const toIntValue = (value) => {
+          if (value > 0.5 || value < -0.5) {
+              return (value > 0) ? 1 : -1;
+          } else {
+              return 0;
+          }
+        };
+
+        const value = toIntValue(e.value || 0);
+        const oldValue = toIntValue(e.oldValue || 0);
+        const skippedZero = (value !== 0) && (value + oldValue === 0);
+
         if (this.controlPopup.parentElement.parentElement.getAttribute("hidden") === null) {
             if ("buttonup" === e.type || (e.type === "axischanged" && value === 0)) return;
             const num = this.controlPopup.getAttribute("button-num");
@@ -3865,6 +3871,8 @@ class EmulatorJS {
                             }
                         } else if (value === 0 || controlValue === e.label || controlValue === `${e.axis}:${value}`) {
                             this.gameManager.simulateInput(i, j, ((value === 0) ? 0 : 1));
+                        } else if (skippedZero) {
+                          this.gameManager.simulateInput(i, j, 0);
                         }
                     }
                 }
