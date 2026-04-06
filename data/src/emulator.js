@@ -3788,11 +3788,11 @@ class EmulatorJS {
         }
 
         const toIntValue = (value) => {
-          if (value > 0.5 || value < -0.5) {
-              return (value > 0) ? 1 : -1;
-          } else {
-              return 0;
-          }
+            if (value > 0.5 || value < -0.5) {
+                return (value > 0) ? 1 : -1;
+            } else {
+                return 0;
+            }
         };
 
         const value = toIntValue(e.value || 0);
@@ -3872,7 +3872,7 @@ class EmulatorJS {
                         } else if (value === 0 || controlValue === e.label || controlValue === `${e.axis}:${value}`) {
                             this.gameManager.simulateInput(i, j, ((value === 0) ? 0 : 1));
                         } else if (skippedZero) {
-                          this.gameManager.simulateInput(i, j, 0);
+                            this.gameManager.simulateInput(i, j, 0);
                         }
                     }
                 }
