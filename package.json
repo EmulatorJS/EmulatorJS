@@ -3,7 +3,7 @@
     "version": "4.2.4",
     "type": "module",
     "main": "./index.js",
-    "types": "./types/index.d.ts",
+    "types": "./index.d.ts",
     "typesVersions": {
         "*": {
             "*": [
