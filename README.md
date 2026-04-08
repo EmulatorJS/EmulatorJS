@@ -43,6 +43,38 @@ const EJS_pathToData = 'https://cdn.emulatorjs.org/<version>/data/';
 // Replace <version> with: stable, latest, nightly, etc.
 ```
 
+### NPM / TypeScript
+EmulatorJS can now be imported directly from the package root. The npm package ships bundled TypeScript definitions for the root entrypoint, `loader.js`, and published modules.
+
+```ts
+import EmulatorJS, { type EmulatorJSConfig } from "@emulatorjs/emulatorjs";
+
+const config: EmulatorJSConfig = {
+    gameUrl: "/roms/mario.nes",
+    system: "nes",
+    dataPath: "https://cdn.emulatorjs.org/stable/data/",
+};
+
+const emulator = new EmulatorJS("#game", config);
+
+emulator.on("saveState", (event) => {
+    console.log(event.format, event.state);
+});
+```
+
+`dataPath` must point to a reachable `data/` directory, either self-hosted or served from the EmulatorJS CDN. Existing published deep imports also include declarations.
+
+If you use the loader-based API, importing `@emulatorjs/emulatorjs/data/loader.js` also loads typed `EJS_*` globals:
+
+```ts
+import "@emulatorjs/emulatorjs/data/loader.js";
+
+window.EJS_player = "#game";
+window.EJS_gameUrl = "/roms/mario.nes";
+window.EJS_core = "nes";
+window.EJS_pathToData = "https://cdn.emulatorjs.org/stable/data/";
+```
+
 ### Development
 To run the project locally for development:
 
