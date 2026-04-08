@@ -27,7 +27,8 @@
         "minify": "node minify/minify.js",
         "build": "node build.js",
         "update": "node update.js",
-        "docs": "jsdoc data/src/*.js -d jsdoc"
+        "docs": "jsdoc data/src/*.js -d jsdoc",
+        "check:types": "node check-types.mjs"
     },
     "dependencies": {
         "@node-minify/clean-css": "^10.4.0",
@@ -45,6 +46,7 @@
         "nipplejs": "^0.10.2",
         "node-fetch": "^3.3.2",
         "rollup": "^4.59.0",
-        "socket.io": "^4.8.3"
+        "socket.io": "^4.8.3",
+        "typescript": "^5.9.3"
     }
 }

@@ -5,6 +5,7 @@ package-lock.json
 .github/
 *.tgz
 update.js
+check-types.mjs
 build.js
 data/localization/translate.html
 data/cores/*
