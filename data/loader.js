@@ -224,7 +224,13 @@ async function prepareLanguage() {
         await loadStyle("emulator.css");
     } else {
         EmulatorJS = await loadScript("emulator.min.js");
-        await loadStyle("emulator.min.css");
+        if (EmulatorJS) {
+            await loadStyle("emulator.min.css");
+        } else {
+            // fallback to non-minified if minified failed to load
+            EmulatorJS = await loadScript("emulator.js");
+            await loadStyle("emulator.css");
+        }
     }
 
     if (!EmulatorJS) {
