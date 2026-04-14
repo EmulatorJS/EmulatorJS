@@ -38,7 +38,7 @@ async function loadScript(file) {
     } catch(e) {
         if (debug) console.error(e);
         const module = await filesMissing(file);
-        return module.default;
+        return module;
     }
 }
 
@@ -224,13 +224,7 @@ async function prepareLanguage() {
         await loadStyle("emulator.css");
     } else {
         EmulatorJS = await loadScript("emulator.min.js");
-        if (EmulatorJS) {
-            await loadStyle("emulator.min.css");
-        } else {
-            // fallback to non-minified if minified failed to load
-            EmulatorJS = await loadScript("emulator.js");
-            await loadStyle("emulator.css");
-        }
+        await loadStyle("emulator.min.css");
     }
 
     if (!EmulatorJS) {
