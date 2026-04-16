@@ -38,7 +38,7 @@ async function loadScript(file) {
     } catch(e) {
         if (debug) console.error(e);
         const module = await filesMissing(file);
-        return module.default;
+        return module;
     }
 }
 
