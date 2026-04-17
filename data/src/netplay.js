@@ -778,7 +778,8 @@ export class Netplay {
 
                 if (!rawStream || rawStream.getVideoTracks().length === 0) { resolve(); return; }
 
-                try { rawStream.getVideoTracks()[0].contentHint = "detail"; } catch (e) {}
+                // "motion" for gameplay (prioritizes framerate/smoothness).
+                try { rawStream.getVideoTracks()[0].contentHint = "motion"; } catch (e) {}
 
                 // Build final stream with video + audio
                 const finalStream = new MediaStream();
@@ -1069,7 +1070,7 @@ export class Netplay {
             iceServers = [];
         }
 
-        const pc = new RTCPeerConnection({ iceServers: iceServers, iceCandidatePoolSize: 10 });
+        const pc = new RTCPeerConnection({ iceServers: iceServers, iceCandidatePoolSize: 4 });
         let usingRelay = false;
         let bitrateAdjusted = false;
 
@@ -1090,7 +1091,10 @@ export class Netplay {
         // Set up data channel for inputs
         let dc;
         if (this.owner) {
-            dc = pc.createDataChannel("inputs");
+            // ordered:true + maxRetransmits:0 would drop reliability;
+            // inputs reliable but prioritized. "high" priority tells the
+            // browser to favor this SCTP stream over video under congestion.
+            dc = pc.createDataChannel("inputs", { ordered: true, priority: "high" });
             dc.onmessage = (e) => {
                 const d = JSON.parse(e.data);
                 if (d.type === "host-left") {
@@ -1132,13 +1136,17 @@ export class Netplay {
                 const sender = pc.getSenders().find((s) => s.track && s.track.kind === "video");
                 if (sender) {
                     const p = sender.getParameters();
-                    p.degradationPreference = "maintain-resolution";
+                    p.degradationPreference = "maintain-framerate";
                     if (!p.encodings || !p.encodings.length) p.encodings = [{}];
-                    p.encodings[0].maxBitrate = 2500000;
+                    p.encodings[0].maxBitrate = 1800000;
                     p.encodings[0].maxFramerate = 30;
                     p.encodings[0].priority = "high";
                     p.encodings[0].networkPriority = "high";
                     p.encodings[0].scaleResolutionDownBy = 1.0;
+                    // Temporal scalability - harmless if unsupported by encoder.
+                    // L1T2 = 1 spatial layer, 2 temporal layers. Helps guests with
+                    // weak downlinks drop to half framerate without killing the stream.
+                    try { p.encodings[0].scalabilityMode = "L1T2"; } catch (e) {}
                     sender.setParameters(p).catch(() => {});
                 }
             } catch (e) {}
@@ -1236,6 +1244,14 @@ export class Netplay {
                 clearTimeout(this.connectionTimeout);
                 this.webRtcReady = true;
 
+                // Minimize the receiver-side jitter buffer. Default is ~200ms+,
+                // which adds perceived input lag. 0 tells the browser to target
+                // the lowest playout delay it can manage. Graceful fallback if
+                // the property isn't supported.
+                try {
+                    if (e.receiver) e.receiver.playoutDelayHint = 0;
+                } catch (err) {}
+
                 if (!this.video) {
                     this.video = document.createElement("video");
                     this.video.muted = true;
@@ -1273,16 +1289,18 @@ export class Netplay {
             const p = sender.getParameters();
             if (!p.encodings || !p.encodings.length) p.encodings = [{}];
 
-            p.degradationPreference = "maintain-resolution";
+            // Framerate matters more than resolution for gameplay perception.
+            p.degradationPreference = "maintain-framerate";
             p.encodings[0].maxFramerate = 30;
 
             if (usingRelay) {
-                p.encodings[0].maxBitrate = 1500000;
+                p.encodings[0].maxBitrate = 900000;
             } else {
-                p.encodings[0].maxBitrate = 4000000;
+                p.encodings[0].maxBitrate = 2500000;
             }
 
             p.encodings[0].scaleResolutionDownBy = 1.0;
+            try { p.encodings[0].scalabilityMode = "L1T2"; } catch (e) {}
             sender.setParameters(p).catch(() => {});
         } catch (e) {}
     }
