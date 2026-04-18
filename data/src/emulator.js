@@ -824,7 +824,7 @@ class EmulatorJS {
                 }
                 this.on("start", () => {
                     setTimeout(() => {
-                        this.gameManager.loadState(new Uint8Array(res.data));
+                        this.gameManager.loadState(new Uint8Array(res.data.files[0].bytes));
                     }, 10);
                 })
                 resolve();
