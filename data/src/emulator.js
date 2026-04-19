@@ -2387,56 +2387,65 @@ class EmulatorJS {
         let exitMenuIsOpen = false;
         const exitEmulation = addButton(this.config.buttonOpts.exitEmulation, async () => {
             if (exitMenuIsOpen) return;
-            exitMenuIsOpen = true;
-            const popups = this.createSubPopup();
-            this.game.appendChild(popups[0]);
-            popups[1].classList.add("ejs_cheat_parent");
-            popups[1].style.width = "100%";
-            const popup = popups[1];
-            const header = this.createElement("div");
-            header.classList.add("ejs_cheat_header");
-            const title = this.createElement("h2");
-            title.innerText = this.localization("Are you sure you want to exit?");
-            title.classList.add("ejs_cheat_heading");
-            const close = this.createElement("button");
-            close.classList.add("ejs_cheat_close");
-            header.appendChild(title);
-            header.appendChild(close);
-            popup.appendChild(header);
-            this.addEventListener(close, "click", (e) => {
-                exitMenuIsOpen = false
-                popups[0].remove();
-            })
-            popup.appendChild(this.createElement("br"));
+            if (this.config.askBeforeExit === true || this.config.askBeforeExit === undefined) {
+                exitMenuIsOpen = true;
+                const popups = this.createSubPopup();
+                this.game.appendChild(popups[0]);
+                popups[1].classList.add("ejs_cheat_parent");
+                popups[1].style.width = "100%";
+                const popup = popups[1];
+                const header = this.createElement("div");
+                header.classList.add("ejs_cheat_header");
+                const title = this.createElement("h2");
+                title.innerText = this.localization("Are you sure you want to exit?");
+                title.classList.add("ejs_cheat_heading");
+                const close = this.createElement("button");
+                close.classList.add("ejs_cheat_close");
+                header.appendChild(title);
+                header.appendChild(close);
+                popup.appendChild(header);
+                this.addEventListener(close, "click", (e) => {
+                    exitMenuIsOpen = false
+                    popups[0].remove();
+                })
+                popup.appendChild(this.createElement("br"));
 
-            const footer = this.createElement("footer");
-            const submit = this.createElement("button");
-            const closeButton = this.createElement("button");
-            submit.innerText = this.localization("Exit");
-            closeButton.innerText = this.localization("Cancel");
-            submit.classList.add("ejs_button_button");
-            closeButton.classList.add("ejs_button_button");
-            submit.classList.add("ejs_popup_submit");
-            closeButton.classList.add("ejs_popup_submit");
-            submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-            footer.appendChild(submit);
-            const span = this.createElement("span");
-            span.innerText = " ";
-            footer.appendChild(span);
-            footer.appendChild(closeButton);
-            popup.appendChild(footer);
+                const footer = this.createElement("footer");
+                const submit = this.createElement("button");
+                const closeButton = this.createElement("button");
+                submit.innerText = this.localization("Exit");
+                closeButton.innerText = this.localization("Cancel");
+                submit.classList.add("ejs_button_button");
+                closeButton.classList.add("ejs_button_button");
+                submit.classList.add("ejs_popup_submit");
+                closeButton.classList.add("ejs_popup_submit");
+                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+                footer.appendChild(submit);
+                const span = this.createElement("span");
+                span.innerText = " ";
+                footer.appendChild(span);
+                footer.appendChild(closeButton);
+                popup.appendChild(footer);
 
-            this.addEventListener(closeButton, "click", (e) => {
-                popups[0].remove();
-                exitMenuIsOpen = false
-            })
+                this.addEventListener(closeButton, "click", (e) => {
+                    popups[0].remove();
+                    exitMenuIsOpen = false
+                })
 
-            this.addEventListener(submit, "click", (e) => {
-                popups[0].remove();
+                this.addEventListener(submit, "click", (e) => {
+                    popups[0].remove();
+                    const body = this.createPopup("EmulatorJS has exited", {});
+                    setTimeout(() => {
+                        this.callEvent("exit");
+                    }, 20);
+                })
+                setTimeout(this.menu.close.bind(this), 20);
+            } else {
                 const body = this.createPopup("EmulatorJS has exited", {});
-                this.callEvent("exit");
-            })
-            setTimeout(this.menu.close.bind(this), 20);
+                setTimeout(() => {
+                    this.callEvent("exit");
+                }, 20);
+            }
         });
 
         this.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {
