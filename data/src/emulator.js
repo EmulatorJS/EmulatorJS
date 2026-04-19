@@ -74,9 +74,10 @@ class EmulatorJS {
      * @param {*} opts Additional options for the download.
      * @param {boolean} forceExtract Whether to force extraction of compressed files regardless of extension (default is false).
      * @param {boolean} dontCache If true, the downloaded file will not be cached (default is false).
+     * @param {boolean} dontExtract If true, the downloaded file will not be extracted, but will still be cached (default is false, overridden by forceExtract).
      * @returns A promise that resolves with the downloaded file data.
      */
-    downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false) {
+    downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false, dontExtract = false) {
         if (this.debug) console.log("[EJS " + type + "] Downloading " + path);
         return new Promise(async (resolve) => {
             // Handle direct data objects (ArrayBuffer, Uint8Array, Blob)
@@ -130,7 +131,8 @@ class EmulatorJS {
                     timeout,
                     responseType,
                     forceExtract,
-                    dontCache
+                    dontCache,
+                    dontExtract
                 );
 
                 // Handle HEAD requests (returns null)
@@ -360,9 +362,9 @@ class EmulatorJS {
         
         // Populate downloadTypes
         this.downloadType = {
-            "rom": { "name": "ROM", "dontCache": false },
+            "rom": { "name": "ROM", "dontCache": false, "dontExtractIfCore": ["arcade", "fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi", "mame", "mame2003_plus", "mame2003"] },
             "core": { "name": "Core", "dontCache": false },
-            "bios": { "name": "BIOS", "dontCache": false },
+            "bios": { "name": "BIOS", "dontCache": false, "dontExtractIfCore": ["arcade", "fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi", "mame", "mame2003_plus", "mame2003"] },
             "parent": { "name": "Parent", "dontCache": false },
             "patch": { "name": "Patch", "dontCache": false },
             "reports": { "name": "Reports", "dontCache": true },
@@ -850,6 +852,14 @@ class EmulatorJS {
             this.compression = new EJS_COMPRESSION(this);
         }
 
+        let dontExtract = false;
+        if (type.dontExtractIfCore?.includes(this.getCore())) {
+            dontExtract = true;
+            console.log(`[EJS ${type.name.toUpperCase()}] Core ${this.getCore()} requires special handling, will not attempt to extract if compressed.`);
+        } else {
+            console.log(`[EJS ${type.name.toUpperCase()}] Core ${this.getCore()} does not require special handling, will attempt to extract if compressed.`);
+        }
+
         return new Promise(async (resolve, reject) => {
             let returnData;
 
@@ -870,29 +880,34 @@ class EmulatorJS {
                 } else {
                     // Not in cache - decompress
                     let files = [];
-                    const decompressedData = await this.compression.decompress(inData, (m, appendMsg) => {
-                        this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Core") + m) : m;
-                    }, (fileName, fileData) => {
-                        // Use file callback to collect files during decompression
-                        let bytes;
-                        if (fileData instanceof Uint8Array) {
-                            bytes = fileData;
-                        } else if (fileData instanceof ArrayBuffer) {
-                            bytes = new Uint8Array(fileData);
-                        } else if (fileData && typeof fileData === 'object') {
-                            // Handle case where it might be an object with numeric keys
-                            bytes = new Uint8Array(Object.values(fileData));
-                        } else {
-                            console.error("Unknown file data type:", typeof fileData, fileData);
-                            return;
-                        }
+                    if (dontExtract === false) {
+                        const decompressedData = await this.compression.decompress(inData, (m, appendMsg) => {
+                            this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Core") + m) : m;
+                        }, (fileName, fileData) => {
+                            // Use file callback to collect files during decompression
+                            let bytes;
+                            if (fileData instanceof Uint8Array) {
+                                bytes = fileData;
+                            } else if (fileData instanceof ArrayBuffer) {
+                                bytes = new Uint8Array(fileData);
+                            } else if (fileData && typeof fileData === 'object') {
+                                // Handle case where it might be an object with numeric keys
+                                bytes = new Uint8Array(Object.values(fileData));
+                            } else {
+                                console.error("Unknown file data type:", typeof fileData, fileData);
+                                return;
+                            }
 
-                        if (fileName === "!!notCompressedData") {
-                            files.push(new EJS_FileItem(url.name, bytes));
-                        } else if (!fileName.endsWith("/")) {
-                            files.push(new EJS_FileItem(fileName, bytes));
-                        }
-                    });
+                            if (fileName === "!!notCompressedData") {
+                                files.push(new EJS_FileItem(url.name, bytes));
+                            } else if (!fileName.endsWith("/")) {
+                                files.push(new EJS_FileItem(fileName, bytes));
+                            }
+                        });
+                    } else {
+                        // If we shouldn't extract, just treat the whole file as a single item
+                        files.push(new EJS_FileItem(url.name, inData));
+                    }
 
                     // construct EJS_CacheItem
                     let data = new EJS_CacheItem(
@@ -923,7 +938,8 @@ class EmulatorJS {
                     true,
                     { responseType: "arraybuffer", method: "GET" },
                     false,
-                    type.dontCache
+                    type.dontCache,
+                    dontExtract
                 );
                 // check for error
                 if (data === -1) {

@@ -101,9 +101,10 @@ class EJS_Download {
      * @param {string} responseType - The response type (default is "arraybuffer").
      * @param {boolean} forceExtract - Whether to force extraction of compressed files regardless of extension (default is false).
      * @param {boolean} dontCache - If true, the downloaded file will not be cached (default is false).
+     * @param {boolean} dontExtract - If true, the downloaded file will not be extracted, but will still be cached (default is false, overridden by forceExtract).
      * @returns {Promise<EJS_CacheItem>} - The downloaded file as an EJS_CacheItem.
      */
-    downloadFile(url, type, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer", forceExtract = false, dontCache = false) {
+    downloadFile(url, type, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer", forceExtract = false, dontCache = false, dontExtract = false) {
         let cacheActiveText = " (cache usage requested)"
         if (dontCache) {
             cacheActiveText = "";
@@ -228,7 +229,8 @@ class EJS_Download {
                 let files = [];
                 const ext = filename.toLowerCase().split('.').pop();
                 if (responseType === "arraybuffer") {
-                    if (["zip", "7z", "rar"].includes(ext) || forceExtract) {
+                    if (forceExtract === true || (dontExtract === false && ["zip", "7z", "rar"].includes(ext))) {
+                        console.log(`Extracting ${filename} because it is a compressed file and forceExtract is ${forceExtract} and dontExtract is ${dontExtract}`);
                         if (onProgress) onProgress("decompressing", 0, 0, 0);
                         try {
                             const compression = new EJS_COMPRESSION(this.EJS);
@@ -245,6 +247,7 @@ class EJS_Download {
                             return;
                         }
                     } else {
+                        console.log(`Not extracting ${filename} because forceExtract is ${forceExtract} and dontExtract is ${dontExtract}`);
                         files = [new EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
                     }
                 } else {
