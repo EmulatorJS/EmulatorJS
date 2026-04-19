@@ -2387,7 +2387,7 @@ class EmulatorJS {
         let exitMenuIsOpen = false;
         const exitEmulation = addButton(this.config.buttonOpts.exitEmulation, async () => {
             if (exitMenuIsOpen) return;
-            if (this.config.askBeforeExit === true || this.config.askBeforeExit === undefined) {
+            if (this.config.askBeforeExit !== false) {
                 exitMenuIsOpen = true;
                 const popups = this.createSubPopup();
                 this.game.appendChild(popups[0]);
