@@ -32,7 +32,9 @@ class EJS_GameManager {
             setVSync: this.Module.cwrap("set_vsync", "null", ["number"]),
             setVideoRoation: this.Module.cwrap("set_video_rotation", "null", ["number"]),
             getVideoDimensions: this.Module.cwrap("get_video_dimensions", "number", ["string"]),
-            setKeyboardEnabled: this.Module.cwrap("ejs_set_keyboard_enabled", "null", ["number"])
+            setKeyboardEnabled: this.Module.cwrap("ejs_set_keyboard_enabled", "null", ["number"]),
+            setControllerPortDevice: this.Module.cwrap("ejs_set_controller_port_device", "null", ["number", "number"]),
+            getControllerPortInfo: this.Module.cwrap("ejs_get_controller_port_info", "string", [])
         }
 
         this.writeFile("/home/web_user/.config/retroarch/retroarch.cfg", this.getRetroArchCfg());
@@ -416,6 +418,12 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     }
     supportsStates() {
         return !!this.functions.supportsStates();
+    }
+    setControllerPortDevice(port, device) {
+        this.functions.setControllerPortDevice(port, device);
+    }
+    getControllerPortInfo() {
+        return this.functions.getControllerPortInfo();
     }
     getSaveFile(save) {
         if (save !== false) {
