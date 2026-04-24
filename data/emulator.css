@@ -234,23 +234,149 @@
 }
 
 .netplay-hidden {
-  display: none !important;
+    display: none !important;
 }
 
 .option-enabled {
-  color: inherit;
-  opacity: 1;
+    color: inherit;
+    opacity: 1;
 }
 
 .ejs_netplay_warning {
-  padding: 10px;
-  margin-bottom: 15px;
-  text-align: center;
-  color: black !important;
-  background-color: rgba(255, 165, 0, 0.8);
-  border: 1px solid orange;
-  border-radius: 5px;
-  font-size: 0.9em;
+    padding: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: black !important;
+    background-color: rgba(255, 165, 0, 0.8);
+    border: 1px solid orange;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.ejs_netplay_chat_header_row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+
+.ejs_netplay_chat_hint {
+    font-size: 11px;
+    color: #888;
+}
+
+.ejs_netplay_offscreen {
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.ejs_netplay_offscreen_canvas {
+    position: fixed;
+    left: -9999px;
+    top: -9999px;
+    visibility: hidden;
+}
+
+.ejs_netplay_overlay {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10001;
+    pointer-events: none;
+    overflow: visible;
+    background: transparent;
+}
+
+.ejs_netplay_canvas {
+    position: fixed;
+    left: 0;
+    top: 0;
+    background: #000;
+    z-index: 10001;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    pointer-events: none;
+}
+
+.ejs_netplay_chat_container {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: 8px;
+}
+
+.ejs_netplay_chat_log {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 6px 8px;
+    min-height: 60px;
+    max-height: 120px;
+    overflow-y: auto;
+    font-size: 12px;
+    margin-bottom: 6px;
+    word-break: break-word;
+}
+
+.ejs_netplay_chat_row {
+    display: flex;
+    gap: 4px;
+    align-items: stretch;
+}
+
+.ejs_netplay_chat_to {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 4px 6px;
+    font-size: 12px;
+    min-width: 90px;
+    max-width: 120px;
+    cursor: pointer;
+}
+
+.ejs_netplay_chat_input {
+    flex: 1;
+    background-color: #222;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 13px;
+    outline: none;
+}
+
+.ejs_netplay_chat_input:focus {
+    border-color: rgba(var(--ejs-primary-color), 0.6);
+}
+
+.ejs_netplay_dialog_label {
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: #bcbcbc;
+}
+
+.ejs_netplay_dialog_buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.ejs_netplay_error_box {
+    background: rgba(248, 35, 0, 0.15);
+    border: 1px solid rgba(248, 35, 0, 0.4);
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    color: #ff6b6b;
+    font-size: 13px;
+    text-align: center;
 }
 
 .ejs_context_menu {
@@ -474,9 +600,6 @@
     right: -3px;
 }
 
-/* .ejs_big_screen .ejs_settings_parent::after {
-    right: 15px;
-} */
 .ejs_big_screen .ejs_settings_text {
     display: none;
 }
@@ -927,15 +1050,6 @@
     -webkit-backdrop-filter: blur(8px);
 }
 
-/* .ejs_settings_parent::after {
-    border: 5px solid transparent;
-    border-top-color: rgba(119, 119, 119, 0.9);
-    content: '';
-    height: 0;
-    position: absolute;
-    top: 100%;
-    width: 0;
-} */
 .ejs_settings_parent::before,
 .ejs_settings_parent::after {
     position: absolute;
