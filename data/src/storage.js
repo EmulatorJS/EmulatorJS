@@ -1,14 +1,25 @@
+/**
+ * Thin wrapper around a single IndexedDB object store.
+ * Handles opening the database and provides get/put/remove/getAll helpers.
+ * Each instance is scoped to one store name within a named database.
+ */
 class EJS_STORAGE {
     /**
-     * @param {string} dbName
-     * @param {string} storeName
-     * @param {string[]?} indexes - Optional array of field names to create non-unique indexes on
+     * @param {string} dbName - The IndexedDB database name to open.
+     * @param {string} storeName - The object store name to use within that database.
+     * @param {string[]?} indexes - Optional array of field names to create non-unique indexes on.
      */
     constructor(dbName, storeName, indexes = null) {
         this.dbName = dbName;
         this.storeName = storeName;
         this.indexes = indexes;
     }
+    /**
+     * Tracks which primary keys have stored data by maintaining a `?EJS_KEYS!` index record.
+     * Called internally after every put or remove. Skipped for the index record itself.
+     * @param {string} key - The primary key that was added or removed.
+     * @param {boolean} add - True to register the key, false to deregister it.
+     */
     addFileToDB(key, add) {
         (async () => {
             if (key === "?EJS_KEYS!") return;
@@ -23,6 +34,12 @@ class EJS_STORAGE {
             this.put("?EJS_KEYS!", keys);
         })();
     }
+    /**
+     * Opens the database and resolves with the named object store inside a new transaction.
+     * Resolves with undefined instead of rejecting when IndexedDB is unavailable.
+     * @param {IDBTransactionMode} [mode="readwrite"] - The transaction mode to use.
+     * @returns {Promise<IDBObjectStore|undefined>} The opened object store, or undefined on failure.
+     */
     getObjectStore(mode = "readwrite") {
         return new Promise((resolve, reject) => {
             if (!window.indexedDB) return resolve();
@@ -82,6 +99,12 @@ class EJS_STORAGE {
             }
         });
     }
+    /**
+     * Stores a value under the given primary key and registers the key in the index.
+     * @param {string} key - The primary key to store the value under.
+     * @param {*} data - The value to persist.
+     * @returns {Promise<void>}
+     */
     put(key, data) {
         return new Promise(async (resolve, reject) => {
             const objectStore = await this.getObjectStore();
@@ -94,6 +117,11 @@ class EJS_STORAGE {
             };
         });
     }
+    /**
+     * Deletes the record for the given key and removes it from the index.
+     * @param {string} key - The primary key to delete.
+     * @returns {Promise<void>}
+     */
     remove(key) {
         return new Promise(async (resolve, reject) => {
             const objectStore = await this.getObjectStore();
@@ -104,6 +132,10 @@ class EJS_STORAGE {
             request.onerror = () => {};
         });
     }
+    /**
+     * Returns a map of primary key → byte length for every tracked record that has a `.data` ArrayBuffer.
+     * @returns {Promise<Object.<string, number>>} Map of key to byte size.
+     */
     getSizes() {
         return new Promise(async (resolve, reject) => {
             if (!window.indexedDB) resolve({});
@@ -118,6 +150,10 @@ class EJS_STORAGE {
             resolve(rv);
         })
     }
+    /**
+     * Retrieves every tracked record in the store as an array.
+     * @returns {Promise<any[]>} Array of all stored values, excluding the key index record.
+     */
     getAll() {
         return new Promise(async (resolve, reject) => {
             if (!window.indexedDB) return resolve([]);
@@ -132,6 +168,10 @@ class EJS_STORAGE {
             resolve(rv);
         });
     }
+    /**
+     * Returns all tracked primary keys in the store.
+     * @returns {Promise<string[]>} Array of primary keys, excluding the internal index key.
+     */
     getKeys() {
         return new Promise(async (resolve, reject) => {
             if (!window.indexedDB) return resolve([]);
@@ -142,20 +182,29 @@ class EJS_STORAGE {
     }
 }
 
+/**
+ * No-op storage class used as a drop-in replacement for EJS_STORAGE when IndexedDB
+ * is disabled or unavailable. All methods resolve immediately with empty results.
+ */
 class EJS_DUMMYSTORAGE {
     constructor() {}
+    /** @returns {Promise<void>} */
     addFileToDB() {
         return new Promise(resolve => resolve());
     }
+    /** @returns {Promise<undefined>} */
     get() {
         return new Promise(resolve => resolve());
     }
+    /** @returns {Promise<void>} */
     put() {
         return new Promise(resolve => resolve());
     }
+    /** @returns {Promise<void>} */
     remove() {
         return new Promise(resolve => resolve());
     }
+    /** @returns {Promise<{}>} */
     getSizes() {
         return new Promise(resolve => resolve({}));
     }
