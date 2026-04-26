@@ -90,19 +90,29 @@ class EJS_GameManager {
                     await new Promise(async (done) => {
                         try {
                             const url = this.EJS.config.externalFiles[key];
-                            const cacheItem = await this.EJS.downloadFile(url, this.EJS.downloadType.support.name, "GET", {}, null, null, null, 30000, "arraybuffer", false, this.EJS.downloadType.support.dontCache);
+                            
+                            const cacheItem = await this.EJS.downloadFile(
+                                url,
+                                this.EJS.downloadType.support.name,
+                                null,          // progress callback
+                                true,          // notWithPath (URL is already absolute)
+                                { responseType: "arraybuffer" },  // opts (was null → causes crash)
+                                false,         // forceExtract
+                                this.EJS.downloadType.support.dontCache,
+                                false          // dontExtract
+                            );
                             
                             let path = key;
                             if (key.trim().endsWith("/")) {
                                 // Extract to directory
-                                for (let i = 0; i < cacheItem.files.length; i++) {
-                                    const file = cacheItem.files[i];
+                                for (let i = 0; i < cacheItem.data.files.length; i++) {
+                                    const file = cacheItem.data.files[i];
                                     this.writeFile(path + file.filename, file.bytes);
                                 }
                             } else {
                                 // Write single file (or first file from archive)
-                                if (cacheItem.files.length > 0) {
-                                    this.writeFile(path, cacheItem.files[0].bytes);
+                                if (cacheItem.data.files.length > 0) {
+                                    this.writeFile(path, cacheItem.data.files[0].bytes);
                                 }
                             }
                             done();
