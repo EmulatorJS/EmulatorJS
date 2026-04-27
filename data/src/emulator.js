@@ -971,7 +971,9 @@ class EmulatorJS {
                     }
                 }
                 if (fileName.endsWith("/")) {
-                    this.gameManager.FS.mkdir(fileName);
+                    if (!this.gameManager.FS.analyzePath(fileName).exists) {
+                        this.gameManager.FS.mkdir(fileName);
+                    }
                     return null;
                 }
                 this.gameManager.FS.writeFile(`/${fileName}`, fileData);
