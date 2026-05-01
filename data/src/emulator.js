@@ -4573,6 +4573,19 @@ class EmulatorJS {
         //This wouldnt work using :not()... strange.
         this.game.parentElement.classList.toggle("ejs_big_screen", positionInfo.width > 575);
 
+        let intScaleValue = this.getSettingValue("integerScaleFactor")
+        if (!isNaN(intScaleValue)) {
+            let intScaleFactor = parseInt(intScaleValue);
+            let newSize = [intScaleFactor * this.gameManager.getVideoDimensions("width"), intScaleFactor * this.gameManager.getVideoDimensions("width")];
+            this.canvas.style.width =  `${newSize[0]}px`;
+            this.canvas.style.height = `${newSize[1]}px`;
+            this.canvas.width =  `${newSize[0]}`;
+            this.canvas.height = `${newSize[1]}`;
+        } else {
+            this.canvas.style.width =  "";
+            this.canvas.style.height = "";
+        }
+
         if (!this.handleSettingsResize) return;
         this.handleSettingsResize();
     }
@@ -5299,6 +5312,20 @@ class EmulatorJS {
             "2": "180 deg",
             "3": "270 deg"
         }, this.videoRotation.toString(), graphicsOptions, true);
+
+        addToMenu(this.localization("Integer Scaling"), "integerScaleFactor", {
+            "disabled": this.localization("Disabled"),
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "10"
+        }, "disabled", graphicsOptions, true)
 
         const screenCaptureOptions = createSettingParent(true, "Screen Capture", home);
 
