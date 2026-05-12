@@ -1908,10 +1908,10 @@ class EmulatorJS {
             header.appendChild(close);
             popup.appendChild(header);
             
-            const manualDescriptionInput = this.createElement("input");
-            manualDescriptionInput.type = "text";
-            manualDescriptionInput.style.width = "100%";
-            popup.appendChild(manualDescriptionInput);
+            const input = this.createElement("input");
+            input.type = "text";
+            input.style.width = "100%";
+            popup.appendChild(input);
             
             this.addEventListener(close, "click", (e) => {
                 popups[0].remove();
