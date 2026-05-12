@@ -1151,6 +1151,9 @@ class EmulatorJS {
                     return "." + this.saveFileExt;
                 }
                 return ".srm";
+            },
+            getInputText: (options) => {
+                this.showInputPrompt(options);
             }
         }).then(module => {
             this.Module = module;
@@ -1884,6 +1887,51 @@ class EmulatorJS {
         }
 
         return main;
+    }
+    showInputPrompt(opts) {
+        opts = opts || {};
+        const hint = opts.hint || "Enter text";
+        const maxLength = opts.maxLength | 0;
+        const password = !!opts.password;
+        return new Promise((resolve) => {
+            const popups = this.createSubPopup();
+            this.currentPopup = popups;
+            this.game.appendChild(popups[0]);
+            const popup = popups[1];
+            popup.classList.add("small_popup");
+            popup.style.width = "100%";
+            const header = this.createElement("div");
+            const title = this.createElement("h2");
+            title.innerText = this.localization(hint);
+            const close = this.createElement("button");
+            header.appendChild(title);
+            header.appendChild(close);
+            popup.appendChild(header);
+            
+            const manualDescriptionInput = this.createElement("input");
+            manualDescriptionInput.type = "text";
+            manualDescriptionInput.style.width = "100%";
+            popup.appendChild(manualDescriptionInput);
+            
+            this.addEventListener(close, "click", (e) => {
+                popups[0].remove();
+                this.currentPopup = null;
+                resolve("REFUSED INPUT");
+            })
+            
+            const submit = this.createElement("button");
+            submit.classList.add("ejs_button_button");
+            submit.classList.add("ejs_popup_submit");
+            submit.innerText = this.localization("Submit");
+            popup.appendChild(submit);
+            this.addEventListener(submit, "click", (e) => {
+                if (!input.value.trim())
+                    return;
+                popups[0].remove();
+                this.currentPopup = null;
+                resolve(input.value.trim());
+            });
+        });
     }
     selectFile() {
         return new Promise((resolve, reject) => {
@@ -5755,7 +5803,6 @@ class EmulatorJS {
                 const submit = this.createElement("button");
                 submit.classList.add("ejs_button_button");
                 submit.classList.add("ejs_popup_submit");
-                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
                 submit.innerText = this.localization("Submit");
                 popup.appendChild(submit);
                 this.addEventListener(submit, "click", (e) => {
