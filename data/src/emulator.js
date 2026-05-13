@@ -1153,7 +1153,7 @@ class EmulatorJS {
                 return ".srm";
             },
             getInputText: (options) => {
-                this.showInputPrompt(options);
+                return this.showInputPrompt(options);
             }
         }).then(module => {
             this.Module = module;
