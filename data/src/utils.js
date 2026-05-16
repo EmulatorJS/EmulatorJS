@@ -15,7 +15,6 @@ export function simpleHash(dataArray) {
     }
     return hash;
 }
-
 /**
  * Cyrb53 hash function adapted for buffers.
  * @param {*} charBuffer 
@@ -39,4 +38,12 @@ export async function cyrb53(charBuffer, seed = 0) {
     // Cyrb53 is a 53-bit hash; we need 14 hex characters to represent it, and the first char will
     // always be 0 or 1 (since it is only 1 bit)
     return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(16).padStart(14, "0");
+}
+/**
+ * Generate a random GUID string.
+ * @returns {string} A GUID in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.
+ */
+export function guid() {
+    const s4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+    return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
 }
