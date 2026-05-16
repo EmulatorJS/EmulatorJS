@@ -234,23 +234,23 @@
 }
 
 .netplay-hidden {
-  display: none !important;
+    display: none !important;
 }
 
 .option-enabled {
-  color: inherit;
-  opacity: 1;
+    color: inherit;
+    opacity: 1;
 }
 
 .ejs_netplay_warning {
-  padding: 10px;
-  margin-bottom: 15px;
-  text-align: center;
-  color: black !important;
-  background-color: rgba(255, 165, 0, 0.8);
-  border: 1px solid orange;
-  border-radius: 5px;
-  font-size: 0.9em;
+    padding: 10px;
+    margin-bottom: 15px;
+    text-align: center;
+    color: black !important;
+    background-color: rgba(255, 165, 0, 0.8);
+    border: 1px solid orange;
+    border-radius: 5px;
+    font-size: 0.9em;
 }
 
 .ejs_netplay_chat_header_row {
