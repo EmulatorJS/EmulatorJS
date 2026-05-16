@@ -22,6 +22,7 @@ Supported languages
 `ro.json`: `ro-RO` - Romanian (Romania)<br>
 `km.json`: `km-KH` - Khmer (Cambodia)<br>
 `vi.json`: `vi-VN` - Vietnamese (Vietnam)<br>
+`ua.json`: `uk-UA` - Ukranian (Ukraine)<br>
 
 default: `en-US`
 
@@ -48,6 +49,7 @@ Translated for `ja-JP` by [@noel-forester](https://github.com/noel-forester) <br
 Translated for `km-KH` by [@novsochetra](https://github.com/novsochetra) <br>
 Translated for `vi-VN` by [@TimKieu](https://github.com/TimKieu) <br>
 Translated for `hi-IN`, `ar-SA`, `jv-iD`, `bn-BD`, `ru-RU`, `de-DE`, `ko-KR` by [@allancoding](https://github.com/allancoding), using a translate application <br>
+Translated for `ua-UA` by [@MrSosige](https://github.com/MrSosige) <br>
 
 ## Contributing
 
