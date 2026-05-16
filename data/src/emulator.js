@@ -1962,9 +1962,9 @@ class EmulatorJS {
         })
     }
     isPopupOpen() {
-        return (this.cheatMenu && this.cheatMenu.style.display !== "none") || 
-               (this.netplay && this.netplay._menuElement && this.netplay._menuElement.style.display !== "none") ||
-               (this.controlMenu && this.controlMenu.style.display !== "none") || 
+        return (this.cheatMenu && this.cheatMenu.style.display !== "none") ||
+               (this.netplay && this.netplay.isMenuOpen()) ||
+               (this.controlMenu && this.controlMenu.style.display !== "none") ||
                this.currentPopup !== null;
     }
     isChild(first, second) {
@@ -2257,12 +2257,11 @@ class EmulatorJS {
             this.gameManager.loadSaveFiles();
         });
         const netplay = addButton(this.config.buttonOpts.netplay, async () => {
-            if (this.netplay) {
-                if (!this.netplay._menuElement) {
-                    this.netplay.createNetplayMenu();
-                }
-                this.openNetplayMenu(); 
+            if (!this.netplay) return;
+            if (!this.netplay.isMenuCreated()) {
+                this.netplay.createNetplayMenu();
             }
+            this.netplay.openMenu();
         });
         
         // add custom buttons
@@ -5889,22 +5888,29 @@ class EmulatorJS {
                         const systemUrl =
                             this.config.cheatPath + system + ".json";
 
+                        const fetchCheatJson = async (url) => {
+                            const res = await this.downloadFile(url, "cheats", null, true, { responseType: "text", method: "GET" });
+                            if (res === -1) return null;
+                            return res.data;
+                        };
+
                         try {
-                            let response = await fetch(globalUrl);
-                            if (!response.ok) {
+                            let data = await fetchCheatJson(globalUrl);
+                            if (data === null) {
                                 if (this.debug)
                                     console.log(
                                         `[Cheats] cheats.json not found. Trying ${system}.json fallback...`,
                                     );
-                                response = await fetch(systemUrl);
-                                if (!response.ok) {
+                                data = await fetchCheatJson(systemUrl);
+                                if (data === null) {
                                     throw new Error(
                                         `Cheat JSON not found at ${globalUrl} or ${systemUrl}`,
                                     );
                                 }
                             }
-
-                            let data = await response.json();
+                            // downloadFile tries JSON.parse internally and swallows failures,
+                            // so data may be the already-parsed object or still a string.
+                            if (typeof data === "string") data = JSON.parse(data);
                             if (
                                 data &&
                                 data.data &&
@@ -6127,7 +6133,7 @@ class EmulatorJS {
         if (!this.gameManager) return;
         try {
             this.Module.FS.unlink("/shader/shader.glslp");
-        } catch (e) {}
+        } catch(e) {}
 
         if (name === "disabled" || !this.shaders[name]) {
             this.gameManager.toggleShader(0);
@@ -6137,30 +6143,13 @@ class EmulatorJS {
         const shaderConfig = this.shaders[name];
 
         if (typeof shaderConfig === "string") {
-            this.Module.FS.writeFile(
-                "/shader/shader.glslp",
-                shaderConfig,
-                {},
-                "w+",
-            );
+            this.Module.FS.writeFile("/shader/shader.glslp", shaderConfig, {}, "w+");
         } else {
             const shader = shaderConfig.shader;
-            this.Module.FS.writeFile(
-                "/shader/shader.glslp",
-                shader.type === "base64" ? atob(shader.value) : shader.value,
-                {},
-                "w+",
-            );
-            if (shaderConfig.resources && shaderConfig.resources.length) {
-                shaderConfig.resources.forEach((resource) => {
-                    this.Module.FS.writeFile(
-                        `/shader/${resource.name}`,
-                        resource.type === "base64"
-                            ? atob(resource.value)
-                            : resource.value,
-                        {},
-                        "w+",
-                    );
+            this.Module.FS.writeFile("/shader/shader.glslp", shader.type === "base64" ? atob(shader.value) : shader.value, {}, "w+");
+            if (Array.isArray(shaderConfig.resources)) {
+                shaderConfig.resources.forEach(resource => {
+                    this.Module.FS.writeFile(`/shader/${resource.name}`, resource.type === "base64" ? atob(resource.value) : resource.value, {}, "w+");
                 });
             }
         }

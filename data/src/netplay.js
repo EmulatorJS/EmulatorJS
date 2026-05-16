@@ -1,3 +1,5 @@
+import { guid } from "./utils.js";
+
 /**
  * Netplay - WebRTC-based multiplayer for EmulatorJS
  * Handles room creation, peer connections, video/audio streaming, and input sync
@@ -95,6 +97,16 @@ export class Netplay {
         }
     }
 
+    /** Whether the netplay menu DOM has been built */
+    isMenuCreated() {
+        return !!this._menuElement;
+    }
+
+    /** Whether the netplay menu is currently visible */
+    isMenuOpen() {
+        return !!(this._menuElement && this._menuElement.style.display !== "none");
+    }
+
     /** Toggle visibility of UI elements based on host/guest role */
     updateNetplayUI(isJoining) {
         if (!this.emu.elements.bottomBar) return;
@@ -116,7 +128,7 @@ export class Netplay {
         const body = this.emu.createPopup("Netplay", {
             "Create a Room": () => {
                 this._unlockMobileAudio();
-                if (typeof this.updateList !== "object" || !this.updateList) this.defineNetplayFunctions();
+                if (!this.updateList) this.defineNetplayFunctions();
                 if (this.emu.isNetplay) this.leaveRoom();
                 else this.showOpenRoomDialog();
             },
@@ -376,15 +388,14 @@ export class Netplay {
         }
     }
 
-    /** Generate a unique identifier */
-    _guid() {
-        const s4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-        return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
+    /** Debug logging helper (with role tag) */
+    _log(role, ...args) {
+        this._dlog("[NETPLAY " + role + "]", ...args);
     }
 
-    /** Debug logging helper */
-    _log(role, ...args) {
-        if (this.emu.debug) console.log("[NETPLAY " + role + "]", ...args);
+    /** Debug logging helper (no role tag) */
+    _dlog(...args) {
+        if (this.emu.debug) console.log(...args);
     }
 
     /** Get emulator's native resolution for aspect ratio calculations */
@@ -425,11 +436,11 @@ export class Netplay {
         try {
             if (!this._remoteAudioCtx) {
                 this._remoteAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                console.log("[NETPLAY] Pre-created remote AudioContext during user gesture, state:", this._remoteAudioCtx.state);
+                this._dlog("[NETPLAY] Pre-created remote AudioContext during user gesture, state:", this._remoteAudioCtx.state);
             }
             if (this._remoteAudioCtx.state === "suspended") {
                 this._remoteAudioCtx.resume().then(() => {
-                    console.log("[NETPLAY] Remote AudioContext resumed to:", this._remoteAudioCtx.state);
+                    this._dlog("[NETPLAY] Remote AudioContext resumed to:", this._remoteAudioCtx.state);
                 }).catch(() => {});
             }
         } catch (e) {
@@ -503,7 +514,7 @@ export class Netplay {
                 try {
                     this.emu.gameManager.audioNode.connect(boostGain);
                     connected = true;
-                    console.log("[NETPLAY HOST] Connected gameManager.audioNode -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
+                    this._dlog("[NETPLAY HOST] Connected gameManager.audioNode -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
                 } catch (e) {
                     console.warn("[NETPLAY HOST] Failed to connect audioNode:", e);
                 }
@@ -516,7 +527,7 @@ export class Netplay {
                     try {
                         alCtx.gain.connect(boostGain);
                         connected = true;
-                        console.log("[NETPLAY HOST] Connected AL gain node -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
+                        this._dlog("[NETPLAY HOST] Connected AL gain node -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
                     } catch (e) {
                         console.warn("[NETPLAY HOST] Failed to connect AL gain:", e);
                     }
@@ -528,7 +539,7 @@ export class Netplay {
                             try {
                                 src.gain.connect(boostGain);
                                 connected = true;
-                                console.log("[NETPLAY HOST] Connected AL source gain -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
+                                this._dlog("[NETPLAY HOST] Connected AL source gain -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
                             } catch (e) {}
                         }
                     }
@@ -546,7 +557,7 @@ export class Netplay {
                             mediaSource.connect(boostGain);
                             mediaSource.connect(audioCtx.destination);
                             connected = true;
-                            console.log("[NETPLAY HOST] Connected audio element -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
+                            this._dlog("[NETPLAY HOST] Connected audio element -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
                             break;
                         } catch (e) {}
                     }
@@ -558,7 +569,7 @@ export class Netplay {
             }
 
             const audioTracks = dest.stream.getAudioTracks();
-            console.log("[NETPLAY HOST] Captured", audioTracks.length, "audio tracks, connected:", connected, "boost:", this._audioBoostFactor + "x");
+            this._dlog("[NETPLAY HOST] Captured", audioTracks.length, "audio tracks, connected:", connected, "boost:", this._audioBoostFactor + "x");
             
             if (audioTracks.length > 0) {
                 return dest.stream;
@@ -604,7 +615,7 @@ export class Netplay {
             this._remoteAudioGain = gain;
             this._remoteAudioSource = source;
 
-            console.log("[NETPLAY GUEST] Audio stream connected to AudioContext, state:", this._remoteAudioCtx.state, "gain:", gain.gain.value);
+            this._dlog("[NETPLAY GUEST] Audio stream connected to AudioContext, state:", this._remoteAudioCtx.state, "gain:", gain.gain.value);
         } catch (e) {
             console.error("[NETPLAY GUEST] _routeRemoteAudio error:", e);
         }
@@ -630,12 +641,12 @@ export class Netplay {
         this._audioUnlockArmed = true;
 
         const tryPlayAll = () => {
-            console.log("[NETPLAY GUEST] Audio unlock triggered by user gesture");
+            this._dlog("[NETPLAY GUEST] Audio unlock triggered by user gesture");
 
             // Resume dedicated remote audio context
             if (this._remoteAudioCtx && this._remoteAudioCtx.state !== "running") {
                 this._remoteAudioCtx.resume().then(() => {
-                    console.log("[NETPLAY GUEST] Remote AudioContext resumed via interaction, state:", this._remoteAudioCtx.state);
+                    this._dlog("[NETPLAY GUEST] Remote AudioContext resumed via interaction, state:", this._remoteAudioCtx.state);
                 }).catch(() => {});
             }
             try {
@@ -793,7 +804,7 @@ export class Netplay {
                     if (audioTracks.length > 0) {
                         audioTracks.forEach(t => finalStream.addTrack(t));
                         audioAdded = true;
-                        console.log("[NETPLAY HOST] Audio captured via AudioContext MediaStreamDestination");
+                        this._dlog("[NETPLAY HOST] Audio captured via AudioContext MediaStreamDestination");
                     }
                 }
 
@@ -808,7 +819,7 @@ export class Netplay {
                             if (fallbackTracks.length > 0) {
                                 fallbackTracks.forEach(t => finalStream.addTrack(t));
                                 audioAdded = true;
-                                console.log("[NETPLAY HOST] Audio captured via collectScreenRecordingMediaTracks fallback");
+                                this._dlog("[NETPLAY HOST] Audio captured via collectScreenRecordingMediaTracks fallback");
                             }
                         }
                     } catch (e) {
@@ -821,7 +832,7 @@ export class Netplay {
                 }
 
                 this.localStream = finalStream;
-                console.log("[NETPLAY HOST] Stream ready - video tracks:", finalStream.getVideoTracks().length, "audio tracks:", finalStream.getAudioTracks().length);
+                this._dlog("[NETPLAY HOST] Stream ready - video tracks:", finalStream.getVideoTracks().length, "audio tracks:", finalStream.getAudioTracks().length);
 
                 this.captureRunning = true;
                 resolve();
@@ -872,6 +883,9 @@ export class Netplay {
     /** Handle successful room join for both host and guest */
     roomJoined(isOwner, roomName, password, roomId) {
         this._log(isOwner ? "HOST" : "GUEST", "Room joined: " + roomName);
+
+        // Once in a room the room list is no longer relevant.
+        if (this.updateList) this.updateList.stop();
 
         this.updateNetplayUI(true);
         this.emu.isNetplay = true;
@@ -1127,7 +1141,7 @@ export class Netplay {
         if (this.owner && this.localStream) {
             this.localStream.getTracks().forEach((t) => {
                 pc.addTrack(t, this.localStream);
-                console.log("[NETPLAY HOST] Added", t.kind, "track to peer connection, enabled:", t.enabled, "readyState:", t.readyState);
+                this._dlog("[NETPLAY HOST] Added", t.kind, "track to peer connection, enabled:", t.enabled, "readyState:", t.readyState);
             });
 
             this._preferH264(pc);
@@ -1211,7 +1225,7 @@ export class Netplay {
             const t = e.track;
 
             if (t.kind === "audio") {
-                console.log("[NETPLAY GUEST] Audio track received, readyState:", t.readyState);
+                this._dlog("[NETPLAY GUEST] Audio track received, readyState:", t.readyState);
                 try {
                     const stream = (e.streams && e.streams[0]) ? e.streams[0] : new MediaStream([t]);
 
@@ -1222,7 +1236,7 @@ export class Netplay {
                     const p = audioEl.play();
                     if (p && p.then) {
                         p.then(() => {
-                            console.log("[NETPLAY GUEST] Audio element playing");
+                            this._dlog("[NETPLAY GUEST] Audio element playing");
                         }).catch(() => {
                             console.warn("[NETPLAY GUEST] Audio element play blocked, arming unlock");
                             this.armGuestAudioUnlock();
@@ -1412,12 +1426,17 @@ export class Netplay {
 
     /** Clean up and leave the current room */
     leaveRoom() {
-        // Restore module hooks
+        // Restore module hooks. Reset updateList so the next room entry
+        // re-runs defineNetplayFunctions and re-hooks Module.postMainLoop.
         if (this._prevPostMainLoop || this._origPostMainLoop) {
             const Module = (this.emu.gameManager && this.emu.gameManager.Module) ? this.emu.gameManager.Module : this.emu.Module;
             if (Module) Module.postMainLoop = this._origPostMainLoop || null;
             this._prevPostMainLoop = null;
             this._origPostMainLoop = null;
+        }
+        if (this.updateList) {
+            try { this.updateList.stop(); } catch (e) {}
+            this.updateList = null;
         }
         this._copyFrameToCapture = null;
 
@@ -1573,7 +1592,11 @@ export class Netplay {
     /** Fetch available rooms from server */
     getOpenRooms() {
         if (!this.url) return Promise.resolve({});
-        return fetch(this.url + "/list?domain=" + window.location.host + "&game_id=" + this.emu.config.gameId)
+        const params = new URLSearchParams({
+            domain: window.location.host,
+            game_id: this.emu.config.gameId
+        });
+        return fetch(this.url + "/list?" + params.toString())
             .then((res) => res.text())
             .then((text) => JSON.parse(text))
             .catch(() => ({}));
@@ -1913,8 +1936,8 @@ export class Netplay {
             this.emu.Module.AL.currentCtx.audioCtx.resume().catch(() => {});
         }
 
-        const sid = this._guid();
-        this.playerID = this._guid();
+        const sid = guid();
+        this.playerID = guid();
         this.players = {};
         this.maxPlayers = mp;
         this.extra = {
@@ -1942,7 +1965,7 @@ export class Netplay {
         // Also ensure AudioContext is ready (belt and suspenders)
         this._ensureRemoteAudioContext();
         
-        this.playerID = this._guid();
+        this.playerID = guid();
         this.players = {};
         this.maxPlayers = mp;
         this.extra = {
