@@ -37,9 +37,10 @@ export const cores = {
     "plus4": ["vice_xplus4"],
     "vic20": ["vice_xvic"],
     "dos": ["dosbox_pure"],
-    "intv": ["freeintv"]
+    "intv": ["freeintv"],
+    "3ds": ["azahar"]
 };
 
-export const requiresThreads = ["ppsspp", "dosbox_pure"];
+export const requiresThreads = ["ppsspp", "dosbox_pure", "azahar"];
 
-export const requiresWebGL2 = ["ppsspp"];
+export const requiresWebGL2 = ["ppsspp", "azahar"];

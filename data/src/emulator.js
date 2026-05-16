@@ -75,9 +75,10 @@ class EmulatorJS {
      * @param {*} opts Additional options for the download.
      * @param {boolean} forceExtract Whether to force extraction of compressed files regardless of extension (default is false).
      * @param {boolean} dontCache If true, the downloaded file will not be cached (default is false).
+     * @param {boolean} dontExtract If true, the downloaded file will not be extracted, but will still be cached (default is false, overridden by forceExtract).
      * @returns A promise that resolves with the downloaded file data.
      */
-    downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false) {
+    downloadFile(path, type, progress, notWithPath, opts, forceExtract = false, dontCache = false, dontExtract = false) {
         if (this.debug) console.log("[EJS " + type + "] Downloading " + path);
         return new Promise(async (resolve) => {
             // Handle direct data objects (ArrayBuffer, Uint8Array, Blob)
@@ -131,7 +132,8 @@ class EmulatorJS {
                     timeout,
                     responseType,
                     forceExtract,
-                    dontCache
+                    dontCache,
+                    dontExtract
                 );
 
                 // Handle HEAD requests (returns null)
@@ -348,9 +350,9 @@ class EmulatorJS {
         
         // Populate downloadTypes
         this.downloadType = {
-            "rom": { "name": "ROM", "dontCache": false },
+            "rom": { "name": "ROM", "dontCache": false, "dontExtractIfCore": ["arcade", "fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi", "mame", "mame2003_plus", "mame2003"] },
             "core": { "name": "Core", "dontCache": false },
-            "bios": { "name": "BIOS", "dontCache": false },
+            "bios": { "name": "BIOS", "dontCache": false, "dontExtractIfCore": ["arcade", "fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi", "mame", "mame2003_plus", "mame2003"] },
             "parent": { "name": "Parent", "dontCache": false },
             "patch": { "name": "Patch", "dontCache": false },
             "reports": { "name": "Reports", "dontCache": true },
@@ -812,7 +814,7 @@ class EmulatorJS {
                 }
                 this.on("start", () => {
                     setTimeout(() => {
-                        this.gameManager.loadState(new Uint8Array(res.data));
+                        this.gameManager.loadState(new Uint8Array(res.data.files[0].bytes));
                     }, 10);
                 })
                 resolve();
@@ -838,6 +840,14 @@ class EmulatorJS {
             this.compression = new EJS_COMPRESSION(this);
         }
 
+        let dontExtract = false;
+        if (type.dontExtractIfCore?.includes(this.getCore())) {
+            dontExtract = true;
+            console.log(`[EJS ${type.name.toUpperCase()}] Core ${this.getCore()} requires special handling, will not attempt to extract if compressed.`);
+        } else {
+            console.log(`[EJS ${type.name.toUpperCase()}] Core ${this.getCore()} does not require special handling, will attempt to extract if compressed.`);
+        }
+
         return new Promise(async (resolve, reject) => {
             let returnData;
 
@@ -858,29 +868,34 @@ class EmulatorJS {
                 } else {
                     // Not in cache - decompress
                     let files = [];
-                    const decompressedData = await this.compression.decompress(inData, (m, appendMsg) => {
-                        this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Core") + m) : m;
-                    }, (fileName, fileData) => {
-                        // Use file callback to collect files during decompression
-                        let bytes;
-                        if (fileData instanceof Uint8Array) {
-                            bytes = fileData;
-                        } else if (fileData instanceof ArrayBuffer) {
-                            bytes = new Uint8Array(fileData);
-                        } else if (fileData && typeof fileData === 'object') {
-                            // Handle case where it might be an object with numeric keys
-                            bytes = new Uint8Array(Object.values(fileData));
-                        } else {
-                            console.error("Unknown file data type:", typeof fileData, fileData);
-                            return;
-                        }
+                    if (dontExtract === false) {
+                        const decompressedData = await this.compression.decompress(inData, (m, appendMsg) => {
+                            this.textElem.innerText = appendMsg ? (this.localization("Decompress Game Core") + m) : m;
+                        }, (fileName, fileData) => {
+                            // Use file callback to collect files during decompression
+                            let bytes;
+                            if (fileData instanceof Uint8Array) {
+                                bytes = fileData;
+                            } else if (fileData instanceof ArrayBuffer) {
+                                bytes = new Uint8Array(fileData);
+                            } else if (fileData && typeof fileData === 'object') {
+                                // Handle case where it might be an object with numeric keys
+                                bytes = new Uint8Array(Object.values(fileData));
+                            } else {
+                                console.error("Unknown file data type:", typeof fileData, fileData);
+                                return;
+                            }
 
-                        if (fileName === "!!notCompressedData") {
-                            files.push(new EJS_FileItem(url.name, bytes));
-                        } else if (!fileName.endsWith("/")) {
-                            files.push(new EJS_FileItem(fileName, bytes));
-                        }
-                    });
+                            if (fileName === "!!notCompressedData") {
+                                files.push(new EJS_FileItem(url.name, bytes));
+                            } else if (!fileName.endsWith("/")) {
+                                files.push(new EJS_FileItem(fileName, bytes));
+                            }
+                        });
+                    } else {
+                        // If we shouldn't extract, just treat the whole file as a single item
+                        files.push(new EJS_FileItem(url.name, inData));
+                    }
 
                     // construct EJS_CacheItem
                     let data = new EJS_CacheItem(
@@ -911,7 +926,8 @@ class EmulatorJS {
                     true,
                     { responseType: "arraybuffer", method: "GET" },
                     false,
-                    type.dontCache
+                    type.dontCache,
+                    dontExtract
                 );
                 // check for error
                 if (data === -1) {
@@ -943,7 +959,9 @@ class EmulatorJS {
                     }
                 }
                 if (fileName.endsWith("/")) {
-                    this.gameManager.FS.mkdir(fileName);
+                    if (!this.gameManager.FS.analyzePath(fileName).exists) {
+                        this.gameManager.FS.mkdir(fileName);
+                    }
                     return null;
                 }
                 this.gameManager.FS.writeFile(`/${fileName}`, fileData);
@@ -1139,6 +1157,9 @@ class EmulatorJS {
                     return "." + this.saveFileExt;
                 }
                 return ".srm";
+            },
+            getInputText: (options) => {
+                return this.showInputPrompt(options);
             }
         }).then(module => {
             this.Module = module;
@@ -1600,7 +1621,7 @@ class EmulatorJS {
         this.elements.contextmenu.classList.add("ejs_context_menu");
         this.addEventListener(this.game, "contextmenu", (e) => {
             e.preventDefault();
-            if ((this.config.buttonOpts && this.config.buttonOpts.rightClick === false) || !this.started) return;
+            if ((this.config.buttonOpts && this.config.buttonOpts.rightClick === false) || !this.started || this.lightgunActive) return;
             const parentRect = this.elements.parent.getBoundingClientRect();
             this.elements.contextmenu.style.display = "block";
             const rect = this.elements.contextmenu.getBoundingClientRect();
@@ -1615,6 +1636,19 @@ class EmulatorJS {
         this.addEventListener(this.elements.contextmenu, "contextmenu", (e) => e.preventDefault());
         this.addEventListener(this.elements.parent, "contextmenu", (e) => e.preventDefault());
         this.addEventListener(this.game, "mousedown touchend", hideMenu);
+        // Prevent mouse buttons 4/5 (back/forward) from navigating away
+        // when used as lightgun Start/Select. Works in Chromium-based
+        // browsers; Firefox handles back/forward navigation before page
+        // event handlers fire, so this has no effect there.
+        // See: https://support.mozilla.org/en-US/questions/1319892
+        for (const evtName of ["mousedown", "mouseup", "auxclick"]) {
+            this.addEventListener(this.game, evtName, (e) => {
+                if (this.lightgunActive && (e.button === 3 || e.button === 4)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+            });
+        }
         const parent = this.createElement("ul");
         const addButton = (title, hidden, functi0n) => {
             //<li><a href="#" onclick="return false">'+title+'</a></li>
@@ -1871,6 +1905,51 @@ class EmulatorJS {
         }
 
         return main;
+    }
+    showInputPrompt(opts) {
+        opts = opts || {};
+        const hint = opts.hint || "Enter text";
+        const maxLength = opts.maxLength | 0;
+        const password = !!opts.password;
+        return new Promise((resolve) => {
+            const popups = this.createSubPopup();
+            this.currentPopup = popups;
+            this.game.appendChild(popups[0]);
+            const popup = popups[1];
+            popup.classList.add("small_popup");
+            popup.style.width = "100%";
+            const header = this.createElement("div");
+            const title = this.createElement("h2");
+            title.innerText = this.localization(hint);
+            const close = this.createElement("button");
+            header.appendChild(title);
+            header.appendChild(close);
+            popup.appendChild(header);
+            
+            const input = this.createElement("input");
+            input.type = "text";
+            input.style.width = "100%";
+            popup.appendChild(input);
+            
+            this.addEventListener(close, "click", (e) => {
+                popups[0].remove();
+                this.currentPopup = null;
+                resolve("REFUSED INPUT");
+            })
+            
+            const submit = this.createElement("button");
+            submit.classList.add("ejs_button_button");
+            submit.classList.add("ejs_popup_submit");
+            submit.innerText = this.localization("Submit");
+            popup.appendChild(submit);
+            this.addEventListener(submit, "click", (e) => {
+                if (!input.value.trim())
+                    return;
+                popups[0].remove();
+                this.currentPopup = null;
+                resolve(input.value.trim());
+            });
+        });
     }
     selectFile() {
         return new Promise((resolve, reject) => {
@@ -2385,56 +2464,65 @@ class EmulatorJS {
         let exitMenuIsOpen = false;
         const exitEmulation = addButton(this.config.buttonOpts.exitEmulation, async () => {
             if (exitMenuIsOpen) return;
-            exitMenuIsOpen = true;
-            const popups = this.createSubPopup();
-            this.game.appendChild(popups[0]);
-            popups[1].classList.add("ejs_cheat_parent");
-            popups[1].style.width = "100%";
-            const popup = popups[1];
-            const header = this.createElement("div");
-            header.classList.add("ejs_cheat_header");
-            const title = this.createElement("h2");
-            title.innerText = this.localization("Are you sure you want to exit?");
-            title.classList.add("ejs_cheat_heading");
-            const close = this.createElement("button");
-            close.classList.add("ejs_cheat_close");
-            header.appendChild(title);
-            header.appendChild(close);
-            popup.appendChild(header);
-            this.addEventListener(close, "click", (e) => {
-                exitMenuIsOpen = false
-                popups[0].remove();
-            })
-            popup.appendChild(this.createElement("br"));
+            if (this.config.askBeforeExit !== false) {
+                exitMenuIsOpen = true;
+                const popups = this.createSubPopup();
+                this.game.appendChild(popups[0]);
+                popups[1].classList.add("ejs_cheat_parent");
+                popups[1].style.width = "100%";
+                const popup = popups[1];
+                const header = this.createElement("div");
+                header.classList.add("ejs_cheat_header");
+                const title = this.createElement("h2");
+                title.innerText = this.localization("Are you sure you want to exit?");
+                title.classList.add("ejs_cheat_heading");
+                const close = this.createElement("button");
+                close.classList.add("ejs_cheat_close");
+                header.appendChild(title);
+                header.appendChild(close);
+                popup.appendChild(header);
+                this.addEventListener(close, "click", (e) => {
+                    exitMenuIsOpen = false
+                    popups[0].remove();
+                })
+                popup.appendChild(this.createElement("br"));
 
-            const footer = this.createElement("footer");
-            const submit = this.createElement("button");
-            const closeButton = this.createElement("button");
-            submit.innerText = this.localization("Exit");
-            closeButton.innerText = this.localization("Cancel");
-            submit.classList.add("ejs_button_button");
-            closeButton.classList.add("ejs_button_button");
-            submit.classList.add("ejs_popup_submit");
-            closeButton.classList.add("ejs_popup_submit");
-            submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
-            footer.appendChild(submit);
-            const span = this.createElement("span");
-            span.innerText = " ";
-            footer.appendChild(span);
-            footer.appendChild(closeButton);
-            popup.appendChild(footer);
+                const footer = this.createElement("footer");
+                const submit = this.createElement("button");
+                const closeButton = this.createElement("button");
+                submit.innerText = this.localization("Exit");
+                closeButton.innerText = this.localization("Cancel");
+                submit.classList.add("ejs_button_button");
+                closeButton.classList.add("ejs_button_button");
+                submit.classList.add("ejs_popup_submit");
+                closeButton.classList.add("ejs_popup_submit");
+                submit.style["background-color"] = "rgba(var(--ejs-primary-color),1)";
+                footer.appendChild(submit);
+                const span = this.createElement("span");
+                span.innerText = " ";
+                footer.appendChild(span);
+                footer.appendChild(closeButton);
+                popup.appendChild(footer);
 
-            this.addEventListener(closeButton, "click", (e) => {
-                popups[0].remove();
-                exitMenuIsOpen = false
-            })
+                this.addEventListener(closeButton, "click", (e) => {
+                    popups[0].remove();
+                    exitMenuIsOpen = false
+                })
 
-            this.addEventListener(submit, "click", (e) => {
-                popups[0].remove();
+                this.addEventListener(submit, "click", (e) => {
+                    popups[0].remove();
+                    const body = this.createPopup("EmulatorJS has exited", {});
+                    setTimeout(() => {
+                        this.callEvent("exit");
+                    }, 20);
+                })
+                setTimeout(this.menu.close.bind(this), 20);
+            } else {
                 const body = this.createPopup("EmulatorJS has exited", {});
-                this.callEvent("exit");
-            })
-            setTimeout(this.menu.close.bind(this), 20);
+                setTimeout(() => {
+                    this.callEvent("exit");
+                }, 20);
+            }
         });
 
         this.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {
@@ -3784,13 +3872,19 @@ class EmulatorJS {
         if (gamepadIndex < 0) {
             return; // Gamepad not set anywhere
         }
-        const value = function (value) {
+
+        const toIntValue = (value) => {
             if (value > 0.5 || value < -0.5) {
                 return (value > 0) ? 1 : -1;
             } else {
                 return 0;
             }
-        }(e.value || 0);
+        };
+
+        const value = toIntValue(e.value || 0);
+        const oldValue = toIntValue(e.oldValue || 0);
+        const skippedZero = (value !== 0) && (value + oldValue === 0);
+
         if (this.controlPopup.parentElement.parentElement.getAttribute("hidden") === null) {
             if ("buttonup" === e.type || (e.type === "axischanged" && value === 0)) return;
             const num = this.controlPopup.getAttribute("button-num");
@@ -3863,6 +3957,8 @@ class EmulatorJS {
                             }
                         } else if (value === 0 || controlValue === e.label || controlValue === `${e.axis}:${value}`) {
                             this.gameManager.simulateInput(i, j, ((value === 0) ? 0 : 1));
+                        } else if (skippedZero) {
+                            this.gameManager.simulateInput(i, j, 0);
                         }
                     }
                 }
@@ -4765,6 +4861,27 @@ class EmulatorJS {
             this.enableMouseLock = (value === "enabled");
         } else if (option === "autofireInterval") {
             this.defaultAutoFireInterval = parseInt(value);
+        } else if (option.startsWith("controller-port-device-p")) {
+            const port = parseInt(option.replace("controller-port-device-p", "")) - 1;
+            const deviceId = parseInt(value);
+            this.gameManager.setControllerPortDevice(port, deviceId);
+            /* RETRO_DEVICE_LIGHTGUN = 4; subclass mask = 0xFF */
+            const isLightgun = (deviceId & 0xFF) === 4;
+            if (isLightgun) {
+                this.lightgunActive = true;
+            } else {
+                /* Re-check all ports */
+                this.lightgunActive = false;
+                for (const k in this.allSettings) {
+                    if (k.startsWith("controller-port-device-p")) {
+                        const v = parseInt(this.allSettings[k]);
+                        if ((v & 0xFF) === 4) this.lightgunActive = true;
+                    }
+                }
+            }
+            if (this.canvas) {
+                this.canvas.style.cursor = this.lightgunActive ? "none" : "";
+            }
         }
     }
     menuOptionChanged(option, value) {
@@ -5439,6 +5556,39 @@ class EmulatorJS {
         }, "100", inputOptions, true);
 
         checkForEmptyMenu(inputOptions);
+
+        let controllerPortInfo;
+        try {
+            controllerPortInfo = this.gameManager.getControllerPortInfo();
+        } catch(e) {
+            if (this.debug) console.warn("getControllerPortInfo not available:", e);
+        }
+        if (controllerPortInfo) {
+            // Parse the port info: each line is "port:deviceId:description"
+            const ports = {};
+            controllerPortInfo.split("\n").forEach(line => {
+                if (!line.trim()) return;
+                const parts = line.split(":");
+                if (parts.length < 3) return;
+                const port = parseInt(parts[0]);
+                const deviceId = parts[1];
+                const desc = parts.slice(2).join(":");
+                if (!ports[port]) ports[port] = {};
+                ports[port][deviceId] = this.localization(desc);
+            });
+            const portKeys = Object.keys(ports);
+            if (portKeys.length > 0) {
+                const controllerDeviceOpts = createSettingParent(true, "Controller Port Devices", home);
+                for (const port of portKeys) {
+                    const portNum = parseInt(port) + 1;
+                    if (Object.keys(ports[port]).length <= 1) continue;
+                    addToMenu(this.localization("Port") + " " + portNum,
+                        "controller-port-device-p" + portNum,
+                        ports[port], "1", controllerDeviceOpts, true);
+                }
+                checkForEmptyMenu(controllerDeviceOpts);
+            }
+        }
 
         if (this.saveInBrowserSupported()) {
             const saveStateOpts = createSettingParent(true, "Save States", home);

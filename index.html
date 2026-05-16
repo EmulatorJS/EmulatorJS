@@ -322,6 +322,9 @@
                     if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
                         return ext
 
+                    if (["3ds", "cci", "cia", "cxi", "app"].includes(ext))
+                        return "3ds"
+
                     return await new Promise(resolve => {
                         var coreValues = {
                             "Nintendo 64": "n64",
@@ -359,6 +362,7 @@
                         if (enableThreads) {
                             coreValues["DOSBOX-PURE"] = "dosbox_pure";
                             coreValues["PlayStation Portable"] = "ppsspp";
+                            coreValues["Nintendo 3DS"] = "3ds";
                         }
 
                         for (let core in coreValues) {
@@ -421,6 +425,10 @@
                 if (browserMode) {
                     window.EJS_browserMode = browserMode;
                 }
+                window.EJS_askBeforeExit = false;
+                window.EJS_onExit = () => {
+                        alert("The emulator has exited. This callback can be used to do any cleanup or show a message to the user.");
+                    };
 
                 script.src = "data/loader.js";
                 document.body.appendChild(script);

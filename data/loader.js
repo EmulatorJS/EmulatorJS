@@ -38,7 +38,7 @@ async function loadScript(file) {
     } catch(e) {
         if (debug) console.error(e);
         const module = await filesMissing(file);
-        return module.default;
+        return module;
     }
 }
 
@@ -199,7 +199,8 @@ const config = {
     additionalShaders: window.EJS_shaders,
     fixedSaveInterval: window.EJS_fixedSaveInterval,
     disableAutoUnload: window.EJS_disableAutoUnload,
-    disableBatchBootup: window.EJS_disableBatchBootup
+    disableBatchBootup: window.EJS_disableBatchBootup,
+    askBeforeExit: window.EJS_askBeforeExit
 };
 
 async function prepareLanguage() {
@@ -248,7 +249,8 @@ async function prepareLanguage() {
         ["loadState", window.EJS_onLoadState],
         ["saveState", window.EJS_onSaveState],
         ["loadSave", window.EJS_onLoadSave],
-        ["saveSave", window.EJS_onSaveSave]
+        ["saveSave", window.EJS_onSaveSave],
+        ["exit", window.EJS_onExit]
     ];
 
     handlers.forEach(([event, callback]) => {

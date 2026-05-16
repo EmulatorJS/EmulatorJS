@@ -68,6 +68,7 @@ class GamepadHandler {
                         this.dispatchEvent('axischanged', {
                             axis: axis,
                             value: newVal,
+                            oldValue: val,
                             index: gamepad.index,
                             label: this.getAxisLabel(axis, newVal),
                             gamepadIndex: gamepad.index,
