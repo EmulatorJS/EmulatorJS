@@ -1924,21 +1924,13 @@ class EmulatorJS {
             const header = this.createElement("div");
             const title = this.createElement("h2");
             title.innerText = this.localization(hint);
-            const close = this.createElement("button");
             header.appendChild(title);
-            header.appendChild(close);
             popup.appendChild(header);
             
             const input = this.createElement("input");
             input.type = "text";
             input.style.width = "100%";
             popup.appendChild(input);
-            
-            this.addEventListener(close, "click", (e) => {
-                popups[0].remove();
-                this.currentPopup = null;
-                resolve("REFUSED INPUT");
-            })
             
             const submit = this.createElement("button");
             submit.classList.add("ejs_button_button");
