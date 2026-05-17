@@ -1,4 +1,4 @@
-export const version = "4.3.0-beta";
+export const version = "4.3.0-pre";
 
 export const cores = {
     "atari5200": ["a5200"],

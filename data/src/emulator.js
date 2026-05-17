@@ -214,6 +214,9 @@ class EmulatorJS {
         if (ver.endsWith("-beta")) {
             return 99999999;
         }
+        if (ver.endsWith("-pre")) {
+            ver = ver.substring(0, ver.length - 4);
+        }
         let rv = ver.split(".");
         if (rv[rv.length - 1].length === 1) {
             rv[rv.length - 1] = "0" + rv[rv.length - 1];
