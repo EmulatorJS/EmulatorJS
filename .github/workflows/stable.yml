@@ -1,4 +1,4 @@
-name: Make Stable Folder On EmulatorJS CDN
+name: Update EmulatorJS CDN
 on:
   release:
     types: [published]
@@ -12,13 +12,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Set Variables
         run: |
           cd /mnt/HDD/public/
-          wget -q "https://api.github.com/repos/EmulatorJS/EmulatorJS/releases/latest" -O .tmp.json
-          version=$(jq -r '.tag_name' .tmp.json)
-          download_url=$(jq -r '.assets[0].browser_download_url' .tmp.json)
-          name=$(jq -r '.assets[0].name' .tmp.json)
+          if [[ "${{ github.event.release.prerelease }}" == "true" ]]; then
+              wget -q "https://api.github.com/repos/EmulatorJS/EmulatorJS/releases?per_page=1" -O .tmp.json
+              # The releases endpoint returns an array, get the first item
+              version=$(jq -r '.[0].tag_name' .tmp.json)
+              download_url=$(jq -r '.[0].assets[0].browser_download_url' .tmp.json)
+              name=$(jq -r '.[0].assets[0].name' .tmp.json)
+              is_prerelease=true
+          else
+              wget -q "https://api.github.com/repos/EmulatorJS/EmulatorJS/releases/latest" -O .tmp.json
+              version=$(jq -r '.tag_name' .tmp.json)
+              download_url=$(jq -r '.assets[0].browser_download_url' .tmp.json)
+              name=$(jq -r '.assets[0].name' .tmp.json)
+              is_prerelease=false
+          fi
           old_version=$(jq -r '.github' versions.json)
           v_version="$version"
           if [[ $version == v* ]]; then
@@ -30,40 +41,71 @@ jobs:
           echo "NAME=$name" >> $GITHUB_ENV
           echo "OLD_VERSION=$old_version" >> $GITHUB_ENV
           echo "V_VERSION=$v_version" >> $GITHUB_ENV
-      - name: Download Stable
+          echo "IS_PRERELEASE=$is_prerelease" >> $GITHUB_ENV
+
+      - name: Download Release
         run: |
           cd /mnt/HDD/public/
-          mkdir -p ".stable"
-          wget -q "$DOWNLOAD_URL" -O ".stable/$NAME"
-      - name: Extract Stable
+          mkdir -p ".new"
+          wget -q "$DOWNLOAD_URL" -O ".new/$NAME"
+
+      - name: Extract Release
         run: |
-          cd /mnt/HDD/public/.stable/
+          cd /mnt/HDD/public/.new/
           7z x "$NAME"
-      - name: Move Versions
+
+      - name: Archive Release Asset
         run: |
           cd /mnt/HDD/public/
-          mv ".stable/$NAME" releases/
+          mv ".new/$NAME" releases/
+
+      - name: Promote Stable (stable releases only)
+        if: env.IS_PRERELEASE == 'false'
+        run: |
+          cd /mnt/HDD/public/
           mv "$OLD_VERSION" "$VERSION"
           mv stable "$OLD_VERSION"
-          mv .stable stable
+          mv .new stable
           jq --arg version "$VERSION" '.github = $version' versions.json | sponge versions.json
+
+      - name: Place Prerelease Folder (prereleases only)
+        if: env.IS_PRERELEASE == 'true'
+        run: |
+          cd /mnt/HDD/public/
+          mv .new "$VERSION"
+
       - name: Set Permissions
         run: |
           cd /mnt/HDD/public
-          chmod -R 775 stable/
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+              chmod -R 775 "$VERSION/"
+          else
+              chmod -R 775 stable/
+          fi
+
       - name: Update Stable Cores
+        if: env.IS_PRERELEASE == 'false'
         run: |
           rsync -a --delete /mnt/HDD/public/stable/data/cores/ /mnt/HDD/public/.EmulatorJS/data/cores/
+
       - name: Zip Stable
+        if: env.IS_PRERELEASE == 'false'
         run: |
           cd /mnt/HDD/public/stable/data/
           rm -f emulator.min.zip
           zip emulator.min.zip *.min.*
-      - name: Update Version
+
+      - name: Update Versions JSON
         run: |
           cd /mnt/HDD/public/
-          jq --arg old_version "$OLD_VERSION" '.versions += {($old_version): ($old_version + "/")}' versions.json | sponge versions.json
-      - name: Clean Up
+          if [[ "$IS_PRERELEASE" == "true" ]]; then
+              jq --arg version "$VERSION" '.versions += {($version): ($version + "/")}' versions.json | sponge versions.json
+          else
+              jq --arg old_version "$OLD_VERSION" '.versions += {($old_version): ($old_version + "/")}' versions.json | sponge versions.json
+          fi
+
+      - name: Clean Up (stable releases only)
+        if: env.IS_PRERELEASE == 'false'
         run: |
           cd /mnt/HDD/public/
           rm -f "$OLD_VERSION/data/emulator.min.zip"
