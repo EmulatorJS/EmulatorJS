@@ -23,7 +23,7 @@ Supported languages
 `km.json`: `km-KH` - Khmer (Cambodia)<br>
 `vi.json`: `vi-VN` - Vietnamese (Vietnam)<br>
 `ua.json`: `uk-UA` - Ukranian (Ukraine)<br>
-
+`ur.json`: `ur-PK` - Urdu (Pakistan)<br>
 default: `en-US`
 
 add the line to your code to use
@@ -50,6 +50,7 @@ Translated for `km-KH` by [@novsochetra](https://github.com/novsochetra) <br>
 Translated for `vi-VN` by [@TimKieu](https://github.com/TimKieu) <br>
 Translated for `hi-IN`, `ar-SA`, `jv-iD`, `bn-BD`, `ru-RU`, `de-DE`, `ko-KR` by [@allancoding](https://github.com/allancoding), using a translate application <br>
 Translated for `ua-UA` by [@MrSosige](https://github.com/MrSosige) <br>
+Translated for `ur-PK` by [@hassanraza2000](https://github.com/hassanraza2000) <br>
 
 ## Contributing
 
