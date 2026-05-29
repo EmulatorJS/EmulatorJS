@@ -1,5 +1,58 @@
 # Changes
 
+# 4.3.0-pre
+
+**This is a PRE RELEASE. It is not marked as stable for a reason. Running this in a prod environment where stability is needed is not advised.** Many, many things have changed. Cores are not inter-changable between versions
+
+Many subsystems were completely redone in this release. Things may break. Please report them so I can yell at other maintainers
+
+One thing I really like about this update is PPSSPP is significantly more playable (as in, it is. Runs even at 10x fastforward on my pc)
+
+- Redo method used to read save states from the backend (may be slower but significantly less error-prone)
+- Throw network errors instead of supressing them
+- Add genesis_plus_gx_wide core
+- Add bsnes core
+- Add freeintv core
+- Add azahar core
+- Redo start game detection
+- Move to ES6 modules
+- Disable async for most cores
+- Move to rwebaudio driver
+- Fix hardware rendering for PPSSPP core
+- Finish DOS support with a batch bootup file (this can be disabled)
+- Update af-FR translation (Thanks to [@t3chnob0y](https://github.com/t3chnob0y))
+- Fix custom broken buttons (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Redo language support (Thanks to [@allancoding](https://github.com/allancoding))
+- Update ko translation (Thanks to [@UzuCore](https://github.com/UzuCore))
+- Fix context menu visibility options (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Update ja translation (Thanks to someone who seems to have deleted their account)
+- Fix `EJS_dontExtractBIOS` if the bios url has a "/" in its path (Thanks to [@daguile](https://github.com/daguile))
+- Add jsdoc comments to compression.js (Thanks to [@gantoine](https://github.com/gantoine))
+- Improve multi-disc handling for dosbox-pure (Thanks to [@daguile](https://github.com/daguile))
+- Added netplay over WebRTC (Thanks to [@S-Coding23](https://github.com/S-Coding23))
+- Fix screenshot return in EJS_onSaveState (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Fix bug in loadExternalFilesFixed function (Thanks to [@lxyongit](https://github.com/lxyongit))
+- Redo the SVG logos (Thanks to [@milktoastrat](https://github.com/milktoastrat))
+- Add event for when game save is updated (Thanks to [@cryptonaus](https://github.com/cryptonaus))
+- Support a fixed save flushing interval (Thanks to [@cryptonaus](https://github.com/cryptonaus))
+- Update ja translation (Thanks to [@paln21](https://github.com/paln21))
+- Refactor cache system (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Refactor decompression system (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Refactor download system (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Improve UI in development index.html (Thanks to [@298A-E9E3](https://github.com/298A-E9E3))
+- Ability to disable beforeUnload event listener (Thanks to [@duanyu5871](https://github.com/duanyu5871))
+- Fix PSX labels (Thanks to [@joethun](https://github.com/joethun))
+- Fix save state text (Thanks to [@joethun](https://github.com/joethun))
+- Add support for dynamic cheat codes (Thanks to [@S-Coding23](https://github.com/S-Coding23))
+- Automatic core detection in the development index.html for Sega Mega Drive games (Thanks to [@298A-E9E3](https://github.com/298A-E9E3))
+- Fix Sega Genesis control scheme (Thanks to [@mikhailv](https://github.com/mikhailv))
+- Add auto fire interval (Thanks to [@zees-dev](https://github.com/zees-dev))
+- Add Khmer localization (Thanks to [@Novsochetra](https://github.com/Novsochetra))
+- Update Turkish Translation (Thanks to [@Notenlish](https://github.com/Notenlish))
+- Add exit confirmation prompt and exit callback functionality (Thanks to [@michael-j-green](https://github.com/michael-j-green))
+- Fix localization for Quick Save and Quick Load (Thanks to [@leonardoman9](https://github.com/leonardoman9))
+- Add Ukrainian Translation (Thanks to [@MrSosige](https://github.com/MrSosige))
+
 # 4.2.3
 
 Bug fix release
