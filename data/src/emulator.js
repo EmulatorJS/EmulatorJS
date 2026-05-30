@@ -1343,17 +1343,19 @@ class EmulatorJS {
         this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         this.gamepad.on("connected", (e) => {
             if (!this.gamepadLabels) return;
+            const gamepadSelection = this.getGamepadSelectionValue(e.gamepadIndex);
+            if (!gamepadSelection) return;
             for (let i = 0; i < this.gamepadSelection.length; i++) {
                 if (this.gamepadSelection[i] === "") {
-                    this.gamepadSelection[i] = this.gamepad.gamepads[e.gamepadIndex].id + "_" + this.gamepad.gamepads[e.gamepadIndex].index;
+                    this.gamepadSelection[i] = gamepadSelection;
                     break;
                 }
             }
             this.updateGamepadLabels();
         })
         this.gamepad.on("disconnected", (e) => {
-            const gamepadIndex = this.gamepad.gamepads.indexOf(this.gamepad.gamepads.find(f => f.index == e.gamepadIndex));
-            const gamepadSelection = this.gamepad.gamepads[gamepadIndex].id + "_" + this.gamepad.gamepads[gamepadIndex].index;
+            const gamepadSelection = this.getGamepadSelectionValue(e.gamepadIndex);
+            if (!gamepadSelection) return;
             for (let i = 0; i < this.gamepadSelection.length; i++) {
                 if (this.gamepadSelection[i] === gamepadSelection) {
                     this.gamepadSelection[i] = "";
@@ -1392,6 +1394,13 @@ class EmulatorJS {
             }
             this.gamepadLabels[i].value = this.gamepadSelection[i] || "notconnected";
         }
+    }
+    getGamepadSelectionValue(gamepadIndex) {
+        const gamepad = this.gamepad.gamepads.find((candidate) => candidate && candidate.index === gamepadIndex);
+        if (!gamepad) {
+            return null;
+        }
+        return gamepad.id + "_" + gamepad.index;
     }
     createLink(elem, link, text, useP) {
         const elm = this.createElement("a");
@@ -3862,7 +3871,11 @@ class EmulatorJS {
     }
     gamepadEvent(e) {
         if (!this.started) return;
-        const gamepadIndex = this.gamepadSelection.indexOf(this.gamepad.gamepads[e.gamepadIndex].id + "_" + this.gamepad.gamepads[e.gamepadIndex].index);
+        const gamepadSelection = this.getGamepadSelectionValue(e.gamepadIndex);
+        if (!gamepadSelection) {
+            return;
+        }
+        const gamepadIndex = this.gamepadSelection.indexOf(gamepadSelection);
         if (gamepadIndex < 0) {
             return; // Gamepad not set anywhere
         }
