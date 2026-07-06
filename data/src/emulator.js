@@ -1685,7 +1685,20 @@ class EmulatorJS {
             if (screenMediaRecorder !== null) {
                 screenMediaRecorder.stop();
             }
-            screenMediaRecorder = this.screenRecord();
+            const recorder = this.screenRecord();
+            if (recorder === null) {
+                return;
+            }
+            screenMediaRecorder = recorder;
+            const resetScreenRecordingButtons = () => {
+                if (screenMediaRecorder === recorder) {
+                    screenMediaRecorder = null;
+                    startScreenRecording.removeAttribute("hidden");
+                    stopScreenRecording.setAttribute("hidden", "hidden");
+                }
+            };
+            screenMediaRecorder.addEventListener("stop", resetScreenRecordingButtons, { once: true });
+            screenMediaRecorder.addEventListener("error", resetScreenRecordingButtons, { once: true });
             startScreenRecording.setAttribute("hidden", "hidden");
             stopScreenRecording.removeAttribute("hidden");
             hideMenu();
