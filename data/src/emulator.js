@@ -3134,6 +3134,8 @@ class EmulatorJS {
                 { id: 11, label: this.localization("R1") },
                 { id: 12, label: this.localization("L2") },
                 { id: 13, label: this.localization("R2") },
+                { id: 14, label: this.localization("L3") },
+                { id: 15, label: this.localization("R3") },
                 { id: 19, label: this.localization("L STICK UP") },
                 { id: 18, label: this.localization("L STICK DOWN") },
                 { id: 17, label: this.localization("L STICK LEFT") },
