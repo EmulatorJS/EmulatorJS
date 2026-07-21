@@ -768,6 +768,9 @@ class EmulatorJS {
         parts.splice(parts.length - 1, 1);
         return parts.join(".");
     }
+    getFileNameTimestamp(date) {
+        return date.toISOString().replace(/[-:]/g, "").replace(/\.\d{3}Z$/, "Z");
+    }
     saveInBrowserSupported() {
         return !!window.indexedDB && (typeof this.config.gameName === "string" || !this.config.gameUrl.startsWith("blob:"));
     }
@@ -1669,8 +1672,7 @@ class EmulatorJS {
         let screenshotUrl;
         const screenshot = addButton("Take Screenshot", false, () => {
             if (screenshotUrl) URL.revokeObjectURL(screenshotUrl);
-            const date = new Date();
-            const fileName = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear();
+            const fileName = this.getBaseFileName() + "-" + this.getFileNameTimestamp(new Date());
             this.screenshot((blob, format) => {
                 screenshotUrl = URL.createObjectURL(blob);
                 const a = this.createElement("a");
@@ -6367,10 +6369,9 @@ class EmulatorJS {
         recorder.addEventListener("stop", () => {
             const blob = new Blob(chunks);
             const url = URL.createObjectURL(blob);
-            const date = new Date();
             const a = document.createElement("a");
             a.href = url;
-            a.download = this.getBaseFileName() + "-" + date.getMonth() + "-" + date.getDate() + "-" + date.getFullYear() + "." + captureFormat;
+            a.download = this.getBaseFileName() + "-" + this.getFileNameTimestamp(new Date()) + "." + captureFormat;
             a.click();
 
             animation = false;
