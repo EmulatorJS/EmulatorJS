@@ -1201,8 +1201,9 @@ class EmulatorJS {
                 }
             }
             this.menu.open();
-            if (this.isSafari && this.isMobile) {
-                //Safari is --- funny
+            if (this.isSafari && (this.isMobile || this.hasTouchScreen)) {
+                // iPadOS can use a desktop Safari user agent, so touch support
+                // is a more reliable fallback than mobile user-agent detection.
                 this.checkStarted();
             }
 
