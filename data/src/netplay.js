@@ -109,8 +109,8 @@ export class Netplay {
 
     /** Toggle visibility of UI elements based on host/guest role */
     updateNetplayUI(isJoining) {
-        if (!this.emu.elements.bottomBar) return;
-        const bar = this.emu.elements.bottomBar;
+        if (!this.emu.frontend.elements.bottomBar) return;
+        const bar = this.emu.frontend.elements.bottomBar;
         const shouldHide = isJoining && !this.owner;
         const elems = [
             ...(bar.playPause || []), ...(bar.restart || []), ...(bar.saveState || []),
@@ -119,13 +119,13 @@ export class Netplay {
             ...(bar.cacheManager || [])
         ];
         if (bar.settings && bar.settings.length > 0 && bar.settings[0].parentElement) elems.push(bar.settings[0].parentElement);
-        if (this.emu.diskParent) elems.push(this.emu.diskParent);
+        if (this.emu.frontend.diskParent) elems.push(this.emu.frontend.diskParent);
         elems.forEach((el) => { if (el) el.classList.toggle("netplay-hidden", shouldHide); });
     }
 
     /** Build the netplay menu popup with room list, chat, and player table */
     createNetplayMenu() {
-        const body = this.emu.createPopup("Netplay", {
+        const body = this.emu.frontend.createPopup("Netplay", {
             "Create a Room": () => {
                 this._unlockMobileAudio();
                 if (!this.updateList) this.defineNetplayFunctions();
@@ -144,7 +144,7 @@ export class Netplay {
         // Room list section
         const rooms = this.emu.createElement("div");
         const title = this.emu.createElement("strong");
-        title.innerText = this.emu.localization("Rooms");
+        title.innerText = this.emu.frontend.localization("Rooms");
 
         const table = this.emu.createElement("table");
         table.classList.add("ejs_netplay_table");
@@ -214,12 +214,12 @@ export class Netplay {
         chatWrap.appendChild(chatHeaderRow);
 
         const chatTitle = this.emu.createElement("strong");
-        chatTitle.innerText = this.emu.localization("Chat");
+        chatTitle.innerText = this.emu.frontend.localization("Chat");
         chatHeaderRow.appendChild(chatTitle);
 
         const chatHint = this.emu.createElement("span");
         chatHint.classList.add("ejs_netplay_chat_hint");
-        chatHint.innerText = this.emu.localization("Everyone or private");
+        chatHint.innerText = this.emu.frontend.localization("Everyone or private");
         chatHeaderRow.appendChild(chatHint);
 
         const chatLog = this.emu.createElement("div");
@@ -234,14 +234,14 @@ export class Netplay {
         chatTo.classList.add("ejs_netplay_chat_to");
         const optAll = document.createElement("option");
         optAll.value = "all";
-        optAll.innerText = this.emu.localization("Everyone");
+        optAll.innerText = this.emu.frontend.localization("Everyone");
         chatTo.appendChild(optAll);
         chatRow.appendChild(chatTo);
 
         const chatInput = this.emu.createElement("input");
         chatInput.type = "text";
         chatInput.maxLength = 300;
-        chatInput.placeholder = this.emu.localization("Type a message...");
+        chatInput.placeholder = this.emu.frontend.localization("Type a message...");
         chatInput.classList.add("ejs_netplay_chat_input");
         chatRow.appendChild(chatInput);
 
@@ -249,7 +249,7 @@ export class Netplay {
         chatSend.classList.add("ejs_button_button");
         chatSend.style.height = "34px";
         chatSend.style.minWidth = "70px";
-        chatSend.innerText = this.emu.localization("Send");
+        chatSend.innerText = this.emu.frontend.localization("Send");
         chatRow.appendChild(chatSend);
 
         joined.appendChild(chatWrap);
@@ -297,14 +297,14 @@ export class Netplay {
 
             // Prompt for player name if not set
             if (!this.name) {
-                const popups = this.emu.createSubPopup();
+                const popups = this.emu.frontend.createSubPopup();
                 this._menuElement.appendChild(popups[0]);
                 popups[1].classList.add("ejs_cheat_parent");
                 const popup = popups[1];
 
                 const header = this.emu.createElement("div");
                 const nameTitle = this.emu.createElement("h2");
-                nameTitle.innerText = this.emu.localization("Set Player Name");
+                nameTitle.innerText = this.emu.frontend.localization("Set Player Name");
                 nameTitle.classList.add("ejs_netplay_name_heading");
                 header.appendChild(nameTitle);
                 popup.appendChild(header);
@@ -312,7 +312,7 @@ export class Netplay {
                 const main = this.emu.createElement("div");
                 main.classList.add("ejs_netplay_header");
                 const head = this.emu.createElement("strong");
-                head.innerText = this.emu.localization("Player Name");
+                head.innerText = this.emu.frontend.localization("Player Name");
                 const input = this.emu.createElement("input");
                 input.type = "text";
                 input.setAttribute("maxlength", 20);
@@ -332,12 +332,12 @@ export class Netplay {
                 const submit = this.emu.createElement("button");
                 submit.classList.add("ejs_button_button", "ejs_popup_submit");
                 submit.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
-                submit.innerText = this.emu.localization("Submit");
+                submit.innerText = this.emu.frontend.localization("Submit");
                 buttonRow.appendChild(submit);
 
                 const cancel = this.emu.createElement("button");
                 cancel.classList.add("ejs_button_button", "ejs_popup_submit");
-                cancel.innerText = this.emu.localization("Cancel");
+                cancel.innerText = this.emu.frontend.localization("Cancel");
                 buttonRow.appendChild(cancel);
 
                 const closeNamePopup = () => popups[0].remove();
@@ -378,7 +378,7 @@ export class Netplay {
     defineNetplayFunctions() {
         this.updateList = { start: () => this._updateListStart(), stop: () => this._updateListStop() };
         if (!this.url) {
-            this.emu.displayMessage("Netplay URL not configured", 5000);
+            this.emu.frontend.displayMessage("Netplay URL not configured", 5000);
             return;
         }
         const Module = (this.emu.gameManager && this.emu.gameManager.Module) ? this.emu.gameManager.Module : this.emu.Module;
@@ -691,9 +691,9 @@ export class Netplay {
         }
 
         // Prevent resize from affecting guest canvas
-        if (this.emu.handleResize && !orig.handleResize) {
-            orig.handleResize = this.emu.handleResize;
-            this.emu.handleResize = (...args) => {
+        if (this.emu.frontend.handleResize && !orig.handleResize) {
+            orig.handleResize = this.emu.frontend.handleResize;
+            this.emu.frontend.handleResize = (...args) => {
                 if (this.emu.isNetplay && !this.owner) return;
                 try { orig.handleResize.apply(this.emu, args); } catch (e) {}
             };
@@ -721,7 +721,7 @@ export class Netplay {
         this._log("GUEST", "Unfreezing emulator...");
 
         const orig = this.frozen.originals || {};
-        if (orig.handleResize) this.emu.handleResize = orig.handleResize;
+        if (orig.handleResize) this.emu.frontend.handleResize = orig.handleResize;
 
         // Restore audio
         if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx) {
@@ -776,7 +776,7 @@ export class Netplay {
 
         return new Promise((resolve) => {
             try {
-                const emuCanvas = this.emu.canvas;
+                const emuCanvas = this.emu.frontend.canvas;
                 if (!emuCanvas || !emuCanvas.captureStream) { resolve(); return; }
 
                 // Capture directly from emulator canvas at 30fps
@@ -848,7 +848,7 @@ export class Netplay {
         if (this._captureLoopRunning) return;
         this._captureLoopRunning = true;
 
-        const emuCanvas    = this.emu.canvas;
+        const emuCanvas    = this.emu.frontend.canvas;
         const captureCanvas = this.captureCanvas;
         const captureCtx   = this._captureCtx;
         if (!emuCanvas || !captureCanvas || !captureCtx) return;
@@ -902,7 +902,7 @@ export class Netplay {
             this.passwordElem.style.display = password ? "" : "none";
             this.passwordElem.innerText = password ? "Password: " + password : "";
         }
-        if (this.createButton) this.createButton.innerText = this.emu.localization("Leave Room");
+        if (this.createButton) this.createButton.innerText = this.emu.frontend.localization("Leave Room");
 
         this.updatePlayersTable();
 
@@ -912,8 +912,8 @@ export class Netplay {
             
             this.freezeGuest();
 
-            if (this.emu.canvas) {
-                this.emu.canvas.classList.add("ejs_netplay_offscreen_canvas");
+            if (this.emu.frontend.canvas) {
+                this.emu.frontend.canvas.classList.add("ejs_netplay_offscreen_canvas");
             }
 
             // Create overlay canvas for remote video
@@ -936,19 +936,19 @@ export class Netplay {
             });
 
             if (!this.emu.netplayCanvas.parentElement) {
-                this.emu.elements.parent.appendChild(this.emu.netplayCanvas);
+                this.emu.frontend.elements.parent.appendChild(this.emu.netplayCanvas);
             }
 
-            const parentCs = window.getComputedStyle(this.emu.elements.parent);
+            const parentCs = window.getComputedStyle(this.emu.frontend.elements.parent);
             if (parentCs.position === "static") {
-                this._restoreParentPosition = this.emu.elements.parent.style.position;
-                this.emu.elements.parent.style.position = "relative";
+                this._restoreParentPosition = this.emu.frontend.elements.parent.style.position;
+                this.emu.frontend.elements.parent.style.position = "relative";
             }
 
             // Hide cheat button for guests
-            if (this.emu.elements.bottomBar && this.emu.elements.bottomBar.cheat && this.emu.elements.bottomBar.cheat[0]) {
-                this.oldCheatDisplay = this.emu.elements.bottomBar.cheat[0].style.display;
-                this.emu.elements.bottomBar.cheat[0].style.display = "none";
+            if (this.emu.frontend.elements.bottomBar && this.emu.frontend.elements.bottomBar.cheat && this.emu.frontend.elements.bottomBar.cheat[0]) {
+                this.oldCheatDisplay = this.emu.frontend.elements.bottomBar.cheat[0].style.display;
+                this.emu.frontend.elements.bottomBar.cheat[0].style.display = "none";
             }
             if (this.emu.gameManager && this.emu.gameManager.resetCheat) {
                 this.emu.gameManager.resetCheat();
@@ -992,12 +992,12 @@ export class Netplay {
             // Connection timeout fallback
             this.connectionTimeout = setTimeout(() => {
                 if (!this.webRtcReady && !this._gotVideoEver) {
-                    this.emu.displayMessage("Connection failed", 5000);
+                    this.emu.frontend.displayMessage("Connection failed", 5000);
                     this.leaveRoom();
                 }
             }, 15000);
 
-            this.emu.elements.parent.focus();
+            this.emu.frontend.elements.parent.focus();
         } else {
             this._log("HOST", "Setup complete");
             if (this.emu.gameManager) {
@@ -1112,7 +1112,7 @@ export class Netplay {
             dc.onmessage = (e) => {
                 const d = JSON.parse(e.data);
                 if (d.type === "host-left") {
-                    this.emu.displayMessage("Host left", 3000);
+                    this.emu.frontend.displayMessage("Host left", 3000);
                     this.leaveRoom();
                     return;
                 }
@@ -1130,7 +1130,7 @@ export class Netplay {
                 dc.onmessage = (e) => {
                     const d = JSON.parse(e.data);
                     if (d.type === "host-left") {
-                        this.emu.displayMessage("Host left", 3000);
+                        this.emu.frontend.displayMessage("Host left", 3000);
                         this.leaveRoom();
                     }
                 };
@@ -1387,7 +1387,7 @@ export class Netplay {
         sel.innerHTML = "";
         const optAll = document.createElement("option");
         optAll.value = "all";
-        optAll.innerText = this.emu.localization("Everyone");
+        optAll.innerText = this.emu.frontend.localization("Everyone");
         sel.appendChild(optAll);
         const players = this.players || {};
         Object.keys(players).forEach((userid) => {
@@ -1479,8 +1479,8 @@ export class Netplay {
         this.emu.netplayCanvas = null;
 
         // Show original emulator canvas
-        if (this.emu.canvas) {
-            this.emu.canvas.classList.remove("ejs_netplay_offscreen_canvas");
+        if (this.emu.frontend.canvas) {
+            this.emu.frontend.canvas.classList.remove("ejs_netplay_offscreen_canvas");
         }
 
         if (!this.owner) {
@@ -1490,7 +1490,7 @@ export class Netplay {
         // Restore parent position
         if (this._restoreParentPosition !== undefined && this._restoreParentPosition !== null) {
             try {
-                const parent = this.emu.elements.parent;
+                const parent = this.emu.frontend.elements.parent;
                 if (parent) parent.style.position = this._restoreParentPosition;
             } catch (e) {}
             this._restoreParentPosition = null;
@@ -1539,7 +1539,7 @@ export class Netplay {
         }
 
         // Reset UI
-        if (this.createButton) this.createButton.innerText = this.emu.localization("Create Room");
+        if (this.createButton) this.createButton.innerText = this.emu.frontend.localization("Create Room");
         if (this.tabs) {
             this.tabs[0].style.display = "";
             this.tabs[1].style.display = "none";
@@ -1548,8 +1548,8 @@ export class Netplay {
         if (this.passwordElem) this.passwordElem.style.display = "none";
         if (this.playerTable) this.playerTable.innerHTML = "";
 
-        if (this.emu.elements.bottomBar && this.emu.elements.bottomBar.cheat && this.emu.elements.bottomBar.cheat[0]) {
-            this.emu.elements.bottomBar.cheat[0].style.display = this.oldCheatDisplay || "";
+        if (this.emu.frontend.elements.bottomBar && this.emu.frontend.elements.bottomBar.cheat && this.emu.frontend.elements.bottomBar.cheat[0]) {
+            this.emu.frontend.elements.bottomBar.cheat[0].style.display = this.oldCheatDisplay || "";
         }
 
         // Restore original input handler
@@ -1569,8 +1569,8 @@ export class Netplay {
             this.emu.originalControls = null;
         }
 
-        setTimeout(() => { if (this.emu.handleResize) this.emu.handleResize(); }, 100);
-        this.emu.displayMessage("Left room", 3000);
+        setTimeout(() => { if (this.emu.frontend.handleResize) this.emu.frontend.handleResize(); }, 100);
+        this.emu.frontend.displayMessage("Left room", 3000);
         this._leaving = false;
     }
 
@@ -1621,7 +1621,7 @@ export class Netplay {
                         const btn = this.emu.createElement("button");
                         btn.classList.add("ejs_netplay_join_button", "ejs_button_button");
                         btn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
-                        btn.innerText = this.emu.localization("Join");
+                        btn.innerText = this.emu.frontend.localization("Join");
                         c3.appendChild(btn);
                         this.emu.addEventListener(btn, "click", () => {
                             // Pre-create AudioContext during this user gesture
@@ -1642,13 +1642,13 @@ export class Netplay {
 
     /** Show dialog to create a new room */
     showOpenRoomDialog() {
-        if (!this.emu.createSubPopup) return;
+        if (!this.emu.frontend.createSubPopup) return;
         this.emu.originalControls = JSON.parse(JSON.stringify(this.emu.controls));
-        const popups = this.emu.createSubPopup();
+        const popups = this.emu.frontend.createSubPopup();
         this._menuElement.appendChild(popups[0]);
         popups[1].classList.add("ejs_cheat_parent");
         const title = this.emu.createElement("h2");
-        title.innerText = this.emu.localization("Create a room");
+        title.innerText = this.emu.frontend.localization("Create a room");
         title.classList.add("ejs_netplay_name_heading");
         popups[1].appendChild(title);
         const form = this.emu.createElement("div");
@@ -1659,7 +1659,7 @@ export class Netplay {
         const pw = this.emu.createElement("input"); pw.type = "text"; pw.maxLength = 20;
         [["Room Name", ni], ["Max Players", ms], ["Password (optional)", pw]].forEach((item) => {
             const s = this.emu.createElement("strong");
-            s.innerText = this.emu.localization(item[0]);
+            s.innerText = this.emu.frontend.localization(item[0]);
             form.appendChild(s); form.appendChild(this.emu.createElement("br")); form.appendChild(item[1]);
         });
         popups[1].appendChild(form);
@@ -1667,7 +1667,7 @@ export class Netplay {
         sub.classList.add("ejs_button_button", "ejs_popup_submit");
         sub.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
         sub.style.margin = "10px";
-        sub.innerText = this.emu.localization("Submit");
+        sub.innerText = this.emu.frontend.localization("Submit");
         this.emu.addEventListener(sub, "click", () => {
             const n = ni.value.trim();
             if (n) { this.openRoom(n, parseInt(ms.value, 10), pw.value.trim()); popups[0].remove(); }
@@ -1675,32 +1675,32 @@ export class Netplay {
         const cls = this.emu.createElement("button");
         cls.classList.add("ejs_button_button", "ejs_popup_submit");
         cls.style.margin = "10px";
-        cls.innerText = this.emu.localization("Close");
+        cls.innerText = this.emu.frontend.localization("Close");
         this.emu.addEventListener(cls, "click", () => { popups[0].remove(); });
         popups[1].appendChild(sub); popups[1].appendChild(cls);
     }
 
     /** Show password dialog for protected rooms */
     showJoinPasswordDialog(roomId, roomName, maxPlayers) {
-        if (!this.emu.createSubPopup) return;
-        const popups = this.emu.createSubPopup();
+        if (!this.emu.frontend.createSubPopup) return;
+        const popups = this.emu.frontend.createSubPopup();
         this._menuElement.appendChild(popups[0]);
         popups[1].classList.add("ejs_cheat_parent");
         const title = this.emu.createElement("h2");
-        title.innerText = this.emu.localization("Enter Password");
+        title.innerText = this.emu.frontend.localization("Enter Password");
         title.classList.add("ejs_netplay_name_heading");
         popups[1].appendChild(title);
         const form = this.emu.createElement("div");
         form.classList.add("ejs_netplay_header");
         const roomLabel = this.emu.createElement("div");
         roomLabel.classList.add("ejs_netplay_dialog_label");
-        roomLabel.innerText = this.emu.localization("Room") + ": " + roomName;
+        roomLabel.innerText = this.emu.frontend.localization("Room") + ": " + roomName;
         form.appendChild(roomLabel);
         const pwLabel = this.emu.createElement("strong");
-        pwLabel.innerText = this.emu.localization("Password");
+        pwLabel.innerText = this.emu.frontend.localization("Password");
         form.appendChild(pwLabel); form.appendChild(this.emu.createElement("br"));
         const pwInput = this.emu.createElement("input");
-        pwInput.type = "password"; pwInput.maxLength = 20; pwInput.placeholder = this.emu.localization("Enter room password");
+        pwInput.type = "password"; pwInput.maxLength = 20; pwInput.placeholder = this.emu.frontend.localization("Enter room password");
         form.appendChild(pwInput);
         popups[1].appendChild(form);
         const buttonRow = this.emu.createElement("div");
@@ -1708,10 +1708,10 @@ export class Netplay {
         const joinBtn = this.emu.createElement("button");
         joinBtn.classList.add("ejs_button_button", "ejs_popup_submit");
         joinBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
-        joinBtn.innerText = this.emu.localization("Join");
+        joinBtn.innerText = this.emu.frontend.localization("Join");
         const cancelBtn = this.emu.createElement("button");
         cancelBtn.classList.add("ejs_button_button", "ejs_popup_submit");
-        cancelBtn.innerText = this.emu.localization("Cancel");
+        cancelBtn.innerText = this.emu.frontend.localization("Cancel");
 
         this.emu.addEventListener(joinBtn, "click", () => {
             // Pre-create AudioContext during this user gesture
@@ -1738,22 +1738,22 @@ export class Netplay {
 
     /** Show error dialog when join fails */
     showJoinErrorDialog(roomId, roomName, maxPlayers, errorMessage, hadPassword) {
-        if (!this.emu.createSubPopup) {
-            this.emu.displayMessage(this.emu.localization("Join error") + ": " + errorMessage, 5000);
+        if (!this.emu.frontend.createSubPopup) {
+            this.emu.frontend.displayMessage(this.emu.frontend.localization("Join error") + ": " + errorMessage, 5000);
             return;
         }
-        const popups = this.emu.createSubPopup();
+        const popups = this.emu.frontend.createSubPopup();
         this._menuElement.appendChild(popups[0]);
         popups[1].classList.add("ejs_cheat_parent");
         const title = this.emu.createElement("h2");
-        title.innerText = this.emu.localization("Unable to Join");
+        title.innerText = this.emu.frontend.localization("Unable to Join");
         title.classList.add("ejs_netplay_name_heading");
         popups[1].appendChild(title);
         const content = this.emu.createElement("div");
         content.classList.add("ejs_netplay_header");
         const roomLabel = this.emu.createElement("div");
         roomLabel.classList.add("ejs_netplay_dialog_label");
-        roomLabel.innerText = this.emu.localization("Room") + ": " + roomName;
+        roomLabel.innerText = this.emu.frontend.localization("Room") + ": " + roomName;
         content.appendChild(roomLabel);
         const errorBox = this.emu.createElement("div");
         errorBox.classList.add("ejs_netplay_error_box");
@@ -1767,7 +1767,7 @@ export class Netplay {
             const retryBtn = this.emu.createElement("button");
             retryBtn.classList.add("ejs_button_button", "ejs_popup_submit");
             retryBtn.style.backgroundColor = "rgba(var(--ejs-primary-color),1)";
-            retryBtn.innerText = this.emu.localization("Try Again");
+            retryBtn.innerText = this.emu.frontend.localization("Try Again");
             this.emu.addEventListener(retryBtn, "click", () => {
                 popups[0].remove();
                 this.showJoinPasswordDialog(roomId, roomName, maxPlayers);
@@ -1777,7 +1777,7 @@ export class Netplay {
 
         const closeBtn = this.emu.createElement("button");
         closeBtn.classList.add("ejs_button_button", "ejs_popup_submit");
-        closeBtn.innerText = this.emu.localization("Close");
+        closeBtn.innerText = this.emu.frontend.localization("Close");
         this.emu.addEventListener(closeBtn, "click", () => { popups[0].remove(); });
         buttonRow.appendChild(closeBtn);
         popups[1].appendChild(buttonRow);
@@ -1786,15 +1786,15 @@ export class Netplay {
     /** Initialize Socket.IO connection and set up event handlers */
     startSocketIO(cb) {
         this._unlockMobileAudio();
-        if (typeof io === "undefined") { this.emu.displayMessage("Socket.IO unavailable", 5000); return; }
+        if (typeof io === "undefined") { this.emu.frontend.displayMessage("Socket.IO unavailable", 5000); return; }
         if (this.socket && this.socket.connected) { cb(); return; }
-        if (!this.url) { this.emu.displayMessage("Network error", 5000); return; }
+        if (!this.url) { this.emu.frontend.displayMessage("Network error", 5000); return; }
 
         this.previousPlayers = {};
         this.socket = io(this.url);
 
         this.socket.on("connect", () => { this.bindChatUI(); cb(); });
-        this.socket.on("connect_error", (e) => { this.emu.displayMessage("Connect error: " + e.message, 5000); });
+        this.socket.on("connect_error", (e) => { this.emu.frontend.displayMessage("Connect error: " + e.message, 5000); });
         this.socket.on("disconnect", () => { this.leaveRoom(); });
 
         // Handle player list updates
@@ -1803,12 +1803,12 @@ export class Netplay {
             const cu = Object.keys(users || {});
             cu.forEach((id) => {
                 if (pv.indexOf(id) === -1 && id !== this.playerID) {
-                    this.emu.displayMessage((users[id].player_name || "Player") + " joined");
+                    this.emu.frontend.displayMessage((users[id].player_name || "Player") + " joined");
                 }
             });
             pv.forEach((id) => {
                 if (cu.indexOf(id) === -1) {
-                    this.emu.displayMessage((this.previousPlayers[id].player_name || "Player") + " left");
+                    this.emu.frontend.displayMessage((this.previousPlayers[id].player_name || "Player") + " left");
                 }
             });
 
@@ -1953,7 +1953,7 @@ export class Netplay {
 
         this.startSocketIO(() => {
             this.socket.emit("open-room", { extra: this.extra, maxPlayers: mp, password: pw }, (e) => {
-                if (e) { this.emu.displayMessage("Room error: " + e, 5000); return; }
+                if (e) { this.emu.frontend.displayMessage("Room error: " + e, 5000); return; }
                 this.roomJoined(true, rn, pw, sid);
             });
         });
@@ -2005,9 +2005,9 @@ export class Netplay {
                 const name = chat.player_name || "Player";
                 const msg = chat.message || "";
                 const typing = this.chatInput && document.activeElement === this.chatInput;
-                if (!typing && this.emu.displayMessage) {
+                if (!typing && this.emu.frontend.displayMessage) {
                     const prefix = (to !== "all") ? "(private) " : "";
-                    this.emu.displayMessage(prefix + name + ": " + msg, 4500);
+                    this.emu.frontend.displayMessage(prefix + name + ": " + msg, 4500);
                 }
             } catch (e) {}
             return;

@@ -89,13 +89,13 @@ class EJS_COMPRESSION {
             }
             const res = await this.EJS.downloadFile(path, this.EJS.downloadType.support.name, null, false, { responseType: "text", method: "GET" }, false, this.EJS.downloadType.support.dontCache);
             if (res === -1) {
-                this.EJS.startGameError(this.EJS.localization("Network Error"));
+                this.EJS.startGameError("Network Error");
                 return;
             }
             if (method === "rar") {
                 const res2 = await this.EJS.downloadFile("compression/libunrar.wasm", this.EJS.downloadType.support.name, null, false, { responseType: "arraybuffer", method: "GET" }, false, this.EJS.downloadType.support.dontCache);
                 if (res2 === -1) {
-                    this.EJS.startGameError(this.EJS.localization("Network Error"));
+                    this.EJS.startGameError("Network Error");
                     return;
                 }
                 const path = URL.createObjectURL(new Blob([res2.data], { type: "application/wasm" }));
