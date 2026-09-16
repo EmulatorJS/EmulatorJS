@@ -1194,6 +1194,8 @@ class EmulatorJS {
             this.paused = false;
             if (this.touch) {
                 this.virtualGamepad.style.display = "";
+            } else if (this.defaultCoreOpts && this.defaultCoreOpts.supportsMouse) {
+                this.canvas.classList.remove("ejs-canvas-no-pointer");
             }
             this.handleResize();
             if (this.config.fullscreenOnLoad) {
