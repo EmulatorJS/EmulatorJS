@@ -697,11 +697,24 @@ class EmulatorJS {
         const reportUrl = `${report}?v=${cacheBustParam}`;
 
         this.downloadFile(reportUrl, this.downloadType.reports.name, null, false, { responseType: "text", method: "GET" }, false, this.downloadType.reports.dontCache).then(async rep => {
-            if (rep === -1 || typeof rep === "string" || typeof rep.data === "string") {
-                rep = {};
-            } else {
-                rep = rep.data;
-            }
+            const decodeReport = (value) => {
+                if (!value || value === -1) return {};
+                if (typeof value === "string") value = { data: value };
+                const payload = value.data;
+                if (typeof payload === "string") {
+                    try { return JSON.parse(payload); } catch (e) { return {}; }
+                }
+                const file = payload && Array.isArray(payload.files) ? payload.files[0] : null;
+                if (file && file.bytes) {
+                    try {
+                        return JSON.parse(new TextDecoder().decode(file.bytes));
+                    } catch (e) {
+                        return {};
+                    }
+                }
+                return payload && typeof payload === "object" ? payload : {};
+            };
+            rep = decodeReport(rep);
             if (!rep.buildStart) {
                 console.warn("Could not fetch core report JSON at " + reportUrl + "! Core caching will be disabled!");
                 rep.buildStart = Math.random() * 100;
