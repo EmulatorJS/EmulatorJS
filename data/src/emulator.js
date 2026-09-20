@@ -3106,21 +3106,26 @@ class EmulatorJS {
             buttons = [
                 { id: 8, label: this.localization("LEFT BUTTON") },
                 { id: 0, label: this.localization("RIGHT BUTTON") },
-                { id: 9, label: this.localization("1") },
-                { id: 1, label: this.localization("2") },
-                { id: 11, label: this.localization("3") },
-                { id: 10, label: this.localization("4") },
-                { id: 13, label: this.localization("5") },
-                { id: 12, label: this.localization("6") },
-                { id: 15, label: this.localization("7") },
-                { id: 14, label: this.localization("8") },
+                { id: 1, label: this.localization("1") },
+                { id: 9, label: this.localization("2") },
+                { id: 10, label: this.localization("3") },
+                { id: 11, label: this.localization("4") },
+                { id: 12, label: this.localization("5") },
+                { id: 13, label: this.localization("6") },
+                { id: 14, label: this.localization("7") },
+                { id: 15, label: this.localization("8") },
+                { id: 18, label: this.localization("9") },
+                { id: 16, label: this.localization("0") },
                 { id: 2, label: this.localization("*") },
                 { id: 3, label: this.localization("#") },
                 { id: 4, label: this.localization("UP") },
                 { id: 5, label: this.localization("DOWN") },
                 { id: 6, label: this.localization("LEFT") },
                 { id: 7, label: this.localization("RIGHT") },
+                { id: 17, label: this.localization("ALT 0") },
+                { id: 19, label: this.localization("ALT 9") },
             ];
+            this.analogAxes.splice(0, 4) // 16 to 19 are not analog for gearcoleco
         } else if ("pcfx" === this.getControlScheme()) {
             buttons = [
                 { id: 8, label: this.localization("I") },
@@ -4261,9 +4266,23 @@ class EmulatorJS {
             info.push(...speedControlButtons);
         } else if ("coleco" === this.getControlScheme()) {
             info = [
-                { "type": "button", "text": "L", "id": "l", "location": "right", "left": 10, "top": 40, "bold": true, "input_value": 8 },
-                { "type": "button", "text": "R", "id": "r", "location": "right", "left": 81, "top": 40, "bold": true, "input_value": 0 },
-                { "type": "dpad", "id": "dpad", "location": "left", "left": "50%", "right": "50%", "joystickInput": false, "inputValues": [4, 5, 6, 7] }
+                { "type": "button", "text": "L", "id": "l", "location": "right", "left": 10, "top": 40, "bold": true, "input_value": 0 },
+                { "type": "button", "text": "R", "id": "r", "location": "right", "left": 81, "top": 40, "bold": true, "input_value": 8 },
+                { "type": "dpad", "id": "dpad", "location": "left", "left": "50%", "right": "50%", "joystickInput": false, "inputValues": [4, 5, 6, 7] },
+
+                { "type": "button", "text": "1", "id": "one_key", "block": true, "fontSize": 15, "location": "left", "left": 0, "top": 145, "input_value": 1 },
+                { "type": "button", "text": "2", "id": "two_key", "block": true, "fontSize": 15, "location": "left", "left": 60, "top": 145, "input_value": 9 },
+                { "type": "button", "text": "3", "id": "three_key", "block": true, "fontSize": 15, "location": "left", "left": 120, "top": 145, "input_value": 10 },
+                { "type": "button", "text": "4", "id": "four_key", "block": true, "fontSize": 15, "location": "left", "left": 0, "top": 185, "input_value": 11 },
+                { "type": "button", "text": "5", "id": "five_key", "block": true, "fontSize": 15, "location": "left", "left": 60, "top": 185, "input_value": 12 },
+                { "type": "button", "text": "6", "id": "six_key", "block": true, "fontSize": 15, "location": "left", "left": 120, "top": 185, "input_value": 13 },
+
+                { "type": "button", "text": "7", "id": "seven_key", "block": true, "fontSize": 15, "location": "right", "right": 120, "top": 145, "input_value": 14 },
+                { "type": "button", "text": "8", "id": "eight_key", "block": true, "fontSize": 15, "location": "right", "right": 60, "top": 145, "input_value": 15 },
+                { "type": "button", "text": "9", "id": "nine_key", "block": true, "fontSize": 15, "location": "right", "right": "0px", "top": 145, "input_value": 18 },
+                { "type": "button", "text": "*", "id": "star_key", "block": true, "fontSize": 15, "location": "right", "right": 120, "top": 185, "input_value": 3 },
+                { "type": "button", "text": "0", "id": "zero_key", "block": true, "fontSize": 15, "location": "right", "right": 60, "top": 185, "input_value": 16 },
+                { "type": "button", "text": "#", "id": "hash_key", "block": true, "fontSize": 15, "location": "right", "right": "0px", "top": 185, "input_value": 2 }
             ];
             info.push(...speedControlButtons);
         } else if ("pcfx" === this.getControlScheme()) {
