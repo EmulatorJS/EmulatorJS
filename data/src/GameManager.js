@@ -267,28 +267,28 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
         }
         if ([24, 25, 26, 27, 28, 29].includes(index)) {
             if (index === 24 && value === 1) {
-                const slot = this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1";
+                const slot = this.EJS.frontend.settings["save-state-slot"] ? this.EJS.frontend.settings["save-state-slot"] : "1";
                 if (this.quickSave(slot)) {
-                    this.EJS.displayMessage(this.EJS.localization("SAVED STATE TO SLOT") + " " + slot);
+                    this.EJS.frontend.displayMessage("SAVED STATE TO SLOT", undefined, " " + slot);
                 } else {
-                    this.EJS.displayMessage(this.EJS.localization("FAILED TO SAVE STATE"));
+                    this.EJS.frontend.displayMessage("FAILED TO SAVE STATE");
                 }
             }
             if (index === 25 && value === 1) {
-                const slot = this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1";
+                const slot = this.EJS.frontend.settings["save-state-slot"] ? this.EJS.frontend.settings["save-state-slot"] : "1";
                 this.quickLoad(slot);
-                this.EJS.displayMessage(this.EJS.localization("LOADED STATE FROM SLOT") + " " + slot);
+                this.EJS.frontend.displayMessage("LOADED STATE FROM SLOT", undefined, " " + slot);
             }
             if (index === 26 && value === 1) {
                 let newSlot;
                 try {
-                    newSlot = parseFloat(this.EJS.settings["save-state-slot"] ? this.EJS.settings["save-state-slot"] : "1") + 1;
+                    newSlot = parseFloat(this.EJS.frontend.settings["save-state-slot"] ? this.EJS.frontend.settings["save-state-slot"] : "1") + 1;
                 } catch(e) {
                     newSlot = 1;
                 }
                 if (newSlot > 9) newSlot = 1;
-                this.EJS.displayMessage(this.EJS.localization("SET SAVE STATE SLOT TO") + " " + newSlot);
-                this.EJS.changeSettingOption("save-state-slot", newSlot.toString());
+                this.EJS.frontend.displayMessage("SET SAVE STATE SLOT TO", undefined, " " + newSlot);
+                this.EJS.frontend.changeSettingOption("save-state-slot", newSlot.toString());
             }
             if (index === 27) {
                 this.functions.toggleFastForward(this.EJS.isFastForward ? !value : value);
@@ -385,8 +385,8 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
                 }
                 resolve();
             } catch (error) {
-                this.EJS.textElem.innerText = this.EJS.localization("Network Error");
-                this.EJS.textElem.style.color = "red";
+                this.EJS.frontend.setLoadingText("Network Error");
+                this.EJS.frontend.textElem.style.color = "red";
                 reject(error);
             }
         })

@@ -237,7 +237,7 @@ async function prepareLanguage() {
     }
 
     window.EJS_emulator = new EmulatorJS(EJS_player, config);
-    window.EJS_adBlocked = (url, del) => window.EJS_emulator.adBlocked(url, del);
+    window.EJS_adBlocked = (url, del) => window.EJS_emulator.frontend.adBlocked(url, del);
 
     const handlers = [
         ["ready", window.EJS_ready],
