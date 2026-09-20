@@ -393,16 +393,24 @@ class EJS_Frontend {
         this.textElem.innerText = this.localization("Loading...");
         this.elements.parent.appendChild(this.textElem);
     }
-    displayMessage(message, time, suffix) {
+    displayMessage(message, time, suffix, severity) {
         if (!this.msgElem) {
             this.msgElem = this.ejs.createElement("div");
             this.msgElem.classList.add("ejs_message");
             this.msgElem.style.zIndex = "6";
             this.elements.parent.appendChild(this.msgElem);
         }
+        // Cleared as well as set: the element is reused, so an earlier failure
+        // would otherwise colour a later success.
+        const severityClasses = ["ejs_message_error", "ejs_message_success"];
+        this.msgElem.classList.remove(...severityClasses);
+        if (severity === "error" || severity === "success") {
+            this.msgElem.classList.add("ejs_message_" + severity);
+        }
         clearTimeout(this.msgTimeout);
         this.msgTimeout = setTimeout(() => {
             this.msgElem.innerText = "";
+            this.msgElem.classList.remove(...severityClasses);
         }, (typeof time === "number" && time > 0) ? time : 3000)
         this.msgElem.innerText = this.localizeAll(message) + (suffix || "");
     }
@@ -550,16 +558,16 @@ class EJS_Frontend {
         const qSave = addButton("Quick Save", false, () => {
             const slot = this.ejs.getSettingValue("save-state-slot") ? this.ejs.getSettingValue("save-state-slot") : "1";
             if (this.ejs.gameManager.quickSave(slot)) {
-                this.displayMessage("SAVED STATE TO SLOT", undefined, " " + slot);
+                this.displayMessage("SAVED STATE TO SLOT", undefined, " " + slot, "success");
             } else {
-                this.displayMessage("FAILED TO SAVE STATE");
+                this.displayMessage("FAILED TO SAVE STATE", undefined, undefined, "error");
             }
             hideMenu();
         });
         const qLoad = addButton("Quick Load", false, () => {
             const slot = this.ejs.getSettingValue("save-state-slot") ? this.ejs.getSettingValue("save-state-slot") : "1";
             this.ejs.gameManager.quickLoad(slot);
-            this.displayMessage("LOADED STATE FROM SLOT", undefined, " " + slot);
+            this.displayMessage("LOADED STATE FROM SLOT", undefined, " " + slot, "success");
             hideMenu();
         });
         this.elements.contextMenu = {
@@ -978,7 +986,7 @@ class EJS_Frontend {
             try {
                 state = this.ejs.gameManager.getState();
             } catch(e) {
-                this.displayMessage("FAILED TO SAVE STATE");
+                this.displayMessage("FAILED TO SAVE STATE", undefined, undefined, "error");
                 return;
             }
             const { screenshot, format } = await this.ejs.takeScreenshot(this.ejs.capture.photo.source, this.ejs.capture.photo.format, this.ejs.capture.photo.upscale);
@@ -991,7 +999,7 @@ class EJS_Frontend {
             if (stateUrl) URL.revokeObjectURL(stateUrl);
             if (this.ejs.getSettingValue("save-state-location") === "browser" && this.ejs.saveInBrowserSupported()) {
                 this.ejs.storage.states.put(this.ejs.getBaseFileName() + ".state", state);
-                this.displayMessage("SAVED STATE TO BROWSER");
+                this.displayMessage("SAVED STATE TO BROWSER", undefined, undefined, "success");
             } else {
                 const blob = new Blob([state]);
                 stateUrl = URL.createObjectURL(blob);
@@ -1007,7 +1015,7 @@ class EJS_Frontend {
             if (this.ejs.getSettingValue("save-state-location") === "browser" && this.ejs.saveInBrowserSupported()) {
                 this.ejs.storage.states.get(this.ejs.getBaseFileName() + ".state").then(e => {
                     this.ejs.gameManager.loadState(e);
-                    this.displayMessage("LOADED STATE FROM BROWSER");
+                    this.displayMessage("LOADED STATE FROM BROWSER", undefined, undefined, "success");
                 })
             } else {
                 const file = await this.selectFile();
