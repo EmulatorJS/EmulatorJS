@@ -104,9 +104,14 @@ class EmulatorJS {
             const attempt = async (targetUrl) => {
                 try {
                     const onProgress = progress instanceof Function ? (status, percentage, loaded, total) => {
-                        if (status === "downloading") {
-                            const progressText = total ? " " + Math.floor(percentage).toString() + "%" : " " + (loaded / 1048576).toFixed(2) + "MB";
-                            progress(progressText);
+                        if (status === "downloading" || status === "decompressing") {
+                            let progressText = "";
+                            if (total || percentage) {
+                                progressText = " " + Math.floor(percentage).toString() + "%";
+                            } else if (loaded) {
+                                progressText = " " + (loaded / 1048576).toFixed(2) + "MB";
+                            }
+                            progress(progressText, status);
                         }
                     } : null;
 
@@ -728,8 +733,10 @@ class EmulatorJS {
             // Download the core
             console.log("[EJS Core] Downloading core:", filename);
             const corePath = "cores/" + filename;
-            const res = await this.downloadFile(corePath, this.downloadType.core.name, (progress) => {
-                this.textElem.innerText = this.localization("Download Game Core") + progress;
+            const res = await this.downloadFile(corePath, this.downloadType.core.name, (progress, status) => {
+                this.textElem.innerText = this.localization(
+                    status === "decompressing" ? "Decompress Game Core" : "Download Game Core"
+                ) + progress;
             }, false, { responseType: "arraybuffer", method: "GET" }, true, this.downloadType.core.dontCache);
             if (res === -1) {
                 if (!this.supportsWebgl2) {
@@ -910,8 +917,10 @@ class EmulatorJS {
                 const data = await this.downloadFile(
                     url,
                     type.name,
-                    (progress) => {
-                        this.textElem.innerText = this.localization("Download Game Data") + progress;
+                    (progress, status) => {
+                        this.textElem.innerText = this.localization(
+                            status === "decompressing" ? "Decompress Game Data" : "Download Game Data"
+                        ) + progress;
                     },
                     true,
                     { responseType: "arraybuffer", method: "GET" },
