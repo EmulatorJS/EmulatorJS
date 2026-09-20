@@ -1722,11 +1722,33 @@
     overflow: hidden;
     position: absolute;
     top: 0;
-    color: red;
+    color: #fff;
     font-size: 17px;
     padding: 10px;
     text-align: left;
     text-shadow: rgb(0, 0, 0) 1px 1px 1px;
+}
+
+/* The message sits over arbitrary game video, so the text needs a backdrop of
+   its own to stay readable. Shrink-wrapped to the text: the element is
+   absolutely positioned with no width, so the box follows the content. */
+.ejs_message:not(:empty) {
+    background-color: rgba(0, 0, 0, 0.55);
+    border-radius: 4px;
+    margin: 6px;
+    padding: 6px 10px;
+}
+
+.ejs_message:empty {
+    visibility: hidden;
+}
+
+.ejs_message_success {
+    color: #6fdc8c;
+}
+
+.ejs_message_error {
+    color: #ff6b6b;
 }
 
 .ejs_virtualGamepad_open {
