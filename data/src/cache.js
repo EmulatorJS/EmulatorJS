@@ -24,6 +24,7 @@ class EJS_Download {
     constructor(storageCache = null, EJS = null) {
         this.storageCache = storageCache;
         this.EJS = EJS;
+        this.debug = EJS ? EJS.debug : false;
     }
 
     /**
