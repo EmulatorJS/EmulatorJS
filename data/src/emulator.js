@@ -3789,8 +3789,8 @@ class EmulatorJS {
             191: "forward slash",
             192: "grave accent",
             219: "open bracket",
-            220: "back slash",
-            221: "close braket",
+            220: "backslash",
+            221: "close bracket",
             222: "single quote"
         }
     }
