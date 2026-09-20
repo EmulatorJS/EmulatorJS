@@ -78,11 +78,11 @@ This project is free and ad-free. The demo page may show occasional ads to help 
 
 ## Star History
 
-<a href="https://star-history.com/#EmulatorJS/EmulatorJS&Date">
+<a href="https://star-history.dera.page/#EmulatorJS/EmulatorJS&Date">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date&theme=dark" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
-   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=EmulatorJS/EmulatorJS&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=EmulatorJS/EmulatorJS&type=Date" />
  </picture>
 </a>
 
