@@ -60,6 +60,7 @@
         "@emulatorjs/core-cap32": "latest",
         "@emulatorjs/core-crocods": "latest",
         "@emulatorjs/core-prboom": "latest",
-        "@emulatorjs/core-ppsspp": "latest"
+        "@emulatorjs/core-ppsspp": "latest",
+        "@emulatorjs/core-bluemsx": "latest"
     }
 }
