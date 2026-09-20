@@ -415,8 +415,9 @@ export class Netplay {
 
     /** Unlock audio context on mobile devices (requires user gesture) */
     _unlockMobileAudio() {
-        const ctx = this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx;
-        if (!ctx) return;
+        const coreAudio = this.emu.getCoreAudio();
+        if (!coreAudio) return;
+        const ctx = coreAudio.ctx;
         try { if (ctx.state !== "running") ctx.resume().catch(() => {}); } catch (e) {}
         try {
             const b = ctx.createBuffer(1, 1, ctx.sampleRate);
@@ -473,27 +474,14 @@ export class Netplay {
      */
     _captureHostAudio() {
         try {
-            let audioCtx = null;
-
-            // Method 1: EmulatorJS OpenAL audio context
-            if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx) {
-                const alCtx = this.emu.Module.AL.currentCtx;
-                if (alCtx.audioCtx) {
-                    audioCtx = alCtx.audioCtx;
-                    if (audioCtx.state !== "running") {
-                        audioCtx.resume().catch(() => {});
-                    }
-                }
-            }
-
-            // Method 2: gameManager audioContext
-            if (!audioCtx && this.emu.gameManager && this.emu.gameManager.audioContext) {
-                audioCtx = this.emu.gameManager.audioContext;
-            }
-
-            if (!audioCtx) {
+            const coreAudio = this.emu.getCoreAudio();
+            if (!coreAudio) {
                 console.warn("[NETPLAY HOST] No audio context found for capture");
                 return null;
+            }
+            const audioCtx = coreAudio.ctx;
+            if (audioCtx.state !== "running") {
+                audioCtx.resume().catch(() => {});
             }
 
             // Create boost gain node and MediaStreamDestination
@@ -504,73 +492,14 @@ export class Netplay {
             const dest = audioCtx.createMediaStreamDestination();
             this._hostAudioDest = dest;
 
-            // Connect: source -> boostGain -> dest
+            // Connect: core gain -> boostGain -> dest
             boostGain.connect(dest);
-
-            let connected = false;
-
-            // Method 1: Connect gameManager's audioNode
-            if (this.emu.gameManager && this.emu.gameManager.audioNode) {
-                try {
-                    this.emu.gameManager.audioNode.connect(boostGain);
-                    connected = true;
-                    this._dlog("[NETPLAY HOST] Connected gameManager.audioNode -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
-                } catch (e) {
-                    console.warn("[NETPLAY HOST] Failed to connect audioNode:", e);
-                }
-            }
-
-            // Method 2: Connect OpenAL gain/source nodes
-            if (!connected && this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx) {
-                const alCtx = this.emu.Module.AL.currentCtx;
-                if (alCtx.gain) {
-                    try {
-                        alCtx.gain.connect(boostGain);
-                        connected = true;
-                        this._dlog("[NETPLAY HOST] Connected AL gain node -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
-                    } catch (e) {
-                        console.warn("[NETPLAY HOST] Failed to connect AL gain:", e);
-                    }
-                }
-                if (!connected && alCtx.sources) {
-                    for (const sid in alCtx.sources) {
-                        const src = alCtx.sources[sid];
-                        if (src && src.gain) {
-                            try {
-                                src.gain.connect(boostGain);
-                                connected = true;
-                                this._dlog("[NETPLAY HOST] Connected AL source gain -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
-                            } catch (e) {}
-                        }
-                    }
-                }
-            }
-
-            // Method 3: Use createMediaElementSource if there's an audio element
-            if (!connected) {
-                try {
-                    const audioElements = document.querySelectorAll("audio");
-                    for (const ae of audioElements) {
-                        if (ae.id && ae.id.startsWith("ejs-remote-audio-")) continue;
-                        try {
-                            const mediaSource = audioCtx.createMediaElementSource(ae);
-                            mediaSource.connect(boostGain);
-                            mediaSource.connect(audioCtx.destination);
-                            connected = true;
-                            this._dlog("[NETPLAY HOST] Connected audio element -> boostGain -> capture dest (boost:", this._audioBoostFactor + "x)");
-                            break;
-                        } catch (e) {}
-                    }
-                } catch (e) {}
-            }
-
-            if (!connected) {
-                console.warn("[NETPLAY HOST] Could not connect any audio source to capture destination");
-            }
+            coreAudio.gain.connect(boostGain);
+            this._hostAudioSourceNode = coreAudio.gain;
 
             const audioTracks = dest.stream.getAudioTracks();
-            this._dlog("[NETPLAY HOST] Captured", audioTracks.length, "audio tracks, connected:", connected, "boost:", this._audioBoostFactor + "x");
-            
+            this._dlog("[NETPLAY HOST] Captured", audioTracks.length, "audio tracks, boost:", this._audioBoostFactor + "x");
+
             if (audioTracks.length > 0) {
                 return dest.stream;
             }
@@ -700,17 +629,10 @@ export class Netplay {
         }
 
         // Silence local audio
-        if (this.emu.gameManager && this.emu.gameManager.audioNode) {
-            try { this.emu.gameManager.audioNode.disconnect(); } catch (e) {}
-        }
-        if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx) {
-            const ctx = this.emu.Module.AL.currentCtx;
-            if (ctx.sources) {
-                for (const id in ctx.sources) {
-                    try { ctx.sources[id].gain.gain.value = 0; } catch (e) {}
-                }
-            }
-            if (ctx.audioCtx) ctx.audioCtx.suspend().catch(() => {});
+        const coreAudio = this.emu.getCoreAudio();
+        if (coreAudio) {
+            coreAudio.gain.gain.value = 0;
+            coreAudio.ctx.suspend().catch(() => {});
         }
         this._log("GUEST", "Emulator frozen");
     }
@@ -724,17 +646,10 @@ export class Netplay {
         if (orig.handleResize) this.emu.handleResize = orig.handleResize;
 
         // Restore audio
-        if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx) {
-            this.emu.Module.AL.currentCtx.audioCtx.resume().catch(() => {});
-            const vol = this.emu.muted ? 0 : this.emu.volume;
-            if (this.emu.Module.AL.currentCtx.sources) {
-                for (const id in this.emu.Module.AL.currentCtx.sources) {
-                    try { this.emu.Module.AL.currentCtx.sources[id].gain.gain.value = vol; } catch (e) {}
-                }
-            }
-        }
-        if (this.emu.gameManager && this.emu.gameManager.audioNode && this.emu.gameManager.audioContext) {
-            try { this.emu.gameManager.audioNode.connect(this.emu.gameManager.audioContext.destination); } catch (e) {}
+        const coreAudio = this.emu.getCoreAudio();
+        if (coreAudio) {
+            coreAudio.ctx.resume().catch(() => {});
+            coreAudio.gain.gain.value = this.emu.muted ? 0 : this.emu.volume;
         }
 
         // Resume emulation
@@ -770,9 +685,8 @@ export class Netplay {
     initWebRTCStream() {
         if (this.localStream) return Promise.resolve();
 
-        if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx) {
-            this.emu.Module.AL.currentCtx.audioCtx.resume().catch(() => {});
-        }
+        const coreAudio = this.emu.getCoreAudio();
+        if (coreAudio) coreAudio.ctx.resume().catch(() => {});
 
         return new Promise((resolve) => {
             try {
@@ -1932,9 +1846,6 @@ export class Netplay {
     /** Create and host a new room */
     openRoom(rn, mp, pw) {
         this._unlockMobileAudio();
-        if (this.emu.Module && this.emu.Module.AL && this.emu.Module.AL.currentCtx && this.emu.Module.AL.currentCtx.audioCtx) {
-            this.emu.Module.AL.currentCtx.audioCtx.resume().catch(() => {});
-        }
 
         const sid = guid();
         this.playerID = guid();

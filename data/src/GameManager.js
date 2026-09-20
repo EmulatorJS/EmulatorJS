@@ -5,7 +5,7 @@ class EJS_GameManager {
         this.FS = this.Module.FS;
         this.functions = {
             restart: this.Module.cwrap("system_restart", "", []),
-            //saveStateInfo: this.Module.cwrap("save_state_info", "string", []),
+            saveStateInfo: this.Module.cwrap("save_state_info", "number", []),
             loadState: this.Module.cwrap("load_state", "number", ["string", "number"]),
             screenshot: this.Module.cwrap("cmd_take_screenshot", "", []),
             simulateInput: this.Module.cwrap("simulate_input", "null", ["number", "number", "number"]),
@@ -205,10 +205,19 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     }
     restart() {
         this.clearEJSResetTimer();
-        this.functions.restart();
+        this.EJS.withCoreAudioCapture(() => this.functions.restart());
     }
     getState() {
-        return this.Module.EmulatorJSGetState();
+        const info = this.Module.UTF8ToString(this.functions.saveStateInfo()).split("|");
+        if (info[2] !== "1") {
+            console.error(info[0]);
+            throw new Error(info[0]);
+        }
+        const size = parseInt(info[0]);
+        const dataStart = parseInt(info[1]);
+        const state = new Uint8Array(this.Module.HEAPU8.subarray(dataStart, dataStart + size));
+        this.Module._free(dataStart);
+        return state;
     }
     loadState(state) {
         try {

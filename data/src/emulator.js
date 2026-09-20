@@ -267,6 +267,9 @@ class EmulatorJS {
         this.defaultAutoFireInterval = 100;
         this.autofireIntervals = {};
         this.muted = false;
+        this.audioContextHooked = false;
+        this.captureAudioContext = false;
+        this.coreAudio = null;
         this.paused = true;
         this.missingLang = [];
         this.setElements(element);
@@ -515,6 +518,9 @@ class EmulatorJS {
         if (!Array.isArray(this.functions[event])) return 0;
         this.functions[event].forEach(e => e(data));
         return this.functions[event].length;
+    }
+    hasEventListener(event) {
+        return !!(this.functions && Array.isArray(this.functions[event]) && this.functions[event].length);
     }
     setElements(element) {
         const game = this.createElement("div");
@@ -1181,13 +1187,49 @@ class EmulatorJS {
             this.startGameError(this.localization("Failed to start game"));
         });
     }
+    withCoreAudioCapture(callback) {
+        const native = window.AudioContext || window.webkitAudioContext;
+        if (!this.audioContextHooked && typeof native === "function") {
+            this.audioContextHooked = true;
+            const hooked = new Proxy(native, {
+                construct: (target, args, newTarget) => {
+                    const ctx = Reflect.construct(target, args, newTarget);
+                    if (this.captureAudioContext) this.setCoreAudioContext(ctx);
+                    return ctx;
+                }
+            });
+            if (window.AudioContext) window.AudioContext = hooked;
+            if (window.webkitAudioContext) window.webkitAudioContext = hooked;
+        }
+        this.captureAudioContext = true;
+        try {
+            return callback();
+        } finally {
+            this.captureAudioContext = false;
+        }
+    }
+    setCoreAudioContext(ctx) {
+        try {
+            const gain = ctx.createGain();
+            gain.connect(ctx.destination);
+            gain.gain.value = this.muted ? 0 : this.volume;
+            Object.defineProperty(ctx, "destination", { get: () => gain, configurable: true });
+            this.coreAudio = { ctx: ctx, gain: gain };
+        } catch(e) {
+            if (this.debug) console.warn("Could not hook the core audio context", e);
+        }
+    }
+    getCoreAudio() {
+        if (this.coreAudio && this.coreAudio.ctx.state === "closed") this.coreAudio = null;
+        return this.coreAudio;
+    }
     startGame() {
         try {
             const args = [];
             if (this.debug) args.push("-v");
             args.push("/" + this.fileName);
             if (this.debug) console.log(args);
-            this.Module.callMain(args);
+            this.withCoreAudioCapture(() => this.Module.callMain(args));
             if (typeof this.config.softLoad === "number" && this.config.softLoad > 0) {
                 this.resetTimeout = setTimeout(() => {
                     this.gameManager.restart();
@@ -1250,14 +1292,10 @@ class EmulatorJS {
     checkStarted() {
         (async () => {
             let sleep = (ms) => new Promise(r => setTimeout(r, ms));
-            let state = "suspended";
             let popup;
-            while (state === "suspended") {
-                if (!this.Module.AL) return;
-                this.Module.AL.currentCtx.sources.forEach(ctx => {
-                    state = ctx.gain.context.state;
-                });
-                if (state !== "suspended") break;
+            while (true) {
+                const coreAudio = this.getCoreAudio();
+                if (!coreAudio || coreAudio.ctx.state !== "suspended") break;
                 if (!popup) {
                     popup = this.createPopup("", {});
                     const button = this.createElement("button");
@@ -2202,7 +2240,10 @@ class EmulatorJS {
                 this.displayMessage(this.localization("FAILED TO SAVE STATE"));
                 return;
             }
-            const { screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale);
+            let screenshot, format;
+            if (this.hasEventListener("saveState")) {
+                ({ screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale));
+            }
             const called = this.callEvent("saveState", {
                 screenshot: screenshot,
                 format: format,
@@ -2253,7 +2294,10 @@ class EmulatorJS {
 
         const saveSavFiles = addButton(this.config.buttonOpts.saveSavFiles, async () => {
             const file = await this.gameManager.getSaveFile();
-            const { screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale);
+            let screenshot, format;
+            if (this.hasEventListener("saveSave")) {
+                ({ screenshot, format } = await this.takeScreenshot(this.capture.photo.source, this.capture.photo.format, this.capture.photo.upscale));
+            }
             const called = this.callEvent("saveSave", {
                 screenshot: screenshot,
                 format: format,
@@ -2346,10 +2390,9 @@ class EmulatorJS {
 
             const skipLocalAudio = this.isNetplay && this.netplay && this.netplay.setVolume(volume);
 
-            if (!skipLocalAudio && this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.sources) {
-                this.Module.AL.currentCtx.sources.forEach(e => {
-                    e.gain.gain.value = volume;
-                })
+            const coreAudio = this.getCoreAudio();
+            if (!skipLocalAudio && coreAudio) {
+                coreAudio.gain.gain.value = volume;
             }
             if (!this.config.buttonOpts || this.config.buttonOpts.mute !== false) {
                 unmuteButton.style.display = (volume === 0) ? "" : "none";
@@ -4644,7 +4687,7 @@ class EmulatorJS {
             menuButton.style.display = "none";
             this.on("start", () => {
                 menuButton.style.display = "";
-                if (matchMedia('(pointer:fine)').matches && this.getSettingValue("menu-bar-button") !== "visible") {
+                if (matchMedia('(pointer:fine)').matches && this.preGetSetting("menu-bar-button") !== "visible") {
                     menuButton.style.opacity = 0;
                     this.changeSettingOption('menu-bar-button', 'hidden', true);
                 }
@@ -6327,21 +6370,10 @@ class EmulatorJS {
         }
 
         let audioTrack = null;
-        if (this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.audioCtx) {
-            const alContext = this.Module.AL.currentCtx;
-            const audioContext = alContext.audioCtx;
-
-            const gainNodes = [];
-            for (let sourceIdx in alContext.sources) {
-                gainNodes.push(alContext.sources[sourceIdx].gain);
-            }
-
-            const merger = audioContext.createChannelMerger(gainNodes.length);
-            gainNodes.forEach(node => node.connect(merger));
-
-            const destination = audioContext.createMediaStreamDestination();
-            merger.connect(destination);
-
+        const coreAudio = this.getCoreAudio();
+        if (coreAudio) {
+            const destination = coreAudio.ctx.createMediaStreamDestination();
+            coreAudio.gain.connect(destination);
             const audioTracks = destination.stream.getAudioTracks();
             if (audioTracks.length !== 0) {
                 audioTrack = audioTracks[0];
