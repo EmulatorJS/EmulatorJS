@@ -157,9 +157,6 @@ class EJS_GameManager {
             (this.EJS.rewindEnabled ? "rewind_enable = true\n" : "") +
             (this.EJS.rewindEnabled ? "rewind_granularity = 6\n" : "") +
             "savefile_directory = \"/data/saves\"\n" +
-            // blueMSX looks for Machines/ and Databases/ under RetroArch's
-            // system_directory. Without this the directory resolves to "/"
-            // and the core cannot find its machine configurations.
             "system_directory = \"/home/web_user/retroarch/system\"\n";
 
         if (this.EJS.retroarchOpts && Array.isArray(this.EJS.retroarchOpts)) {
