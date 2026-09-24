@@ -615,7 +615,7 @@ class EmulatorJS {
             // Download the core
             console.log("[EJS Core] Downloading core:", filename);
             // Versioned by the same buildStart the cache is keyed on, so a
-            // rebuilt core is a new URL rather than a stale hit on a stable one.
+            // rebuilt core is a new URL rather than a stale hit on a stable one
             const corePath = "cores/" + filename + "?v=" + encodeURIComponent(rep.buildStart);
             const res = await this.downloadFile(corePath, this.downloadType.core.name, (progress, status) => {
                 this.frontend.setLoadingText(status === "decompressing" ? "Decompress Game Core" : "Download Game Core", progress);
