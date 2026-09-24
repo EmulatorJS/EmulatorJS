@@ -145,11 +145,24 @@ class EJS_GameManager {
         } catch(e) {}
     }
     getRetroArchCfg() {
+        let detectedSampleRate = 44100;
+        try {
+            const AudioCtx = window.AudioContext || window.webkitAudioContext;
+            if (AudioCtx) {
+                const ac = new AudioCtx();
+                if (ac.sampleRate) {
+                    detectedSampleRate = ac.sampleRate;
+                }
+                ac.close();
+            }
+        } catch(e) {}
+
         let cfg = "autosave_interval = 60\n" +
             "screenshot_directory = \"/\"\n" +
             "block_sram_overwrite = false\n" +
             "video_gpu_screenshot = false\n" +
             "audio_latency = 64\n" +
+            "audio_out_rate = " + detectedSampleRate + "\n" +
             "video_top_portrait_viewport = true\n" +
             "video_vsync = true\n" +
             "video_smooth = false\n" +
@@ -160,15 +173,16 @@ class EJS_GameManager {
             "savefile_directory = \"/data/saves\"\n";
 
         if (this.EJS.retroarchOpts && Array.isArray(this.EJS.retroarchOpts)) {
-            this.EJS.retroarchOpts.forEach(option => {
+            this.EJS.retroarchOpts.forEach((option) => {
                 let selected = this.EJS.preGetSetting(option.name);
-                console.log(selected);
-                if (!selected) {
-                    selected = option.default;
+                if (selected === undefined || selected === null) {
+                    selected = option.value !== undefined ? option.value : option.default;
                 }
-                const value = option.isString === false ? selected : '"' + selected + '"';
-                cfg += option.name + " = " + value + "\n"
-            })
+                if (selected !== undefined && selected !== null) {
+                    const value = option.isString === false ? selected : '"' + selected + '"';
+                    cfg += option.name + " = " + value + "\n";
+                }
+            });
         }
         return cfg;
     }
