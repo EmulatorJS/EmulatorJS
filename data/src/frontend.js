@@ -3804,14 +3804,15 @@ class EJS_Frontend {
 
         if (this.ejs.retroarchOpts && Array.isArray(this.ejs.retroarchOpts)) {
             const retroarchOptsMenu = createSettingParent(true, "RetroArch Options" + " (" + this.localization("Requires restart") + ")", home);
-            this.ejs.retroarchOpts.forEach(option => {
+            this.ejs.retroarchOpts.forEach((option) => {
+                if (!option || !option.title || !option.options) return;
                 addToMenu(this.localization(option.title, this.ejs.config.settingsLanguage),
                     option.name,
                     option.options,
                     option.default,
                     retroarchOptsMenu,
                     true);
-            })
+            });
             checkForEmptyMenu(retroarchOptsMenu);
         }
 
