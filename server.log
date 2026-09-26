@@ -1,0 +1,61 @@
+127.0.0.1 - - [26/Sep/2026 13:06:57] "HEAD /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:24] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:26] "GET /data/version.json HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:48] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:48] "GET /data/version.json HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/loader.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/emulator.min.js HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/emulator.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/cache.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/gamepad.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/GameManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/storage.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/utils.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/compression.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/setup.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/netplay.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/frontend.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/retroachievements.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/consts.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/vendor/socket.io.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/shaders.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/license.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:49] "GET /data/src/vendor/nipplejs.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:50] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:07:50] "GET /data/emulator.min.css HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:07:50] "GET /data/emulator.css HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:07:50] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:07:50] "GET /data/cores/reports/mgba.json?v=497341 HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:07:50] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:07:50] "GET /data/cores/mgba-legacy-wasm.data HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:07:50] "GET /data/compression/extract7z.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:03] "GET /index.html HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:04] "GET /data/version.json HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/loader.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/emulator.min.js HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/emulator.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/cache.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/storage.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/utils.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/compression.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/GameManager.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/gamepad.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/setup.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/netplay.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/retroachievements.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/consts.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/frontend.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/shaders.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/vendor/socket.io.min.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/vendor/nipplejs.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/src/license.js HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/emulator.min.css HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/emulator.css HTTP/1.1" 200 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/cores/reports/mgba.json?v=497341 HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] code 404, message File not found
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/cores/mgba-legacy-wasm.data HTTP/1.1" 404 -
+127.0.0.1 - - [26/Sep/2026 13:08:05] "GET /data/compression/extract7z.js HTTP/1.1" 200 -
