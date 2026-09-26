@@ -1,461 +1,884 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <title>EmulatorJS</title>
-        <link rel="icon" href="docs/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
-        <meta name="viewport" content="width = device-width, initial-scale = 1">
-        <style>
-             body, html {
-                height: 100%;
-                background-color: black;
-                color: white;
-            }
+<head>
+    <meta charset="utf-8">
+    <title>EmulatorJS</title>
+    <link rel="icon" href="docs/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-            body {
-                margin: 0;
-                overflow: hidden;
-            }
+        :root {
+            --bg:        #0a0a0f;
+            --surface:   #13131f;
+            --surface2:  #1c1c2e;
+            --border:    rgba(124,58,237,0.18);
+            --accent:    #7c3aed;
+            --accent2:   #a855f7;
+            --text:      #e2e8f0;
+            --muted:     #64748b;
+            --success:   #4ade80;
+            --font-head: 'Space Grotesk', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --radius:    14px;
+        }
 
-            body, #box, #top {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                flex-direction: column;
-            }
+        html, body {
+            height: 100%;
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--font-body);
+            overflow-x: hidden;
+        }
 
-            #box {
-                color: #aaa;
-                height: 20em;
-                width: 30em;
-                max-width: 80%;
-                max-height: 80%;
-                background-color: #333;
-                border-radius: 0.4em;
-                border: 2px solid #555;
-                position: relative;
-                flex-direction: column;
-                transition-duration: 0.2s;
-                overflow: hidden;
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 20px;
-                margin: 5px;
-                text-align: center;
-                padding: 10px;
-            }
+        /* ── NOISE OVERLAY ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 0;
+        }
 
-            #box:hover, #box[drag] {
-                border-color: #1AAFFF;
-                color: #ddd
-            }
+        /* ── GLOW BG ── */
+        body::after {
+            content: '';
+            position: fixed;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 500px;
+            background: radial-gradient(ellipse, rgba(124,58,237,0.12) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
 
-            #advanced {
-                color: #aaa;
-                text-align: left;
-                width: 30em;
-                max-width: 80%;
-                background-color: #333;
-                border-radius: 0.4em;
-                border: 2px solid #555;
-                position: relative;
-                flex-direction: column;
-                transition-duration: 0.2s;
-                overflow: hidden;
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 20px;
-                margin: 5px;
-                padding: 10px;
-            }
+        /* ── SHELL ── */
+        #shell {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: grid;
+            grid-template-rows: auto 1fr auto;
+        }
 
-            #advancedOptionsBox {
-                margin-top: 10px;
-                font-size: 14px;
-                margin-left: 20px;
-            }
+        /* ── HEADER ── */
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
 
-            .advancedOptionsBoxRow {
-                margin-top: 10px;
-            }
+        .logo-mark {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: var(--font-head);
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            text-decoration: none;
+        }
 
-            #input {
-                cursor: pointer;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                opacity: 0;
-            }
+        .logo-mark svg {
+            width: 28px;
+            height: 28px;
+        }
 
-            #display {
-                width: 100%;
-                height: 100%
-            }
+        .logo-mark span {
+            color: var(--accent2);
+        }
 
-            select, button {
-                padding: 0.6em 0.4em;
-                margin: 0.5em;
-                width: 15em;
-                max-width: 100%;
-                font-family: monospace;
-                font-weight: bold;
-                font-size: 16px;
-                background-color: #444;
-                color: #aaa;
-                border-radius: 0.4em;
-                border: 1px solid #555;
-                cursor: pointer;
-                transition-duration: 0.2s
-            }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-            select:hover, button:hover {
-                background-color: #666;
-                color: #ddd
-            }
+        .badge {
+            font-family: var(--font-head);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            color: var(--muted);
+            background: var(--surface);
+        }
 
-            .logo {
-                width: 130px;
-                height: 130px;
-                filter: drop-shadow(0 0 8px white);
-            }
+        /* ── MAIN ── */
+        main {
+            padding: 48px 32px 64px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-            #top {
-                margin: 5px;
-            }
-        </style>
-    </head>
+        /* ── DROP ZONE ── */
+        .drop-zone {
+            position: relative;
+            border: 1.5px dashed rgba(124,58,237,0.35);
+            border-radius: var(--radius);
+            background: var(--surface);
+            padding: 56px 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, transform 0.15s;
+            text-align: center;
+            overflow: hidden;
+        }
 
-    <body>
-        <div id="top">
-            <h1>EmulatorJS Demo</h1>
-            <img src="docs/Logo-light.png" alt="Logo" class="logo">
-            <br>
+        .drop-zone::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at 50% 0%, rgba(124,58,237,0.07) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .drop-zone:hover, .drop-zone[drag] {
+            border-color: var(--accent);
+            background: rgba(124,58,237,0.06);
+            transform: translateY(-2px);
+        }
+
+        .drop-zone[drag] {
+            border-style: solid;
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 4px rgba(124,58,237,0.15);
+        }
+
+        #input {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .drop-icon {
+            width: 52px;
+            height: 52px;
+            background: rgba(124,58,237,0.12);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(124,58,237,0.25);
+        }
+
+        .drop-icon svg {
+            width: 24px;
+            height: 24px;
+            color: var(--accent2);
+            fill: currentColor;
+        }
+
+        .drop-title {
+            font-family: var(--font-head);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1.3;
+        }
+
+        .drop-sub {
+            font-size: 13.5px;
+            color: var(--muted);
+            line-height: 1.5;
+            max-width: 340px;
+        }
+
+        .drop-formats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            margin-top: 4px;
+        }
+
+        .fmt-tag {
+            font-family: var(--font-head);
+            font-size: 10px;
+            font-weight: 600;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(124,58,237,0.1);
+            border: 1px solid rgba(124,58,237,0.2);
+            color: var(--accent2);
+            letter-spacing: 0.3px;
+        }
+
+        /* ── RECENT GAMES ── */
+        .section-label {
+            font-family: var(--font-head);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--muted);
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin: 40px 0 16px;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+            position: relative;
+        }
+
+        .game-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(124,58,237,0.45);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+        }
+
+        .game-thumb {
+            width: 100%;
+            aspect-ratio: 1/1;
+            background: var(--surface2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .game-thumb svg {
+            width: 32px;
+            height: 32px;
+            fill: rgba(124,58,237,0.3);
+        }
+
+        .game-info {
+            padding: 8px 10px;
+        }
+
+        .game-name {
+            font-family: var(--font-head);
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .game-system {
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 2px;
+        }
+
+        .empty-library {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 32px;
+            border: 1px dashed var(--border);
+            border-radius: var(--radius);
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .empty-library svg {
+            width: 28px;
+            height: 28px;
+            fill: currentColor;
+            opacity: 0.4;
+            margin-bottom: 4px;
+        }
+
+        /* ── ADVANCED PANEL ── */
+        .advanced-panel {
+            margin-top: 28px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--surface);
+            overflow: hidden;
+        }
+
+        .advanced-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 20px;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.15s;
+        }
+
+        .advanced-toggle:hover { background: rgba(255,255,255,0.02); }
+
+        .advanced-toggle-label {
+            font-family: var(--font-head);
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .advanced-toggle-label svg {
+            width: 14px;
+            height: 14px;
+            fill: currentColor;
+        }
+
+        .advanced-arrow {
+            width: 16px;
+            height: 16px;
+            fill: var(--muted);
+            transition: transform 0.2s;
+        }
+
+        .advanced-arrow.open { transform: rotate(180deg); }
+
+        .advanced-body {
+            display: none;
+            padding: 8px 20px 20px;
+            border-top: 1px solid var(--border);
+        }
+
+        .advanced-body.open { display: block; }
+
+        .adv-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .adv-row:last-child { border-bottom: none; }
+
+        .adv-row label { cursor: pointer; }
+
+        /* ── TOGGLE SWITCH ── */
+        .toggle {
+            position: relative;
+            width: 34px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        .toggle input { opacity: 0; width: 0; height: 0; }
+
+        .toggle-track {
+            position: absolute;
+            inset: 0;
+            background: var(--surface2);
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .toggle input:checked + .toggle-track { background: var(--accent); border-color: var(--accent); }
+
+        .toggle-track::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 99px;
+            transition: transform 0.2s;
+        }
+
+        .toggle input:checked + .toggle-track::after { transform: translateX(16px); }
+
+        /* ── RADIO GROUP ── */
+        .radio-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .radio-pill {
+            position: relative;
+        }
+
+        .radio-pill input { position: absolute; opacity: 0; }
+
+        .radio-pill label {
+            display: block;
+            padding: 4px 12px;
+            border-radius: 99px;
+            border: 1px solid var(--border);
+            font-size: 12px;
+            font-family: var(--font-head);
+            font-weight: 500;
+            cursor: pointer;
+            color: var(--muted);
+            background: var(--surface2);
+            transition: all 0.15s;
+        }
+
+        .radio-pill input:checked + label {
+            background: rgba(124,58,237,0.15);
+            border-color: var(--accent);
+            color: var(--accent2);
+        }
+
+        /* ── FOOTER ── */
+        footer {
+            padding: 20px 32px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--muted);
+            position: relative;
+            z-index: 1;
+        }
+
+        footer a { color: var(--muted); text-decoration: none; }
+        footer a:hover { color: var(--text); }
+
+        /* ── CORE SELECTOR (inside drop zone after upload) ── */
+        .core-select-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 8px 0;
+            width: 100%;
+        }
+
+        .core-select-wrap select {
+            width: 100%;
+            max-width: 320px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text);
+            font-family: var(--font-body);
+            font-size: 14px;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 12px;
+        }
+
+        .core-select-wrap select:focus { outline: none; border-color: var(--accent); }
+
+        .btn-primary {
+            padding: 10px 28px;
+            border-radius: 8px;
+            border: none;
+            background: var(--accent);
+            color: white;
+            font-family: var(--font-head);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); }
+
+        /* ── GAME VIEW ── */
+        #display {
+            width: 100%;
+            height: 100%;
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+        }
+
+        #game {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* ── RECENT STORAGE ── */
+        .game-card .play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(124,58,237,0.0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s;
+        }
+
+        .game-card:hover .play-overlay { background: rgba(124,58,237,0.15); }
+
+        .play-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 99px;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: opacity 0.15s, transform 0.15s;
+        }
+
+        .game-card:hover .play-btn { opacity: 1; transform: scale(1); }
+
+        .play-btn svg { width: 14px; height: 14px; fill: white; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            main { padding: 28px 16px 48px; }
+            header { padding: 16px; }
+            footer { flex-direction: column; gap: 8px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+<div id="shell">
+    <header>
+        <a class="logo-mark" href="#">
+            <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect width="28" height="28" rx="7" fill="#7c3aed"/>
+                <path d="M7 14h4M9 12v4M16 13h.01M19 13h.01M15 16h5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Emulator<span>JS</span>
+        </a>
+        <div class="header-actions">
+            <span class="badge" id="versionBadge">v4.x</span>
         </div>
-        <div id="box">
-            <input type="file" id ="input" title="Upload" />
-            Drag ROM file or click here
-        </div>
-        <div id="advanced">
-            <div id="advancedToggleBox">
-                <input type="checkbox" id="advancedToggle" />
-                <label for="advancedToggle"> Show Advanced Options</label>
+    </header>
+
+    <main>
+        <!-- DROP ZONE -->
+        <div class="drop-zone" id="box">
+            <input type="file" id="input" title="Upload ROM" />
+            <div class="drop-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                </svg>
             </div>
-            <div id="advancedOptionsBox">
-                <div class="advancedOptionsBoxRow">
-                    <input type="file" id ="inputAdvanced" title="BIOS" />
-                    <label for="inputAdvanced"> Upload BIOS file (if required)</label>
-                </div>
-                <div class="advancedOptionsBoxRow">
-                    <input type="checkbox" id="debugToggle" />
-                    <label for="debugToggle"> Enable Debug Mode</label>
-                </div>
-                <div id="advancedOptionsBoxThreads" class="advancedOptionsBoxRow">
-                    <input type="checkbox" id="threadsToggle" />
-                    <label for="threadsToggle"> Enable Threads</label>
-                </div>
-                <div id="advancedOptionsCache" class="advancedOptionsBoxRow">
-                    <input type="checkbox" id="cacheToggle" checked="checked" />
-                    <label for="cacheToggle"> Enable Cache</label>
-                </div>
-                <div class="advancedOptionsBoxRow">
-                    <span>Browser mode: </span>
-                    <input type="radio" id="browserModeAuto" name="browserMode" value="auto">
-                    <label for="browserModeAuto"> Auto </label>
-                    <input type="radio" id="browserModeDesktop" name="browserMode" value="desktop">
-                    <label for="browserModeDesktop"> Desktop </label>
-                    <input type="radio" id="browserModeMobile" name="browserMode" value="mobile">
-                    <label for="browserModeMobile"> Mobile </label>
-                </div>
+            <div class="drop-title">Drop a ROM file here</div>
+            <div class="drop-sub">or click to browse — your game starts immediately, nothing is uploaded anywhere</div>
+            <div class="drop-formats">
+                <span class="fmt-tag">NES</span>
+                <span class="fmt-tag">SNES</span>
+                <span class="fmt-tag">GBA</span>
+                <span class="fmt-tag">N64</span>
+                <span class="fmt-tag">PS1</span>
+                <span class="fmt-tag">PSP</span>
+                <span class="fmt-tag">GBC</span>
+                <span class="fmt-tag">NDS</span>
+                <span class="fmt-tag">+more</span>
             </div>
         </div>
 
-        <script>
-            let enableDebug = false;
-            let enableThreads = false;
-            let browserMode;
+        <!-- RECENT GAMES -->
+        <div class="section-label">Recent games</div>
+        <div class="games-grid" id="gamesGrid">
+            <div class="empty-library">
+                <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 3c-.83 0-1.5-.67-1.5-1.5S17.67 13 18.5 13s1.5.67 1.5 1.5S19.33 16 18.5 16zm3-5c-.83 0-1.5-.67-1.5-1.5S20.67 9 21.5 9 23 9.67 23 10.5 22.33 11 21.5 11z"/></svg>
+                Games you play will appear here
+            </div>
+        </div>
 
-            const biosFileInput = document.getElementById("inputAdvanced");
-            
-            const advancedToggle = document.getElementById("advancedToggle");
-            const advanced = document.getElementById("advanced");
-            const advancedOptionsBox = document.getElementById("advancedOptionsBox");
-            advancedOptionsBox.style.display = "none";
-            advancedToggle.addEventListener("change", (event) => {
-                if (event.target.checked) {
-                    advancedOptionsBox.style.display = "block";
-                } else {
-                    advancedOptionsBox.style.display = "none";
-                }
-            });
+        <!-- ADVANCED -->
+        <div class="advanced-panel">
+            <div class="advanced-toggle" id="advancedToggle">
+                <span class="advanced-toggle-label">
+                    <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+                    Advanced options
+                </span>
+                <svg class="advanced-arrow" id="advancedArrow" viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>
+            </div>
+            <div class="advanced-body" id="advancedBody">
+                <div class="adv-row">
+                    <label class="toggle">
+                        <input type="checkbox" id="debugToggle">
+                        <span class="toggle-track"></span>
+                    </label>
+                    <label for="debugToggle">Debug mode</label>
+                </div>
+                <div class="adv-row" id="advancedOptionsBoxThreads">
+                    <label class="toggle">
+                        <input type="checkbox" id="threadsToggle">
+                        <span class="toggle-track"></span>
+                    </label>
+                    <label for="threadsToggle">Enable threads <span style="color:#4ade80;font-size:11px;">(requires special headers)</span></label>
+                </div>
+                <div class="adv-row">
+                    <label class="toggle">
+                        <input type="checkbox" id="cacheToggle" checked>
+                        <span class="toggle-track"></span>
+                    </label>
+                    <label for="cacheToggle">Cache ROMs locally</label>
+                </div>
+                <div class="adv-row">
+                    <span style="margin-right:8px;">Browser mode</span>
+                    <div class="radio-group">
+                        <span class="radio-pill"><input type="radio" id="browserModeAuto" name="browserMode" value="auto"><label for="browserModeAuto">Auto</label></span>
+                        <span class="radio-pill"><input type="radio" id="browserModeDesktop" name="browserMode" value="desktop"><label for="browserModeDesktop">Desktop</label></span>
+                        <span class="radio-pill"><input type="radio" id="browserModeMobile" name="browserMode" value="mobile"><label for="browserModeMobile">Mobile</label></span>
+                    </div>
+                </div>
+                <div class="adv-row">
+                    <span style="margin-right:8px;">BIOS file</span>
+                    <input type="file" id="inputAdvanced" style="font-size:12px;color:var(--muted);">
+                </div>
+            </div>
+        </div>
+    </main>
 
-            const queryString = window.location.search;
-            const urlParams = new URLSearchParams(queryString);
-            const debugToggle = document.getElementById("debugToggle");
-            debugToggle.addEventListener("change", (event) => {
-                enableDebug = event.target.checked;
-                console.log(`Debug is ${enableDebug ? "enabled" : "disabled"}`);
-            });
-            const cacheToggle = document.getElementById("cacheToggle");
-            window.EJS_cacheConfig = {
-                enabled: true,
-                cacheMaxSizeMB: 4096, // 4096 MB = 4 GB
-                cacheMaxAgeMins: 7200 // 7200 minutes = 5 days
-            };
-            cacheToggle.addEventListener("change", (event) => {
-                const cacheEnabled = event.target.checked;
-                console.log(`Cache is ${cacheEnabled ? "enabled" : "disabled"}`);
-                window.EJS_cacheConfig.enabled = cacheEnabled;
-            });
-            const threadsToggleAvailable = document.getElementById("advancedOptionsBoxThreads");
-            const threadsToggle = document.getElementById("threadsToggle");
-            threadsToggle.addEventListener("change", (event) => {
-                enableThreads = event.target.checked;
-                console.log(`Threads are ${enableThreads ? "enabled" : "disabled"}`);
-            });
-            if (parseInt(urlParams.get("debug")) === 1 || urlParams.get("debug") === "true") {
-                enableDebug = true;
-                debugToggle.checked = true;
-                console.log("Debug is enabled");
-            } else {
-                debugToggle.checked = false;
-                console.log("Debug is disabled");
+    <footer>
+        <span>EmulatorJS — open source retro gaming in your browser</span>
+        <span><a href="https://github.com/EmulatorJS/EmulatorJS" target="_blank">GitHub</a></span>
+    </footer>
+</div>
+
+<script>
+    // ── VERSION ──
+    try {
+        fetch('data/version.json').then(r=>r.json()).then(d=>{
+            if(d && d.version) document.getElementById('versionBadge').textContent = 'v' + d.version;
+        }).catch(()=>{});
+    } catch(e){}
+
+    // ── STATE ──
+    let enableDebug   = false;
+    let enableThreads = false;
+    let browserMode;
+
+    // ── ADVANCED PANEL ──
+    const advancedToggle = document.getElementById('advancedToggle');
+    const advancedBody   = document.getElementById('advancedBody');
+    const advancedArrow  = document.getElementById('advancedArrow');
+
+    advancedToggle.addEventListener('click', () => {
+        const open = advancedBody.classList.toggle('open');
+        advancedArrow.classList.toggle('open', open);
+    });
+
+    // ── TOGGLES ──
+    document.getElementById('debugToggle').addEventListener('change', e => { enableDebug = e.target.checked; });
+    document.getElementById('threadsToggle').addEventListener('change', e => { enableThreads = e.target.checked; });
+
+    window.EJS_cacheConfig = { enabled: true, cacheMaxSizeMB: 4096, cacheMaxAgeMins: 7200 };
+    document.getElementById('cacheToggle').addEventListener('change', e => { window.EJS_cacheConfig.enabled = e.target.checked; });
+
+    // ── RADIO ──
+    document.getElementById('browserModeAuto').addEventListener('change',    () => { browserMode = undefined; });
+    document.getElementById('browserModeDesktop').addEventListener('change', () => { browserMode = 'desktop'; });
+    document.getElementById('browserModeMobile').addEventListener('change',  () => { browserMode = 'mobile'; });
+
+    // ── THREADS CHECK ──
+    if (!window.SharedArrayBuffer) {
+        document.getElementById('advancedOptionsBoxThreads').style.display = 'none';
+    }
+
+    // ── RECENT GAMES (localStorage) ──
+    function getRecentGames() {
+        try { return JSON.parse(localStorage.getItem('ejs_recent') || '[]'); } catch(e) { return []; }
+    }
+
+    function saveRecentGame(name, system) {
+        const games = getRecentGames().filter(g => g.name !== name);
+        games.unshift({ name, system, ts: Date.now() });
+        if (games.length > 12) games.pop();
+        try { localStorage.setItem('ejs_recent', JSON.stringify(games)); } catch(e){}
+    }
+
+    function renderRecentGames() {
+        const grid  = document.getElementById('gamesGrid');
+        const games = getRecentGames();
+        if (!games.length) return;
+        grid.innerHTML = '';
+        games.forEach(g => {
+            const card = document.createElement('div');
+            card.className = 'game-card';
+            card.innerHTML = `
+                <div class="game-thumb">
+                    <svg viewBox="0 0 24 24"><path d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H8v3H6v-3H3v-2h3V8h2v3h3v2zm4.5 3c-.83 0-1.5-.67-1.5-1.5S17.67 13 18.5 13s1.5.67 1.5 1.5S19.33 16 18.5 16zm3-5c-.83 0-1.5-.67-1.5-1.5S20.67 9 21.5 9 23 9.67 23 10.5 22.33 11 21.5 11z"/></svg>
+                </div>
+                <div class="play-overlay"><div class="play-btn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div></div>
+                <div class="game-info">
+                    <div class="game-name">${g.name}</div>
+                    <div class="game-system">${g.system}</div>
+                </div>`;
+            grid.appendChild(card);
+        });
+    }
+
+    renderRecentGames();
+
+    // ── URL PARAMS ──
+    const urlParams = new URLSearchParams(window.location.search);
+    document.getElementById('browserModeAuto').checked = true;
+    if (urlParams.get('browserMode')) {
+        browserMode = urlParams.get('browserMode');
+        const m = { mobile: 'browserModeMobile', desktop: 'browserModeDesktop', auto: 'browserModeAuto' };
+        if (m[browserMode]) document.getElementById(m[browserMode]).checked = true;
+    }
+    if (parseInt(urlParams.get('debug')) === 1 || urlParams.get('debug') === 'true') {
+        enableDebug = true;
+        document.getElementById('debugToggle').checked = true;
+    }
+    if (urlParams.get('rom')) run(false, urlParams.get('rom'));
+
+    // ── DRAG & DROP ──
+    const box = document.getElementById('box');
+    box.ondragover  = e => { e.preventDefault(); box.setAttribute('drag', true); };
+    box.ondragleave = () => box.removeAttribute('drag');
+    box.ondrop      = e => {
+        e.preventDefault();
+        box.removeAttribute('drag');
+        if (e.dataTransfer.files.length) {
+            const file = e.dataTransfer.files[0];
+            runFromFile(file);
+        }
+    };
+
+    document.getElementById('input').onchange = () => {
+        if (input.files[0]) runFromFile(input.files[0]);
+    };
+
+    // ── CORE DETECTION ──
+    const EXT_MAP = {
+        fds:'nes', nes:'nes', unif:'nes', unf:'nes',
+        smc:'snes', fig:'snes', sfc:'snes', gd3:'snes', gd7:'snes', dx2:'snes', bsx:'snes', swc:'snes',
+        z64:'n64', n64:'n64', pce:'pce', ngp:'ngp', ngc:'ngp', ws:'ws', wsc:'ws',
+        col:'coleco', cv:'coleco', d64:'vice_x64sc',
+        md:'segaMD', sg:'segaMD', smd:'segaMD', gen:'segaMD',
+        nds:'nds', gba:'gba', gb:'gb',
+        '3ds':'3ds', cci:'3ds', cia:'3ds', cxi:'3ds', app:'3ds',
+        uze:'uzem', hex:'uzem', d88:'quasi88', vec:'vecx', dx9:'x1'
+    };
+
+    const CORE_NAMES = {
+        n64:'Nintendo 64', gb:'Game Boy', gba:'Game Boy Advance', nds:'Nintendo DS',
+        nes:'NES', snes:'SNES', psx:'PlayStation', vb:'Virtual Boy',
+        segaMD:'Sega Mega Drive', segaMS:'Sega Master System', segaCD:'Sega CD',
+        lynx:'Atari Lynx', sega32x:'Sega 32X', jaguar:'Atari Jaguar',
+        segaGG:'Sega Game Gear', segaSaturn:'Sega Saturn',
+        atari7800:'Atari 7800', atari2600:'Atari 2600', arcade:'Arcade',
+        pce:'TurboGrafx-16 / PC Engine', pcfx:'NEC PC-FX',
+        ngp:'Neo Geo Pocket', ws:'WonderSwan', coleco:'ColecoVision',
+        vice_x64sc:'Commodore 64', vice_x128:'Commodore 128',
+        vice_xvic:'VIC-20', vice_xplus4:'Commodore Plus/4',
+        vice_xpet:'Commodore PET', puae:'Amiga', uzem:'Uzebox',
+        quasi88:'PC-8800', vecx:'Vectrex', x1:'Sharp X1'
+    };
+
+    function detectCore(ext) {
+        return EXT_MAP[ext.toLowerCase()] || null;
+    }
+
+    async function runFromFile(file) {
+        const parts = file.name.split('.');
+        const ext   = parts.pop().toLowerCase();
+        const name  = parts.join('.');
+        const core  = detectCore(ext);
+        if (core) {
+            launchGame(file, name, core);
+        } else {
+            // ask
+            const coreValues = { ...CORE_NAMES };
+            if (enableThreads) {
+                coreValues['dosbox_pure'] = 'DOSBox Pure';
+                coreValues['ppsspp'] = 'PlayStation Portable';
+                coreValues['3ds'] = 'Nintendo 3DS';
             }
-
-            if (window.SharedArrayBuffer) {
-                threadsToggleAvailable.style.display = "block";
-                if (parseInt(urlParams.get("threads")) === 1 || urlParams.get("threads") === "true") {
-                    enableThreads = true;
-                    threadsToggle.checked = true;
-                    console.log("Threads are enabled");
-                } else {
-                    threadsToggle.checked = false;
-                    console.log("Threads are disabled");
-                }
-            } else {
-                threadsToggleAvailable.style.display = "none";
-                console.warn("Threads are disabled as SharedArrayBuffer is not available. Threads requires two headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
-            }
-
-            const browserModeAuto = document.getElementById("browserModeAuto");
-            browserModeAuto.addEventListener("change", (event) => {
-                if (event.target.checked) {
-                    browserMode = undefined;
-                    console.log("Browser mode set to auto");
-                }
+            const sorted = Object.entries(coreValues).sort((a,b) => a[1].localeCompare(b[1]));
+            const sel = document.createElement('select');
+            sorted.forEach(([val, label]) => {
+                const opt = document.createElement('option');
+                opt.value = val; opt.textContent = label;
+                sel.appendChild(opt);
             });
-            const browserModeDesktop = document.getElementById("browserModeDesktop");
-            browserModeDesktop.addEventListener("change", (event) => {
-                if (event.target.checked) {
-                    browserMode = "desktop";
-                    console.log("Browser mode set to desktop");
-                }
-            });
-            const browserModeMobile = document.getElementById("browserModeMobile");
-            browserModeMobile.addEventListener("change", (event) => {
-                if (event.target.checked) {
-                    browserMode = "mobile";
-                    console.log("Browser mode set to mobile");
-                }
-            });
-            if (urlParams.get("browserMode")) {
-                browserMode = urlParams.get("browserMode");
-                switch (browserMode) {
-                    case 1:
-                    case "1":
-                    case "mobile":
-                        browserModeMobile.checked = true;
-                        break;
-                    case 2:
-                    case "2":
-                    case "desktop":
-                        browserModeDesktop.checked = true;
-                        break;
-                    default:
-                        browserModeAuto.checked = true;
-                        break;
-                }
-            } else {
-                browserModeAuto.checked = true;
-            }
+            const btn = document.createElement('button');
+            btn.textContent = 'Launch game';
+            btn.className = 'btn-primary';
+            btn.onclick = () => launchGame(file, name, sel.value);
+            box.innerHTML = '';
+            const wrap = document.createElement('div');
+            wrap.className = 'core-select-wrap';
+            const lbl = document.createElement('div');
+            lbl.style.cssText = 'font-family:var(--font-head);font-size:15px;font-weight:600;color:var(--text)';
+            lbl.textContent = `Select system for "${file.name}"`;
+            wrap.appendChild(lbl);
+            wrap.appendChild(sel);
+            wrap.appendChild(btn);
+            box.appendChild(wrap);
+        }
+    }
 
-            if (urlParams.get("rom")) {
-                console.log(`Loading ROM from URL: roms/${urlParams.get("rom")}`);
-                run(false, urlParams.get("rom"));
-            }
+    function launchGame(fileOrUrl, name, core) {
+        const systemName = CORE_NAMES[core] || core;
+        saveRecentGame(name, systemName);
 
-            async function run(upload, file) {
-                const url = upload ? input.files[0] : `roms/${file}`;
-                const parts = upload ? input.files[0].name.split(".") : file.split(".");
+        const biosFile = document.getElementById('inputAdvanced').files[0];
 
-                const biosUrl = biosFileInput.files.length > 0 ? biosFileInput.files[0] : "";
+        const div = document.createElement('div');
+        const sub = document.createElement('div');
+        const script = document.createElement('script');
+        sub.id = 'game';
+        div.id  = 'display';
+        div.appendChild(sub);
+        document.body.innerHTML = '';
+        document.body.appendChild(div);
 
-                const core = await (async (ext) => {
-                    if (["fds", "nes", "unif", "unf"].includes(ext))
-                        return "nes"
+        window.EJS_player       = '#game';
+        window.EJS_gameName     = name;
+        window.EJS_biosUrl      = biosFile || '';
+        window.EJS_gameUrl      = fileOrUrl;
+        window.EJS_core         = core;
+        window.EJS_pathtodata   = 'data/';
+        window.EJS_startOnLoaded = true;
+        window.EJS_DEBUG_XX     = enableDebug;
+        window.EJS_threads      = enableThreads;
+        if (browserMode) window.EJS_browserMode = browserMode;
+        window.EJS_askBeforeExit = false;
+        window.EJS_onExit = () => location.reload();
 
-                    if (["smc", "fig", "sfc", "gd3", "gd7", "dx2", "bsx", "swc"].includes(ext))
-                        return "snes"
+        script.src = 'data/loader.js';
+        document.body.appendChild(script);
+    }
 
-                    if (["z64", "n64"].includes(ext))
-                        return "n64"
-
-                    if (["pce"].includes(ext))
-                        return "pce"
-
-                    if (["ngp", "ngc"].includes(ext))
-                        return "ngp"
-
-                    if (["ws", "wsc"].includes(ext))
-                        return "ws"
-
-                    if (["col", "cv"].includes(ext))
-                        return "coleco"
-
-                    if (["d64"].includes(ext))
-                        return "vice_x64sc"
-                    
-                    if (["md", "sg", "smd", "gen"].includes(ext))
-                        return "segaMD"
-
-                    if (["nds", "gba", "gb", "z64", "n64"].includes(ext))
-                        return ext
-
-                    if (["3ds", "cci", "cia", "cxi", "app"].includes(ext))
-                        return "3ds"
-
-                    if (["uze", "hex"].includes(ext))
-                        return "uzem"
-
-                    if (["d88", "88d", "cmt"].includes(ext))
-                        return "quasi88"
-
-                    if (["vec"].includes(ext))
-                        return "vecx"
-
-                    if (["dx9", "tap", "2d"].includes(ext))
-                        return "x1"
-
-                    return await new Promise(resolve => {
-                        var coreValues = {
-                            "Nintendo 64": "n64",
-                            "Nintendo Game Boy": "gb",
-                            "Nintendo Game Boy Advance": "gba",
-                            "Nintendo DS": "nds",
-                            "Nintendo Entertainment System": "nes",
-                            "Super Nintendo Entertainment System": "snes",
-                            "PlayStation": "psx",
-                            "Virtual Boy": "vb",
-                            "Sega Mega Drive": "segaMD",
-                            "Sega Master System": "segaMS",
-                            "Sega CD": "segaCD",
-                            "Atari Lynx": "lynx",
-                            "Sega 32X": "sega32x",
-                            "Atari Jaguar": "jaguar",
-                            "Sega Game Gear": "segaGG",
-                            "Sega Saturn": "segaSaturn",
-                            "Atari 7800": "atari7800",
-                            "Atari 2600": "atari2600",
-                            "Arcade": "arcade",
-                            "NEC TurboGrafx-16/SuperGrafx/PC Engine": "pce",
-                            "NEC PC-FX": "pcfx",
-                            "SNK NeoGeo Pocket (Color)": "ngp",
-                            "Bandai WonderSwan (Color)": "ws",
-                            "ColecoVision": "coleco",
-                            "Commodore 64": "vice_x64sc",
-                            "Commodore 128": "vice_x128",
-                            "Commodore VIC20": "vice_xvic",
-                            "Commodore Plus/4": "vice_xplus4",
-                            "Commodore PET": "vice_xpet",
-                            "Amiga": "puae",
-                            "Uzebox": "uzem",
-                            "PC-8800 Series": "quasi88",
-                            "Vectrex": "vecx",
-                            "Sharp X1": "x1"
-                        }
-                        
-                        if (enableThreads) {
-                            coreValues["DOSBOX-PURE"] = "dosbox_pure";
-                            coreValues["PlayStation Portable"] = "ppsspp";
-                            coreValues["Nintendo 3DS"] = "3ds";
-                        }
-
-                        for (let core in coreValues) {
-                            if (core.toLowerCase() === ext) {
-                                resolve(core)
-                            }
-                        }
- 
-                        const cores = Object.keys(coreValues).sort().reduce(
-                            (obj, key) => { 
-                                obj[key] = coreValues[key]; 
-                                return obj;
-                            }, 
-                            {}
-                        );
-
-                        const button = document.createElement("button")
-                        const select = document.createElement("select")
-
-                        for (const type in cores) {
-                            const option = document.createElement("option")
-
-                            option.value = cores[type]
-                            option.textContent = type
-                            select.appendChild(option)
-                        }
-
-                        button.onclick = () => resolve(select[select.selectedIndex].value)
-                        button.textContent = "Load game"
-                        box.innerHTML = ""
-
-                        box.appendChild(select)
-                        box.appendChild(button)
-                    })
-                })(parts.pop())
-
-                const div = document.createElement("div")
-                const sub = document.createElement("div")
-                const script = document.createElement("script")
-
-                sub.id = "game"
-                div.id = "display"
-
-                const top = document.getElementById("top");
-                top.remove();
-                box.remove();
-                div.appendChild(sub);
-                advanced.remove();
-                document.body.appendChild(div)
-
-                window.EJS_player = "#game";
-                window.EJS_gameName = parts.shift();
-                window.EJS_biosUrl = biosUrl;
-                window.EJS_gameUrl = url;
-                window.EJS_core = core;
-                window.EJS_pathtodata = "data/";
-                window.EJS_startOnLoaded = true;
-                window.EJS_DEBUG_XX = enableDebug;
-                window.EJS_threads = enableThreads;
-                if (browserMode) {
-                    window.EJS_browserMode = browserMode;
-                }
-                window.EJS_askBeforeExit = false;
-                window.EJS_onExit = () => {
-                        alert("The emulator has exited. This callback can be used to do any cleanup or show a message to the user.");
-                    };
-
-                script.src = "data/loader.js";
-                document.body.appendChild(script);
-            }
-            
-            input.onchange = async () => {
-                run(true);
-            }
-            
-            box.ondragover = () => box.setAttribute("drag", true);
-            box.ondragleave = () => box.removeAttribute("drag");
-        </script>
-    </body>
+    function run(upload, file) {
+        const url  = upload ? input.files[0] : `roms/${file}`;
+        const name = upload ? input.files[0].name.split('.').slice(0,-1).join('.') : file;
+        runFromFile(typeof url === 'string' ? { name: file } : url);
+    }
+</script>
+</body>
 </html>
