@@ -1,735 +1,1195 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-950">
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <title>RetroWeb — Game Dashboard</title>
-    <link rel="icon" href="docs/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<title>RetroWeb — Game Library</title>
+<link rel="icon" href="docs/favicon.ico" sizes="16x16 32x32 48x48 64x64" type="image/vnd.microsoft.icon">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;
+  --bg2:#161616;
+  --bg3:#1e1e1e;
+  --border:#2a2a2a;
+  --border2:#333;
+  --text:#f0f0f0;
+  --text2:#999;
+  --text3:#666;
+  --accent:#e8e8e8;
+  --green:#4ade80;
+  --green-dim:rgba(74,222,128,0.12);
+  --green-glow:rgba(74,222,128,0.25);
+  --red:#f87171;
+  --amber:#fbbf24;
+  --radius:12px;
+  --radius-sm:8px;
+  --sidebar:240px;
+  --transition:0.18s ease;
+}
+html,body{height:100%;overflow:hidden;font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+button{cursor:pointer;border:none;background:none;color:inherit;font:inherit}
+input,select{font:inherit}
+a{color:inherit;text-decoration:none}
+img{display:block}
 
-    <!-- CDN Libraries: Tailwind CSS, Lucide Icons, Dexie (IndexedDB) -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+/* ── LAYOUT ── */
+#shell{display:flex;height:100vh;width:100vw;overflow:hidden}
 
-    <style>
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #090d10; }
-        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #334155; }
-    </style>
+/* ── SIDEBAR ── */
+#sidebar{
+  width:var(--sidebar);min-width:var(--sidebar);
+  background:var(--bg2);
+  border-right:1px solid var(--border);
+  display:flex;flex-direction:column;
+  height:100%;z-index:20;
+  overflow:hidden;
+}
+.sb-brand{
+  height:60px;padding:0 18px;
+  display:flex;align-items:center;gap:10px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.sb-logo{
+  width:32px;height:32px;border-radius:9px;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.sb-logo svg{width:16px;height:16px;fill:none;stroke:#0f0f0f;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.sb-title{font-size:15px;font-weight:700;letter-spacing:-0.3px;color:var(--text)}
+.sb-title span{color:var(--green)}
+
+#sidebarNav{flex:1;overflow-y:auto;padding:12px 10px;display:flex;flex-direction:column;gap:4px}
+.sb-section-label{
+  font-size:10px;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--text3);
+  padding:10px 8px 6px;
+}
+.sb-item{
+  display:flex;align-items:center;gap:9px;
+  padding:7px 10px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:500;color:var(--text2);
+  transition:all var(--transition);
+  border:1px solid transparent;
+  width:100%;text-align:left;
+}
+.sb-item svg{width:14px;height:14px;flex-shrink:0;opacity:.7;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sb-item:hover{background:var(--bg3);color:var(--text)}
+.sb-item.active{background:var(--green-dim);color:var(--green);border-color:rgba(74,222,128,0.15)}
+.sb-item.active svg{opacity:1}
+
+.sb-footer{
+  padding:14px 18px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.sb-footer-label{font-size:11px;color:var(--text3)}
+#versionTag{font-size:10px;font-family:monospace;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:2px 7px;border-radius:5px}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;height:100%;min-width:0;background:var(--bg)}
+
+/* ── TOPBAR ── */
+#topbar{
+  height:60px;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;background:var(--bg);
+}
+.topbar-nav{display:flex;align-items:center;gap:2px}
+.topbar-btn{
+  padding:6px 13px;border-radius:var(--radius-sm);
+  font-size:13px;font-weight:500;color:var(--text2);
+  transition:all var(--transition);
+  display:flex;align-items:center;gap:6px;
+}
+.topbar-btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.topbar-btn:hover{background:var(--bg3);color:var(--text)}
+.topbar-btn.active{background:var(--bg3);color:var(--text)}
+
+.topbar-right{display:flex;align-items:center;gap:10px}
+.search-wrap{position:relative}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:13px;height:13px;stroke:var(--text3);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+#searchInput{
+  width:220px;padding:7px 12px 7px 32px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);
+  font-size:13px;outline:none;transition:all var(--transition);
+}
+#searchInput::placeholder{color:var(--text3)}
+#searchInput:focus{border-color:rgba(74,222,128,0.35);background:var(--bg2)}
+
+.add-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:var(--radius-sm);
+  background:var(--green);color:#0f0f0f;
+  font-size:13px;font-weight:600;
+  transition:all var(--transition);cursor:pointer;
+  border:none;
+}
+.add-btn:hover{background:#86efac;transform:translateY(-1px)}
+.add-btn svg{width:13px;height:13px;stroke:#0f0f0f;stroke-width:2.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── CONTENT AREA ── */
+#content{flex:1;overflow-y:auto;padding:28px 28px 28px}
+.content-header{display:flex;align-items:center;gap-12px;margin-bottom:24px;justify-content:space-between}
+.content-header-left{display:flex;align-items:center;gap:12px}
+#currentCategoryTitle{font-size:20px;font-weight:700;letter-spacing:-.4px;color:var(--text)}
+#gameCountBadge{
+  font-size:11px;font-weight:600;color:var(--text3);
+  background:var(--bg3);border:1px solid var(--border);
+  padding:2px 9px;border-radius:20px;
+}
+.content-hint{font-size:12px;color:var(--text3)}
+
+/* ── GAME GRID ── */
+#gameGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+  gap:16px;
+}
+
+/* ── GAME CARD ── */
+.game-card{
+  border-radius:var(--radius);
+  background:var(--bg2);
+  border:1px solid var(--border);
+  overflow:hidden;cursor:pointer;
+  transition:all var(--transition);
+  display:flex;flex-direction:column;
+  position:relative;
+}
+.game-card:hover{
+  border-color:var(--border2);
+  transform:translateY(-3px);
+  box-shadow:0 12px 32px rgba(0,0,0,.5);
+}
+.game-card:hover .card-play{opacity:1}
+.game-card:hover .card-delete{opacity:1}
+
+.card-art{
+  position:relative;width:100%;aspect-ratio:2/3;
+  background:var(--bg3);overflow:hidden;
+  flex-shrink:0;
+}
+.card-art img{width:100%;height:100%;object-fit:cover;transition:transform .4s ease}
+.game-card:hover .card-art img{transform:scale(1.05)}
+
+/* pixel-art placeholder canvas */
+.card-art canvas{width:100%;height:100%;image-rendering:pixelated}
+
+.card-play{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.45);backdrop-filter:blur(3px);
+  opacity:0;transition:opacity var(--transition);
+}
+.card-play-btn{
+  width:44px;height:44px;border-radius:50%;
+  background:var(--green);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 24px var(--green-glow);
+  transform:scale(.85);transition:transform var(--transition);
+}
+.game-card:hover .card-play-btn{transform:scale(1)}
+.card-play-btn svg{width:18px;height:18px;fill:#0f0f0f;stroke:none;margin-left:2px}
+
+.card-delete{
+  position:absolute;top:8px;right:8px;
+  width:26px;height:26px;border-radius:var(--radius-sm);
+  background:rgba(0,0,0,.75);backdrop-filter:blur(4px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:all var(--transition);z-index:5;
+}
+.card-delete:hover{background:var(--red)}
+.card-delete svg{width:12px;height:12px;stroke:var(--text);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.card-delete:hover svg{stroke:#0f0f0f}
+
+/* achievement badge on card */
+.card-ach-badge{
+  position:absolute;top:8px;left:8px;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(4px);
+  border:1px solid rgba(251,191,36,.25);
+  border-radius:6px;padding:2px 6px;
+  display:flex;align-items:center;gap:4px;
+  font-size:10px;font-weight:600;color:var(--amber);
+  opacity:0;transition:opacity var(--transition);z-index:5;
+}
+.card-ach-badge svg{width:10px;height:10px;fill:var(--amber);stroke:none}
+.game-card:hover .card-ach-badge{opacity:1}
+.card-ach-badge.has-ach{opacity:1}
+
+.card-info{padding:10px 11px 11px;flex:1;display:flex;flex-direction:column;gap:4px}
+.card-name{font-size:12px;font-weight:600;color:var(--text);line-height:1.35;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.card-system{font-size:11px;color:var(--text3);font-weight:400}
+.card-meta{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:6px}
+.card-time{font-size:10px;color:var(--text3)}
+
+/* ── EMPTY STATE ── */
+#emptyState{
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:80px 20px;text-align:center;
+  border:1px dashed var(--border2);border-radius:16px;
+  background:var(--bg2);
+  grid-column:1/-1;
+}
+#emptyState.visible{display:flex}
+.empty-icon{width:56px;height:56px;border-radius:14px;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.empty-icon svg{width:24px;height:24px;stroke:var(--text3);stroke-width:1.5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+#emptyState h3{font-size:16px;font-weight:600;margin-bottom:6px}
+#emptyState p{font-size:13px;color:var(--text2);max-width:280px;margin-bottom:20px}
+.empty-upload-btn{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 18px;border-radius:var(--radius-sm);
+  background:var(--bg3);border:1px solid var(--border2);
+  font-size:13px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all var(--transition);
+}
+.empty-upload-btn:hover{background:var(--border2);color:var(--text)}
+.empty-upload-btn svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── EMULATOR OVERLAY ── */
+#display{
+  position:fixed;inset:0;background:#000;z-index:100;
+  display:none;flex-direction:column;
+}
+#display.visible{display:flex}
+#game{width:100%;height:100%}
+#exitEmulatorBtn{
+  position:fixed;top:14px;left:14px;z-index:110;
+  display:flex;align-items:center;gap:7px;
+  padding:8px 14px;border-radius:var(--radius-sm);
+  background:rgba(15,15,15,.9);border:1px solid var(--border2);
+  font-size:12px;font-weight:500;color:var(--text2);
+  backdrop-filter:blur(12px);transition:all var(--transition);
+}
+#exitEmulatorBtn:hover{color:var(--text);border-color:var(--border2);background:var(--bg3)}
+#exitEmulatorBtn svg{width:13px;height:13px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* ── ACHIEVEMENT TOAST ── */
+#achToast{
+  position:fixed;bottom:24px;right:24px;z-index:200;
+  background:var(--bg2);border:1px solid rgba(251,191,36,.3);
+  border-radius:var(--radius);padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  max-width:320px;
+  box-shadow:0 8px 32px rgba(0,0,0,.6);
+  transform:translateY(20px);opacity:0;
+  transition:all .3s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:none;
+}
+#achToast.show{transform:translateY(0);opacity:1;pointer-events:auto}
+.ach-toast-icon{
+  width:40px;height:40px;border-radius:10px;flex-shrink:0;
+  background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.2);
+  display:flex;align-items:center;justify-content:center;
+}
+.ach-toast-icon svg{width:20px;height:20px;fill:var(--amber);stroke:none}
+.ach-toast-body{}
+.ach-toast-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:2px}
+.ach-toast-name{font-size:13px;font-weight:600;color:var(--text)}
+.ach-toast-desc{font-size:11px;color:var(--text2);margin-top:1px}
+
+/* ── ACHIEVEMENTS PAGE ── */
+#achievementsPage{display:none;padding:28px}
+#achievementsPage.visible{display:block}
+.ach-page-header{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.ach-page-header h2{font-size:20px;font-weight:700}
+.ach-page-header svg{width:20px;height:20px;fill:var(--amber)}
+.ach-ra-setup{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:20px;margin-bottom:24px;
+}
+.ach-ra-setup h3{font-size:14px;font-weight:600;margin-bottom:4px}
+.ach-ra-setup p{font-size:12px;color:var(--text2);margin-bottom:14px}
+.ach-ra-form{display:flex;flex-direction:column;gap:8px}
+.ach-ra-form input{
+  width:100%;padding:9px 12px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);
+  font-size:13px;outline:none;transition:border-color var(--transition);
+}
+.ach-ra-form input:focus{border-color:rgba(74,222,128,.35)}
+.ach-ra-form input::placeholder{color:var(--text3)}
+.ach-save-btn{
+  margin-top:4px;padding:9px 18px;border-radius:var(--radius-sm);
+  background:var(--green);color:#0f0f0f;font-size:13px;font-weight:600;
+  transition:background var(--transition);border:none;cursor:pointer;align-self:flex-start;
+}
+.ach-save-btn:hover{background:#86efac}
+.ach-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.ach-card{
+  background:var(--bg2);border:1px solid var(--border);
+  border-radius:var(--radius);padding:14px;
+  display:flex;align-items:center;gap:12px;
+  transition:border-color var(--transition);
+}
+.ach-card.earned{border-color:rgba(251,191,36,.2);background:rgba(251,191,36,.04)}
+.ach-card-icon{
+  width:44px;height:44px;border-radius:10px;flex-shrink:0;
+  background:var(--bg3);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+}
+.ach-card.earned .ach-card-icon{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.2)}
+.ach-card-icon svg{width:22px;height:22px}
+.ach-card-body{}
+.ach-card-name{font-size:13px;font-weight:600;margin-bottom:2px}
+.ach-card-desc{font-size:11px;color:var(--text2)}
+.ach-card-points{font-size:10px;font-weight:600;color:var(--amber);margin-top:4px}
+
+/* ── MODAL BASE ── */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  z-index:150;display:none;align-items:center;justify-content:center;padding:16px;
+}
+.modal-overlay.open{display:flex}
+.modal-box{
+  background:var(--bg2);border:1px solid var(--border2);
+  border-radius:16px;width:100%;max-width:440px;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+  overflow:hidden;
+}
+.modal-header{
+  padding:18px 20px 14px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.modal-title{font-size:15px;font-weight:700;display:flex;align-items:center;gap:8px}
+.modal-title svg{width:15px;height:15px;stroke:var(--green);stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.modal-close{
+  width:28px;height:28px;border-radius:var(--radius-sm);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text3);transition:all var(--transition);
+}
+.modal-close:hover{background:var(--bg3);color:var(--text)}
+.modal-close svg{width:14px;height:14px;stroke:currentColor;stroke-width:2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.modal-body{padding:18px 20px}
+.modal-footer{padding:12px 20px 18px;display:flex;justify-content:flex-end;gap:8px}
+
+/* form elements */
+.form-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:6px;display:block}
+.form-input{
+  width:100%;padding:9px 12px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-size:13px;
+  outline:none;transition:border-color var(--transition);
+}
+.form-input:focus{border-color:rgba(74,222,128,.35)}
+.form-input::placeholder{color:var(--text3)}
+.form-select{
+  width:100%;padding:9px 12px;
+  background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);color:var(--text);font-size:13px;
+  outline:none;transition:border-color var(--transition);appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;
+}
+.form-row{margin-bottom:14px}
+.btn-primary{
+  padding:9px 18px;border-radius:var(--radius-sm);
+  background:var(--green);color:#0f0f0f;font-size:13px;font-weight:600;
+  transition:background var(--transition);border:none;cursor:pointer;
+}
+.btn-primary:hover{background:#86efac}
+.btn-ghost{
+  padding:9px 14px;border-radius:var(--radius-sm);
+  background:transparent;color:var(--text2);font-size:13px;font-weight:500;
+  border:none;cursor:pointer;transition:all var(--transition);
+}
+.btn-ghost:hover{background:var(--bg3);color:var(--text)}
+
+/* toggle row */
+.toggle-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 12px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:var(--radius-sm);margin-bottom:8px;
+}
+.toggle-row-body{}
+.toggle-row-title{font-size:13px;font-weight:500}
+.toggle-row-sub{font-size:11px;color:var(--text3);margin-top:1px}
+.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{
+  position:absolute;inset:0;border-radius:20px;
+  background:var(--border2);transition:background var(--transition);cursor:pointer;
+}
+.toggle input:checked+.toggle-track{background:var(--green)}
+.toggle-track::after{
+  content:'';position:absolute;width:14px;height:14px;border-radius:50%;
+  background:#fff;top:3px;left:3px;transition:transform var(--transition);
+}
+.toggle input:checked+.toggle-track::after{transform:translateX(16px)}
+
+/* radio group */
+.radio-group{display:flex;gap:6px}
+.radio-opt{
+  flex:1;padding:7px 10px;border-radius:var(--radius-sm);
+  background:var(--bg3);border:1px solid var(--border);
+  font-size:12px;font-weight:500;color:var(--text2);
+  cursor:pointer;transition:all var(--transition);text-align:center;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.radio-opt input{display:none}
+.radio-opt.selected{background:var(--green-dim);border-color:rgba(74,222,128,.25);color:var(--green)}
+
+/* section divider */
+.settings-section{margin-bottom:16px}
+.settings-section-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px;padding:0 2px}
+
+/* ── HIDDEN ── */
+.hidden{display:none!important}
+</style>
 </head>
-<body class="h-full text-slate-100 bg-[#0c1311] font-sans antialiased overflow-hidden selection:bg-emerald-500 selection:text-slate-950">
+<body>
 
-    <!-- MAIN DASHBOARD SHELL -->
-    <div id="shell" class="flex h-screen w-screen overflow-hidden">
-
-        <!-- LEFT SIDEBAR (260px) -->
-        <aside class="w-[260px] min-w-[260px] bg-slate-950/90 border-r border-slate-800/80 flex flex-col h-full z-20 select-none">
-            <!-- BRANDING -->
-            <div class="h-16 px-5 border-b border-slate-800/80 flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
-                    <i data-lucide="gamepad-2" class="w-5 h-5"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg leading-none tracking-tight text-slate-100">Retro<span class="text-emerald-400">Web</span></h1>
-                    <p class="text-[10px] text-slate-500 font-medium tracking-wide uppercase mt-0.5">Game Library</p>
-                </div>
-            </div>
-
-            <!-- CONSOLE CATEGORIES NAVIGATION -->
-            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-5" id="sidebarNav">
-                <!-- ALL GAMES -->
-                <div>
-                    <button data-system="all" class="sidebar-item active w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all bg-emerald-500/10 text-emerald-400 border-l-2 border-emerald-400">
-                        <i data-lucide="layout-grid" class="w-4 h-4"></i>
-                        <span>All Games</span>
-                    </button>
-                </div>
-
-                <!-- NINTENDO -->
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold tracking-wider text-slate-500 uppercase">Nintendo</div>
-                    <div class="space-y-0.5">
-                        <button data-system="gb" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="smartphone" class="w-4 h-4"></i>
-                            <span>Game Boy</span>
-                        </button>
-                        <button data-system="gbc" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="smartphone-charging" class="w-4 h-4"></i>
-                            <span>Game Boy Color</span>
-                        </button>
-                        <button data-system="gba" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="gamepad" class="w-4 h-4"></i>
-                            <span>Game Boy Advance</span>
-                        </button>
-                        <button data-system="nes" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="box" class="w-4 h-4"></i>
-                            <span>NES</span>
-                        </button>
-                        <button data-system="snes" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="layers" class="w-4 h-4"></i>
-                            <span>SNES</span>
-                        </button>
-                        <button data-system="n64" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="pyramid" class="w-4 h-4"></i>
-                            <span>Nintendo 64</span>
-                        </button>
-                        <button data-system="nds" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="columns" class="w-4 h-4"></i>
-                            <span>Nintendo DS</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SEGA -->
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold tracking-wider text-slate-500 uppercase">Sega</div>
-                    <div class="space-y-0.5">
-                        <button data-system="segaMS" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="tv" class="w-4 h-4"></i>
-                            <span>Master System</span>
-                        </button>
-                        <button data-system="segaMD" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="disc" class="w-4 h-4"></i>
-                            <span>Mega Drive / Genesis</span>
-                        </button>
-                        <button data-system="segaGG" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="monitor" class="w-4 h-4"></i>
-                            <span>Game Gear</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- SONY -->
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold tracking-wider text-slate-500 uppercase">Sony</div>
-                    <div class="space-y-0.5">
-                        <button data-system="psx" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="disc-3" class="w-4 h-4"></i>
-                            <span>PlayStation</span>
-                        </button>
-                        <button data-system="ppsspp" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="tablet" class="w-4 h-4"></i>
-                            <span>PSP</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- NEC / BANDAI / RETRO -->
-                <div>
-                    <div class="px-3 mb-2 text-[11px] font-bold tracking-wider text-slate-500 uppercase">NEC / Bandai / Retro</div>
-                    <div class="space-y-0.5">
-                        <button data-system="pce" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="cpu" class="w-4 h-4"></i>
-                            <span>PC Engine / TG16</span>
-                        </button>
-                        <button data-system="ws" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="gamepad-2" class="w-4 h-4"></i>
-                            <span>WonderSwan</span>
-                        </button>
-                        <button data-system="uzem" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="terminal" class="w-4 h-4"></i>
-                            <span>Uzebox</span>
-                        </button>
-                        <button data-system="quasi88" class="sidebar-item w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition-all border-l-2 border-transparent">
-                            <i data-lucide="monitor-play" class="w-4 h-4"></i>
-                            <span>PC-88</span>
-                        </button>
-                    </div>
-                </div>
-            </nav>
-
-            <!-- FOOTER INFO -->
-            <div class="p-4 border-t border-slate-800/80 text-xs text-slate-500 flex items-center justify-between">
-                <span>EmulatorJS Engine</span>
-                <span id="versionTag" class="px-2 py-0.5 rounded bg-slate-900 text-slate-400 border border-slate-800 font-mono text-[10px]">v4.x</span>
-            </div>
-        </aside>
-
-        <!-- MAIN AREA -->
-        <div class="flex-1 flex flex-col h-full min-w-0 bg-[#0c1311]">
-
-            <!-- TOP NAVBAR -->
-            <header class="h-16 border-b border-slate-800/80 px-6 flex items-center justify-between gap-4 bg-slate-950/60 backdrop-blur-md z-10 shrink-0">
-                <!-- NAV LINKS -->
-                <div class="flex items-center gap-1">
-                    <button id="navLibraryBtn" class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-100 bg-slate-800/80 hover:bg-slate-800 transition">Library</button>
-                    <button id="navAchievementsBtn" class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition flex items-center gap-1.5">
-                        <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i>
-                        <span>Achievements</span>
-                    </button>
-                    <button id="navSettingsBtn" class="px-3.5 py-1.5 rounded-lg text-sm font-medium text-slate-400 hover:text-slate-100 hover:bg-slate-900 transition flex items-center gap-1.5">
-                        <i data-lucide="settings" class="w-4 h-4"></i>
-                        <span>Settings</span>
-                    </button>
-                </div>
-
-                <!-- SEARCH & UPLOAD -->
-                <div class="flex items-center gap-3">
-                    <!-- SEARCH -->
-                    <div class="relative w-56 md:w-80">
-                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input id="searchInput" type="text" placeholder="Search games, consoles..." class="w-full bg-slate-900/90 border border-slate-800 rounded-xl pl-9 pr-4 py-1.5 text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-emerald-500/80 focus:ring-1 focus:ring-emerald-500/80 transition">
-                    </div>
-
-                    <!-- ADD GAME BUTTON -->
-                    <label for="romFileInput" class="cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold text-sm px-4 py-2 rounded-xl transition-all shadow-lg shadow-emerald-500/20 flex items-center gap-2 shrink-0">
-                        <i data-lucide="plus" class="w-4 h-4 stroke-[3]"></i>
-                        <span>Add Game</span>
-                    </label>
-                    <input id="romFileInput" type="file" class="hidden" accept=".zip,.gba,.gb,.gbc,.nes,.sfc,.smc,.z64,.n64,.nds,.uze,.hex,.pce,.md,.gen,.bin,.iso,.chd">
-                </div>
-            </header>
-
-            <!-- MAIN GAME GRID CONTENT -->
-            <main class="flex-1 overflow-y-auto p-6 md:p-8">
-
-                <!-- PLATFORM HEADER -->
-                <div class="flex items-center justify-between mb-6">
-                    <div class="flex items-center gap-3">
-                        <h2 id="currentCategoryTitle" class="text-2xl font-bold text-slate-100 tracking-tight">All Games</h2>
-                        <span id="gameCountBadge" class="bg-slate-800 text-slate-300 border border-slate-700/60 text-xs font-semibold px-2.5 py-0.5 rounded-full">0 games</span>
-                    </div>
-                    <div class="text-xs text-slate-500 font-medium hidden sm:block">
-                        Click any game card to launch immediately
-                    </div>
-                </div>
-
-                <!-- GAME CARDS GRID -->
-                <div id="gameGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5">
-                    <!-- Dynamic game cards -->
-                </div>
-
-                <!-- EMPTY STATE -->
-                <div id="emptyState" class="hidden flex-col items-center justify-center py-20 text-center border-2 border-dashed border-slate-800/80 rounded-2xl bg-slate-950/40">
-                    <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-4 text-emerald-400 shadow-inner">
-                        <i data-lucide="gamepad-2" class="w-8 h-8 opacity-60"></i>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-200 mb-1">No Games Found</h3>
-                    <p class="text-sm text-slate-400 max-w-sm mb-6">Upload a ROM file (.zip, .gba, .uze, .sfc, etc.) to start building your library.</p>
-                    <label for="romFileInput" class="cursor-pointer bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-medium text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
-                        <i data-lucide="upload" class="w-4 h-4"></i>
-                        <span>Upload ROM File</span>
-                    </label>
-                </div>
-
-            </main>
-        </div>
+<div id="shell">
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-brand">
+      <div class="sb-logo">
+        <!-- gamepad icon -->
+        <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="11" r="1" fill="#0f0f0f" stroke="none"/><circle cx="18" cy="13" r="1" fill="#0f0f0f" stroke="none"/></svg>
+      </div>
+      <div>
+        <div class="sb-title">Retro<span>Web</span></div>
+      </div>
     </div>
 
-    <!-- EMULATOR PLAYER DISPLAY OVERLAY -->
-    <div id="display" class="fixed inset-0 bg-black z-50 hidden flex-col">
-        <!-- Floating Back Button -->
-        <button id="exitEmulatorBtn" class="fixed top-4 left-4 z-50 bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 hover:text-emerald-400 font-medium text-xs px-3.5 py-2 rounded-xl backdrop-blur-md shadow-2xl transition-all flex items-center gap-2 group cursor-pointer">
-            <i data-lucide="arrow-left" class="w-4 h-4 group-hover:-translate-x-0.5 transition-transform"></i>
-            <span>Back to Library</span>
+    <nav id="sidebarNav">
+      <button data-system="all" class="sb-item active">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        All Games
+      </button>
+
+      <div class="sb-section-label">Nintendo</div>
+      <button data-system="gb" class="sb-item"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><rect x="8" y="6" width="8" height="6" rx="1"/><circle cx="9" cy="16" r="1.5"/><circle cx="15" cy="16" r="1.5"/></svg>Game Boy</button>
+      <button data-system="gbc" class="sb-item"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2"/><rect x="8" y="6" width="8" height="6" rx="1"/><circle cx="9" cy="16" r="1.5" stroke="#4ade80"/><circle cx="15" cy="16" r="1.5"/></svg>Game Boy Color</button>
+      <button data-system="gba" class="sb-item"><svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="3"/><circle cx="17" cy="10" r="1.5"/><circle cx="19" cy="12" r="1.5"/><rect x="6" y="10" width="4" height="1.5" rx=".5"/><rect x="7.25" y="9" width="1.5" height="4" rx=".5"/></svg>Game Boy Advance</button>
+      <button data-system="nes" class="sb-item"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><rect x="4" y="9" width="6" height="6" rx="1"/><circle cx="17" cy="12" r="1.5"/><circle cx="20" cy="12" r="1.5"/></svg>NES</button>
+      <button data-system="snes" class="sb-item"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><rect x="4" y="9" width="7" height="5" rx="1"/><circle cx="16" cy="11" r="1.2"/><circle cx="18.5" cy="13" r="1.2"/><circle cx="18.5" cy="10" r="1.2"/><circle cx="16" cy="13" r="1.2" stroke="none" fill="currentColor" opacity=".3"/></svg>SNES</button>
+      <button data-system="n64" class="sb-item"><svg viewBox="0 0 24 24"><path d="M12 3L4 8v8l8 5 8-5V8z"/><circle cx="12" cy="12" r="2"/></svg>Nintendo 64</button>
+      <button data-system="nds" class="sb-item"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="9" rx="2"/><rect x="3" y="13" width="18" height="9" rx="2"/><rect x="6" y="5" width="12" height="5" rx="1"/><rect x="6" y="15" width="12" height="5" rx="1"/></svg>Nintendo DS</button>
+
+      <div class="sb-section-label">Sega</div>
+      <button data-system="segaMS" class="sb-item"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><rect x="4" y="9" width="5" height="6" rx="1"/><path d="M15 12h4M17 10v4"/></svg>Master System</button>
+      <button data-system="segaMD" class="sb-item"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="8" cy="12" r="2"/><path d="M14 10h4M14 12h4M14 14h4"/></svg>Mega Drive</button>
+      <button data-system="segaGG" class="sb-item"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"/><rect x="7" y="8" width="10" height="8" rx="1"/><circle cx="5" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg>Game Gear</button>
+
+      <div class="sb-section-label">Sony</div>
+      <button data-system="psx" class="sb-item"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v4M12 17v4M3 12h4M17 12h4"/></svg>PlayStation</button>
+      <button data-system="ppsspp" class="sb-item"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="4"/><rect x="6" y="9" width="6" height="6" rx="1"/><circle cx="16" cy="11" r="1"/><circle cx="18" cy="13" r="1"/></svg>PSP</button>
+
+      <div class="sb-section-label">Other</div>
+      <button data-system="pce" class="sb-item"><svg viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2"/><path d="M8 12h8M12 9v6"/></svg>PC Engine</button>
+      <button data-system="ws" class="sb-item"><svg viewBox="0 0 24 24"><rect x="6" y="2" width="12" height="20" rx="3"/><rect x="9" y="5" width="6" height="5" rx="1"/></svg>WonderSwan</button>
+    </nav>
+
+    <div class="sb-footer">
+      <span class="sb-footer-label">EmulatorJS</span>
+      <span id="versionTag">v4.x</span>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div id="main">
+    <!-- TOPBAR -->
+    <header id="topbar">
+      <div class="topbar-nav">
+        <button id="navLibraryBtn" class="topbar-btn active">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="7" height="7" rx="1"/><rect x="9" y="3" width="13" height="4" rx="1"/><rect x="2" y="12" width="7" height="7" rx="1"/><rect x="9" y="14" width="13" height="4" rx="1"/></svg>
+          Library
         </button>
-        <!-- EmulatorJS Container -->
-        <div id="game" class="w-full h-full"></div>
-    </div>
-
-    <!-- SYSTEM SELECT MODAL (for unknown ROM extensions) -->
-    <div id="systemSelectModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 shadow-2xl space-y-5">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2">
-                    <i data-lucide="help-circle" class="w-5 h-5 text-emerald-400"></i>
-                    Select Console
-                </h3>
-                <button id="closeSystemModalBtn" class="text-slate-400 hover:text-slate-200 p-1 rounded-lg">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            <p id="systemModalFileName" class="text-sm text-slate-400">Select system core for uploaded ROM:</p>
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">System Core</label>
-                <select id="modalSystemSelect" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
-                    <!-- Populated via JS -->
-                </select>
-            </div>
-            <div class="flex justify-end gap-3 pt-2">
-                <button id="cancelModalBtn" class="px-4 py-2 rounded-xl text-sm font-medium text-slate-400 hover:bg-slate-800">Cancel</button>
-                <button id="confirmSystemBtn" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20">Launch & Save</button>
-            </div>
+        <button id="navAchievementsBtn" class="topbar-btn">
+          <svg viewBox="0 0 24 24" fill="#fbbf24" stroke="none"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+          Achievements
+        </button>
+        <button id="navSettingsBtn" class="topbar-btn">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+          Settings
+        </button>
+      </div>
+      <div class="topbar-right">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="searchInput" type="text" placeholder="Search games…">
         </div>
-    </div>
+        <label for="romFileInput" class="add-btn">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Game
+        </label>
+        <input id="romFileInput" type="file" class="hidden" accept=".zip,.gba,.gb,.gbc,.nes,.sfc,.smc,.z64,.n64,.nds,.uze,.hex,.pce,.md,.gen,.bin,.iso,.chd,.ws,.wsc">
+      </div>
+    </header>
 
-    <!-- SETTINGS MODAL -->
-    <div id="settingsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-6">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2">
-                    <i data-lucide="settings" class="w-5 h-5 text-emerald-400"></i>
-                    EmulatorJS Settings
-                </h3>
-                <button id="closeSettingsBtn" class="text-slate-400 hover:text-slate-200 p-1 rounded-lg">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <div class="space-y-4">
-                <!-- Debug mode -->
-                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">
-                    <div>
-                        <div class="text-sm font-medium text-slate-200">Debug Mode</div>
-                        <div class="text-xs text-slate-500">Log detailed emulator activity to console</div>
-                    </div>
-                    <input type="checkbox" id="settingDebugToggle" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-                </div>
-
-                <!-- Threads -->
-                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800" id="threadsRow">
-                    <div>
-                        <div class="text-sm font-medium text-slate-200">Enable Threads</div>
-                        <div class="text-xs text-emerald-400/80">Requires SharedArrayBuffer support</div>
-                    </div>
-                    <input type="checkbox" id="settingThreadsToggle" class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-                </div>
-
-                <!-- Local Cache -->
-                <div class="flex items-center justify-between p-3 rounded-xl bg-slate-950 border border-slate-800">
-                    <div>
-                        <div class="text-sm font-medium text-slate-200">Cache ROMs Locally</div>
-                        <div class="text-xs text-slate-500">Accelerate subsequent game boots</div>
-                    </div>
-                    <input type="checkbox" id="settingCacheToggle" checked class="w-4 h-4 accent-emerald-500 rounded cursor-pointer">
-                </div>
-
-                <!-- Browser mode -->
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                    <div class="text-sm font-medium text-slate-200">Browser Layout Mode</div>
-                    <div class="flex gap-4 text-xs text-slate-300">
-                        <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="settingBrowserMode" value="auto" checked class="accent-emerald-500"> Auto
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="settingBrowserMode" value="desktop" class="accent-emerald-500"> Desktop
-                        </label>
-                        <label class="flex items-center gap-1.5 cursor-pointer">
-                            <input type="radio" name="settingBrowserMode" value="mobile" class="accent-emerald-500"> Mobile
-                        </label>
-                    </div>
-                </div>
-
-                <!-- BIOS File -->
-                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
-                    <div class="text-sm font-medium text-slate-200">Custom BIOS File</div>
-                    <input type="file" id="settingBiosInput" class="text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-slate-800 file:text-slate-300 hover:file:bg-slate-700">
-                </div>
-            </div>
-
-            <div class="flex justify-end pt-2">
-                <button id="saveSettingsBtn" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20">Done</button>
-            </div>
+    <!-- LIBRARY PAGE -->
+    <main id="libraryPage" style="flex:1;overflow-y:auto;padding:28px">
+      <div class="content-header">
+        <div class="content-header-left">
+          <h2 id="currentCategoryTitle">All Games</h2>
+          <span id="gameCountBadge">0 games</span>
         </div>
-    </div>
-
-    <!-- ACHIEVEMENTS MODAL -->
-    <div id="achievementsModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 shadow-2xl space-y-6">
-            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                <h3 class="font-bold text-lg text-slate-100 flex items-center gap-2">
-                    <i data-lucide="trophy" class="w-5 h-5 text-amber-400"></i>
-                    RetroAchievements Integration
-                </h3>
-                <button id="closeAchievementsBtn" class="text-slate-400 hover:text-slate-200 p-1 rounded-lg">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-
-            <div class="space-y-4 text-sm text-slate-300">
-                <p>Unlock achievements in retro games powered by RetroAchievements.org!</p>
-                <div class="space-y-3 bg-slate-950 p-4 rounded-xl border border-slate-800">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Username</label>
-                        <input type="text" id="raUsername" placeholder="RetroAchievements Username" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">API Key / Token</label>
-                        <input type="password" id="raToken" placeholder="RetroAchievements Web API Key" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-emerald-500">
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex justify-end gap-3 pt-2">
-                <button id="saveAchievementsBtn" class="px-5 py-2 rounded-xl text-sm font-semibold bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/20">Save Credentials</button>
-            </div>
+        <span class="content-hint">Click a game to launch</span>
+      </div>
+      <div id="gameGrid">
+        <div id="emptyState">
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="3"/><path d="M6 12h4M8 10v4"/><circle cx="16" cy="11" r="1.5"/><circle cx="18" cy="13" r="1.5"/></svg>
+          </div>
+          <h3>No Games Yet</h3>
+          <p>Upload a ROM file to start your library.</p>
+          <label for="romFileInput" class="empty-upload-btn">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Upload ROM
+          </label>
         </div>
+      </div>
+    </main>
+
+    <!-- ACHIEVEMENTS PAGE -->
+    <div id="achievementsPage">
+      <div class="ach-page-header">
+        <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+        <h2>Achievements</h2>
+        <span id="gameCountBadge2" style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:2px 9px;border-radius:20px;margin-left:4px"></span>
+      </div>
+      <div class="ach-ra-setup">
+        <h3>RetroAchievements Integration</h3>
+        <p>Connect your RetroAchievements.org account to track progress across games.</p>
+        <div class="ach-ra-form">
+          <input type="text" id="raUsername" placeholder="Username" class="form-input">
+          <input type="password" id="raToken" placeholder="Web API Key" class="form-input">
+          <button class="ach-save-btn" id="saveRaBtn">Connect Account</button>
+        </div>
+        <div id="raStatus" style="margin-top:10px;font-size:12px;color:var(--green);display:none"></div>
+      </div>
+      <div id="achGrid" class="ach-grid"></div>
     </div>
+  </div>
+</div>
 
-    <script>
-        // Initialize Lucide icons
-        lucide.createIcons();
+<!-- EMULATOR OVERLAY -->
+<div id="display">
+  <button id="exitEmulatorBtn">
+    <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+    Back to Library
+  </button>
+  <div id="game"></div>
+</div>
 
-        // Dexie Database Initialization (RetroWebDB)
-        const db = new Dexie('RetroWebDB');
-        db.version(1).stores({
-            games: '++id, name, system, core, addedAt, lastPlayed'
-        });
+<!-- ACHIEVEMENT TOAST -->
+<div id="achToast">
+  <div class="ach-toast-icon">
+    <svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>
+  </div>
+  <div class="ach-toast-body">
+    <div class="ach-toast-label">Achievement Unlocked</div>
+    <div class="ach-toast-name" id="toastAchName">—</div>
+    <div class="ach-toast-desc" id="toastAchDesc">—</div>
+  </div>
+</div>
 
-        // Core / Extension mappings
-        const EXT_MAP = {
-            fds:'nes', nes:'nes', unf:'nes', unif:'nes',
-            smc:'snes', fig:'snes', sfc:'snes', bsx:'snes', swc:'snes',
-            z64:'n64', n64:'n64', v64:'n64',
-            gb:'gb', gbc:'gbc', gba:'gba', nds:'nds',
-            pce:'pce', ngp:'ngp', ws:'ws', wsc:'ws',
-            md:'segaMD', smd:'segaMD', gen:'segaMD', sg:'segaMD', sms:'segaMS', gg:'segaGG',
-            psx:'psx', iso:'psx', chd:'psx', psp:'ppsspp',
-            uze:'uzem', hex:'uzem', d88:'quasi88', vec:'vecx'
-        };
+<!-- SYSTEM SELECT MODAL -->
+<div id="systemSelectModal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+        Select Console
+      </div>
+      <button class="modal-close" id="closeSystemModalBtn"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label class="form-label" id="systemModalFileName">Select core for ROM</label>
+        <select id="modalSystemSelect" class="form-select"></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="cancelModalBtn">Cancel</button>
+      <button class="btn-primary" id="confirmSystemBtn">Launch</button>
+    </div>
+  </div>
+</div>
 
-        const CORE_NAMES = {
-            gb: 'Game Boy', gbc: 'Game Boy Color', gba: 'Game Boy Advance',
-            nes: 'NES', snes: 'SNES', n64: 'Nintendo 64', nds: 'Nintendo DS',
-            segaMS: 'Master System', segaMD: 'Mega Drive / Genesis', segaGG: 'Game Gear',
-            psx: 'PlayStation', ppsspp: 'PSP', pce: 'PC Engine / TG16',
-            ws: 'WonderSwan', uzem: 'Uzebox', quasi88: 'PC-88', vecx: 'Vectrex'
-        };
+<!-- SETTINGS MODAL -->
+<div id="settingsModal" class="modal-overlay">
+  <div class="modal-box" style="max-width:480px">
+    <div class="modal-header">
+      <div class="modal-title">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        Settings
+      </div>
+      <button class="modal-close" id="closeSettingsBtn"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div class="modal-body" style="max-height:70vh;overflow-y:auto">
 
-        const LIBRETRO_SYSTEM_MAP = {
-            gb: 'Nintendo - Game Boy',
-            gbc: 'Nintendo - Game Boy Color',
-            gba: 'Nintendo - Game Boy Advance',
-            nes: 'Nintendo - Nintendo Entertainment System',
-            snes: 'Nintendo - Super Nintendo Entertainment System',
-            n64: 'Nintendo - Nintendo 64',
-            nds: 'Nintendo - Nintendo DS',
-            segaMS: 'Sega - Master System - Mark III',
-            segaMD: 'Sega - Mega Drive - Genesis',
-            segaGG: 'Sega - Game Gear',
-            psx: 'Sony - PlayStation',
-            ppsspp: 'Sony - PlayStation Portable',
-            pce: 'NEC - PC Engine - TurboGrafx-16',
-            ws: 'Bandai - WonderSwan',
-            uzem: 'Uzebox',
-            quasi88: 'NEC - PC-8800 series',
-            vecx: 'GCE - Vectrex'
-        };
+      <div class="settings-section">
+        <div class="settings-section-title">Emulator</div>
+        <div class="toggle-row">
+          <div class="toggle-row-body">
+            <div class="toggle-row-title">Debug Mode</div>
+            <div class="toggle-row-sub">Log emulator activity to console</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="settingDebugToggle"><span class="toggle-track"></span></label>
+        </div>
+        <div class="toggle-row" id="threadsRow">
+          <div class="toggle-row-body">
+            <div class="toggle-row-title">Enable Threads</div>
+            <div class="toggle-row-sub" style="color:var(--green)">Requires SharedArrayBuffer</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="settingThreadsToggle"><span class="toggle-track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-row-body">
+            <div class="toggle-row-title">Cache ROMs Locally</div>
+            <div class="toggle-row-sub">Faster boot on revisited games</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="settingCacheToggle" checked><span class="toggle-track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-row-body">
+            <div class="toggle-row-title">VSync</div>
+            <div class="toggle-row-sub">Sync frame output to display refresh</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="settingVsyncToggle"><span class="toggle-track"></span></label>
+        </div>
+        <div class="toggle-row">
+          <div class="toggle-row-body">
+            <div class="toggle-row-title">Force Legacy Cores</div>
+            <div class="toggle-row-sub">Use older emulator cores if new ones break</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="settingLegacyCoresToggle"><span class="toggle-track"></span></label>
+        </div>
+      </div>
 
-        // Application State
-        let currentFilter = 'all';
-        let searchQuery = '';
-        let pendingUploadFile = null;
+      <div class="settings-section">
+        <div class="settings-section-title">Display</div>
+        <div class="form-row">
+          <label class="form-label">Browser Layout</label>
+          <div class="radio-group" id="browserModeGroup">
+            <label class="radio-opt selected"><input type="radio" name="browserMode" value="auto" checked>Auto</label>
+            <label class="radio-opt"><input type="radio" name="browserMode" value="desktop">Desktop</label>
+            <label class="radio-opt"><input type="radio" name="browserMode" value="mobile">Mobile</label>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="form-label">Shader Preset</label>
+          <select id="settingShader" class="form-select">
+            <option value="">None</option>
+            <option value="crt">CRT Scanlines</option>
+            <option value="crt-royale">CRT Royale</option>
+            <option value="xbrz">xBRZ Upscale</option>
+            <option value="snes_ntsc">SNES NTSC</option>
+          </select>
+        </div>
+      </div>
 
-        // Settings State
-        let enableDebug = false;
-        let enableThreads = false;
-        let browserMode = 'auto';
+      <div class="settings-section">
+        <div class="settings-section-title">BIOS</div>
+        <div class="form-row">
+          <label class="form-label">Custom BIOS File</label>
+          <input type="file" id="settingBiosInput" style="font-size:12px;color:var(--text2)">
+        </div>
+      </div>
 
-        // Version badge fetch
-        try {
-            fetch('data/version.json').then(r=>r.json()).then(d=>{
-                if(d && d.version) document.getElementById('versionTag').textContent = 'v' + d.version;
-            }).catch(()=>{});
-        } catch(e){}
+      <div class="settings-section">
+        <div class="settings-section-title">Storage</div>
+        <div class="toggle-row">
+          <div class="toggle-row-body">
+            <div class="toggle-row-title">Disable LocalStorage</div>
+            <div class="toggle-row-sub">Prevent caching in browser storage</div>
+          </div>
+          <label class="toggle"><input type="checkbox" id="settingNoLocalStorage"><span class="toggle-track"></span></label>
+        </div>
+        <div style="margin-top:10px">
+          <button id="clearLibraryBtn" style="padding:8px 14px;border-radius:var(--radius-sm);background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red);font-size:12px;font-weight:500;cursor:pointer;transition:all var(--transition)">
+            Clear Entire Library
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-ghost" id="cancelSettingsBtn">Cancel</button>
+      <button class="btn-primary" id="saveSettingsBtn">Save Settings</button>
+    </div>
+  </div>
+</div>
 
-        // Threads check
-        if (!window.SharedArrayBuffer) {
-            const threadsRow = document.getElementById('threadsRow');
-            if (threadsRow) threadsRow.style.display = 'none';
-        }
+<script src="https://unpkg.com/dexie/dist/dexie.js"></script>
+<script>
+// ══════════════════════════════════════════════
+//  DB
+// ══════════════════════════════════════════════
+const db = new Dexie('RetroWebDB');
+db.version(2).stores({ games: '++id, name, system, core, addedAt, lastPlayed, achCount' });
 
-        // Render Games Function
-        async function renderGames() {
-            let games = await db.games.toArray();
+// ══════════════════════════════════════════════
+//  MAPPINGS
+// ══════════════════════════════════════════════
+const EXT_MAP = {
+  fds:'nes',nes:'nes',unf:'nes',unif:'nes',
+  smc:'snes',fig:'snes',sfc:'snes',bsx:'snes',swc:'snes',
+  z64:'n64',n64:'n64',v64:'n64',
+  gb:'gb',gbc:'gbc',gba:'gba',nds:'nds',
+  pce:'pce',ngp:'ngp',ws:'ws',wsc:'ws',
+  md:'segaMD',smd:'segaMD',gen:'segaMD',sg:'segaMD',
+  sms:'segaMS',gg:'segaGG',
+  psx:'psx',iso:'psx',chd:'psx',
+  uze:'uzem',hex:'uzem',d88:'quasi88',vec:'vecx'
+};
 
-            // Apply filter
-            if (currentFilter !== 'all') {
-                games = games.filter(g => g.system === currentFilter);
-            }
+const CORE_NAMES = {
+  gb:'Game Boy',gbc:'Game Boy Color',gba:'Game Boy Advance',
+  nes:'NES',snes:'SNES',n64:'Nintendo 64',nds:'Nintendo DS',
+  segaMS:'Master System',segaMD:'Mega Drive',segaGG:'Game Gear',
+  psx:'PlayStation',ppsspp:'PSP',pce:'PC Engine',
+  ws:'WonderSwan',uzem:'Uzebox',quasi88:'PC-88',vecx:'Vectrex'
+};
 
-            // Apply search
-            if (searchQuery.trim() !== '') {
-                const q = searchQuery.toLowerCase();
-                games = games.filter(g => g.name.toLowerCase().includes(q) || (CORE_NAMES[g.system] || g.system).toLowerCase().includes(q));
-            }
+const LIBRETRO_MAP = {
+  gb:'Nintendo - Game Boy',gbc:'Nintendo - Game Boy Color',
+  gba:'Nintendo - Game Boy Advance',nes:'Nintendo - Nintendo Entertainment System',
+  snes:'Nintendo - Super Nintendo Entertainment System',n64:'Nintendo - Nintendo 64',
+  nds:'Nintendo - Nintendo DS',segaMS:'Sega - Master System - Mark III',
+  segaMD:'Sega - Mega Drive - Genesis',segaGG:'Sega - Game Gear',
+  psx:'Sony - PlayStation',ppsspp:'Sony - PlayStation Portable',
+  pce:'NEC - PC Engine - TurboGrafx-16',ws:'Bandai - WonderSwan',
+  uzem:'Uzebox',quasi88:'NEC - PC-8800 series',vecx:'GCE - Vectrex'
+};
 
-            const grid = document.getElementById('gameGrid');
-            const emptyState = document.getElementById('emptyState');
-            const badge = document.getElementById('gameCountBadge');
+// Console colours for pixel art placeholders
+const CONSOLE_COLORS = {
+  gb:['#8bac0f','#306230','#0f380f'],
+  gbc:['#ff0080','#00ff80','#0040ff'],
+  gba:['#9933cc','#cc6600','#333399'],
+  nes:['#cc0000','#cccccc','#333333'],
+  snes:['#6633cc','#cc33cc','#333366'],
+  n64:['#cc3300','#006600','#000033'],
+  nds:['#333399','#cc0099','#003333'],
+  segaMS:['#000099','#cc0000','#006600'],
+  segaMD:['#0066cc','#cc6600','#003366'],
+  segaGG:['#006600','#cc0000','#003300'],
+  psx:['#003399','#999900','#330033'],
+  ppsspp:['#003399','#cccccc','#001133'],
+  pce:['#cc6600','#003366','#330000'],
+  ws:['#cccccc','#999999','#333333'],
+};
 
-            badge.textContent = `${games.length} game${games.length === 1 ? '' : 's'}`;
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let currentFilter = 'all';
+let searchQuery = '';
+let pendingUploadFile = null;
+let enableDebug = false;
+let enableThreads = false;
+let enableVsync = false;
+let enableLegacyCores = false;
+let disableLocalStorage = false;
+let browserMode = 'auto';
+let selectedShader = '';
+let currentPage = 'library'; // 'library' | 'achievements'
 
-            if (games.length === 0) {
-                grid.innerHTML = '';
-                emptyState.classList.remove('hidden');
-                emptyState.classList.add('flex');
-                return;
-            }
+// ══════════════════════════════════════════════
+//  PIXEL ART PLACEHOLDER
+// ══════════════════════════════════════════════
+function drawPlaceholder(canvas, system, name) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = 150, h = canvas.height = 225;
+  const cols = CONSOLE_COLORS[system] || ['#222','#444','#666'];
 
-            emptyState.classList.add('hidden');
-            emptyState.classList.remove('flex');
-            grid.innerHTML = '';
+  // BG gradient
+  const g = ctx.createLinearGradient(0,0,w,h);
+  g.addColorStop(0, cols[2]);
+  g.addColorStop(1, '#0a0a0a');
+  ctx.fillStyle = g;
+  ctx.fillRect(0,0,w,h);
 
-            games.forEach(game => {
-                const card = document.createElement('div');
-                card.className = 'group relative rounded-2xl bg-slate-900 border border-slate-800/80 overflow-hidden shadow-lg hover:shadow-2xl hover:border-emerald-500/50 hover:scale-[1.03] transition-all duration-300 cursor-pointer flex flex-col';
+  // Pixel grid pattern
+  ctx.fillStyle = 'rgba(255,255,255,.03)';
+  for(let px=0;px<w;px+=4) for(let py=0;py<h;py+=4) {
+    if(Math.random()>.85) ctx.fillRect(px,py,2,2);
+  }
 
-                // Libretro boxart URL
-                const systemLibretro = LIBRETRO_SYSTEM_MAP[game.system] || '';
-                const cleanTitle = game.name.replace(/ *\([^)]*\) */g, "").replace(/ *\[[^\]]*\] */g, "").trim();
-                const boxArtUrl = systemLibretro ? `https://thumbnails.libretro.com/${encodeURIComponent(systemLibretro)}/Named_Boxarts/${encodeURIComponent(cleanTitle)}.png` : '';
+  // Console icon block (8x8 pixel art style)
+  const cx=w/2, cy=h*0.38, s=6;
+  ctx.fillStyle = cols[0];
+  // simple gamepad shape in big pixels
+  const shape=[
+    [0,1,1,1,1,0],[1,1,1,1,1,1],[1,1,0,0,1,1],[1,1,0,0,1,1],[1,1,1,1,1,1],[0,1,1,1,1,0]
+  ];
+  shape.forEach((row,ry)=>row.forEach((px,rx)=>{
+    if(px){
+      ctx.fillStyle=rx<3?cols[0]:cols[1];
+      ctx.fillRect(cx+(rx-3)*s,cy+(ry-3)*s,s-1,s-1);
+    }
+  }));
 
-                const lastPlayedText = game.lastPlayed ? formatTimeAgo(game.lastPlayed) : 'Never Played';
+  // Name text
+  ctx.fillStyle='rgba(255,255,255,.75)';
+  ctx.font=`bold 11px monospace`;
+  ctx.textAlign='center';
+  ctx.textBaseline='middle';
+  const words=name.split(' ');
+  const lines=[];let cur='';
+  words.forEach(w=>{if((cur+' '+w).trim().length>14){lines.push(cur.trim());cur=w;}else cur+=' '+w;});
+  if(cur.trim())lines.push(cur.trim());
+  lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,w/2,h*.72+i*14));
 
-                card.innerHTML = `
-                    <div class="relative w-full aspect-[2/3] bg-gradient-to-br from-slate-800 to-slate-950 overflow-hidden flex items-center justify-center">
-                        <img src="${boxArtUrl}" alt="${game.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');" />
-                        <div class="hidden inset-0 w-full h-full flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-slate-800 to-slate-900">
-                            <i data-lucide="gamepad-2" class="w-10 h-10 text-emerald-400/60 mb-2"></i>
-                            <span class="text-xs font-semibold text-slate-300 line-clamp-3">${game.name}</span>
-                        </div>
-                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
-                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 bg-slate-950/40 backdrop-blur-[2px]">
-                            <div class="w-12 h-12 rounded-full bg-emerald-500 text-slate-950 flex items-center justify-center shadow-xl shadow-emerald-500/40 transform scale-75 group-hover:scale-100 transition-transform duration-300">
-                                <i data-lucide="play" class="w-6 h-6 fill-current translate-x-0.5"></i>
-                            </div>
-                        </div>
-                        <button class="delete-game-btn absolute top-2 right-2 p-1.5 rounded-lg bg-slate-950/80 hover:bg-red-500/90 text-slate-400 hover:text-white opacity-0 group-hover:opacity-100 transition-all z-10" data-id="${game.id}" title="Delete game">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </div>
-                    <div class="p-3 flex-1 flex flex-col justify-between">
-                        <div>
-                            <h4 class="font-bold text-sm text-slate-100 group-hover:text-emerald-400 transition-colors line-clamp-1">${game.name}</h4>
-                            <p class="text-xs text-slate-400 font-medium mt-0.5">${CORE_NAMES[game.system] || game.system}</p>
-                        </div>
-                        <div class="mt-3 flex items-center justify-between text-[11px]">
-                            <span class="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/50">${lastPlayedText}</span>
-                        </div>
-                    </div>
-                `;
+  // System tag
+  ctx.fillStyle=cols[0]+'cc';
+  ctx.fillRect(6,h-28,w-12,18);
+  ctx.fillStyle='rgba(255,255,255,.8)';
+  ctx.font='bold 9px monospace';
+  ctx.fillText((CORE_NAMES[system]||system).toUpperCase(),w/2,h-19);
+}
 
-                // On Card Click -> Launch Game
-                card.addEventListener('click', (e) => {
-                    if (e.target.closest('.delete-game-btn')) return;
-                    launchGameEntry(game);
-                });
+// ══════════════════════════════════════════════
+//  RENDER GAMES
+// ══════════════════════════════════════════════
+async function renderGames() {
+  let games = await db.games.toArray();
+  if(currentFilter!=='all') games=games.filter(g=>g.system===currentFilter);
+  if(searchQuery.trim()) {
+    const q=searchQuery.toLowerCase();
+    games=games.filter(g=>g.name.toLowerCase().includes(q)||(CORE_NAMES[g.system]||'').toLowerCase().includes(q));
+  }
 
-                // Delete click
-                const delBtn = card.querySelector('.delete-game-btn');
-                delBtn.addEventListener('click', async (e) => {
-                    e.stopPropagation();
-                    if (confirm(`Remove "${game.name}" from library?`)) {
-                        await db.games.delete(game.id);
-                        renderGames();
-                    }
-                });
+  const grid=document.getElementById('gameGrid');
+  const empty=document.getElementById('emptyState');
+  const badge=document.getElementById('gameCountBadge');
+  badge.textContent=`${games.length} game${games.length===1?'':'s'}`;
 
-                grid.appendChild(card);
-            });
+  // clear existing cards (keep emptyState)
+  Array.from(grid.children).forEach(c=>{if(c.id!=='emptyState')c.remove()});
 
-            lucide.createIcons();
-        }
+  if(games.length===0){empty.classList.add('visible');return;}
+  empty.classList.remove('visible');
 
-        function formatTimeAgo(timestamp) {
-            const diff = Math.floor((Date.now() - timestamp) / 1000);
-            if (diff < 60) return 'Just now';
-            if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-            if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-            return `${Math.floor(diff / 86400)}d ago`;
-        }
+  games.forEach(game=>{
+    const card=document.createElement('div');
+    card.className='game-card';
 
-        // Launch Game Function
-        async function launchGameEntry(game) {
-            // Update last played
-            await db.games.update(game.id, { lastPlayed: Date.now() });
+    const sysLib=LIBRETRO_MAP[game.system]||'';
+    const cleanTitle=game.name.replace(/ *\([^)]*\) */g,'').replace(/ *\[[^\]]*\] */g,'').trim();
+    const boxUrl=sysLib?`https://thumbnails.libretro.com/${encodeURIComponent(sysLib)}/Named_Boxarts/${encodeURIComponent(cleanTitle)}.png`:'';
+    const ago=game.lastPlayed?timeAgo(game.lastPlayed):'Never played';
+    const achCount=game.achCount||0;
 
-            // Create Blob URL
-            const blobUrl = URL.createObjectURL(game.blob);
+    card.innerHTML=`
+      <div class="card-art">
+        <img src="${boxUrl}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <canvas style="display:none"></canvas>
+        <div class="card-play"><div class="card-play-btn"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></div></div>
+        <button class="card-delete" title="Remove"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg></button>
+        ${achCount>0?`<div class="card-ach-badge has-ach"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>${achCount}</div>`:'<div class="card-ach-badge"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg>—</div>'}
+      </div>
+      <div class="card-info">
+        <div class="card-name">${game.name}</div>
+        <div class="card-system">${CORE_NAMES[game.system]||game.system}</div>
+        <div class="card-meta"><span class="card-time">${ago}</span></div>
+      </div>`;
 
-            // Set globals for EmulatorJS
-            window.EJS_gameUrl = blobUrl;
-            window.EJS_core = game.core || game.system;
-            window.EJS_gameName = game.name;
-            window.EJS_player = '#game';
-            window.EJS_pathtodata = 'data/';
-            window.EJS_startOnLoaded = true;
-            window.EJS_DEBUG_XX = enableDebug;
-            window.EJS_threads = enableThreads;
-            if (browserMode && browserMode !== 'auto') window.EJS_browserMode = browserMode;
-            window.EJS_askBeforeExit = false;
+    // draw pixel placeholder on img error
+    const img=card.querySelector('img');
+    const cvs=card.querySelector('canvas');
+    img.addEventListener('error',()=>{ drawPlaceholder(cvs,game.system,game.name); });
+    if(!boxUrl){ img.style.display='none'; drawPlaceholder(cvs,game.system,game.name); }
 
-            window.EJS_onExit = () => {
-                exitEmulator();
-            };
+    card.addEventListener('click',e=>{
+      if(e.target.closest('.card-delete'))return;
+      launchGame(game);
+    });
+    card.querySelector('.card-delete').addEventListener('click',async e=>{
+      e.stopPropagation();
+      if(confirm(`Remove "${game.name}"?`)){await db.games.delete(game.id);renderGames();}
+    });
 
-            // Call startEmulator
-            startEmulator();
-        }
+    grid.appendChild(card);
+  });
+}
 
-        // startEmulator Implementation
-        function startEmulator() {
-            const display = document.getElementById('display');
-            display.classList.remove('hidden');
-            display.classList.add('flex');
+function timeAgo(ts) {
+  const d=Math.floor((Date.now()-ts)/1000);
+  if(d<60)return'Just now';
+  if(d<3600)return`${Math.floor(d/60)}m ago`;
+  if(d<86400)return`${Math.floor(d/3600)}h ago`;
+  return`${Math.floor(d/86400)}d ago`;
+}
 
-            // Inject loader script if not already present
-            let script = document.getElementById('ejs-loader-script');
-            if (script) {
-                script.remove(); // allow re-instantiation
-            }
-            script = document.createElement('script');
-            script.id = 'ejs-loader-script';
-            script.src = 'data/loader.js';
-            document.body.appendChild(script);
-        }
+// ══════════════════════════════════════════════
+//  LAUNCH GAME
+// ══════════════════════════════════════════════
+async function launchGame(game) {
+  await db.games.update(game.id,{lastPlayed:Date.now()});
+  const blobUrl=URL.createObjectURL(game.blob);
 
-        function exitEmulator() {
-            const display = document.getElementById('display');
-            display.classList.add('hidden');
-            display.classList.remove('flex');
-            document.getElementById('game').innerHTML = '';
-            renderGames();
-        }
+  window.EJS_gameUrl=blobUrl;
+  window.EJS_core=game.core||game.system;
+  window.EJS_gameName=game.name;
+  window.EJS_player='#game';
+  window.EJS_pathtodata='data/';
+  window.EJS_startOnLoaded=true;
+  window.EJS_DEBUG_XX=enableDebug;
+  window.EJS_threads=enableThreads;
+  if(enableVsync)window.EJS_vsync=true;
+  if(enableLegacyCores)window.EJS_forceLegacyCores=true;
+  if(disableLocalStorage)window.EJS_disableLocalStorage=true;
+  if(browserMode!=='auto')window.EJS_browserMode=browserMode;
+  window.EJS_askBeforeExit=false;
+  window.EJS_onExit=()=>exitEmulator();
 
-        document.getElementById('exitEmulatorBtn').addEventListener('click', () => {
-            exitEmulator();
-        });
+  // RetroAchievements
+  const raUser=localStorage.getItem('ra_user');
+  const raToken=localStorage.getItem('ra_token');
+  if(raUser&&raToken){
+    window.EJS_cheats=false;
+    window.EJS_retroAchievementsUsername=raUser;
+    window.EJS_retroAchievementsToken=raToken;
+    window.EJS_retroAchievementsOnAchievementUnlock=(data)=>{
+      showAchievementToast(data);
+      updateGameAchCount(game.id);
+    };
+  }
 
-        // ROM Upload Processing
-        const romFileInput = document.getElementById('romFileInput');
-        romFileInput.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                processUploadedFile(e.target.files[0]);
-                romFileInput.value = '';
-            }
-        });
+  document.getElementById('display').classList.add('visible');
+  let s=document.getElementById('ejs-loader');
+  if(s)s.remove();
+  s=document.createElement('script');
+  s.id='ejs-loader';s.src='data/loader.js';
+  document.body.appendChild(s);
+}
 
-        function processUploadedFile(file) {
-            const parts = file.name.split('.');
-            const ext = parts.pop().toLowerCase();
-            const name = parts.join('.');
-            const detectedSystem = EXT_MAP[ext];
+async function updateGameAchCount(id) {
+  const g=await db.games.get(id);
+  if(g) await db.games.update(id,{achCount:(g.achCount||0)+1});
+  renderGames();
+}
 
-            if (detectedSystem) {
-                saveAndLaunchGame(file, name, detectedSystem, detectedSystem);
-            } else {
-                // Prompt System Selection Modal
-                pendingUploadFile = file;
-                const modal = document.getElementById('systemSelectModal');
-                const nameLabel = document.getElementById('systemModalFileName');
-                const select = document.getElementById('modalSystemSelect');
+function exitEmulator() {
+  document.getElementById('display').classList.remove('visible');
+  document.getElementById('game').innerHTML='';
+  renderGames();
+}
 
-                nameLabel.textContent = `Select console core for "${file.name}":`;
-                select.innerHTML = '';
+// ══════════════════════════════════════════════
+//  ACHIEVEMENT TOAST
+// ══════════════════════════════════════════════
+let toastTimer=null;
+function showAchievementToast(data) {
+  const t=document.getElementById('achToast');
+  document.getElementById('toastAchName').textContent=data.title||data.name||'Achievement';
+  document.getElementById('toastAchDesc').textContent=data.description||data.desc||'';
+  t.classList.add('show');
+  if(toastTimer)clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),5000);
+}
+// demo trigger (remove in prod)
+window._demoAch=()=>showAchievementToast({title:'First Blood',description:'Beat your first level!'});
 
-                Object.entries(CORE_NAMES).sort((a,b)=>a[1].localeCompare(b[1])).forEach(([sys, label]) => {
-                    const opt = document.createElement('option');
-                    opt.value = sys;
-                    opt.textContent = label;
-                    select.appendChild(opt);
-                });
+// ══════════════════════════════════════════════
+//  ACHIEVEMENTS PAGE
+// ══════════════════════════════════════════════
+function renderAchievementsPage() {
+  const raUser=localStorage.getItem('ra_user');
+  const raToken=localStorage.getItem('ra_token');
+  const status=document.getElementById('raStatus');
+  if(raUser&&raToken){
+    document.getElementById('raUsername').value=raUser;
+    status.textContent=`✓ Connected as ${raUser}`;
+    status.style.display='block';
+  }
 
-                modal.classList.remove('hidden');
-            }
-        }
+  // Show demo achievement cards
+  const grid=document.getElementById('achGrid');
+  const badge=document.getElementById('gameCountBadge2');
+  const demos=[
+    {name:'First Steps',desc:'Complete the tutorial',points:5,earned:true},
+    {name:'Speed Runner',desc:'Finish a level in under 60s',points:25,earned:false},
+    {name:'Collector',desc:'Find all hidden items',points:50,earned:true},
+    {name:'No Damage',desc:'Clear a stage without getting hit',points:100,earned:false},
+  ];
+  badge.textContent=`${demos.filter(d=>d.earned).length} / ${demos.length} earned`;
+  grid.innerHTML='';
+  demos.forEach(a=>{
+    const d=document.createElement('div');
+    d.className='ach-card'+(a.earned?' earned':'');
+    d.innerHTML=`
+      <div class="ach-card-icon">
+        <svg viewBox="0 0 24 24" ${a.earned?'fill="var(--amber)" stroke="none"':'fill="none" stroke="var(--text3)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"'}>
+          <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+        </svg>
+      </div>
+      <div class="ach-card-body">
+        <div class="ach-card-name">${a.name}</div>
+        <div class="ach-card-desc">${a.desc}</div>
+        <div class="ach-card-points">⭐ ${a.points} pts${a.earned?' · Earned':''}</div>
+      </div>`;
+    grid.appendChild(d);
+  });
+}
 
-        async function saveAndLaunchGame(file, name, system, core) {
-            const gameObj = {
-                name: name,
-                system: system,
-                core: core,
-                blob: file,
-                addedAt: Date.now(),
-                lastPlayed: Date.now()
-            };
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+function showPage(p) {
+  currentPage=p;
+  document.getElementById('libraryPage').style.display=p==='library'?'':'none';
+  document.getElementById('achievementsPage').classList.toggle('visible',p==='achievements');
+  document.getElementById('navLibraryBtn').classList.toggle('active',p==='library');
+  document.getElementById('navAchievementsBtn').classList.toggle('active',p==='achievements');
+  if(p==='achievements')renderAchievementsPage();
+}
 
-            const id = await db.games.add(gameObj);
-            gameObj.id = id;
+document.getElementById('navLibraryBtn').addEventListener('click',()=>showPage('library'));
+document.getElementById('navAchievementsBtn').addEventListener('click',()=>showPage('achievements'));
 
-            renderGames();
-            launchGameEntry(gameObj);
-        }
+// ══════════════════════════════════════════════
+//  SIDEBAR FILTER
+// ══════════════════════════════════════════════
+document.getElementById('sidebarNav').addEventListener('click',e=>{
+  const btn=e.target.closest('.sb-item');
+  if(!btn)return;
+  document.querySelectorAll('.sb-item').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  currentFilter=btn.dataset.system;
+  const titles={all:'All Games',...CORE_NAMES};
+  document.getElementById('currentCategoryTitle').textContent=titles[currentFilter]||'Games';
+  showPage('library');
+  renderGames();
+});
 
-        // Modal Handlers
-        document.getElementById('closeSystemModalBtn').addEventListener('click', () => {
-            document.getElementById('systemSelectModal').classList.add('hidden');
-        });
-        document.getElementById('cancelModalBtn').addEventListener('click', () => {
-            document.getElementById('systemSelectModal').classList.add('hidden');
-        });
-        document.getElementById('confirmSystemBtn').addEventListener('click', () => {
-            const select = document.getElementById('modalSystemSelect');
-            if (pendingUploadFile && select.value) {
-                const parts = pendingUploadFile.name.split('.');
-                parts.pop();
-                const name = parts.join('.');
-                document.getElementById('systemSelectModal').classList.add('hidden');
-                saveAndLaunchGame(pendingUploadFile, name, select.value, select.value);
-                pendingUploadFile = null;
-            }
-        });
+// ══════════════════════════════════════════════
+//  SEARCH
+// ══════════════════════════════════════════════
+document.getElementById('searchInput').addEventListener('input',e=>{
+  searchQuery=e.target.value;
+  renderGames();
+});
 
-        // Sidebar Navigation Category Filtering
-        const sidebarNav = document.getElementById('sidebarNav');
-        sidebarNav.addEventListener('click', (e) => {
-            const btn = e.target.closest('.sidebar-item');
-            if (!btn) return;
+// ══════════════════════════════════════════════
+//  ROM UPLOAD
+// ══════════════════════════════════════════════
+document.getElementById('romFileInput').addEventListener('change',e=>{
+  if(e.target.files.length){processUpload(e.target.files[0]);e.target.value='';}
+});
 
-            document.querySelectorAll('.sidebar-item').forEach(b => {
-                b.classList.remove('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-400');
-                b.classList.add('text-slate-400', 'border-transparent');
-            });
+function processUpload(file) {
+  const parts=file.name.split('.');
+  const ext=parts.pop().toLowerCase();
+  const name=parts.join('.');
+  const sys=EXT_MAP[ext];
+  if(sys){saveAndLaunch(file,name,sys,sys);}
+  else{
+    pendingUploadFile=file;
+    const sel=document.getElementById('modalSystemSelect');
+    document.getElementById('systemModalFileName').textContent=`Select console for "${file.name}"`;
+    sel.innerHTML='';
+    Object.entries(CORE_NAMES).sort((a,b)=>a[1].localeCompare(b[1])).forEach(([k,v])=>{
+      const o=document.createElement('option');o.value=k;o.textContent=v;sel.appendChild(o);
+    });
+    document.getElementById('systemSelectModal').classList.add('open');
+  }
+}
 
-            btn.classList.add('bg-emerald-500/10', 'text-emerald-400', 'border-emerald-400');
-            btn.classList.remove('text-slate-400', 'border-transparent');
+async function saveAndLaunch(file,name,system,core) {
+  const id=await db.games.add({name,system,core,blob:file,addedAt:Date.now(),lastPlayed:Date.now(),achCount:0});
+  renderGames();
+  launchGame({id,name,system,core,blob:file});
+}
 
-            currentFilter = btn.dataset.system;
-            const titleMap = { all: 'All Games', ...CORE_NAMES };
-            document.getElementById('currentCategoryTitle').textContent = titleMap[currentFilter] || 'Games';
+// MODAL: system select
+document.getElementById('closeSystemModalBtn').onclick=()=>document.getElementById('systemSelectModal').classList.remove('open');
+document.getElementById('cancelModalBtn').onclick=()=>document.getElementById('systemSelectModal').classList.remove('open');
+document.getElementById('confirmSystemBtn').onclick=()=>{
+  if(pendingUploadFile){
+    const sel=document.getElementById('modalSystemSelect').value;
+    const parts=pendingUploadFile.name.split('.');parts.pop();
+    document.getElementById('systemSelectModal').classList.remove('open');
+    saveAndLaunch(pendingUploadFile,parts.join('.'),sel,sel);
+    pendingUploadFile=null;
+  }
+};
 
-            renderGames();
-        });
+// ══════════════════════════════════════════════
+//  SETTINGS MODAL
+// ══════════════════════════════════════════════
+document.getElementById('navSettingsBtn').onclick=()=>document.getElementById('settingsModal').classList.add('open');
+document.getElementById('closeSettingsBtn').onclick=()=>document.getElementById('settingsModal').classList.remove('open');
+document.getElementById('cancelSettingsBtn').onclick=()=>document.getElementById('settingsModal').classList.remove('open');
 
-        // Search Filter
-        const searchInput = document.getElementById('searchInput');
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value;
-            renderGames();
-        });
+// radio styles
+document.querySelectorAll('#browserModeGroup .radio-opt').forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    document.querySelectorAll('#browserModeGroup .radio-opt').forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+  });
+});
 
-        // Settings Modal
-        const settingsModal = document.getElementById('settingsModal');
-        document.getElementById('navSettingsBtn').addEventListener('click', () => {
-            settingsModal.classList.remove('hidden');
-        });
-        document.getElementById('closeSettingsBtn').addEventListener('click', () => {
-            settingsModal.classList.add('hidden');
-        });
-        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
-            enableDebug = document.getElementById('settingDebugToggle').checked;
-            enableThreads = document.getElementById('settingThreadsToggle').checked;
-            const checkedMode = document.querySelector('input[name="settingBrowserMode"]:checked');
-            if (checkedMode) browserMode = checkedMode.value;
+document.getElementById('saveSettingsBtn').onclick=()=>{
+  enableDebug=document.getElementById('settingDebugToggle').checked;
+  enableThreads=document.getElementById('settingThreadsToggle').checked;
+  enableVsync=document.getElementById('settingVsyncToggle').checked;
+  enableLegacyCores=document.getElementById('settingLegacyCoresToggle').checked;
+  disableLocalStorage=document.getElementById('settingNoLocalStorage').checked;
+  selectedShader=document.getElementById('settingShader').value;
+  const m=document.querySelector('input[name="browserMode"]:checked');
+  if(m)browserMode=m.value;
+  if(selectedShader)window.EJS_shaderName=selectedShader;
+  const bios=document.getElementById('settingBiosInput').files[0];
+  if(bios)window.EJS_biosUrl=URL.createObjectURL(bios);
+  document.getElementById('settingsModal').classList.remove('open');
+};
 
-            const biosFile = document.getElementById('settingBiosInput').files[0];
-            if (biosFile) window.EJS_biosUrl = URL.createObjectURL(biosFile);
+document.getElementById('clearLibraryBtn').onclick=async()=>{
+  if(confirm('Delete all games from library? This cannot be undone.')){
+    await db.games.clear();renderGames();
+    document.getElementById('settingsModal').classList.remove('open');
+  }
+};
 
-            settingsModal.classList.add('hidden');
-        });
+// ══════════════════════════════════════════════
+//  ACHIEVEMENTS FORM
+// ══════════════════════════════════════════════
+document.getElementById('saveRaBtn').onclick=()=>{
+  const u=document.getElementById('raUsername').value.trim();
+  const t=document.getElementById('raToken').value.trim();
+  if(u&&t){
+    localStorage.setItem('ra_user',u);localStorage.setItem('ra_token',t);
+    const s=document.getElementById('raStatus');
+    s.textContent=`✓ Connected as ${u}`;s.style.display='block';
+  }
+};
 
-        // Achievements Modal
-        const achievementsModal = document.getElementById('achievementsModal');
-        document.getElementById('navAchievementsBtn').addEventListener('click', () => {
-            achievementsModal.classList.remove('hidden');
-        });
-        document.getElementById('closeAchievementsBtn').addEventListener('click', () => {
-            achievementsModal.classList.add('hidden');
-        });
-        document.getElementById('saveAchievementsBtn').addEventListener('click', () => {
-            const user = document.getElementById('raUsername').value;
-            const token = document.getElementById('raToken').value;
-            if (user && token) {
-                localStorage.setItem('ra_user', user);
-                localStorage.setItem('ra_token', token);
-            }
-            achievementsModal.classList.add('hidden');
-        });
+// ══════════════════════════════════════════════
+//  EXIT EMULATOR
+// ══════════════════════════════════════════════
+document.getElementById('exitEmulatorBtn').onclick=()=>exitEmulator();
 
-        // Initial Load
-        renderGames();
-    </script>
+// ══════════════════════════════════════════════
+//  THREADS CHECK
+// ══════════════════════════════════════════════
+if(!window.SharedArrayBuffer)document.getElementById('threadsRow').style.display='none';
+
+// ══════════════════════════════════════════════
+//  VERSION
+// ══════════════════════════════════════════════
+fetch('data/version.json').then(r=>r.json()).then(d=>{
+  if(d&&d.version)document.getElementById('versionTag').textContent='v'+d.version;
+}).catch(()=>{});
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+showPage('library');
+renderGames();
+</script>
 </body>
 </html>
