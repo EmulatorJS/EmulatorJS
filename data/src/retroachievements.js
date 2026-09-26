@@ -8,6 +8,8 @@ class RetroAchievements {
         this.achievements = [];
         this.gameData = null;
         this.romMd5 = null;
+        this.unlockedIds = new Set();
+        this._pollInterval = null;
         this.loadConfig();
     }
 
@@ -56,11 +58,111 @@ class RetroAchievements {
                 this.gameId = gameId;
                 if (this.ejs.debug) console.log("[RetroAchievements] Identified Game ID:", this.gameId);
                 await this.fetchPatchData(this.gameId);
+                await this.startSession();
+                this.startAchievementPolling();
             } else {
                 if (this.ejs.debug) console.log("[RetroAchievements] No Game ID matched for MD5:", this.romMd5);
             }
         } catch (e) {
             if (this.ejs.debug) console.warn("[RetroAchievements] Initialization failed:", e);
+        }
+    }
+
+    async startSession() {
+        this.unlockedIds = new Set();
+        if (!this.gameId || !this.romMd5) return;
+
+        if (!this.username || !this.token) {
+            if (this.ejs.debug) console.log("[RetroAchievements] Guest mode active (no credentials)");
+            return;
+        }
+
+        try {
+            const url = `${this.baseUrl}?r=startsession`
+                + `&g=${this.gameId}`
+                + `&z=${encodeURIComponent(this.username)}`
+                + `&y=${encodeURIComponent(this.token)}`
+                + `&h=${this.hardcore ? 1 : 0}`
+                + `&m=${this.romMd5}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            const unlocks = (this.hardcore ? data.HardcoreUnlocks : data.Unlocks) || data.Unlocks || data.HardcoreUnlocks || [];
+            if (Array.isArray(unlocks)) {
+                unlocks.forEach(item => {
+                    if (typeof item === "object" && item !== null) {
+                        const id = item.ID || item.id || item.AchievementID;
+                        if (id !== undefined) this.unlockedIds.add(Number(id));
+                    } else if (item !== undefined) {
+                        this.unlockedIds.add(Number(item));
+                    }
+                });
+            }
+            if (this.ejs.debug) console.log("[RetroAchievements] Session started. Unlocked count:", this.unlockedIds.size);
+        } catch (e) {
+            if (this.ejs.debug) console.warn("[RetroAchievements] Failed to start session:", e);
+        }
+    }
+
+    startAchievementPolling() {
+        if (this._pollInterval) return;
+        this._pollInterval = setInterval(() => {
+            this.checkAchievements();
+        }, 500); // check every 500ms
+    }
+
+    stopAchievementPolling() {
+        if (this._pollInterval) {
+            clearInterval(this._pollInterval);
+            this._pollInterval = null;
+        }
+    }
+
+    checkAchievements() {
+        if (!this.achievements || this.achievements.length === 0) return;
+
+        // TODO: requires gameManager memory read API
+        if (!this.ejs.gameManager || typeof this.ejs.gameManager.getRetroVariable !== "function") {
+            return;
+        }
+
+        for (const achievement of this.achievements) {
+            const achId = achievement.ID || achievement.id;
+            if (achId === undefined || this.unlockedIds.has(Number(achId))) continue;
+
+            // Evaluate memory condition if address is available
+            const conditionMet = false; // Stub until memory read API is available
+            if (conditionMet) {
+                this.awardAchievement(achievement);
+            }
+        }
+    }
+
+    async awardAchievement(achievement) {
+        const achId = achievement.ID || achievement.id;
+        if (achId === undefined) return;
+        const numericId = Number(achId);
+        if (this.unlockedIds.has(numericId)) return;
+
+        this.unlockedIds.add(numericId);
+        this.showUnlockToast(achievement);
+
+        if (!this.username || !this.token) return; // guest — local only
+
+        try {
+            const url = `${this.baseUrl}?r=awardachievement`
+                + `&z=${encodeURIComponent(this.username)}`
+                + `&y=${encodeURIComponent(this.token)}`
+                + `&a=${numericId}`
+                + `&h=${this.hardcore ? 1 : 0}`
+                + `&m=${this.romMd5}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (this.ejs.debug) console.log("[RetroAchievements] Awarded:", achievement.Title || achievement.title, data);
+        } catch (e) {
+            console.warn("[RetroAchievements] Failed to submit award:", e);
+            // Do NOT remove from unlockedIds — don't double-toast on retry
         }
     }
 
@@ -87,6 +189,8 @@ class RetroAchievements {
         if (data.Achievements && Array.isArray(data.Achievements)) {
             this.achievements = data.Achievements;
             if (this.ejs.debug) console.log(`[RetroAchievements] Loaded ${this.achievements.length} achievements`);
+        } else {
+            this.achievements = [];
         }
         return data;
     }
@@ -168,13 +272,48 @@ class RetroAchievements {
             toast.classList.remove("ra_toast_visible");
             toast.classList.add("ra_toast_hiding");
             setTimeout(() => {
-                toast.remove();
+                if (toast.remove) toast.remove();
+                else if (toast.parentNode) toast.parentNode.removeChild(toast);
             }, 500);
         }, 4000);
     }
 
+    showProgressToast(achievement, current, target) {
+        const title = achievement.Title || achievement.title || "Achievement Progress";
+        let toast = document.querySelector(".ra_progress_toast");
+        if (!toast) {
+            toast = document.createElement("div");
+            toast.className = "ra_progress_toast";
+            const container = (this.ejs && this.ejs.frontend && this.ejs.frontend.elements && this.ejs.frontend.elements.parent)
+                ? this.ejs.frontend.elements.parent
+                : document.body;
+            container.appendChild(toast);
+        }
+
+        toast.innerText = `${title}: ${current} / ${target}`;
+
+        requestAnimationFrame(() => {
+            toast.classList.add("visible");
+        });
+
+        if (this._progressTimeout) clearTimeout(this._progressTimeout);
+        this._progressTimeout = setTimeout(() => {
+            toast.classList.remove("visible");
+            setTimeout(() => {
+                if (toast && toast.remove) toast.remove();
+                else if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, 2000);
+    }
+
     unlockAchievement(achievement) {
-        this.showUnlockToast(achievement);
+        if (achievement) {
+            const achId = achievement.ID || achievement.id;
+            if (achId !== undefined) {
+                this.unlockedIds.delete(Number(achId));
+            }
+            this.awardAchievement(achievement);
+        }
     }
 }
 

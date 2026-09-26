@@ -394,6 +394,13 @@ class EmulatorJS {
 
         if (this.config.fixedSaveInterval) {
             this.startSaveInterval(this.config.fixedSaveInterval);
+        } else {
+            const savedAutoSave = localStorage.getItem("ejs-autosave-enabled");
+            if (savedAutoSave === "false") {
+                this.startSaveInterval(0);
+            } else {
+                this.startSaveInterval(30000); // 30 seconds default
+            }
         }
     }
 
@@ -452,10 +459,16 @@ class EmulatorJS {
         }
         // Disabled
         if (period === 0 || isNaN(period)) return;
-        if (this.started) this.gameManager.saveSaveFiles();
-        if (this.debug) console.log("Saving every", period, "miliseconds");
+        if (this.started) {
+            this.gameManager.saveSaveFiles();
+            this.callEvent("autoSaved", { timestamp: Date.now() });
+        }
+        if (this.debug) console.log("Saving every", period, "milliseconds");
         this.saveSaveInterval = setInterval(() => {
-            if (this.started) this.gameManager.saveSaveFiles();
+            if (this.started) {
+                this.gameManager.saveSaveFiles();
+                this.callEvent("autoSaved", { timestamp: Date.now() });
+            }
         }, period);
     }
 
@@ -1120,6 +1133,9 @@ class EmulatorJS {
     }
     bindListeners() {
         this.frontend.bindListeners();
+        this.on("exit", () => {
+            if (this.retroachievements) this.retroachievements.stopAchievementPolling();
+        });
 
         this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
         this.gamepad.on("connected", (e) => {
@@ -1276,6 +1292,21 @@ class EmulatorJS {
                 visible: true,
                 icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2023 Fonticons, Inc.--><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg>',
                 displayName: "Context Menu"
+            },
+            autoSave: {
+                visible: true,
+                icon: '<svg viewBox="0 0 448 512"><path fill="currentColor" d="M433.941 129.941l-83.882-83.882A48 48 0 0 0 316.118 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h352c26.51 0 48-21.49 48-48V163.882a48 48 0 0 0-14.059-33.941zM224 416c-35.346 0-64-28.654-64-64s28.654-64 64-64 64 28.654 64 64-28.654 64-64 64zm96-224H96V96h224v96z"/></svg>',
+                displayName: "AutoSave"
+            },
+            fastForward: {
+                visible: true,
+                icon: '<svg viewBox="0 0 512 512"><path fill="currentColor" d="M499.8 238.1l-200-160c-13.51-10.81-33.12-1.22-33.12 16.15v103.7L83.8 38.13C70.29 27.32 50.68 36.91 50.68 54.28v399.4c0 17.38 19.61 26.96 33.12 16.15L266.7 312.1v103.7c0 17.38 19.61 26.96 33.12 16.15l200-160c10.3-8.2 10.3-25.7 0-33.9z"/></svg>',
+                displayName: "Fast Forward"
+            },
+            rewind: {
+                visible: true,
+                icon: '<svg viewBox="0 0 512 512"><path fill="currentColor" d="M11.5 280.3l192 160c20.6 17.2 52.5 2.8 52.5-24.3V320l192 160c20.6 17.2 52.5 2.8 52.5-24.3V56c0-27.1-31.9-41.5-52.5-24.3L256 192V56c0-27.1-31.9-41.5-52.5-24.3l-192 160c-15.3 12.8-15.3 35.8 0 48.6z"/></svg>',
+                displayName: "Rewind"
             }
         };
         this.defaultButtonAliases = {
@@ -1882,6 +1913,12 @@ class EmulatorJS {
     loadSettings() {
         if (!window.localStorage || this.config.disableLocalStorage) return;
         this.settingsLoaded = true;
+        try {
+            const savedFFRatio = localStorage.getItem("ejs-ff-ratio");
+            if (savedFFRatio) {
+                this.changeOption("ff-ratio", savedFFRatio);
+            }
+        } catch (e) {}
         let ejs_settings = localStorage.getItem("ejs-settings");
         let coreSpecific = localStorage.getItem(this.getLocalStorageKey());
         if (coreSpecific) {
@@ -1935,6 +1972,7 @@ class EmulatorJS {
         } else if (option === "virtual-gamepad-left-handed-mode") {
             this.frontend.toggleVirtualGamepadLeftHanded(value !== "disabled");
         } else if (option === "ff-ratio") {
+            try { localStorage.setItem("ejs-ff-ratio", value); } catch (e) {}
             if (this.isFastForward) this.gameManager.toggleFastForward(0);
             if (value === "unlimited") {
                 this.gameManager.setFastForwardRatio(0);
@@ -2014,6 +2052,12 @@ class EmulatorJS {
             }
             this.frontend.setLightgunCursor(this.lightgunActive);
         }
+    }
+    changeOption(option, value) {
+        if (this.frontend && typeof this.frontend.changeSettingOption === "function") {
+            this.frontend.changeSettingOption(option, value);
+        }
+        this.menuOptionChanged(option, value);
     }
     menuOptionChanged(option, value) {
         this.saveSettings();
