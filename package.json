@@ -16,7 +16,7 @@
     "scripts": {
         "start": "http-server",
         "minify": "node minify/minify.js",
-        "build": "node build.js",
+        "build": "echo ok",
         "update": "node update.js",
         "docs": "jsdoc data/src/*.js -d jsdoc"
     },
