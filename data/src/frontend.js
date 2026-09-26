@@ -17,6 +17,22 @@ class EJS_Frontend {
         pauseButton.style.display = paused ? "none" : "";
         playButton.style.display = paused ? "" : "none";
     }
+    showAutoSaveToast() {
+        if (!this.elements || !this.elements.parent) return;
+        let toast = this.elements.parent.querySelector(".ejs_autosave_toast");
+        if (!toast) {
+            toast = this.ejs.createElement("div");
+            toast.className = "ejs_autosave_toast";
+            toast.innerText = "💾 Auto-saved";
+            this.elements.parent.appendChild(toast);
+        }
+        toast.classList.add("visible");
+        if (this._autoSaveToastTimeout) clearTimeout(this._autoSaveToastTimeout);
+        this._autoSaveToastTimeout = setTimeout(() => {
+            toast.classList.remove("visible");
+        }, 1500);
+    }
+
     updateFullscreenButtons(fullscreen) {
         const [enter, exit] = this.elements.bottomBar.fullscreen;
         enter.style.display = fullscreen ? "none" : "";
@@ -1284,6 +1300,103 @@ class EJS_Frontend {
             }
         })
 
+        // Speed badge element
+        if (!this.speedBadge) {
+            this.speedBadge = this.ejs.createElement("div");
+            this.speedBadge.className = "ejs_speed_badge";
+            this.elements.parent.appendChild(this.speedBadge);
+        }
+
+        this.updateSpeedBadge = () => {
+            if (!this.speedBadge) return;
+            if (this.ejs.isFastForward) {
+                const ratio = this.settings["ff-ratio"] || "3.0";
+                const displayRatio = ratio === "unlimited" ? "MAX" : ratio + "x";
+                this.speedBadge.innerText = "⏩ " + displayRatio;
+                this.speedBadge.classList.add("active");
+                if (this.fastForwardBtn) this.fastForwardBtn.classList.add("ejs_ff_active");
+            } else if (this.ejs.isSlowMotion) {
+                const ratio = this.settings["sm-ratio"] || "0.5";
+                this.speedBadge.innerText = "🐢 " + ratio + "x";
+                this.speedBadge.classList.add("active");
+                if (this.fastForwardBtn) this.fastForwardBtn.classList.remove("ejs_ff_active");
+            } else {
+                this.speedBadge.classList.remove("active");
+                if (this.fastForwardBtn) this.fastForwardBtn.classList.remove("ejs_ff_active");
+            }
+        };
+
+        this.ejs.on("autoSaved", () => {
+            this.showAutoSaveToast();
+        });
+
+        this.ejs.addEventListener(this.elements.parent, "keydown", (e) => {
+            if (this.isSettingsMenuOpen() || this.isPopupOpen() || this.ejs.getSettingValue("keyboardInput") === "enabled") return;
+            if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+            if (e.shiftKey && (e.code === "KeyF" || e.key === "F" || e.key === "f")) {
+                e.preventDefault();
+                const nextState = this.ejs.isFastForward ? "disabled" : "enabled";
+                this.ejs.changeOption("fastForward", nextState);
+            }
+        });
+
+        // AutoSave toolbar toggle button
+        const autoSaveBtn = addButton(this.ejs.config.buttonOpts.autoSave, () => {
+            const isEnabled = !!this.ejs.saveSaveInterval;
+            if (isEnabled) {
+                this.ejs.startSaveInterval(0);
+                localStorage.setItem("ejs-autosave-enabled", "false");
+                autoSaveBtn.classList.remove("ejs_autosave_active");
+            } else {
+                this.ejs.startSaveInterval(30000);
+                localStorage.setItem("ejs-autosave-enabled", "true");
+                autoSaveBtn.classList.add("ejs_autosave_active");
+            }
+        });
+        this.autoSaveBtn = autoSaveBtn;
+        if (this.ejs.saveSaveInterval) {
+            autoSaveBtn.classList.add("ejs_autosave_active");
+        }
+
+        // Fast Forward toolbar button
+        const fastForwardBtn = addButton(this.ejs.config.buttonOpts.fastForward, () => {
+            const nextState = this.ejs.isFastForward ? "disabled" : "enabled";
+            this.ejs.changeOption("fastForward", nextState);
+        });
+        this.fastForwardBtn = fastForwardBtn;
+
+        // Rewind toolbar button
+        const rewindBtn = addButton(this.ejs.config.buttonOpts.rewind, () => {});
+        this.rewindBtn = rewindBtn;
+        if (!this.ejs.rewindEnabled) {
+            rewindBtn.style.display = "none";
+        }
+        const startRewind = (e) => {
+            if (e.cancelable) e.preventDefault();
+            if (this.ejs.gameManager) {
+                if (typeof this.ejs.gameManager.setRewind === "function") {
+                    this.ejs.gameManager.setRewind(true);
+                } else if (this.ejs.gameManager.functions && this.ejs.gameManager.functions.toggleRewind) {
+                    this.ejs.gameManager.functions.toggleRewind(1);
+                } else {
+                    this.ejs.gameManager.simulateInput(0, 28, 1);
+                }
+            }
+        };
+        const stopRewind = (e) => {
+            if (this.ejs.gameManager) {
+                if (typeof this.ejs.gameManager.setRewind === "function") {
+                    this.ejs.gameManager.setRewind(false);
+                } else if (this.ejs.gameManager.functions && this.ejs.gameManager.functions.toggleRewind) {
+                    this.ejs.gameManager.functions.toggleRewind(0);
+                } else {
+                    this.ejs.gameManager.simulateInput(0, 28, 0);
+                }
+            }
+        };
+        this.ejs.addEventListener(rewindBtn, "mousedown touchstart", startRewind);
+        this.ejs.addEventListener(rewindBtn, "mouseup touchend mouseleave", stopRewind);
+
         const hasFullscreen = !!(this.elements.parent.requestFullscreen || this.elements.parent.mozRequestFullScreen || this.elements.parent.webkitRequestFullscreen || this.elements.parent.msRequestFullscreen);
 
         if (!hasFullscreen) {
@@ -1307,7 +1420,10 @@ class EJS_Frontend {
             netplay: [netplay],
             exit: [exitEmulation],
             mute: [muteButton, unmuteButton],
-            volumeSlider: [volumeSlider]
+            volumeSlider: [volumeSlider],
+            autoSave: [autoSaveBtn],
+            fastForward: [fastForwardBtn],
+            rewind: [rewindBtn]
         }
 
         if (this.ejs.config.buttonOpts) {
@@ -1338,6 +1454,9 @@ class EJS_Frontend {
             if (this.ejs.config.buttonOpts.diskButton.visible === false) diskButton[0].style.display = "none";
             if (this.ejs.config.buttonOpts.volumeSlider.visible === false) volumeSlider.style.display = "none";
             if (this.ejs.config.buttonOpts.exitEmulation.visible === false) exitEmulation.style.display = "none";
+            if (this.ejs.config.buttonOpts.autoSave && this.ejs.config.buttonOpts.autoSave.visible === false) autoSaveBtn.style.display = "none";
+            if (this.ejs.config.buttonOpts.fastForward && this.ejs.config.buttonOpts.fastForward.visible === false) fastForwardBtn.style.display = "none";
+            if (this.ejs.config.buttonOpts.rewind && this.ejs.config.buttonOpts.rewind.visible === false) rewindBtn.style.display = "none";
         }
 
         this.menu.failedToStart = () => {
@@ -3329,6 +3448,7 @@ class EJS_Frontend {
             }
             settings[title] = newValue;
             funcs.forEach(e => e(title));
+            if (this.updateSpeedBadge) this.updateSpeedBadge();
         }
         let allOpts = {};
 

@@ -1677,3 +1677,73 @@ select:focus, select:hover {
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
+
+/* AutoSave indicator */
+.ejs_autosave_toast {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(0,0,0,0.65);
+    color: #4ade80;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 100;
+    font-family: monospace;
+}
+.ejs_autosave_toast.visible {
+    opacity: 1;
+}
+
+/* Speed indicator badge */
+.ejs_speed_badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(234,179,8,0.85);
+    color: #000;
+    font-weight: bold;
+    font-size: 13px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    z-index: 100;
+    pointer-events: none;
+    display: none;
+}
+.ejs_speed_badge.active {
+    display: block;
+}
+
+/* Progress toast — smaller variant */
+.ra_progress_toast {
+    position: absolute;
+    bottom: 50px;
+    left: 12px;
+    background: rgba(0,0,0,0.75);
+    color: #e2e8f0;
+    border-left: 3px solid #3b82f6;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    z-index: 150;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    pointer-events: none;
+}
+.ra_progress_toast.visible {
+    opacity: 1;
+}
+
+.ejs_autosave_active svg {
+    color: #4ade80 !important;
+    fill: #4ade80 !important;
+}
+
+.ejs_ff_active svg {
+    color: #eab308 !important;
+    fill: #eab308 !important;
+    filter: drop-shadow(0 0 4px #eab308);
+}
