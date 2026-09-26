@@ -1747,3 +1747,77 @@ select:focus, select:hover {
     fill: #eab308 !important;
     filter: drop-shadow(0 0 4px #eab308);
 }
+
+/* Profile Verification Card Utility Classes */
+.w-12 { width: 48px; height: 48px; }
+.h-12 { height: 48px; }
+.rounded-full { border-radius: 9999px; }
+.border-2 { border-width: 2px; border-style: solid; }
+.border-emerald-500 { border-color: #10b981; }
+
+.ra-profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(30, 41, 59, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 16px 20px;
+}
+.ra-profile-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ra-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  object-fit: cover;
+  background: #0f172a;
+}
+.ra-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ra-profile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ra-username {
+  font-size: 16px;
+  font-weight: 700;
+  color: #f8fafc;
+}
+.ra-live-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4ade80;
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+.ra-score {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fbbf24;
+}
+.ra-logout-btn {
+  padding: 7px 14px;
+  border-radius: 6px;
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  color: #f87171;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.ra-logout-btn:hover {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+}

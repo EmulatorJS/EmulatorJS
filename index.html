@@ -445,6 +445,80 @@ img{display:block}
 
 /* ── HIDDEN ── */
 .hidden{display:none!important}
+
+/* ── RETROACHIEVEMENTS PROFILE CARD ── */
+.w-12{width:48px;height:48px}
+.h-12{height:48px}
+.rounded-full{border-radius:9999px}
+.border-2{border-width:2px;border-style:solid}
+.border-emerald-500{border-color:#10b981}
+
+.ra-profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+.ra-profile-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.ra-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #10b981;
+  object-fit: cover;
+  background: var(--bg2);
+}
+.ra-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.ra-profile-user-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ra-username {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.ra-live-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #4ade80;
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.25);
+  padding: 2px 8px;
+  border-radius: 12px;
+}
+.ra-score {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--amber);
+}
+.ra-logout-btn {
+  padding: 7px 14px;
+  border-radius: var(--radius-sm);
+  background: rgba(248,113,113,0.1);
+  border: 1px solid rgba(248,113,113,0.2);
+  color: var(--red);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.ra-logout-btn:hover {
+  background: rgba(248,113,113,0.2);
+  color: #f87171;
+}
 </style>
 </head>
 <body>
@@ -559,15 +633,33 @@ img{display:block}
         <h2>Achievements</h2>
         <span id="gameCountBadge2" style="font-size:11px;color:var(--text3);background:var(--bg3);border:1px solid var(--border);padding:2px 9px;border-radius:20px;margin-left:4px"></span>
       </div>
-      <div class="ach-ra-setup">
-        <h3>RetroAchievements Integration</h3>
-        <p>Connect your RetroAchievements.org account to track progress across games.</p>
-        <div class="ach-ra-form">
-          <input type="text" id="raUsername" placeholder="Username" class="form-input">
-          <input type="password" id="raToken" placeholder="Web API Key" class="form-input">
-          <button class="ach-save-btn" id="saveRaBtn">Connect Account</button>
+      <div class="ach-ra-setup" id="raSetupContainer">
+        <!-- Logged Out State -->
+        <div id="raLoginFormWrap">
+          <h3>RetroAchievements Integration</h3>
+          <p>Connect your RetroAchievements.org account with your Username and Password.</p>
+          <form id="raLoginForm" class="ach-ra-form" onsubmit="return false;">
+            <input type="text" id="raUsername" placeholder="Username" class="form-input" required>
+            <input type="password" id="raPassword" placeholder="Password" class="form-input" required>
+            <button type="submit" class="ach-save-btn" id="loginRaBtn">Log In</button>
+          </form>
+          <div id="raLoginError" style="margin-top:10px;font-size:12px;color:var(--red);display:none"></div>
         </div>
-        <div id="raStatus" style="margin-top:10px;font-size:12px;color:var(--green);display:none"></div>
+
+        <!-- Logged In State Profile Card -->
+        <div id="raProfileCard" class="ra-profile-card hidden">
+          <div class="ra-profile-left">
+            <img id="raAvatar" src="" alt="User Avatar" class="w-12 h-12 rounded-full border-2 border-emerald-500 ra-avatar">
+            <div class="ra-profile-info">
+              <div class="ra-profile-user-row">
+                <span id="raProfileUsername" class="ra-username"></span>
+                <span class="ra-live-badge">🟢 Connected</span>
+              </div>
+              <div id="raProfileScore" class="ra-score">🏆 0 Points</div>
+            </div>
+          </div>
+          <button id="logoutRaBtn" class="ra-logout-btn">Log Out</button>
+        </div>
       </div>
       <div id="achGrid" class="ach-grid"></div>
     </div>
@@ -997,15 +1089,27 @@ window._demoAch=()=>showAchievementToast({title:'First Blood',description:'Beat 
 // ══════════════════════════════════════════════
 //  ACHIEVEMENTS PAGE
 // ══════════════════════════════════════════════
-function renderAchievementsPage() {
-  const raUser=localStorage.getItem('ra_user');
-  const raToken=localStorage.getItem('ra_token');
-  const status=document.getElementById('raStatus');
-  if(raUser&&raToken){
-    document.getElementById('raUsername').value=raUser;
-    status.textContent=`✓ Connected as ${raUser}`;
-    status.style.display='block';
+function updateRaUI() {
+  const raUser = localStorage.getItem('ra_user');
+  const raScore = localStorage.getItem('ra_score') || 0;
+  const loginWrap = document.getElementById('raLoginFormWrap');
+  const profileCard = document.getElementById('raProfileCard');
+
+  if (raUser) {
+    loginWrap.classList.add('hidden');
+    profileCard.classList.remove('hidden');
+
+    document.getElementById('raAvatar').src = `https://media.retroachievements.org/UserPic/${raUser}.png`;
+    document.getElementById('raProfileUsername').textContent = raUser;
+    document.getElementById('raProfileScore').textContent = `🏆 ${Number(raScore).toLocaleString()} Points`;
+  } else {
+    loginWrap.classList.remove('hidden');
+    profileCard.classList.add('hidden');
   }
+}
+
+function renderAchievementsPage() {
+  updateRaUI();
 
   // Show demo achievement cards
   const grid=document.getElementById('achGrid');
@@ -1156,16 +1260,45 @@ document.getElementById('clearLibraryBtn').onclick=async()=>{
 };
 
 // ══════════════════════════════════════════════
-//  ACHIEVEMENTS FORM
+//  ACHIEVEMENTS FORM & PROFILE CARD
 // ══════════════════════════════════════════════
-document.getElementById('saveRaBtn').onclick=()=>{
-  const u=document.getElementById('raUsername').value.trim();
-  const t=document.getElementById('raToken').value.trim();
-  if(u&&t){
-    localStorage.setItem('ra_user',u);localStorage.setItem('ra_token',t);
-    const s=document.getElementById('raStatus');
-    s.textContent=`✓ Connected as ${u}`;s.style.display='block';
+document.getElementById('loginRaBtn').onclick = async (e) => {
+  e.preventDefault();
+  const u = document.getElementById('raUsername').value.trim();
+  const p = document.getElementById('raPassword').value.trim();
+  const errEl = document.getElementById('raLoginError');
+  errEl.style.display = 'none';
+
+  if (!u || !p) {
+    errEl.textContent = 'Please enter both username and password';
+    errEl.style.display = 'block';
+    return;
   }
+
+  const btn = document.getElementById('loginRaBtn');
+  btn.disabled = true;
+  btn.textContent = 'Logging in...';
+
+  try {
+    const { loginRA } = await import('./data/src/retroachievements.js');
+    await loginRA(u, p);
+    document.getElementById('raPassword').value = '';
+    updateRaUI();
+  } catch (err) {
+    errEl.textContent = err.message || 'Invalid credentials';
+    errEl.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Log In';
+  }
+};
+
+document.getElementById('logoutRaBtn').onclick = () => {
+  localStorage.removeItem('ra_user');
+  localStorage.removeItem('ra_token');
+  localStorage.removeItem('ra_score');
+  localStorage.removeItem('ejs-retroachievements-config');
+  updateRaUI();
 };
 
 // ══════════════════════════════════════════════

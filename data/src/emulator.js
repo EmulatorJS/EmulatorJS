@@ -168,8 +168,8 @@ class EmulatorJS {
             if (result === -1 && !notWithPath && typeConfig && typeConfig.cdnFallback) {
                 console.log("[EJS " + type + "] " + path + " not found locally, attempting to fetch from the emulatorjs cdn.");
                 console.error("**THIS METHOD IS A FAILSAFE, AND NOT OFFICIALLY SUPPORTED. USE AT YOUR OWN RISK**");
-                const version = this.ejs_version.endsWith("-beta") ? "nightly" : this.ejs_version;
-                result = await attempt(`https://cdn.emulatorjs.org/${version}/data/${path}`);
+                const coreFile = path.startsWith("cores/") ? path.substring(6) : path;
+                result = await attempt(`https://cdn.emulatorjs.org/stable/data/cores/${coreFile}`);
                 if (result !== -1) {
                     console.warn("File was not found locally, but was found on the emulatorjs cdn.\nIt is recommended to download the stable release from here: https://cdn.emulatorjs.org/releases/");
                 }
@@ -352,7 +352,7 @@ class EmulatorJS {
             "bios": { "name": "BIOS", "dontCache": false, "dontExtractIfCore": ["arcade", "fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi", "mame", "mame2003_plus", "mame2003"] },
             "parent": { "name": "Parent", "dontCache": false },
             "patch": { "name": "Patch", "dontCache": false },
-            "reports": { "name": "Reports", "dontCache": true },
+            "reports": { "name": "Reports", "dontCache": true, "cdnFallback": true },
             "states": { "name": "States", "dontCache": true },
             "support": { "name": "Support", "dontCache": true },
             "unknown": { "name": "Unknown", "dontCache": true }
