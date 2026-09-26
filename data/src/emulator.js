@@ -7,6 +7,7 @@ import { cyrb53 } from "./utils.js";
 import { EJS_SETUP } from "./setup.js";
 import { Netplay } from "./netplay.js";
 import { EJS_Frontend } from "./frontend.js";
+import { RetroAchievements } from "./retroachievements.js";
 import * as CONSTS from "./consts.js";
 
 import "./vendor/socket.io.min.js";
@@ -314,6 +315,7 @@ class EmulatorJS {
         this.capture.video.fps = (typeof this.capture.video.fps === "number") ? this.capture.video.fps : 30;
         this.capture.video.videoBitrate = (typeof this.capture.video.videoBitrate === "number") ? this.capture.video.videoBitrate : 2.5 * 1024 * 1024;
         this.capture.video.audioBitrate = (typeof this.capture.video.audioBitrate === "number") ? this.capture.video.audioBitrate : 192 * 1024;
+        this.retroachievements = new RetroAchievements(this);
         this.bindListeners();
         if (this.netplayEnabled) {
             this.netplay = new Netplay(this);
@@ -962,6 +964,12 @@ class EmulatorJS {
             fileNames.push(file.filename);
         }
         this.selectRomFile(fileNames, this.getCore());
+        if (romData && romData.files && romData.files.length > 0) {
+            const primaryFile = romData.files.find(f => f.filename === this.fileName) || romData.files[0];
+            if (primaryFile && primaryFile.bytes) {
+                this.retroachievements.initGame(primaryFile.bytes);
+            }
+        }
         this.startGame();
     }
 

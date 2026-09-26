@@ -325,6 +325,18 @@
                     if (["3ds", "cci", "cia", "cxi", "app"].includes(ext))
                         return "3ds"
 
+                    if (["uze", "hex"].includes(ext))
+                        return "uzem"
+
+                    if (["d88", "88d", "cmt"].includes(ext))
+                        return "quasi88"
+
+                    if (["vec"].includes(ext))
+                        return "vecx"
+
+                    if (["dx9", "tap", "2d"].includes(ext))
+                        return "x1"
+
                     return await new Promise(resolve => {
                         var coreValues = {
                             "Nintendo 64": "n64",
@@ -356,7 +368,11 @@
                             "Commodore VIC20": "vice_xvic",
                             "Commodore Plus/4": "vice_xplus4",
                             "Commodore PET": "vice_xpet",
-                            "Amiga": "puae"
+                            "Amiga": "puae",
+                            "Uzebox": "uzem",
+                            "PC-8800 Series": "quasi88",
+                            "Vectrex": "vecx",
+                            "Sharp X1": "x1"
                         }
                         
                         if (enableThreads) {

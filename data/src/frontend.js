@@ -2678,6 +2678,7 @@ class EJS_Frontend {
                 let downValue = info[i].joystickInput === true ? 0x7fff : 1;
                 this.ejs.addEventListener(button, "touchstart touchend touchcancel", (e) => {
                     e.preventDefault();
+                    if (e.type === "touchstart" && navigator.vibrate) navigator.vibrate(12);
                     const isAnalog = this.ejs.analogAxes.includes(value);
                     if (e.type === "touchend" || e.type === "touchcancel") {
                         e.target.classList.remove("ejs_virtualGamepad_button_down");
@@ -2717,6 +2718,7 @@ class EJS_Frontend {
 
             const updateCb = (e) => {
                 e.preventDefault();
+                if (e.type === "touchstart" && navigator.vibrate) navigator.vibrate(12);
                 const touch = e.targetTouches[0];
                 if (!touch) return;
                 const rect = dpadMain.getBoundingClientRect();
@@ -3669,6 +3671,69 @@ class EJS_Frontend {
         }, "100", inputOptions, true);
 
         checkForEmptyMenu(inputOptions);
+
+        const retroachievementsOpts = createSettingParent(true, "RetroAchievements", home);
+
+        const usernameBtn = this.ejs.createElement("button");
+        usernameBtn.classList.add("ejs_settings_main_bar");
+        usernameBtn.type = "button";
+        const usernameSpan = this.ejs.createElement("span");
+        const currentUsername = (this.ejs.retroachievements && this.ejs.retroachievements.username) ? this.ejs.retroachievements.username : "Not Set";
+        usernameSpan.innerText = this.localization("Username") + ": " + currentUsername;
+        usernameBtn.appendChild(usernameSpan);
+        this.ejs.addEventListener(usernameBtn, "click", async () => {
+            const name = await this.showInputPrompt({ hint: "Enter RetroAchievements Username" });
+            if (name) {
+                this.ejs.retroachievements.saveConfig(name, undefined, undefined);
+                usernameSpan.innerText = this.localization("Username") + ": " + name;
+            }
+        });
+        retroachievementsOpts.appendChild(usernameBtn);
+
+        const tokenBtn = this.ejs.createElement("button");
+        tokenBtn.classList.add("ejs_settings_main_bar");
+        tokenBtn.type = "button";
+        const tokenSpan = this.ejs.createElement("span");
+        const currentToken = (this.ejs.retroachievements && this.ejs.retroachievements.token) ? "••••••••" : "Not Set";
+        tokenSpan.innerText = this.localization("API Token") + ": " + currentToken;
+        tokenBtn.appendChild(tokenSpan);
+        this.ejs.addEventListener(tokenBtn, "click", async () => {
+            const token = await this.showInputPrompt({ hint: "Enter Web API Key / Token", password: true });
+            if (token) {
+                this.ejs.retroachievements.saveConfig(undefined, token, undefined);
+                tokenSpan.innerText = this.localization("API Token") + ": ••••••••";
+            }
+        });
+        retroachievementsOpts.appendChild(tokenBtn);
+
+        addToMenu(this.localization("Hardcore Mode"), "ra_hardcore", {
+            "enabled": this.localization("Enabled"),
+            "disabled": this.localization("Disabled")
+        }, (this.ejs.retroachievements && this.ejs.retroachievements.hardcore) ? "enabled" : "disabled", retroachievementsOpts, true);
+
+        funcs.push((title) => {
+            if (title === "ra_hardcore") {
+                this.ejs.retroachievements.saveConfig(undefined, undefined, settings["ra_hardcore"] === "enabled");
+            }
+        });
+
+        const testBtn = this.ejs.createElement("button");
+        testBtn.classList.add("ejs_settings_main_bar");
+        testBtn.type = "button";
+        const testSpan = this.ejs.createElement("span");
+        testSpan.innerText = "🏆 " + this.localization("Test Unlock Notification");
+        testBtn.appendChild(testSpan);
+        this.ejs.addEventListener(testBtn, "click", () => {
+            this.ejs.retroachievements.unlockAchievement({
+                Title: "Welcome to RetroWeb!",
+                Description: "RetroAchievements integration successfully configured.",
+                Points: 10,
+                BadgeName: "00001"
+            });
+        });
+        retroachievementsOpts.appendChild(testBtn);
+
+        checkForEmptyMenu(retroachievementsOpts);
 
         let controllerPortInfo;
         try {
