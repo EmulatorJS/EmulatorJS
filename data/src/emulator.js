@@ -904,7 +904,8 @@ class EmulatorJS {
             if (isoFile === null && ["iso", "cso", "chd", "elf"].includes(ext)) {
                 isoFile = fileName;
             }
-            if (prioritizeExtensions.includes(ext)) {
+            // Only a sheet the core can open: a dump may hold a .ccd next to its .cue
+            if (prioritizeExtensions.includes(ext) && this.supportsExtension(ext)) {
                 const currentCueExt = (cueFile === null) ? null : cueFile.split(".").pop().toLowerCase();
                 if (coreName === "psx") {
                     // Always prefer m3u files for psx cores
@@ -913,14 +914,9 @@ class EmulatorJS {
                             cueFile = fileName;
                         }
                     }
-                } else {
-                    const priority = ["cue", "ccd"]
-                    // Prefer cue or ccd files over toc or m3u
-                    if (!priority.includes(currentCueExt)) {
-                        if (cueFile === null || priority.includes(ext)) {
-                            cueFile = fileName;
-                        }
-                    }
+                } else if (cueFile === null || prioritizeExtensions.indexOf(ext) < prioritizeExtensions.indexOf(currentCueExt)) {
+                    // Prefer cue, then ccd, over toc or m3u
+                    cueFile = fileName;
                 }
             }
         });
