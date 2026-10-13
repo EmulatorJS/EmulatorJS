@@ -594,7 +594,7 @@ class EmulatorJS {
                 rep.buildStart = Math.random() * 100;
             }
             if (this.webgl2Enabled === null) {
-                this.webgl2Enabled = rep.options ? rep.options.defaultWebGL2 : false;
+                this.webgl2Enabled = (rep.options && typeof rep.options.defaultWebGL2 === "boolean") ? rep.options.defaultWebGL2 : this.supportsWebgl2;
             }
             if (this.requiresWebGL2(this.getCore())) {
                 this.webgl2Enabled = true;
