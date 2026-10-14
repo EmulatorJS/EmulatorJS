@@ -20,6 +20,7 @@ export const cores = {
     "pce": ["mednafen_pce"],
     "pcfx": ["mednafen_pcfx"],
     "psx": ["pcsx_rearmed", "mednafen_psx_hw"],
+    "ps2": ["ps2web"],
     "ws": ["mednafen_wswan"],
     "gba": ["mgba"],
     "n64": ["mupen64plus_next", "parallel_n64"],
@@ -41,6 +42,6 @@ export const cores = {
     "3ds": ["azahar"]
 };
 
-export const requiresThreads = ["ppsspp", "dosbox_pure", "azahar"];
+export const requiresThreads = ["ppsspp", "dosbox_pure", "azahar", "ps2web"];
 
 export const requiresWebGL2 = ["ppsspp", "azahar"];

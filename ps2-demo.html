@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmulatorJS — PS2 webplay demo (Kingdom Hearts)</title>
+    <style>
+        body { margin: 0; background: #10141f; color: #eef5ff; font-family: system-ui, sans-serif; }
+        header { padding: 12px 16px; background: #0b0e16; border-bottom: 1px solid #222; }
+        h1 { font-size: 16px; margin: 0 0 4px; color: #18e0ff; }
+        p.note { margin: 0; font-size: 12px; color: #8ea2bd; }
+        #game { width: 100%; max-width: 960px; aspect-ratio: 4 / 3; margin: 16px auto; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>EmulatorJS + ps2web — static recompilation PS2 core</h1>
+        <p class="note">
+            The game is a per-title build produced by ps2-web-recomp (EE recompiled to WASM, GS on WebGPU,
+            disc streamed over HTTP Range requests). Requires a cross-origin-isolated page
+            (COOP/COEP) and a browser with WebGPU + WASM JSPI (current Chrome/Edge).
+        </p>
+    </header>
+    <div id="game"></div>
+
+    <script>
+        // Debug mode loads data/src/emulator.js as an ES module (no pre-minified bundle needed)
+        window.EJS_DEBUG_XX = true;
+
+        window.EJS_player = "#game";
+        window.EJS_gameUrl = "/disc.iso";
+        window.EJS_gameName = "Kingdom Hearts (USA)";
+        window.EJS_core = "ps2web";
+        window.EJS_threads = true;
+        window.EJS_startOnLoaded = true;
+        window.EJS_pathtodata = "/data/";
+    </script>
+    <script src="/data/loader.js"></script>
+</body>
+</html>

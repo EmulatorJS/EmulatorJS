@@ -7,6 +7,7 @@ import { cyrb53 } from "./utils.js";
 import { EJS_SETUP } from "./setup.js";
 import { Netplay } from "./netplay.js";
 import { EJS_license } from "./license.js";
+import { EJS_PS2 } from "./ps2web.js";
 import * as CONSTS from "./consts.js";
 
 import "./vendor/nipplejs.js";
@@ -620,6 +621,14 @@ class EmulatorJS {
         if (this.config.threads && typeof window.SharedArrayBuffer !== "function") {
             this.startGameError(this.localization("Error for site owner") + "\n" + this.localization("Check console"));
             console.warn("Threads is set to true, but the SharedArrayBuffer function is not exposed. Threads requires 2 headers to be set when sending you html page. See https://stackoverflow.com/a/68630724");
+            return;
+        }
+        if (this.getCore() === "ps2web") {
+            // Static-recompilation PS2 backend — not a RetroArch core. See src/ps2web.js.
+            this.coreName = "ps2web";
+            this.ps2 = new EJS_PS2(this);
+            this.on("exit", () => this.ps2.exit());
+            this.ps2.start();
             return;
         }
         const gotCore = (data) => {
@@ -2315,6 +2324,7 @@ class EmulatorJS {
         this.setVolume = (volume) => {
             this.saveSettings();
             this.muted = (volume === 0);
+            if (this.ps2Gain) this.ps2Gain.gain.value = volume;
             volumeSlider.value = volume;
             volumeSlider.setAttribute("aria-valuenow", volume * 100);
             volumeSlider.setAttribute("aria-valuetext", (volume * 100).toFixed(1) + "%");
@@ -2322,7 +2332,7 @@ class EmulatorJS {
 
             const skipLocalAudio = this.isNetplay && this.netplay && this.netplay.setVolume(volume);
 
-            if (!skipLocalAudio && this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.sources) {
+            if (!skipLocalAudio && this.Module && this.Module.AL && this.Module.AL.currentCtx && this.Module.AL.currentCtx.sources) {
                 this.Module.AL.currentCtx.sources.forEach(e => {
                     e.gain.gain.value = volume;
                 })
