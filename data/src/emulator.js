@@ -2075,9 +2075,9 @@ class EmulatorJS {
             }
             this.gameManager.screenshot().then(screenshot => {
                 const blob = new Blob([screenshot], { type: "image/png" });
-                if (imageUpscale === 0) {
+                if (imageUpscale <= 1) {
                     callback(blob, "png");
-                } else if (imageUpscale > 1) {
+                } else {
                     scale = imageUpscale;
                     const img = new Image();
                     const screenshotUrl = URL.createObjectURL(blob);
