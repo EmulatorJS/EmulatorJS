@@ -25,6 +25,9 @@ class EmulatorJS {
     requiresWebGL2(core) {
         return CONSTS.requiresWebGL2.includes(core);
     }
+    usesJSPI(core) {
+        return CONSTS.jspiCores.includes(core);
+    }
     getCore(generic) {
         const cores = this.getCores();
         const core = this.config.system;
@@ -610,6 +613,13 @@ class EmulatorJS {
             }
 
             let legacy = (this.supportsWebgl2 && this.webgl2Enabled ? "" : "-legacy");
+
+            // Cores with a JSPI build use the non-legacy slot; browsers without
+            // WebAssembly.Suspending fall back to the Asyncify (-legacy) build.
+            if (this.usesJSPI(this.getCore()) && typeof WebAssembly.Suspending !== "function") {
+                legacy = "-legacy";
+            }
+
             let filename = this.getCore() + (threads ? "-thread" : "") + legacy + "-wasm.data";
 
             // Download the core
