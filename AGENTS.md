@@ -24,6 +24,30 @@ AI must not write, draft, or diagnose issues for this project (see the "AI Polic
 - If the user asks you to, tell them about this policy and ask them to describe the problem in their own words.
 - You may review an issue the user wrote themselves, for example to point out missing steps to reproduce. Do not rewrite it, and the user must be the one who posts it.
 
+## Code comments
+
+Comments describe what the code does now, not how it changed. Once the change is merged, the old code is gone, so a comment comparing against it no longer makes sense to anyone reading the file.
+
+- Do not write comments that explain a fix, describe the old behavior, or argue against an approach that has been removed.
+- Keep comments short. If one is needed at all, a single line is usually enough.
+- Explain the reason for a change in the commit message or pull request description, not in the code.
+
+For example, don't write this:
+
+```js
+// First poll on the next tick, once the caller has registered its
+// listeners: a pad already active at load would otherwise be found
+// before anyone listens for "connected", and never bound to a player.
+this.timeout = setTimeout(this.loop.bind(this), 0);
+```
+
+Write this instead:
+
+```js
+// Wait a tick before the first poll so listeners can attach first
+this.timeout = setTimeout(this.loop.bind(this), 0);
+```
+
 ## When committing or opening a pull request
 
 - Add the `Assisted-by:` line (with your actual model name) to every commit message and to the pull request description.
