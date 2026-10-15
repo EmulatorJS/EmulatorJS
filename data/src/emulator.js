@@ -614,7 +614,7 @@ class EmulatorJS {
 
             // Download the core
             console.log("[EJS Core] Downloading core:", filename);
-            const corePath = "cores/" + filename;
+            const corePath = "cores/" + filename + "?v=" + encodeURIComponent(rep.buildStart);
             const res = await this.downloadFile(corePath, this.downloadType.core.name, (progress, status) => {
                 this.frontend.setLoadingText(status === "decompressing" ? "Decompress Game Core" : "Download Game Core", progress);
             }, false, { responseType: "arraybuffer", method: "GET" }, true, this.downloadType.core.dontCache);
