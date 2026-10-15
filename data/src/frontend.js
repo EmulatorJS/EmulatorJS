@@ -1683,6 +1683,7 @@ class EJS_Frontend {
             buttons = [
                 { id: 0, label: this.localization("BUTTON 1 / START") },
                 { id: 8, label: this.localization("BUTTON 2") },
+                { id: 2, label: this.localization("PAUSE") },
                 { id: 4, label: this.localization("UP") },
                 { id: 5, label: this.localization("DOWN") },
                 { id: 6, label: this.localization("LEFT") },
@@ -2441,6 +2442,7 @@ class EJS_Frontend {
             info = [
                 { "type": "button", "text": "1", "id": "button_1", "location": "right", "left": 10, "top": 40, "bold": true, "input_value": 0 },
                 { "type": "button", "text": "2", "id": "button_2", "location": "right", "left": 81, "top": 40, "bold": true, "input_value": 8 },
+                { "type": "button", "text": "Pause", "id": "pause", "location": "center", "left": 30, "fontSize": 15, "block": true, "input_value": 2 },
                 { "type": "dpad", "id": "dpad", "location": "left", "left": "50%", "right": "50%", "joystickInput": false, "inputValues": [4, 5, 6, 7] }
             ];
             info.push(...speedControlButtons);
