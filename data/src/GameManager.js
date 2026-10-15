@@ -269,15 +269,15 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
             if (index === 24 && value === 1) {
                 const slot = this.EJS.frontend.settings["save-state-slot"] ? this.EJS.frontend.settings["save-state-slot"] : "1";
                 if (this.quickSave(slot)) {
-                    this.EJS.frontend.displayMessage("SAVED STATE TO SLOT", undefined, " " + slot);
+                    this.EJS.frontend.displayMessage("SAVED STATE TO SLOT", undefined, " " + slot, "success");
                 } else {
-                    this.EJS.frontend.displayMessage("FAILED TO SAVE STATE");
+                    this.EJS.frontend.displayMessage("FAILED TO SAVE STATE", undefined, undefined, "error");
                 }
             }
             if (index === 25 && value === 1) {
                 const slot = this.EJS.frontend.settings["save-state-slot"] ? this.EJS.frontend.settings["save-state-slot"] : "1";
                 this.quickLoad(slot);
-                this.EJS.frontend.displayMessage("LOADED STATE FROM SLOT", undefined, " " + slot);
+                this.EJS.frontend.displayMessage("LOADED STATE FROM SLOT", undefined, " " + slot, "success");
             }
             if (index === 26 && value === 1) {
                 let newSlot;
