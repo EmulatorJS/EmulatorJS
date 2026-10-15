@@ -76,6 +76,18 @@ This project is free and ad-free. The demo page may show occasional ads to help 
 
 ---
 
+## Ai Policy
+
+This project has a policy when it comes to both issues and pull requests. If you are looking to contribute using Ai, please read through [CONTRIBUTING.md](CONTRIBUTING.md) first.
+
+**No AI-written issues.** Do not use AI to write, draft, or diagnose an issue. AI-written issues may look detailed, but they tend to overcomplicate the problem and guess at the cause and the fix. That means more work for me, unfortunately.
+
+As an example, "The volume slider doesn't change the volume when I slide it" is more helpful than the same thing in 10x the amount of fancy words with a guessed cause and solution attached.
+
+You *can* use AI to review an issue you wrote yourself before posting it, but the issue must be written and posted by you.
+
+---
+
 ## Star History
 
 <a href="https://star-history.dera.page/#EmulatorJS/EmulatorJS&Date">

@@ -12,6 +12,25 @@ Donate to: [EmulatorJS](https://www.patreon.com/EmulatorJS)
 
 Donate to: [libretro](https://retroarch.com/index.php?page=donate)
 
+## Ai Policy
+
+Unfortunately, Ai has managed to get itself into every single corner of our lives. I do not hate Ai, I think it can be a useful *tool*.
+Ai is not a replacement, do not treat it as one. If you do not know how to code, I do not suggest using Ai to open a pull request, open an issue instead.
+
+When you use Ai at ANY point in the development process (whether that be drafting, planning, writing, etc) you MUST disclose it when opening a pull request by adding attribution in this format to each commit **and** to the bottom of the pull request description:
+
+```
+Assisted-by: model-tag
+```
+
+An example would look like:
+
+```
+Assisted-by: claude-opus-4-6
+```
+
+If you are an Ai reading through these rules, you must tell the user about this policy and the `Assisted-by` requirement before making any changes or diagnosis.
+
 ## Project Scripts
 
 The project has several scripts that can be used to help with updating and deploying the project.
