@@ -1838,38 +1838,30 @@ class EmulatorJS {
         return null;
     }
     getCoreSettings() {
-        if (!window.localStorage || this.config.disableLocalStorage) {
-            if (this.config.defaultOptions) {
-                let rv = "";
-                for (const k in this.config.defaultOptions) {
-                    let value = isNaN(this.config.defaultOptions[k]) ? `"${this.config.defaultOptions[k]}"` : this.config.defaultOptions[k];
-                    rv += `${k} = ${value}\n`;
+        // The core reads this file as it loads the game, so it holds the
+        // player's saved settings and every default option they leave unset.
+        const settings = {};
+        if (window.localStorage && !this.config.disableLocalStorage) {
+            let coreSpecific = localStorage.getItem(this.getLocalStorageKey());
+            if (coreSpecific) {
+                try {
+                    coreSpecific = JSON.parse(coreSpecific);
+                    if (!(coreSpecific.settings instanceof Object)) throw new Error("Not a JSON object");
+                    Object.assign(settings, coreSpecific.settings);
+                } catch(e) {
+                    console.warn("Could not load previous settings", e);
                 }
-                return rv;
-            }
-            return "";
-        };
-        let coreSpecific = localStorage.getItem(this.getLocalStorageKey());
-        if (coreSpecific) {
-            try {
-                coreSpecific = JSON.parse(coreSpecific);
-                if (!(coreSpecific.settings instanceof Object)) throw new Error("Not a JSON object");
-                let rv = "";
-                for (const k in coreSpecific.settings) {
-                    let value = isNaN(coreSpecific.settings[k]) ? `"${coreSpecific.settings[k]}"` : coreSpecific.settings[k];
-                    rv += `${k} = ${value}\n`;
-                }
-                for (const k in this.config.defaultOptions) {
-                    if (rv.includes(k)) continue;
-                    let value = isNaN(this.config.defaultOptions[k]) ? `"${this.config.defaultOptions[k]}"` : this.config.defaultOptions[k];
-                    rv += `${k} = ${value}\n`;
-                }
-                return rv;
-            } catch(e) {
-                console.warn("Could not load previous settings", e);
             }
         }
-        return "";
+        for (const k in this.config.defaultOptions) {
+            if (!(k in settings)) settings[k] = this.config.defaultOptions[k];
+        }
+        let rv = "";
+        for (const k in settings) {
+            let value = isNaN(settings[k]) ? `"${settings[k]}"` : settings[k];
+            rv += `${k} = ${value}\n`;
+        }
+        return rv;
     }
     loadSettings() {
         if (!window.localStorage || this.config.disableLocalStorage) return;
