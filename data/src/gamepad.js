@@ -20,8 +20,7 @@ class GamepadHandler {
         };
         this.gamepads = [];
         this.listeners = {};
-        this.timeout = null;
-        this.loop();
+        this.timeout = setTimeout(this.loop.bind(this), 0);
     }
     terminate() {
         window.clearTimeout(this.timeout);
