@@ -144,7 +144,7 @@ class EJS_GameManager {
             this.FS.mkdir(path);
         } catch(e) {}
     }
-    getRetroArchCfg() {
+    getSampleRate() {
         let detectedSampleRate = 44100;
         try {
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -156,13 +156,15 @@ class EJS_GameManager {
                 ac.close();
             }
         } catch(e) {}
-
+        return detectedSampleRate;
+    }
+    getRetroArchCfg() {
         let cfg = "autosave_interval = 60\n" +
             "screenshot_directory = \"/\"\n" +
             "block_sram_overwrite = false\n" +
             "video_gpu_screenshot = false\n" +
             "audio_latency = 64\n" +
-            "audio_out_rate = " + detectedSampleRate + "\n" +
+            "audio_out_rate = " + this.getSampleRate() + "\n" +
             "video_top_portrait_viewport = true\n" +
             "video_vsync = true\n" +
             "video_smooth = false\n" +
