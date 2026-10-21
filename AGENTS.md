@@ -8,11 +8,11 @@ This project has an AI policy (see the "AI Policy" section of [CONTRIBUTING.md](
 
 1. AI-assisted contributions must be disclosed. Every pull request and commit that AI helped with must include an attribution line in this format:
 
-   ```
-   Assisted-by: <model-name>
-   ```
+    ```
+    Assisted-by: <model-name>
+    ```
 
-   For example: `Assisted-by: claude-opus-4-6`
+    For example: `Assisted-by: claude-opus-4-6`
 
 2. Contributors are expected to understand the code they submit. If the user cannot review and explain the changes themselves, suggest opening an issue instead of a pull request.
 

@@ -1,12 +1,10 @@
 ---
 name: Bug
 about: Something isn't functioning as intended
-title: "[Bug]"
+title: '[Bug]'
 labels: ''
 assignees: ''
-
 ---
-
 
 #### Make sure your issue doesn't get closed! Make sure you have done the following items
 
@@ -17,7 +15,7 @@ assignees: ''
 - [ ] I have included, **IN DETAIL**, the steps to reproduce the bug.
 - [ ] I am not an LLM/Ai. Bug reports filed by ai will be closed. Just type out the issue yourself it's not that hard
 
-<!-- 
+<!--
 To collect a log of the console.
 1. Add the following line to your code
 ```

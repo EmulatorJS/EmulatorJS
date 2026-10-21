@@ -1,29 +1,29 @@
 name: Lint
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
+    lint:
+        runs-on: ubuntu-latest
 
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
 
-    - name: Install dependencies
-      run: npm install
+            - name: Install dependencies
+              run: npm install
 
-    - name: Run ESLint
-      run: npx eslint .
+            - name: Run ESLint
+              run: npx eslint .
 
-    - name: Run Prettier check
-      run: npm run format:check
+            - name: Run Prettier check
+              run: npm run format:check

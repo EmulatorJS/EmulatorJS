@@ -25,9 +25,11 @@ Join our Discord server:
 ## Getting Started
 
 ### Supported Systems
+
 EmulatorJS supports a wide variety of legacy consoles and arcade machines. For the complete list of supported cores, please visit our [Cores Documentation](https://emulatorjs.org/docs4devs/cores).
 
 ### Versioning Guide
+
 We use a specific versioning system to help you choose the right build for your needs:
 
 1.  **Stable** - The most current release. Both code and cores are tested before release. Updated when new versions are released on GitHub. This is the default version on the Demo.
@@ -35,6 +37,7 @@ We use a specific versioning system to help you choose the right build for your 
 3.  **Nightly** - Contains the latest code and the latest cores. Cores are updated daily. **This version is not recommended for production use as it is the main development branch.**
 
 ### CDN Integration
+
 EmulatorJS provides a public CDN at `https://cdn.emulatorjs.org/`. You can access any version by setting the data path and loader.js accordingly.
 
 ```javascript
@@ -44,6 +47,7 @@ const EJS_pathToData = 'https://cdn.emulatorjs.org/<version>/data/';
 ```
 
 ### Development
+
 To run the project locally for development:
 
 1.  Open a terminal in the root directory.
@@ -64,14 +68,17 @@ To run the project locally for development:
 ## Community & Support
 
 ### 3rd Party Integrations
+
 EmulatorJS is built as a library/plugin, not a standalone website (therefore, no Docker container). For projects that utilize EmulatorJS, check out our [3rd Party Integration List](https://emulatorjs.org/docs/3rd-party).
 
 ### Issues & Reporting
+
 If you encounter an issue, please open an [Issue](https://github.com/EmulatorJS/EmulatorJS/issues) on GitHub. Include as many details as possible, including your browser console logs.
 
 > **When reporting bugs, please specify the version you are using (Stable/Latest/Nightly).**
 
 ### Support the Project
+
 This project is free and ad-free. The demo page may show occasional ads to help with hosting costs, but you can support development directly via [Patreon][Link Patreon].
 
 ---
@@ -84,7 +91,7 @@ This project has a policy when it comes to both issues and pull requests. If you
 
 As an example, "The volume slider doesn't change the volume when I slide it" is more helpful than the same thing in 10x the amount of fancy words with a guessed cause and solution attached. I would rather it be in broken english than an overly-detailed ai generated issue
 
-You *can* use AI to review an issue you wrote yourself before posting it, but the issue must be written and posted by you. It cannot be written or re-written by an Ai.
+You _can_ use AI to review an issue you wrote yourself before posting it, but the issue must be written and posted by you. It cannot be written or re-written by an Ai.
 
 People wrote issues (and code!!) without Ai 6 years ago. You can do it now.
 
@@ -101,6 +108,7 @@ People wrote issues (and code!!) without Ai 6 years ago. You can do it now.
 </a>
 
 <!-- Link Definitions -->
+
 [Badge License]: https://img.shields.io/badge/License-GPLv3-blue.svg?style=for-the-badge&logo=opensourceinitiative
 [Badge Website]: https://img.shields.io/badge/Website-736e9b?style=for-the-badge
 [Badge Usage]: https://img.shields.io/badge/Usage-2478b5?style=for-the-badge
@@ -108,7 +116,6 @@ People wrote issues (and code!!) without Ai 6 years ago. You can do it now.
 [Badge Demo]: https://img.shields.io/badge/Demo-528116?style=for-the-badge
 [Badge Contributors]: https://img.shields.io/badge/Contributors-54b7dd?style=for-the-badge
 [Discord Badge]: https://invidget.switchblade.xyz/6akryGkETU
-
 [Link License]: LICENSE
 [Link Website]: https://emulatorjs.org/
 [Link Usage]: https://emulatorjs.org/docs/
