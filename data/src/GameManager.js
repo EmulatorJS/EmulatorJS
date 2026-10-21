@@ -44,7 +44,24 @@ class EJS_GameManager {
         this.initShaders();
         this.setupPreLoadSettings();
 
-        this.EJS.on("exit", () => {
+        this.EJS.on("exit", async () => {
+            if (this.isDosBoxPure()) {
+                if (this.exitInProgress) return;
+                this.exitInProgress = true;
+                clearInterval(this.EJS.saveSaveInterval);
+                if (!this.EJS.failedToStart) this.saveSaveFiles();
+                this.toggleMainLoop(0);
+                // Persist disk differences before tearing down the threaded core.
+                try {
+                    await this.syncSaveFileSystem();
+                } catch (error) {
+                    console.error("Failed to persist DOSBox Pure saves:", error);
+                    return;
+                }
+                this.FS.unmount("/data/saves");
+                try { this.Module.abort(); } catch (error) { console.warn(error); }
+                return;
+            }
             if (!this.EJS.failedToStart) {
                 this.saveSaveFiles();
                 this.functions.restart();
@@ -68,11 +85,11 @@ class EJS_GameManager {
         }
     }
     mountFileSystems() {
-        return new Promise(async resolve => {
+        return new Promise((resolve, reject) => {
             this.mkdir("/data");
             this.mkdir("/data/saves");
             this.FS.mount(this.FS.filesystems.IDBFS, { autoPersist: true }, "/data/saves");
-            this.FS.syncfs(true, resolve);
+            this.FS.syncfs(true, error => error ? reject(error) : resolve());
         });
     }
     writeConfigFile() {
@@ -93,6 +110,7 @@ class EJS_GameManager {
                     await new Promise(async (done) => {
                         try {
                             const url = this.EJS.config.externalFiles[key];
+                            const saveBundle = this.isDosBoxPure() && key === "/data/saves/";
                             
                             const cacheItem = await this.EJS.downloadFile(
                                 url,
@@ -100,13 +118,16 @@ class EJS_GameManager {
                                 null,          // progress callback
                                 true,          // notWithPath (URL is already absolute)
                                 { responseType: "arraybuffer" },  // opts (was null → causes crash)
-                                false,         // forceExtract
+                                saveBundle,    // save URLs may have a .srm suffix
                                 this.EJS.downloadType.support.dontCache,
                                 false          // dontExtract
                             );
                             
                             let path = key;
-                            if (key.trim().endsWith("/")) {
+                            if (saveBundle) {
+                                this.writeDosBoxPureSaveFiles(cacheItem.data.files);
+                                await this.syncSaveFileSystem();
+                            } else if (key.trim().endsWith("/")) {
                                 // Extract to directory
                                 for (let i = 0; i < cacheItem.data.files.length; i++) {
                                     const file = cacheItem.data.files[i];
@@ -440,7 +461,9 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     saveSaveFiles() {
         this.functions.saveSaveFiles();
         this.EJS.callEvent("saveSaveFiles", this.getSaveFile(false));
-        //this.FS.syncfs(false, () => {});
+        if (this.isDosBoxPure()) {
+            this.syncSaveFileSystem().catch(error => console.error("Failed to persist DOSBox Pure saves:", error));
+        }
     }
     supportsStates() {
         return !!this.functions.supportsStates();
@@ -455,8 +478,154 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
         if (save !== false) {
             this.saveSaveFiles();
         }
+        if (this.isDosBoxPure()) return this.createZipSaveBundle(this.getDosBoxPureSaveFiles());
         const exists = this.FS.analyzePath(this.getSaveFilePath()).exists;
         return (exists ? this.FS.readFile(this.getSaveFilePath()) : null);
+    }
+    isDosBoxPure() {
+        return ["dos", "dosbox_pure"].includes(this.EJS.getCore());
+    }
+    syncSaveFileSystem() {
+        if (this.saveSyncPromise) {
+            this.saveSyncPending = true;
+            return this.saveSyncPromise;
+        }
+        this.saveSyncPromise = (async () => {
+            do {
+                this.saveSyncPending = false;
+                await new Promise((resolve, reject) => {
+                    this.FS.syncfs(false, error => error ? reject(error) : resolve());
+                });
+            } while (this.saveSyncPending);
+        })().finally(() => { this.saveSyncPromise = null; });
+        return this.saveSyncPromise;
+    }
+    getDosBoxPureSaveFiles() {
+        const root = "/data/saves/";
+        const savePath = this.getSaveFilePath();
+        if (!savePath.startsWith(root)) return [];
+        const directory = savePath.substring(0, savePath.lastIndexOf("/"));
+        if (!this.FS.analyzePath(directory).exists) return [];
+        const name = savePath.substring(directory.length + 1);
+        const stem = name.replace(/\.[^.]*$/, "");
+        return this.FS.readdir(directory).filter(file => {
+            if (!file.startsWith(stem)) return false;
+            const suffix = file.substring(stem.length);
+            return file === name || /^(?:\.(?:pure\.zip|sav\.zip|sav)|-(?:[A-Z]DRIVE|[0-9A-F]{8})\.sav)$/i.test(suffix);
+        }).sort().filter(file => this.FS.isFile(this.FS.stat(directory + "/" + file).mode))
+            .map(file => ({ name: directory.substring(root.length) + "/" + file, bytes: this.FS.readFile(directory + "/" + file) }))
+            .map(file => ({ ...file, name: file.name.replace(/^\//, "") }));
+    }
+    getSaveFileName() {
+        const name = this.getSaveFilePath().split("/").pop();
+        return this.isDosBoxPure() ? name.replace(/\.[^.]*$/, "") + ".zip" : name;
+    }
+    crc32(data) {
+        if (!EJS_GameManager.crcTable) {
+            EJS_GameManager.crcTable = new Uint32Array(256);
+            for (let n = 0; n < 256; n++) {
+                let c = n;
+                for (let k = 0; k < 8; k++) c = (c & 1) ? (0xedb88320 ^ (c >>> 1)) : (c >>> 1);
+                EJS_GameManager.crcTable[n] = c >>> 0;
+            }
+        }
+        let crc = 0xffffffff;
+        for (const value of data) crc = EJS_GameManager.crcTable[(crc ^ value) & 0xff] ^ (crc >>> 8);
+        return (crc ^ 0xffffffff) >>> 0;
+    }
+    createZipSaveBundle(files) {
+        if (!files.length) return null;
+        const encoder = new TextEncoder();
+        const entries = files.map((file) => ({
+            ...file,
+            fileName: encoder.encode(file.name),
+            crc: this.crc32(file.bytes)
+        }));
+        const localSize = entries.reduce((sum, file) => sum + 30 + file.fileName.length + file.bytes.length, 0);
+        const centralSize = entries.reduce((sum, file) => sum + 46 + file.fileName.length, 0);
+        const output = new Uint8Array(localSize + centralSize + 22);
+        const view = new DataView(output.buffer);
+        const write16 = (offset, value) => view.setUint16(offset, value, true);
+        const write32 = (offset, value) => view.setUint32(offset, value >>> 0, true);
+        let offset = 0;
+        for (const file of entries) {
+            file.offset = offset;
+            write32(offset, 0x04034b50); write16(offset + 4, 20); write16(offset + 6, 0x0800);
+            write16(offset + 8, 0); write16(offset + 10, 0); write16(offset + 12, 33);
+            write32(offset + 14, file.crc); write32(offset + 18, file.bytes.length); write32(offset + 22, file.bytes.length);
+            write16(offset + 26, file.fileName.length); write16(offset + 28, 0);
+            output.set(file.fileName, offset + 30); output.set(file.bytes, offset + 30 + file.fileName.length);
+            offset += 30 + file.fileName.length + file.bytes.length;
+        }
+        const centralOffset = offset;
+        for (const file of entries) {
+            write32(offset, 0x02014b50); write16(offset + 4, 20); write16(offset + 6, 20); write16(offset + 8, 0x0800);
+            write16(offset + 10, 0); write16(offset + 12, 0); write16(offset + 14, 33);
+            write32(offset + 16, file.crc); write32(offset + 20, file.bytes.length); write32(offset + 24, file.bytes.length);
+            write16(offset + 28, file.fileName.length); write16(offset + 30, 0); write16(offset + 32, 0);
+            write16(offset + 34, 0); write16(offset + 36, 0); write32(offset + 38, 0); write32(offset + 42, file.offset);
+            output.set(file.fileName, offset + 46);
+            offset += 46 + file.fileName.length;
+        }
+        write32(offset, 0x06054b50); write16(offset + 4, 0); write16(offset + 6, 0);
+        write16(offset + 8, entries.length); write16(offset + 10, entries.length);
+        write32(offset + 12, centralSize); write32(offset + 16, centralOffset); write16(offset + 20, 0);
+        return output;
+    }
+    prepareDosBoxPureSaveFiles(files) {
+        const prepared = new Map();
+        for (const file of files) {
+            const name = file.filename.replaceAll("\\", "/");
+            if (!name || name.startsWith("/") || name.includes(":") || name.includes("\0") || name.includes("//")
+                || name.split("/").some(part => part === "." || part === "..")) {
+                throw new Error("Unsafe save bundle path: " + file.filename);
+            }
+            if (name.endsWith("/")) continue;
+            if (name.includes("/") && !name.startsWith("DOSBox-pure/")) {
+                throw new Error("Not a DOSBox Pure save path: " + name);
+            }
+            if (name.split("/").some(part => part.startsWith(".ejs-")) || prepared.has(name)) {
+                throw new Error("Invalid or duplicate save bundle path: " + name);
+            }
+            prepared.set(name, file.bytes);
+        }
+        if (!prepared.size) throw new Error("Save bundle contains no files");
+        for (const name of prepared.keys()) {
+            const parts = name.split("/");
+            while (parts.length > 1) {
+                parts.pop();
+                if (prepared.has(parts.join("/"))) throw new Error("Conflicting save bundle path: " + name);
+            }
+        }
+        return prepared;
+    }
+    writeDosBoxPureSaveFiles(files) {
+        const prepared = this.prepareDosBoxPureSaveFiles(files);
+        for (const [name, bytes] of prepared) this.writeFile("/data/saves/" + name, bytes);
+    }
+    async readDosBoxPureSaveBundle(data) {
+        const files = await this.EJS.compression.decompress(data, () => {}, null);
+        if (files["!!notCompressedData"]) throw new Error("Expected a DOSBox Pure save archive");
+        const entries = Object.entries(files).map(([filename, bytes]) => ({ filename, bytes }));
+        this.prepareDosBoxPureSaveFiles(entries);
+        return entries;
+    }
+    getPendingDosBoxPureSavePath() {
+        return "/data/saves/.ejs-dosbox-imports/" + encodeURIComponent(this.EJS.config.gameUrl) + ".zip";
+    }
+    async loadDosBoxPureSaveBundle(data) {
+        // Apply imports on the next launch, before the core opens its disk files.
+        await this.readDosBoxPureSaveBundle(data);
+        this.writeFile(this.getPendingDosBoxPureSavePath(), data);
+        await this.syncSaveFileSystem();
+    }
+    async restorePendingDosBoxPureSave() {
+        const path = this.getPendingDosBoxPureSavePath();
+        if (!this.FS.analyzePath(path).exists) return;
+        this.writeDosBoxPureSaveFiles(await this.readDosBoxPureSaveBundle(this.FS.readFile(path)));
+        await this.syncSaveFileSystem();
+        this.FS.unlink(path);
+        await this.syncSaveFileSystem();
     }
     loadSaveFiles() {
         this.clearEJSResetTimer();
