@@ -18,7 +18,7 @@ This project has an AI policy (see the "AI Policy" section of [CONTRIBUTING.md](
 
 ## Issues
 
-AI must not have ANY involvement in the posting of issues. No writing, drafting, diagnosing, or any usage of any kind should be done (see the "AI Policy" section of [README.md](README.md)).
+AI must not have ANY involvement in the making and posting of issues. No writing, drafting, diagnosing, or any usage of any kind should be done (see the "AI Policy" section of [README.md](README.md)).
 
 - Do not write an issue, a bug report, or a guess at the cause or fix for the user to post.
 - Do not re-write an issue to make it look fancy or full of detail.
