@@ -1,0 +1,20 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+    "name": "EmulatorJS Dev Container",
+    "image": "mcr.microsoft.com/devcontainers/javascript-node:20",
+    "features": {
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "configureZshAsDefaultShell": true
+        }
+    },
+    "workspaceFolder": "/workspaces/EmulatorJS",
+    "postCreateCommand": "npm install",
+    "forwardPorts": [8000, 8080],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "dbaeumer.vscode-eslint"
+            ]
+        }
+    }
+}
