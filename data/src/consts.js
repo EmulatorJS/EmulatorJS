@@ -7,7 +7,10 @@ export const cores = {
     "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi"],
     "nes": ["fceumm", "nestopia"],
     "gb": ["gambatte"],
-    "coleco": ["gearcoleco"],
+    "coleco": ["gearcoleco", "bluemsx"],
+    "msx": ["bluemsx"],
+    "msx2": ["bluemsx"],
+    "sg1000": ["bluemsx"],
     "segaMS": ["smsplus", "genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
     "segaMD": ["genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
     "segaGG": ["genesis_plus_gx", "genesis_plus_gx_wide"],
@@ -44,3 +47,5 @@ export const cores = {
 export const requiresThreads = ["ppsspp", "dosbox_pure", "azahar"];
 
 export const requiresWebGL2 = ["ppsspp", "azahar"];
+
+export const jspiCores = ["bluemsx"];
