@@ -1,6 +1,6 @@
-import { simpleHash } from "./utils.js";
-import { EJS_STORAGE } from "./storage.js";
-import { EJS_COMPRESSION } from "./compression.js";
+import { simpleHash } from './utils.js';
+import { EJS_STORAGE } from './storage.js';
+import { EJS_COMPRESSION } from './compression.js';
 
 const CACHE_BLOB_CHUNK_SIZE = 50 * 1024 * 1024;
 
@@ -16,282 +16,337 @@ const CACHE_BLOB_CHUNK_SIZE = 50 * 1024 * 1024;
  * 5. If none of the above conditions are met, use the cached version.
  */
 class EJS_Download {
-    /**
-     * Creates an instance of EJS_Download.
-     * @param {EJS_Cache} storageCache - The cache instance to use for storing downloaded files.
-     * @param {Object} EJS - The main EmulatorJS instance.
-     */
-    constructor(storageCache = null, EJS = null) {
-        this.storageCache = storageCache;
-        this.EJS = EJS;
-        this.debug = EJS ? EJS.debug : false;
-    }
+	/**
+	 * Creates an instance of EJS_Download.
+	 * @param {EJS_Cache} storageCache - The cache instance to use for storing downloaded files.
+	 * @param {Object} EJS - The main EmulatorJS instance.
+	 */
+	constructor(storageCache = null, EJS = null) {
+		this.storageCache = storageCache;
+		this.EJS = EJS;
+		this.debug = EJS ? EJS.debug : false;
+	}
 
-    /**
-     * Handles downloading non-http(s) URLs (blob:, data:, file:, etc.)
-     * @param {string} url - The non-http(s) URL to fetch
-     * @param {string} type - The type of the file
-     * @param {string} method - The HTTP method (HEAD returns empty, others fetch)
-     * @param {string} responseType - The response type ("arraybuffer" or "text")
-     * @returns {Promise<EJS_CacheItem|null>} - The fetched data as a cache item, or null for HEAD requests
-     */
-    async handleNonHttpUrl(url, type, method = "GET", responseType = "arraybuffer") {
-        console.log("[EJS Download] Handling non-http(s) URL:", url);
-        
-        if (method === "HEAD") {
-            // HEAD requests just return empty for non-http URLs
-            return null;
-        }
+	/**
+	 * Handles downloading non-http(s) URLs (blob:, data:, file:, etc.)
+	 * @param {string} url - The non-http(s) URL to fetch
+	 * @param {string} type - The type of the file
+	 * @param {string} method - The HTTP method (HEAD returns empty, others fetch)
+	 * @param {string} responseType - The response type ("arraybuffer" or "text")
+	 * @returns {Promise<EJS_CacheItem|null>} - The fetched data as a cache item, or null for HEAD requests
+	 */
+	async handleNonHttpUrl(url, type, method = 'GET', responseType = 'arraybuffer') {
+		console.log('[EJS Download] Handling non-http(s) URL:', url);
 
-        try {
-            let res = await fetch(url);
-            let data;
-            
-            if (responseType === "arraybuffer" || !responseType) {
-                data = await res.arrayBuffer();
-                data = new Uint8Array(data);
-            } else {
-                data = await res.text();
-                // Try to parse as JSON if it looks like JSON
-                try { data = JSON.parse(data) } catch(e) {}
-            }
-            
-            // Clean up blob URLs to free memory
-            if (url.startsWith("blob:")) {
-                URL.revokeObjectURL(url);
-            }
-            
-            // Create a cache item for consistency
-            const filename = url.split("/").pop() || "downloaded.bin";
-            const now = Date.now();
-            
-            // Ensure data is Uint8Array for file item
-            let fileData;
-            if (data instanceof Uint8Array) {
-                fileData = data;
-            } else if (typeof data === "string") {
-                const encoder = new TextEncoder();
-                fileData = encoder.encode(data);
-            } else if (data instanceof ArrayBuffer) {
-                fileData = new Uint8Array(data);
-            } else {
-                const encoder = new TextEncoder();
-                fileData = encoder.encode(String(data));
-            }
-            
-            const files = [new EJS_FileItem(filename, fileData)];
-            const key = this.storageCache ? this.storageCache.generateCacheKey(fileData) : "temp-" + Date.now();
-            
-            // Don't cache non-http URLs (they're typically temporary or special)
-            return new EJS_CacheItem(key, files, now, type, responseType, filename, url, null);
-        } catch(e) {
-            console.error("[EJS Download] Failed to fetch non-http URL:", url, e);
-            throw new Error(`Failed to fetch non-http URL: ${e}`);
-        }
-    }
+		if (method === 'HEAD') {
+			// HEAD requests just return empty for non-http URLs
+			return null;
+		}
 
-    /**
-     * Downloads a file from the given URL with the specified options.
-     * Automatically detects and handles both http(s) and non-http(s) URLs (blob:, data:, etc.)
-     * @param {string} url - The URL to download the file from.
-     * @param {string} type - The type of the file to download (e.g. "ROM", "CORE", "BIOS", etc).
-     * @param {string} method - The HTTP method to use (default is "GET").
-     * @param {Array} headers - An array of headers to include in the request.
-     * @param {*} body - The body of the request (for POST/PUT requests).
-     * @param {*} onProgress - Callback function for progress updates - returns status(downloading or decompressing), percentage, loaded bytes, total bytes.
-     * @param {*} onComplete - Callback function when download is complete - returns success boolean, response data or error message.
-     * @param {Number} timeout - Timeout in milliseconds (default is 30000ms).
-     * @param {string} responseType - The response type (default is "arraybuffer").
-     * @param {boolean} forceExtract - Whether to force extraction of compressed files regardless of extension (default is false).
-     * @param {boolean} dontCache - If true, the downloaded file will not be cached (default is false).
-     * @param {boolean} dontExtract - If true, the downloaded file will not be extracted, but will still be cached (default is false, overridden by forceExtract).
-     * @returns {Promise<EJS_CacheItem>} - The downloaded file as an EJS_CacheItem.
-     */
-    downloadFile(url, type, method = "GET", headers = {}, body = null, onProgress = null, onComplete = null, timeout = 30000, responseType = "arraybuffer", forceExtract = false, dontCache = false, dontExtract = false) {
-        let cacheActiveText = " (cache usage requested)"
-        if (dontCache) {
-            cacheActiveText = "";
-        }
-        console.log("[EJS Download] Downloading " + responseType + " file: " + url + cacheActiveText);
-        return new Promise(async (resolve, reject) => {
-            try {
-                // Check if this is a non-http(s) URL (blob:, data:, file:, etc.)
-                let urlObj;
-                try { urlObj = new URL(url) } catch(e) {};
-                
-                if (urlObj && !["http:", "https:"].includes(urlObj.protocol)) {
-                    // Handle non-http(s) URLs directly
-                    const result = await this.handleNonHttpUrl(url, type, method, responseType);
-                    resolve(result);
-                    return;
-                }
+		try {
+			let res = await fetch(url);
+			let data;
 
-                // Use the provided storageCache or create a temporary one
-                if (!this.storageCache) {
-                    console.warn("No storageCache provided to EJS_Download, downloads will not be cached");
-                }
+			if (responseType === 'arraybuffer' || !responseType) {
+				data = await res.arrayBuffer();
+				data = new Uint8Array(data);
+			} else {
+				data = await res.text();
+				// Try to parse as JSON if it looks like JSON
+				try {
+					data = JSON.parse(data);
+				} catch (e) {}
+			}
 
-                let cached = null;
-                if (this.storageCache) {
-                    cached = await this.storageCache.get(url, false, "url");
-                }
-                const now = Date.now();
-                if (cached) {
-                    if (cached.cacheExpiry && cached.cacheExpiry > now) {
-                        if (this.debug) console.log("Using cached version of", url);
-                        resolve(cached);
-                        return;
-                    }
-                    let lastModified = null;
-                    try {
-                        const headResp = await fetch(url, { method: "HEAD", headers });
-                        lastModified = headResp.headers.get("Last-Modified");
-                    } catch (e) { }
-                    if (lastModified) {
-                        const lastModTime = Date.parse(lastModified);
-                        if (!isNaN(lastModTime) && lastModTime <= cached.added) {
-                            if (this.debug) console.log("Using cached version of", url);
-                            resolve(cached);
-                            return;
-                        }
-                    } else {
-                        if (this.debug) console.log("Using cached version of", url);
-                        resolve(cached);
-                        return;
-                    }
-                }
+			// Clean up blob URLs to free memory
+			if (url.startsWith('blob:')) {
+				URL.revokeObjectURL(url);
+			}
 
-                if (onProgress) onProgress("downloading", 0, 0, 0);
-                let controller = new AbortController();
-                let timer = setTimeout(() => controller.abort(), timeout);
-                let resp, data, filename = url.split("/").pop() || "downloaded.bin";
-                let cacheExpiry = null;
-                try {
-                    resp = await fetch(url, {
-                        method,
-                        headers,
-                        body,
-                        signal: controller.signal
-                    });
-                    clearTimeout(timer);
-                    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-                    const cd = resp.headers.get("Content-Disposition");
-                    if (cd) {
-                        const match = cd.match(/filename="?([^";]+)"?/);
-                        if (match) filename = match[1];
-                    }
-                    const cacheControl = resp.headers.get("Cache-Control");
-                    const expires = resp.headers.get("Expires");
-                    if (cacheControl && /max-age=(\d+)/.test(cacheControl)) {
-                        const maxAge = parseInt(cacheControl.match(/max-age=(\d+)/)[1]);
-                        cacheExpiry = now + maxAge * 1000;
-                    } else if (expires) {
-                        const exp = Date.parse(expires);
-                        if (!isNaN(exp)) cacheExpiry = exp;
-                    } else {
-                        // default to 5 days if no cache headers present
-                        cacheExpiry = now + 5 * 24 * 60 * 60 * 1000;
-                    }
-                    if (responseType === "arraybuffer") {
-                        let contentLength = 0;
-                        if (resp.headers.get("Content-Length")) {
-                            try {
-                                const parsedContentLength = parseInt(resp.headers.get("Content-Length"));
-                                if (!isNaN(parsedContentLength) && parsedContentLength > 0) {
-                                    contentLength = parsedContentLength;
-                                }
-                            } catch (e) {
-                                // swallow any errors parsing content length
-                            }
-                        }
-                        const reader = resp.body.getReader();
-                        let received = 0;
-                        let chunks = [];
-                        while (true) {
-                            const { done, value } = await reader.read();
-                            if (done) break;
-                            chunks.push(value);
-                            received += value.length;
-                            if (onProgress && contentLength) {
-                                onProgress("downloading", Math.floor(received / contentLength * 100), received, contentLength);
-                            }
-                        }
-                        
-                        const blob = new Blob(chunks);
-                        const ab = await blob.arrayBuffer();
-                        data = new Uint8Array(ab);
-                    } else {
-                        data = await resp[responseType]();
-                    }
-                } catch (err) {
-                    clearTimeout(timer);
-                    reject(`Download failed: ${err}`);
-                    return;
-                }
+			// Create a cache item for consistency
+			const filename = url.split('/').pop() || 'downloaded.bin';
+			const now = Date.now();
 
-                let files = [];
-                const ext = filename.toLowerCase().split('.').pop();
-                if (responseType === "arraybuffer") {
-                    if (forceExtract === true || (dontExtract === false && ["zip", "7z", "rar"].includes(ext))) {
-                        console.log(`Extracting ${filename} because it is a compressed file and forceExtract is ${forceExtract} and dontExtract is ${dontExtract}`);
-                        if (onProgress) onProgress("decompressing", 0, 0, 0);
-                        try {
-                            const compression = new EJS_COMPRESSION(this.EJS);
-                            await compression.decompress(data, (msg, isProgress) => {
-                                if (onProgress && isProgress) {
-                                    const percent = parseInt(msg);
-                                    onProgress("decompressing", isNaN(percent) ? 0 : percent, 0, 0);
-                                }
-                            }, (fname, fileData) => {
-                                files.push(new EJS_FileItem(fname, fileData instanceof Uint8Array ? fileData : new Uint8Array(fileData)));
-                            });
-                        } catch (e) {
-                            reject(`Decompression failed: ${e}`);
-                            return;
-                        }
-                    } else {
-                        console.log(`Not extracting ${filename} because forceExtract is ${forceExtract} and dontExtract is ${dontExtract}`);
-                        files = [new EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
-                    }
-                } else {
-                    // for non-arraybuffer types, just store the raw data as a single file
-                    files = [new EJS_FileItem(filename, data)];
-                    if (typeof data === "string") {
-                        // Encode string as UTF-8 Uint8Array
-                        const encoder = new TextEncoder();
-                        files = [new EJS_FileItem(filename, encoder.encode(data))];
-                    } else if (data instanceof Uint8Array) {
-                        files = [new EJS_FileItem(filename, data)];
-                    } else if (data instanceof ArrayBuffer) {
-                        files = [new EJS_FileItem(filename, new Uint8Array(data))];
-                    } else {
-                        // Fallback: try to convert to string then encode
-                        const encoder = new TextEncoder();
-                        files = [new EJS_FileItem(filename, encoder.encode(String(data)))];
-                    }
-                }
+			// Ensure data is Uint8Array for file item
+			let fileData;
+			if (data instanceof Uint8Array) {
+				fileData = data;
+			} else if (typeof data === 'string') {
+				const encoder = new TextEncoder();
+				fileData = encoder.encode(data);
+			} else if (data instanceof ArrayBuffer) {
+				fileData = new Uint8Array(data);
+			} else {
+				const encoder = new TextEncoder();
+				fileData = encoder.encode(String(data));
+			}
 
-                if (onProgress) onProgress("complete", 100, data.byteLength || 0, data.byteLength || 0);
+			const files = [new EJS_FileItem(filename, fileData)];
+			const key = this.storageCache ? this.storageCache.generateCacheKey(fileData) : 'temp-' + Date.now();
 
-                // Store in cache if available
-                if (this.storageCache) {
-                    const key = this.storageCache.generateCacheKey(files[0].bytes);
-                    const cacheItem = new EJS_CacheItem(key, files, now, type, responseType, filename, url, cacheExpiry);
-                    if (dontCache === false) {
-                        await this.storageCache.put(cacheItem);
-                    }
-                    resolve(cacheItem);
-                } else {
-                    // Return a temporary cache item if no cache available
-                    const key = "temp-" + Date.now();
-                    const cacheItem = new EJS_CacheItem(key, files, now, type, responseType, filename, url, cacheExpiry);
-                    resolve(cacheItem);
-                }
-            } catch (err) {
-                reject(err.toString());
-            }
-        });
-    }
+			// Don't cache non-http URLs (they're typically temporary or special)
+			return new EJS_CacheItem(key, files, now, type, responseType, filename, url, null);
+		} catch (e) {
+			console.error('[EJS Download] Failed to fetch non-http URL:', url, e);
+			throw new Error(`Failed to fetch non-http URL: ${e}`);
+		}
+	}
+
+	/**
+	 * Downloads a file from the given URL with the specified options.
+	 * Automatically detects and handles both http(s) and non-http(s) URLs (blob:, data:, etc.)
+	 * @param {string} url - The URL to download the file from.
+	 * @param {string} type - The type of the file to download (e.g. "ROM", "CORE", "BIOS", etc).
+	 * @param {string} method - The HTTP method to use (default is "GET").
+	 * @param {Array} headers - An array of headers to include in the request.
+	 * @param {*} body - The body of the request (for POST/PUT requests).
+	 * @param {*} onProgress - Callback function for progress updates - returns status(downloading or decompressing), percentage, loaded bytes, total bytes.
+	 * @param {*} onComplete - Callback function when download is complete - returns success boolean, response data or error message.
+	 * @param {Number} timeout - Timeout in milliseconds (default is 30000ms).
+	 * @param {string} responseType - The response type (default is "arraybuffer").
+	 * @param {boolean} forceExtract - Whether to force extraction of compressed files regardless of extension (default is false).
+	 * @param {boolean} dontCache - If true, the downloaded file will not be cached (default is false).
+	 * @param {boolean} dontExtract - If true, the downloaded file will not be extracted, but will still be cached (default is false, overridden by forceExtract).
+	 * @returns {Promise<EJS_CacheItem>} - The downloaded file as an EJS_CacheItem.
+	 */
+	downloadFile(
+		url,
+		type,
+		method = 'GET',
+		headers = {},
+		body = null,
+		onProgress = null,
+		onComplete = null,
+		timeout = 30000,
+		responseType = 'arraybuffer',
+		forceExtract = false,
+		dontCache = false,
+		dontExtract = false,
+	) {
+		let cacheActiveText = ' (cache usage requested)';
+		if (dontCache) {
+			cacheActiveText = '';
+		}
+		console.log('[EJS Download] Downloading ' + responseType + ' file: ' + url + cacheActiveText);
+		return new Promise(async (resolve, reject) => {
+			try {
+				// Check if this is a non-http(s) URL (blob:, data:, file:, etc.)
+				let urlObj;
+				try {
+					urlObj = new URL(url);
+				} catch (e) {}
+
+				if (urlObj && !['http:', 'https:'].includes(urlObj.protocol)) {
+					// Handle non-http(s) URLs directly
+					const result = await this.handleNonHttpUrl(url, type, method, responseType);
+					resolve(result);
+					return;
+				}
+
+				// Use the provided storageCache or create a temporary one
+				if (!this.storageCache) {
+					console.warn('No storageCache provided to EJS_Download, downloads will not be cached');
+				}
+
+				let cached = null;
+				if (this.storageCache) {
+					cached = await this.storageCache.get(url, false, 'url');
+				}
+				const now = Date.now();
+				if (cached) {
+					if (cached.cacheExpiry && cached.cacheExpiry > now) {
+						if (this.debug) console.log('Using cached version of', url);
+						resolve(cached);
+						return;
+					}
+					let lastModified = null;
+					try {
+						const headResp = await fetch(url, { method: 'HEAD', headers });
+						lastModified = headResp.headers.get('Last-Modified');
+					} catch (e) {}
+					if (lastModified) {
+						const lastModTime = Date.parse(lastModified);
+						if (!isNaN(lastModTime) && lastModTime <= cached.added) {
+							if (this.debug) console.log('Using cached version of', url);
+							resolve(cached);
+							return;
+						}
+					} else {
+						if (this.debug) console.log('Using cached version of', url);
+						resolve(cached);
+						return;
+					}
+				}
+
+				if (onProgress) onProgress('downloading', 0, 0, 0);
+				let controller = new AbortController();
+				let timer = setTimeout(() => controller.abort(), timeout);
+				let resp,
+					data,
+					filename = url.split('/').pop() || 'downloaded.bin';
+				let cacheExpiry = null;
+				try {
+					resp = await fetch(url, {
+						method,
+						headers,
+						body,
+						signal: controller.signal,
+					});
+					clearTimeout(timer);
+					if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+					const cd = resp.headers.get('Content-Disposition');
+					if (cd) {
+						const match = cd.match(/filename="?([^";]+)"?/);
+						if (match) filename = match[1];
+					}
+					const cacheControl = resp.headers.get('Cache-Control');
+					const expires = resp.headers.get('Expires');
+					if (cacheControl && /max-age=(\d+)/.test(cacheControl)) {
+						const maxAge = parseInt(cacheControl.match(/max-age=(\d+)/)[1]);
+						cacheExpiry = now + maxAge * 1000;
+					} else if (expires) {
+						const exp = Date.parse(expires);
+						if (!isNaN(exp)) cacheExpiry = exp;
+					} else {
+						// default to 5 days if no cache headers present
+						cacheExpiry = now + 5 * 24 * 60 * 60 * 1000;
+					}
+					if (responseType === 'arraybuffer') {
+						let contentLength = 0;
+						if (resp.headers.get('Content-Length')) {
+							try {
+								const parsedContentLength = parseInt(resp.headers.get('Content-Length'));
+								if (!isNaN(parsedContentLength) && parsedContentLength > 0) {
+									contentLength = parsedContentLength;
+								}
+							} catch (e) {
+								// swallow any errors parsing content length
+							}
+						}
+						const reader = resp.body.getReader();
+						let received = 0;
+						let chunks = [];
+						while (true) {
+							const { done, value } = await reader.read();
+							if (done) break;
+							chunks.push(value);
+							received += value.length;
+							if (onProgress && contentLength) {
+								onProgress(
+									'downloading',
+									Math.floor((received / contentLength) * 100),
+									received,
+									contentLength,
+								);
+							}
+						}
+
+						const blob = new Blob(chunks);
+						const ab = await blob.arrayBuffer();
+						data = new Uint8Array(ab);
+					} else {
+						data = await resp[responseType]();
+					}
+				} catch (err) {
+					clearTimeout(timer);
+					reject(`Download failed: ${err}`);
+					return;
+				}
+
+				let files = [];
+				const ext = filename.toLowerCase().split('.').pop();
+				if (responseType === 'arraybuffer') {
+					if (forceExtract === true || (dontExtract === false && ['zip', '7z', 'rar'].includes(ext))) {
+						console.log(
+							`Extracting ${filename} because it is a compressed file and forceExtract is ${forceExtract} and dontExtract is ${dontExtract}`,
+						);
+						if (onProgress) onProgress('decompressing', 0, 0, 0);
+						try {
+							const compression = new EJS_COMPRESSION(this.EJS);
+							await compression.decompress(
+								data,
+								(msg, isProgress) => {
+									if (onProgress && isProgress) {
+										const percent = parseInt(msg);
+										onProgress('decompressing', isNaN(percent) ? 0 : percent, 0, 0);
+									}
+								},
+								(fname, fileData) => {
+									files.push(
+										new EJS_FileItem(
+											fname,
+											fileData instanceof Uint8Array ? fileData : new Uint8Array(fileData),
+										),
+									);
+								},
+							);
+						} catch (e) {
+							reject(`Decompression failed: ${e}`);
+							return;
+						}
+					} else {
+						console.log(
+							`Not extracting ${filename} because forceExtract is ${forceExtract} and dontExtract is ${dontExtract}`,
+						);
+						files = [new EJS_FileItem(filename, data instanceof Uint8Array ? data : new Uint8Array(data))];
+					}
+				} else {
+					// for non-arraybuffer types, just store the raw data as a single file
+					files = [new EJS_FileItem(filename, data)];
+					if (typeof data === 'string') {
+						// Encode string as UTF-8 Uint8Array
+						const encoder = new TextEncoder();
+						files = [new EJS_FileItem(filename, encoder.encode(data))];
+					} else if (data instanceof Uint8Array) {
+						files = [new EJS_FileItem(filename, data)];
+					} else if (data instanceof ArrayBuffer) {
+						files = [new EJS_FileItem(filename, new Uint8Array(data))];
+					} else {
+						// Fallback: try to convert to string then encode
+						const encoder = new TextEncoder();
+						files = [new EJS_FileItem(filename, encoder.encode(String(data)))];
+					}
+				}
+
+				if (onProgress) onProgress('complete', 100, data.byteLength || 0, data.byteLength || 0);
+
+				// Store in cache if available
+				if (this.storageCache) {
+					const key = this.storageCache.generateCacheKey(files[0].bytes);
+					const cacheItem = new EJS_CacheItem(
+						key,
+						files,
+						now,
+						type,
+						responseType,
+						filename,
+						url,
+						cacheExpiry,
+					);
+					if (dontCache === false) {
+						await this.storageCache.put(cacheItem);
+					}
+					resolve(cacheItem);
+				} else {
+					// Return a temporary cache item if no cache available
+					const key = 'temp-' + Date.now();
+					const cacheItem = new EJS_CacheItem(
+						key,
+						files,
+						now,
+						type,
+						responseType,
+						filename,
+						url,
+						cacheExpiry,
+					);
+					resolve(cacheItem);
+				}
+			} catch (err) {
+				reject(err.toString());
+			}
+		});
+	}
 }
 
 /**
@@ -299,494 +354,520 @@ class EJS_Download {
  * Manages a cache of files using IndexedDB for storage.
  */
 class EJS_Cache {
-    /**
-     * Creates an instance of EJS_Cache.
-     * @param {boolean} enabled - Whether caching is enabled.
-     * @param {string} databaseName - Name of the IndexedDB database to use for caching.
-     * @param {number} maxSizeMB - Maximum size of the cache in megabytes.
-     * @param {number} maxAgeMins - Maximum age of items (in minutes) before they are cleaned up.
-     */
-    constructor(enabled = true, databaseName, maxSizeMB = 4096, maxAgeMins = 7200, debug = false) {
-        this.enabled = enabled;
-        this.databaseName = databaseName;
-        this.maxSizeMB = maxSizeMB;
-        this.maxAgeMins = maxAgeMins;
-        this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
-        this.debug = debug;
+	/**
+	 * Creates an instance of EJS_Cache.
+	 * @param {boolean} enabled - Whether caching is enabled.
+	 * @param {string} databaseName - Name of the IndexedDB database to use for caching.
+	 * @param {number} maxSizeMB - Maximum size of the cache in megabytes.
+	 * @param {number} maxAgeMins - Maximum age of items (in minutes) before they are cleaned up.
+	 */
+	constructor(enabled = true, databaseName, maxSizeMB = 4096, maxAgeMins = 7200, debug = false) {
+		this.enabled = enabled;
+		this.databaseName = databaseName;
+		this.maxSizeMB = maxSizeMB;
+		this.maxAgeMins = maxAgeMins;
+		this.minAgeMins = Math.max(60, maxAgeMins * 0.1); // Minimum 1 hour, or 10% of max age
+		this.debug = debug;
 
-        /**
-        * Indicates whether the startup cleanup has been completed.
-        */
-        this.startupCleanupCompleted = false;
+		/**
+		 * Indicates whether the startup cleanup has been completed.
+		 */
+		this.startupCleanupCompleted = false;
 
-        if (this.debug) {
-            console.log("Initialized EJS_Cache with settings:", {
-                enabled: this.enabled,
-                databaseName: this.databaseName,
-                maxSizeMB: this.maxSizeMB,
-                maxAgeMins: this.maxAgeMins,
-                minAgeMins: this.minAgeMins
-            });
-        }
-    }
+		if (this.debug) {
+			console.log('Initialized EJS_Cache with settings:', {
+				enabled: this.enabled,
+				databaseName: this.databaseName,
+				maxSizeMB: this.maxSizeMB,
+				maxAgeMins: this.maxAgeMins,
+				minAgeMins: this.minAgeMins,
+			});
+		}
+	}
 
-    /**
-     * Initializes the IndexedDB database and object stores.
-     * @returns {Promise<void>}
-     */
-    async createCacheDatabase() {
-        if (!this.enabled) return;
+	/**
+	 * Initializes the IndexedDB database and object stores.
+	 * @returns {Promise<void>}
+	 */
+	async createCacheDatabase() {
+		if (!this.enabled) return;
 
-        if (this.storage && this.blobStorage) return;
+		if (this.storage && this.blobStorage) return;
 
-        return new Promise((resolve, reject) => {
-            const indexes = ["type", "url"];
-            const request = window.indexedDB.open(this.databaseName, 1);
+		return new Promise((resolve, reject) => {
+			const indexes = ['type', 'url'];
+			const request = window.indexedDB.open(this.databaseName, 1);
 
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                // Create metadata stores
-                const cacheStore = db.createObjectStore("cache");
-                // Create indexes for cache store if indexes array is present
-                if (Array.isArray(indexes)) {
-                    for (const idx of indexes) {
-                        if (!cacheStore.indexNames.contains(idx)) {
-                            cacheStore.createIndex(idx, idx, { unique: false });
-                        }
-                    }
-                }
-                // Create blobs store
-                db.createObjectStore("blobs");
-            };
+			request.onupgradeneeded = (event) => {
+				const db = event.target.result;
+				// Create metadata stores
+				const cacheStore = db.createObjectStore('cache');
+				// Create indexes for cache store if indexes array is present
+				if (Array.isArray(indexes)) {
+					for (const idx of indexes) {
+						if (!cacheStore.indexNames.contains(idx)) {
+							cacheStore.createIndex(idx, idx, { unique: false });
+						}
+					}
+				}
+				// Create blobs store
+				db.createObjectStore('blobs');
+			};
 
-            request.onsuccess = (event) => {
-                this.storage = new EJS_STORAGE(this.databaseName, "cache", indexes);
-                this.blobStorage = new EJS_STORAGE(this.databaseName, "blobs");
-                resolve();
-            };
+			request.onsuccess = (event) => {
+				this.storage = new EJS_STORAGE(this.databaseName, 'cache', indexes);
+				this.blobStorage = new EJS_STORAGE(this.databaseName, 'blobs');
+				resolve();
+			};
 
-            request.onerror = (event) => {
-                console.error("Error creating cache database:", event);
-                reject(event);
-            };
-        });
-    }
+			request.onerror = (event) => {
+				console.error('Error creating cache database:', event);
+				reject(event);
+			};
+		});
+	}
 
-    /**
-     * Generates a cache key for the given data array.
-     * @param {Uint8Array} dataArray 
-     * @returns {string} The generated cache key.
-     */
-    generateCacheKey(dataArray) {
-        let hash = simpleHash(dataArray);
-        const compressionCacheKey = "Obj-" + hash + "-" + dataArray.length;
-        return compressionCacheKey;
-    }
+	/**
+	 * Generates a cache key for the given data array.
+	 * @param {Uint8Array} dataArray
+	 * @returns {string} The generated cache key.
+	 */
+	generateCacheKey(dataArray) {
+		let hash = simpleHash(dataArray);
+		const compressionCacheKey = 'Obj-' + hash + '-' + dataArray.length;
+		return compressionCacheKey;
+	}
 
-    /**
-     * Normalizes stored binary data into a Uint8Array for chunking and reconstruction.
-     * @param {Uint8Array|ArrayBuffer|ArrayBufferView} bytes - The stored binary value.
-     * @returns {Uint8Array} A Uint8Array view of the input, or an empty array if unsupported.
-     */
-    normalizeFileBytes(bytes) {
-        if (bytes instanceof Uint8Array) return bytes;
-        if (bytes instanceof ArrayBuffer) return new Uint8Array(bytes);
-        if (ArrayBuffer.isView(bytes)) {
-            return new Uint8Array(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
-        }
-        return new Uint8Array(0);
-    }
+	/**
+	 * Normalizes stored binary data into a Uint8Array for chunking and reconstruction.
+	 * @param {Uint8Array|ArrayBuffer|ArrayBufferView} bytes - The stored binary value.
+	 * @returns {Uint8Array} A Uint8Array view of the input, or an empty array if unsupported.
+	 */
+	normalizeFileBytes(bytes) {
+		if (bytes instanceof Uint8Array) return bytes;
+		if (bytes instanceof ArrayBuffer) return new Uint8Array(bytes);
+		if (ArrayBuffer.isView(bytes)) {
+			return new Uint8Array(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
+		}
+		return new Uint8Array(0);
+	}
 
-    /**
-     * Opens the raw IndexedDB object store used for blob payload records.
-     * @param {IDBTransactionMode} [mode="readwrite"] - The transaction mode to open the store with.
-     * @returns {Promise<IDBObjectStore|null>} The blob object store, or null when storage is unavailable.
-     */
-    async getBlobObjectStore(mode = "readwrite") {
-        if (!this.blobStorage) return null;
-        return await this.blobStorage.getObjectStore(mode);
-    }
+	/**
+	 * Opens the raw IndexedDB object store used for blob payload records.
+	 * @param {IDBTransactionMode} [mode="readwrite"] - The transaction mode to open the store with.
+	 * @returns {Promise<IDBObjectStore|null>} The blob object store, or null when storage is unavailable.
+	 */
+	async getBlobObjectStore(mode = 'readwrite') {
+		if (!this.blobStorage) return null;
+		return await this.blobStorage.getObjectStore(mode);
+	}
 
-    /**
-     * Writes a single blob manifest part or chunk record into the blobs store.
-     * @param {string} key - The IndexedDB key for the record.
-     * @param {*} value - The value to persist for that record.
-     * @returns {Promise<void>}
-     */
-    async putBlobEntry(key, value) {
-        const objectStore = await this.getBlobObjectStore();
-        if (!objectStore) return;
-        return await new Promise(resolve => {
-            const request = objectStore.put(value, key);
-            request.onsuccess = () => resolve();
-            request.onerror = () => resolve();
-        });
-    }
+	/**
+	 * Writes a single blob manifest part or chunk record into the blobs store.
+	 * @param {string} key - The IndexedDB key for the record.
+	 * @param {*} value - The value to persist for that record.
+	 * @returns {Promise<void>}
+	 */
+	async putBlobEntry(key, value) {
+		const objectStore = await this.getBlobObjectStore();
+		if (!objectStore) return;
+		return await new Promise((resolve) => {
+			const request = objectStore.put(value, key);
+			request.onsuccess = () => resolve();
+			request.onerror = () => resolve();
+		});
+	}
 
-    /**
-     * Reads a single blob manifest part or chunk record from the blobs store.
-     * @param {string} key - The IndexedDB key for the record.
-     * @returns {Promise<*|null>} The stored value, or null if it is missing.
-     */
-    async getBlobEntry(key) {
-        const objectStore = await this.getBlobObjectStore("readonly");
-        if (!objectStore) return null;
-        return await new Promise(resolve => {
-            const request = objectStore.get(key);
-            request.onsuccess = () => resolve(request.result ?? null);
-            request.onerror = () => resolve(null);
-        });
-    }
+	/**
+	 * Reads a single blob manifest part or chunk record from the blobs store.
+	 * @param {string} key - The IndexedDB key for the record.
+	 * @returns {Promise<*|null>} The stored value, or null if it is missing.
+	 */
+	async getBlobEntry(key) {
+		const objectStore = await this.getBlobObjectStore('readonly');
+		if (!objectStore) return null;
+		return await new Promise((resolve) => {
+			const request = objectStore.get(key);
+			request.onsuccess = () => resolve(request.result ?? null);
+			request.onerror = () => resolve(null);
+		});
+	}
 
-    /**
-     * Collects every blob-store key referenced by a cached manifest.
-     * @param {string} key - The parent cache key for the manifest.
-     * @param {*} manifest - The stored blob manifest for that cache key.
-     * @returns {Set<string>} All keys that should be preserved during cleanup.
-     */
-    getBlobManifestKeys(key, manifest) {
-        const referencedKeys = new Set([key]);
-        if (!manifest?._ejsBlobManifest || !Array.isArray(manifest.files)) return referencedKeys;
+	/**
+	 * Collects every blob-store key referenced by a cached manifest.
+	 * @param {string} key - The parent cache key for the manifest.
+	 * @param {*} manifest - The stored blob manifest for that cache key.
+	 * @returns {Set<string>} All keys that should be preserved during cleanup.
+	 */
+	getBlobManifestKeys(key, manifest) {
+		const referencedKeys = new Set([key]);
+		if (!manifest?._ejsBlobManifest || !Array.isArray(manifest.files)) return referencedKeys;
 
-        for (const file of manifest.files) {
-            if (!file?.key) continue;
-            if (file.type === "chunked") {
-                for (let i = 0; i < file.chunkCount; i++) {
-                    referencedKeys.add(`${file.key}__chunk__${i}`);
-                }
-            } else {
-                referencedKeys.add(file.key);
-            }
-        }
+		for (const file of manifest.files) {
+			if (!file?.key) continue;
+			if (file.type === 'chunked') {
+				for (let i = 0; i < file.chunkCount; i++) {
+					referencedKeys.add(`${file.key}__chunk__${i}`);
+				}
+			} else {
+				referencedKeys.add(file.key);
+			}
+		}
 
-        return referencedKeys;
-    }
+		return referencedKeys;
+	}
 
-    /**
-     * Deletes a single blob manifest part or chunk record from the blobs store.
-     * @param {string} key - The IndexedDB key for the record.
-     * @returns {Promise<void>}
-     */
-    async removeBlobEntry(key) {
-        const objectStore = await this.getBlobObjectStore();
-        if (!objectStore) return;
-        return await new Promise(resolve => {
-            const request = objectStore.delete(key);
-            request.onsuccess = () => resolve();
-            request.onerror = () => resolve();
-        });
-    }
+	/**
+	 * Deletes a single blob manifest part or chunk record from the blobs store.
+	 * @param {string} key - The IndexedDB key for the record.
+	 * @returns {Promise<void>}
+	 */
+	async removeBlobEntry(key) {
+		const objectStore = await this.getBlobObjectStore();
+		if (!objectStore) return;
+		return await new Promise((resolve) => {
+			const request = objectStore.delete(key);
+			request.onsuccess = () => resolve();
+			request.onerror = () => resolve();
+		});
+	}
 
-    /**
-     * Stores a cache item's file list in the blobs store, chunking large payloads as needed.
-     * @param {string} key - The parent cache key for the file list.
-     * @param {EJS_FileItem[]} files - The files to persist for the cache item.
-     * @returns {Promise<void>}
-     */
-    async storeBlobFiles(key, files) {
-        const manifest = {
-            _ejsBlobManifest: true,
-            files: []
-        };
+	/**
+	 * Stores a cache item's file list in the blobs store, chunking large payloads as needed.
+	 * @param {string} key - The parent cache key for the file list.
+	 * @param {EJS_FileItem[]} files - The files to persist for the cache item.
+	 * @returns {Promise<void>}
+	 */
+	async storeBlobFiles(key, files) {
+		const manifest = {
+			_ejsBlobManifest: true,
+			files: [],
+		};
 
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            const fileKey = `${key}__blob__${i}`;
-            const bytes = this.normalizeFileBytes(file?.bytes);
+		for (let i = 0; i < files.length; i++) {
+			const file = files[i];
+			const fileKey = `${key}__blob__${i}`;
+			const bytes = this.normalizeFileBytes(file?.bytes);
 
-            if (bytes.byteLength > CACHE_BLOB_CHUNK_SIZE) {
-                const totalChunks = Math.ceil(bytes.byteLength / CACHE_BLOB_CHUNK_SIZE);
-                for (let j = 0; j < totalChunks; j++) {
-                    const start = j * CACHE_BLOB_CHUNK_SIZE;
-                    const end = Math.min(start + CACHE_BLOB_CHUNK_SIZE, bytes.byteLength);
-                    await this.putBlobEntry(`${fileKey}__chunk__${j}`, bytes.slice(start, end));
-                }
-                manifest.files.push({
-                    filename: file?.filename,
-                    type: "chunked",
-                    key: fileKey,
-                    chunkCount: totalChunks
-                });
-            } else {
-                await this.putBlobEntry(fileKey, bytes);
-                manifest.files.push({
-                    filename: file?.filename,
-                    type: "single",
-                    key: fileKey
-                });
-            }
-        }
+			if (bytes.byteLength > CACHE_BLOB_CHUNK_SIZE) {
+				const totalChunks = Math.ceil(bytes.byteLength / CACHE_BLOB_CHUNK_SIZE);
+				for (let j = 0; j < totalChunks; j++) {
+					const start = j * CACHE_BLOB_CHUNK_SIZE;
+					const end = Math.min(start + CACHE_BLOB_CHUNK_SIZE, bytes.byteLength);
+					await this.putBlobEntry(`${fileKey}__chunk__${j}`, bytes.slice(start, end));
+				}
+				manifest.files.push({
+					filename: file?.filename,
+					type: 'chunked',
+					key: fileKey,
+					chunkCount: totalChunks,
+				});
+			} else {
+				await this.putBlobEntry(fileKey, bytes);
+				manifest.files.push({
+					filename: file?.filename,
+					type: 'single',
+					key: fileKey,
+				});
+			}
+		}
 
-        await this.blobStorage.put(key, manifest);
-    }
+		await this.blobStorage.put(key, manifest);
+	}
 
-    /**
-     * Rebuilds a cache item's file list from blob records and fails fast if any part is missing.
-     * @param {string} key - The parent cache key for the file list.
-     * @returns {Promise<EJS_FileItem[]|null>} The restored files, or null when integrity checks fail.
-     */
-    async getBlobFiles(key) {
-        const stored = await this.blobStorage.get(key);
-        if (!stored) return null;
-        if (Array.isArray(stored)) return stored;
-        if (!stored._ejsBlobManifest || !Array.isArray(stored.files)) return stored;
+	/**
+	 * Rebuilds a cache item's file list from blob records and fails fast if any part is missing.
+	 * @param {string} key - The parent cache key for the file list.
+	 * @returns {Promise<EJS_FileItem[]|null>} The restored files, or null when integrity checks fail.
+	 */
+	async getBlobFiles(key) {
+		const stored = await this.blobStorage.get(key);
+		if (!stored) return null;
+		if (Array.isArray(stored)) return stored;
+		if (!stored._ejsBlobManifest || !Array.isArray(stored.files)) return stored;
 
-        const files = [];
-        for (const file of stored.files) {
-            if (file.type === "chunked") {
-                const chunks = [];
-                let totalLength = 0;
-                for (let i = 0; i < file.chunkCount; i++) {
-                    const chunk = await this.getBlobEntry(`${file.key}__chunk__${i}`);
-                    if (chunk === null) return null;
-                    const chunkBytes = this.normalizeFileBytes(chunk);
-                    if (chunkBytes.byteLength === 0) return null;
-                    chunks.push(chunkBytes);
-                    totalLength += chunkBytes.byteLength;
-                }
-                const merged = new Uint8Array(totalLength);
-                let offset = 0;
-                for (const chunk of chunks) {
-                    merged.set(chunk, offset);
-                    offset += chunk.byteLength;
-                }
-                files.push(new EJS_FileItem(file.filename, merged));
-            } else {
-                const blobEntry = await this.getBlobEntry(file.key);
-                if (blobEntry === null) return null;
-                const bytes = this.normalizeFileBytes(blobEntry);
-                if (bytes.byteLength === 0) return null;
-                files.push(new EJS_FileItem(file.filename, bytes));
-            }
-        }
-        return files;
-    }
+		const files = [];
+		for (const file of stored.files) {
+			if (file.type === 'chunked') {
+				const chunks = [];
+				let totalLength = 0;
+				for (let i = 0; i < file.chunkCount; i++) {
+					const chunk = await this.getBlobEntry(`${file.key}__chunk__${i}`);
+					if (chunk === null) return null;
+					const chunkBytes = this.normalizeFileBytes(chunk);
+					if (chunkBytes.byteLength === 0) return null;
+					chunks.push(chunkBytes);
+					totalLength += chunkBytes.byteLength;
+				}
+				const merged = new Uint8Array(totalLength);
+				let offset = 0;
+				for (const chunk of chunks) {
+					merged.set(chunk, offset);
+					offset += chunk.byteLength;
+				}
+				files.push(new EJS_FileItem(file.filename, merged));
+			} else {
+				const blobEntry = await this.getBlobEntry(file.key);
+				if (blobEntry === null) return null;
+				const bytes = this.normalizeFileBytes(blobEntry);
+				if (bytes.byteLength === 0) return null;
+				files.push(new EJS_FileItem(file.filename, bytes));
+			}
+		}
+		return files;
+	}
 
-    /**
-     * Removes a cache item's manifest and all chunk records that belong to it.
-     * @param {string} key - The parent cache key for the file list.
-     * @returns {Promise<void>}
-     */
-    async removeBlobFiles(key) {
-        const stored = await this.blobStorage.get(key);
-        if (stored && stored._ejsBlobManifest && Array.isArray(stored.files)) {
-            for (const file of stored.files) {
-                if (file.type === "chunked") {
-                    for (let i = 0; i < file.chunkCount; i++) {
-                        await this.removeBlobEntry(`${file.key}__chunk__${i}`);
-                    }
-                } else {
-                    await this.removeBlobEntry(file.key);
-                }
-            }
-        }
-        await this.blobStorage.remove(key);
-    }
+	/**
+	 * Removes a cache item's manifest and all chunk records that belong to it.
+	 * @param {string} key - The parent cache key for the file list.
+	 * @returns {Promise<void>}
+	 */
+	async removeBlobFiles(key) {
+		const stored = await this.blobStorage.get(key);
+		if (stored && stored._ejsBlobManifest && Array.isArray(stored.files)) {
+			for (const file of stored.files) {
+				if (file.type === 'chunked') {
+					for (let i = 0; i < file.chunkCount; i++) {
+						await this.removeBlobEntry(`${file.key}__chunk__${i}`);
+					}
+				} else {
+					await this.removeBlobEntry(file.key);
+				}
+			}
+		}
+		await this.blobStorage.remove(key);
+	}
 
-    /**
-     * Retrieves an item from the cache.
-     * @param {*} key - The unique key identifying the cached item.
-     * @param {boolean} [metadataOnly=false] - If true, only retrieves metadata without file data.
-     * @param {string|null} indexName - Optional index name to search by (e.g., 'url') - leave null to search by primary key.
-     * @returns {Promise<EJS_CacheItem|null>} - The cached item or null if not found.
-     */
-    async get(key, metadataOnly = false, indexName = null) {
-        if (!this.enabled) return null;
+	/**
+	 * Retrieves an item from the cache.
+	 * @param {*} key - The unique key identifying the cached item.
+	 * @param {boolean} [metadataOnly=false] - If true, only retrieves metadata without file data.
+	 * @param {string|null} indexName - Optional index name to search by (e.g., 'url') - leave null to search by primary key.
+	 * @returns {Promise<EJS_CacheItem|null>} - The cached item or null if not found.
+	 */
+	async get(key, metadataOnly = false, indexName = null) {
+		if (!this.enabled) return null;
 
-        // ensure database is created
-        await this.createCacheDatabase();
+		// ensure database is created
+		await this.createCacheDatabase();
 
-        // clean up cache on first get if not already done
-        if (!this.startupCleanupCompleted) {
-            await this.cleanup();
-            this.startupCleanupCompleted = true;
-        }
+		// clean up cache on first get if not already done
+		if (!this.startupCleanupCompleted) {
+			await this.cleanup();
+			this.startupCleanupCompleted = true;
+		}
 
-        const item = await this.storage.get(key, indexName);
-        // if the item exists, update its lastAccessed time and return cache item
-        if (item) {
-            item.lastAccessed = Date.now();
-            await this.storage.put(item.key, item);
+		const item = await this.storage.get(key, indexName);
+		// if the item exists, update its lastAccessed time and return cache item
+		if (item) {
+			item.lastAccessed = Date.now();
+			await this.storage.put(item.key, item);
 
-            if (!metadataOnly) {
-                // get the blob from cache-blobs
-                item.files = await this.getBlobFiles(item.key);
-                if (!item.files) {
-                    await this.delete(item.key);
-                    await this.cleanup();
-                    return null;
-                }
-            }
-        }
+			if (!metadataOnly) {
+				// get the blob from cache-blobs
+				item.files = await this.getBlobFiles(item.key);
+				if (!item.files) {
+					await this.delete(item.key);
+					await this.cleanup();
+					return null;
+				}
+			}
+		}
 
-        if (item) {
-            const cacheItem = new EJS_CacheItem(item.key, item.files, item.added, item.type, item.responseType, item.filename, item.url, item.cacheExpiry, item.lastAccessed);
-            cacheItem.source = "cache";
-            return cacheItem;
-        }
-        return null;
-    }
+		if (item) {
+			const cacheItem = new EJS_CacheItem(
+				item.key,
+				item.files,
+				item.added,
+				item.type,
+				item.responseType,
+				item.filename,
+				item.url,
+				item.cacheExpiry,
+				item.lastAccessed,
+			);
+			cacheItem.source = 'cache';
+			return cacheItem;
+		}
+		return null;
+	}
 
-    /**
-     * Stores an item in the cache.
-     * @param {EJS_CacheItem} item - The cache item to store.
-     */
-    async put(item) {
-        if (!this.enabled) return;
+	/**
+	 * Stores an item in the cache.
+	 * @param {EJS_CacheItem} item - The cache item to store.
+	 */
+	async put(item) {
+		if (!this.enabled) return;
 
-        // ensure database is created
-        await this.createCacheDatabase();
+		// ensure database is created
+		await this.createCacheDatabase();
 
-        // before putting, ensure item is of type EJS_CacheItem
-        if (!(item instanceof EJS_CacheItem)) {
-            throw new Error("Item must be an instance of EJS_CacheItem");
-        }
+		// before putting, ensure item is of type EJS_CacheItem
+		if (!(item instanceof EJS_CacheItem)) {
+			throw new Error('Item must be an instance of EJS_CacheItem');
+		}
 
-        // check if the item exists, if so remove the existing item
-        const existingItem = await this.get(item.key);
-        if (existingItem) {
-            await this.delete(item.key);
-        }
+		// check if the item exists, if so remove the existing item
+		const existingItem = await this.get(item.key);
+		if (existingItem) {
+			await this.delete(item.key);
+		}
 
-        // add file size attribute
-        item.fileSize = item.size();
+		// add file size attribute
+		item.fileSize = item.size();
 
-        // check that the size of item.files does not cause the cache to exceed maxSizeMB
-        let currentSize = 0;
-        const allItems = await this.storage.getAll();
-        for (let i = 0; i < allItems.length; i++) {
-            if (allItems[i]) {
-                currentSize += allItems[i].fileSize || 0;
-            }
-        }
-        if ((currentSize + item.fileSize) > (this.maxSizeMB * 1024 * 1024)) {
-            // exceeded max size, keep removing oldest items until we are under maxSizeMB + the size of the new item
-            const itemsToRemove = [];
-            let sizeToFree = (currentSize + item.fileSize) - (this.maxSizeMB * 1024 * 1024);
-            for (let i = 0; i < allItems.length; i++) {
-                if (allItems[i]) {
-                    itemsToRemove.push({ item: allItems[i], size: allItems[i].fileSize || 0 });
-                }
-            }
-            itemsToRemove.sort((a, b) => a.item.lastAccessed - b.item.lastAccessed); // oldest first
-            for (let i = 0; i < itemsToRemove.length; i++) {
-                if (sizeToFree <= 0) break;
-                await this.delete(itemsToRemove[i].item.key);
-                sizeToFree -= itemsToRemove[i].size;
-            }
-        }
+		// check that the size of item.files does not cause the cache to exceed maxSizeMB
+		let currentSize = 0;
+		const allItems = await this.storage.getAll();
+		for (let i = 0; i < allItems.length; i++) {
+			if (allItems[i]) {
+				currentSize += allItems[i].fileSize || 0;
+			}
+		}
+		if (currentSize + item.fileSize > this.maxSizeMB * 1024 * 1024) {
+			// exceeded max size, keep removing oldest items until we are under maxSizeMB + the size of the new item
+			const itemsToRemove = [];
+			let sizeToFree = currentSize + item.fileSize - this.maxSizeMB * 1024 * 1024;
+			for (let i = 0; i < allItems.length; i++) {
+				if (allItems[i]) {
+					itemsToRemove.push({ item: allItems[i], size: allItems[i].fileSize || 0 });
+				}
+			}
+			itemsToRemove.sort((a, b) => a.item.lastAccessed - b.item.lastAccessed); // oldest first
+			for (let i = 0; i < itemsToRemove.length; i++) {
+				if (sizeToFree <= 0) break;
+				await this.delete(itemsToRemove[i].item.key);
+				sizeToFree -= itemsToRemove[i].size;
+			}
+		}
 
-        // store the metadata in cache
-        await this.storage.put(item.key, {
-            key: item.key,
-            fileSize: item.fileSize,
-            added: item.added,
-            lastAccessed: item.lastAccessed,
-            type: item.type,
-            responseType: item.responseType,
-            filename: item.filename,
-            url: item.url,
-            cacheExpiry: item.cacheExpiry
-        });
+		// store the metadata in cache
+		await this.storage.put(item.key, {
+			key: item.key,
+			fileSize: item.fileSize,
+			added: item.added,
+			lastAccessed: item.lastAccessed,
+			type: item.type,
+			responseType: item.responseType,
+			filename: item.filename,
+			url: item.url,
+			cacheExpiry: item.cacheExpiry,
+		});
 
-        // store the files in cache-blobs
-        await this.storeBlobFiles(item.key, item.files);
-    }
+		// store the files in cache-blobs
+		await this.storeBlobFiles(item.key, item.files);
+	}
 
-    /**
-     * Deletes an item from the cache.
-     * @param {string} key - The unique key identifying the cached item to delete.
-     */
-    async delete(key) {
-        // ensure database is created
-        await this.createCacheDatabase();
+	/**
+	 * Deletes an item from the cache.
+	 * @param {string} key - The unique key identifying the cached item to delete.
+	 */
+	async delete(key) {
+		// ensure database is created
+		await this.createCacheDatabase();
 
-        // fail silently if the key does not exist
-        try {
-            await this.storage.remove(key);
-            await this.removeBlobFiles(key);
-        } catch (e) {
-            console.error("Failed to delete cache item:", e);
-        }
-    }
+		// fail silently if the key does not exist
+		try {
+			await this.storage.remove(key);
+			await this.removeBlobFiles(key);
+		} catch (e) {
+			console.error('Failed to delete cache item:', e);
+		}
+	}
 
-    /**
-     * Clears all items from the cache.
-     */
-    async clear() {
-        // ensure database is created
-        await this.createCacheDatabase();
+	/**
+	 * Clears all items from the cache.
+	 */
+	async clear() {
+		// ensure database is created
+		await this.createCacheDatabase();
 
-        const allItems = await this.storage.getAll();
-        for (let i = 0; i < allItems.length; i++) {
-            await this.delete(allItems[i].key);
-        }
-    }
+		const allItems = await this.storage.getAll();
+		for (let i = 0; i < allItems.length; i++) {
+			await this.delete(allItems[i].key);
+		}
+	}
 
-    /**
-     * Cleans up the cache by removing old or excess items based on size and age constraints.
-     */
-    async cleanup() {
-        if (!this.enabled) return;
+	/**
+	 * Cleans up the cache by removing old or excess items based on size and age constraints.
+	 */
+	async cleanup() {
+		if (!this.enabled) return;
 
-        // ensure database is created
-        await this.createCacheDatabase();
+		// ensure database is created
+		await this.createCacheDatabase();
 
-        if (this.debug) console.log("[EJS Cache] Starting cache cleanup...");
-        const cleanupStartTime = performance.now();
+		if (this.debug) console.log('[EJS Cache] Starting cache cleanup...');
+		const cleanupStartTime = performance.now();
 
-        // get all items
-        const allItems = await this.storage.getAll();
-        const now = Date.now();
+		// get all items
+		const allItems = await this.storage.getAll();
+		const now = Date.now();
 
-        // sort items by lastAccessed (oldest first)
-        allItems.sort((a, b) => a.lastAccessed - b.lastAccessed);
+		// sort items by lastAccessed (oldest first)
+		allItems.sort((a, b) => a.lastAccessed - b.lastAccessed);
 
-        let currentSize = 0;
-        let totalItems = allItems.length;
-        const itemsToRemove = [];
+		let currentSize = 0;
+		let totalItems = allItems.length;
+		const itemsToRemove = [];
 
-        // Calculate current total size
-        for (let i = 0; i < allItems.length; i++) {
-            const item = allItems[i];
-            const itemSize = item.fileSize || 0;
-            currentSize += itemSize;
-            const ageMins = (now - item.lastAccessed) / (1000 * 60);
+		// Calculate current total size
+		for (let i = 0; i < allItems.length; i++) {
+			const item = allItems[i];
+			const itemSize = item.fileSize || 0;
+			currentSize += itemSize;
+			const ageMins = (now - item.lastAccessed) / (1000 * 60);
 
-            // Remove if too old OR if cache is over size limit and item is old enough
-            if (ageMins > this.maxAgeMins || (currentSize > this.maxSizeMB * 1024 * 1024 && ageMins > this.minAgeMins)) {
-                itemsToRemove.push({ key: item.key, size: itemSize, age: ageMins });
-                currentSize -= itemSize;
-            }
-        }
+			// Remove if too old OR if cache is over size limit and item is old enough
+			if (
+				ageMins > this.maxAgeMins ||
+				(currentSize > this.maxSizeMB * 1024 * 1024 && ageMins > this.minAgeMins)
+			) {
+				itemsToRemove.push({ key: item.key, size: itemSize, age: ageMins });
+				currentSize -= itemSize;
+			}
+		}
 
-        // remove items from storage
-        for (const item of itemsToRemove) {
-            await this.delete(item.key);
-        }
+		// remove items from storage
+		for (const item of itemsToRemove) {
+			await this.delete(item.key);
+		}
 
-        // remove orphaned blobs in blobStorage - here as a failsafe in case of previous incomplete deletions
-        const blobKeys = await this.blobStorage.getKeys();
-        const referencedBlobKeys = new Set();
-        for (const item of allItems) {
-            referencedBlobKeys.add(item.key);
-            const blobEntry = await this.blobStorage.get(item.key);
-            for (const blobKey of this.getBlobManifestKeys(item.key, blobEntry)) {
-                referencedBlobKeys.add(blobKey);
-            }
-        }
-        for (const blobKey of blobKeys) {
-            if (!referencedBlobKeys.has(blobKey)) {
-                await this.blobStorage.remove(blobKey);
-            }
-        }
+		// remove orphaned blobs in blobStorage - here as a failsafe in case of previous incomplete deletions
+		const blobKeys = await this.blobStorage.getKeys();
+		const referencedBlobKeys = new Set();
+		for (const item of allItems) {
+			referencedBlobKeys.add(item.key);
+			const blobEntry = await this.blobStorage.get(item.key);
+			for (const blobKey of this.getBlobManifestKeys(item.key, blobEntry)) {
+				referencedBlobKeys.add(blobKey);
+			}
+		}
+		for (const blobKey of blobKeys) {
+			if (!referencedBlobKeys.has(blobKey)) {
+				await this.blobStorage.remove(blobKey);
+			}
+		}
 
-        const cleanupTime = performance.now() - cleanupStartTime;
-        const currentSizeMB = (currentSize / (1024 * 1024)).toFixed(2);
-        const removedSizeMB = (itemsToRemove.reduce((sum, item) => sum + item.size, 0) / (1024 * 1024)).toFixed(2);
+		const cleanupTime = performance.now() - cleanupStartTime;
+		const currentSizeMB = (currentSize / (1024 * 1024)).toFixed(2);
+		const removedSizeMB = (itemsToRemove.reduce((sum, item) => sum + item.size, 0) / (1024 * 1024)).toFixed(2);
 
-        if (this.debug) console.log("[EJS Cache] Cleanup complete in " + cleanupTime.toFixed(2) + "ms - Removed " + itemsToRemove.length + "/" + totalItems + " items (" + removedSizeMB + "MB), " + currentSizeMB + "MB remaining");
-    }
+		if (this.debug)
+			console.log(
+				'[EJS Cache] Cleanup complete in ' +
+					cleanupTime.toFixed(2) +
+					'ms - Removed ' +
+					itemsToRemove.length +
+					'/' +
+					totalItems +
+					' items (' +
+					removedSizeMB +
+					'MB), ' +
+					currentSizeMB +
+					'MB remaining',
+			);
+	}
 }
 
 /**
@@ -795,43 +876,43 @@ class EJS_Cache {
  * Contains metadata about the cached item. This class is an internal structure used by EJS_Cache.
  */
 class EJS_CacheItem {
-    /**
-     * Creates an instance of EJS_CacheItem.
-     * @param {string} key - Unique identifier for the cached item.
-     * @param {EJS_FileItem[]} files - Array of EJS_FileItem objects representing the files associated with this cache item.
-     * @param {number} added - Timestamp (in milliseconds) when the item was added to the cache.
-     * @param {string} [type="unknown"] - The type of cached content (e.g., 'core', 'ROM', 'BIOS', 'decompressed').
-     * @param {string} responseType - The response type used when downloading the content (e.g., 'arraybuffer', 'blob', 'text').
-     * @param {string} filename - The original filename of the cached content.
-     * @param {string} url - The URL from which the cached content was downloaded.
-     * @param {number|null} cacheExpiry - Timestamp (in milliseconds) indicating when the cache item should expire.
-     * @param {number} [lastAccessed=added] - Timestamp (in milliseconds) when the item was last accessed. Defaults to added.
-     */
-    constructor(key, files, added, type = "unknown", responseType, filename, url, cacheExpiry, lastAccessed = added) {
-        this.key = key;
-        this.files = files;
-        this.added = added;
-        this.lastAccessed = lastAccessed;
-        this.type = type;
-        this.responseType = responseType;
-        this.filename = filename;
-        this.url = url;
-        this.cacheExpiry = cacheExpiry;
-    }
+	/**
+	 * Creates an instance of EJS_CacheItem.
+	 * @param {string} key - Unique identifier for the cached item.
+	 * @param {EJS_FileItem[]} files - Array of EJS_FileItem objects representing the files associated with this cache item.
+	 * @param {number} added - Timestamp (in milliseconds) when the item was added to the cache.
+	 * @param {string} [type="unknown"] - The type of cached content (e.g., 'core', 'ROM', 'BIOS', 'decompressed').
+	 * @param {string} responseType - The response type used when downloading the content (e.g., 'arraybuffer', 'blob', 'text').
+	 * @param {string} filename - The original filename of the cached content.
+	 * @param {string} url - The URL from which the cached content was downloaded.
+	 * @param {number|null} cacheExpiry - Timestamp (in milliseconds) indicating when the cache item should expire.
+	 * @param {number} [lastAccessed=added] - Timestamp (in milliseconds) when the item was last accessed. Defaults to added.
+	 */
+	constructor(key, files, added, type = 'unknown', responseType, filename, url, cacheExpiry, lastAccessed = added) {
+		this.key = key;
+		this.files = files;
+		this.added = added;
+		this.lastAccessed = lastAccessed;
+		this.type = type;
+		this.responseType = responseType;
+		this.filename = filename;
+		this.url = url;
+		this.cacheExpiry = cacheExpiry;
+	}
 
-    /**
-     * Calculates the total byte size of all files in this cache item.
-     * @returns {number} Total size in bytes.
-     */
-    size() {
-        let total = 0;
-        for (let i = 0; i < this.files.length; i++) {
-            if (this.files[i] && this.files[i].bytes && typeof this.files[i].bytes.byteLength === "number") {
-                total += this.files[i].bytes.byteLength;
-            }
-        }
-        return total;
-    }
+	/**
+	 * Calculates the total byte size of all files in this cache item.
+	 * @returns {number} Total size in bytes.
+	 */
+	size() {
+		let total = 0;
+		for (let i = 0; i < this.files.length; i++) {
+			if (this.files[i] && this.files[i].bytes && typeof this.files[i].bytes.byteLength === 'number') {
+				total += this.files[i].bytes.byteLength;
+			}
+		}
+		return total;
+	}
 }
 
 /**
@@ -839,14 +920,14 @@ class EJS_CacheItem {
  * Represents a single file within an EJS_CacheItem. Stores the filename and its raw bytes.
  */
 class EJS_FileItem {
-    /**
-     * @param {string} filename - The name of the file (e.g. "game.rom").
-     * @param {Uint8Array} bytes - The raw file contents.
-     */
-    constructor(filename, bytes) {
-        this.filename = filename;
-        this.bytes = bytes;
-    }
+	/**
+	 * @param {string} filename - The name of the file (e.g. "game.rom").
+	 * @param {Uint8Array} bytes - The raw file contents.
+	 */
+	constructor(filename, bytes) {
+		this.filename = filename;
+		this.bytes = bytes;
+	}
 }
 
 export { EJS_Cache, EJS_CacheItem, EJS_FileItem, EJS_Download };

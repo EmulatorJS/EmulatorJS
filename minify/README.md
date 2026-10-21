@@ -16,15 +16,15 @@ Before pushing the script files onto your production server it is recommended to
 
 2. Install the dependencies with:
 
-   ```sh
-   npm i
-   ```
+    ```sh
+    npm i
+    ```
 
 3. Start the minification with:
 
-   ```sh
-   node run minify
-   ```
+    ```sh
+    node run minify
+    ```
 
 <!----------------------------------------------------------------------------->
 

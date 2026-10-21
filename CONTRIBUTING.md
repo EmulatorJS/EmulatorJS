@@ -14,7 +14,7 @@ Donate to: [libretro](https://retroarch.com/index.php?page=donate)
 
 ## Ai Policy
 
-Unfortunately, Ai has managed to get itself into every single corner of our lives. I do not hate Ai, I think it can be a useful *tool*.
+Unfortunately, Ai has managed to get itself into every single corner of our lives. I do not hate Ai, I think it can be a useful _tool_.
 Ai is not a replacement, do not treat it as one. If you do not know how to code, I do not suggest using Ai to open a pull request, open an issue instead.
 
 When you use Ai at ANY point in the development process (whether that be drafting, planning, writing, etc) you MUST disclose it when opening a pull request by adding attribution in this format to each commit **and** to the bottom of the pull request description:
@@ -53,22 +53,4 @@ npm run update -- --ejs_v=4.3.1 # Updates contributors list and sets version to 
 npm run update -- --deps=true # Updates contributors list and updates dependencies
 npm run update -- --dev=true # Updates contributors list and enables dev mode
 npm run update -- --dev=false # Updates contributors list and disables dev mode
-```
-
-## Attention Visual Studio Code Users
-
-By default Visual Studio Code will apply formatting that is not consistent with the standard formatting used by this project.
-
-Please disable the formatter *before* submitting a Pull Request.
-
-The formatter can be disabled for this repo only (without affecting your own preferences) by creating a new file called `.vscode/settings.json` (if it doesn't already exist).
-
-Add the following options to the settings.json file to disable the formatter while working on this repo:
-```json
-{
-    "diffEditor.ignoreTrimWhitespace": false,
-    "editor.formatOnPaste": false,
-    "editor.formatOnSave": false,
-    "editor.formatOnSaveMode": "modifications"
-}
 ```
