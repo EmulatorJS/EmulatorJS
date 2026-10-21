@@ -1,5 +1,6 @@
 package-lock.json
 data/cores/
+data/compression/
 data/emulator.min.*
 data/src/vendor/
 dist/
