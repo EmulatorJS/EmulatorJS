@@ -545,8 +545,22 @@ class EmulatorJS {
                     this.coreName = core.name;
                     this.repository = core.repo;
                     this.defaultCoreOpts = core.options;
+                    if (this.config.coreOpts && typeof this.config.coreOpts === "object" && this.defaultCoreOpts) {
+                        this.defaultCoreOpts.settings = Object.assign({}, this.defaultCoreOpts.settings, this.config.coreOpts);
+                    }
                     this.enableMouseLock = core.options.supportsMouse;
-                    this.retroarchOpts = core.retroarchOpts;
+                    const customRetroarchOpts = this.config.retroarchOpts || (typeof window !== "undefined" && window.EJS_retroarchOpts) || [];
+                    let extraOpts = [];
+                    if (Array.isArray(customRetroarchOpts)) {
+                        extraOpts = customRetroarchOpts;
+                    } else if (customRetroarchOpts && typeof customRetroarchOpts === "object") {
+                        extraOpts = Object.keys(customRetroarchOpts).map((key) => ({
+                            name: key,
+                            value: customRetroarchOpts[key],
+                            isString: typeof customRetroarchOpts[key] === "string"
+                        }));
+                    }
+                    this.retroarchOpts = (core.retroarchOpts || []).concat(extraOpts);
                     this.saveFileExt = core.save;
                 } else if (k === "license.txt") {
                     this.license = new TextDecoder().decode(decompressedData[k]);
