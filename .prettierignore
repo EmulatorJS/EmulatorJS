@@ -1,0 +1,6 @@
+package-lock.json
+data/cores/
+data/emulator.min.*
+data/src/vendor/
+dist/
+jsdoc/

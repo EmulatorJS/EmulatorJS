@@ -54,21 +54,3 @@ npm run update -- --deps=true # Updates contributors list and updates dependenci
 npm run update -- --dev=true # Updates contributors list and enables dev mode
 npm run update -- --dev=false # Updates contributors list and disables dev mode
 ```
-
-## Attention Visual Studio Code Users
-
-By default Visual Studio Code will apply formatting that is not consistent with the standard formatting used by this project.
-
-Please disable the formatter *before* submitting a Pull Request.
-
-The formatter can be disabled for this repo only (without affecting your own preferences) by creating a new file called `.vscode/settings.json` (if it doesn't already exist).
-
-Add the following options to the settings.json file to disable the formatter while working on this repo:
-```json
-{
-    "diffEditor.ignoreTrimWhitespace": false,
-    "editor.formatOnPaste": false,
-    "editor.formatOnSave": false,
-    "editor.formatOnSaveMode": "modifications"
-}
-```
