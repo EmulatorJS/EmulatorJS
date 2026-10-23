@@ -1041,14 +1041,22 @@ class EmulatorJS {
             }
         }).then(module => {
             this.Module = module;
+            this.optimizeOpenAL();
             this.downloadFiles();
         }).catch(e => {
             console.warn(e);
             this.startGameError("Failed to start game");
         });
     }
+    optimizeOpenAL() {
+        if (this.Module && this.Module.AL) {
+            this.Module.AL.QUEUE_LOOKAHEAD = (typeof this.config.audioLookahead === "number") ? this.config.audioLookahead : 0.08;
+            this.Module.AL.QUEUE_INTERVAL = 25;
+        }
+    }
     startGame() {
         try {
+            this.optimizeOpenAL();
             const args = [];
             if (this.debug) args.push("-v");
             args.push("/" + this.fileName);

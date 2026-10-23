@@ -186,6 +186,7 @@ const config = {
     externalFiles: window.EJS_externalFiles,
     dontExtractRom: window.EJS_dontExtractRom,
     dontExtractBIOS: window.EJS_dontExtractBIOS,
+    audioLookahead: window.EJS_audioLookahead,
     disableLocalStorage: window.EJS_disableLocalStorage,
     forceLegacyCores: window.EJS_forceLegacyCores,
     noAutoFocus: window.EJS_noAutoFocus,
