@@ -10,6 +10,7 @@ class EJS_Frontend {
         this.textElem = null;
         this.setElements(element);
         this.canvas = this.ejs.createElement("canvas");
+        if (["dos", "dosbox_pure"].includes(this.ejs.getCore())) this.canvas.id = "canvas";
         this.canvas.classList.add("ejs_canvas");
     }
     updatePlayPauseButtons(paused) {

@@ -533,7 +533,7 @@ class EmulatorJS {
             for (let k in decompressedData) {
                 if (k.endsWith(".wasm")) {
                     wasm = decompressedData[k];
-                } else if (k.endsWith(".worker.js")) {
+                } else if (k.endsWith(".worker.js") || k.endsWith(".ww.js")) {
                     thread = decompressedData[k];
                 } else if (k.endsWith(".js")) {
                     js = decompressedData[k];
@@ -718,10 +718,13 @@ class EmulatorJS {
             this.compression = new EJS_COMPRESSION(this);
         }
 
-        let dontExtract = false;
+        let dontExtract = (type.name === "ROM" && this.config.dontExtractRom === true) ||
+            (type.name === "BIOS" && this.config.dontExtractBIOS === true);
         if (type.dontExtractIfCore?.includes(this.getCore())) {
             dontExtract = true;
             console.log(`[EJS ${type.name.toUpperCase()}] Core ${this.getCore()} requires special handling, will not attempt to extract if compressed.`);
+        } else if (dontExtract) {
+            console.log(`[EJS ${type.name.toUpperCase()}] Extraction disabled by configuration.`);
         } else {
             console.log(`[EJS ${type.name.toUpperCase()}] Core ${this.getCore()} does not require special handling, will attempt to extract if compressed.`);
         }
@@ -861,8 +864,13 @@ class EmulatorJS {
      */
     async initializeGameManager() {
         this.gameManager = new EJS_GameManager(this.Module, this);
-        await this.gameManager.loadExternalFiles();
-        await this.gameManager.mountFileSystems();
+        if (this.gameManager.isDosBoxPure()) {
+            await this.gameManager.mountFileSystems();
+            await this.gameManager.loadExternalFiles();
+        } else {
+            await this.gameManager.loadExternalFiles();
+            await this.gameManager.mountFileSystems();
+        }
         this.callEvent("saveDatabaseLoaded", this.gameManager.FS);
         if (this.getCore() === "ppsspp") {
             await this.gameManager.loadPpssppAssets();
@@ -1026,7 +1034,7 @@ class EmulatorJS {
                 if (this.debug) console.log(fileName);
                 if (fileName.endsWith(".wasm")) {
                     return URL.createObjectURL(new Blob([wasmData], { type: "application/wasm" }));
-                } else if (fileName.endsWith(".worker.js")) {
+                } else if (fileName.endsWith(".worker.js") || fileName.endsWith(".ww.js")) {
                     return URL.createObjectURL(new Blob([threadData], { type: "application/javascript" }));
                 }
             },

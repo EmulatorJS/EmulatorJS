@@ -44,7 +44,24 @@ class EJS_GameManager {
         this.initShaders();
         this.setupPreLoadSettings();
 
-        this.EJS.on("exit", () => {
+        this.EJS.on("exit", async () => {
+            if (this.isDosBoxPure()) {
+                if (this.exitInProgress) return;
+                this.exitInProgress = true;
+                clearInterval(this.EJS.saveSaveInterval);
+                if (!this.EJS.failedToStart) this.saveSaveFiles();
+                this.toggleMainLoop(0);
+                // Persist disk differences before tearing down the threaded core.
+                try {
+                    await this.syncSaveFileSystem();
+                } catch (error) {
+                    console.error("Failed to persist DOSBox Pure saves:", error);
+                    return;
+                }
+                this.FS.unmount("/data/saves");
+                try { this.Module.abort(); } catch (error) { console.warn(error); }
+                return;
+            }
             if (!this.EJS.failedToStart) {
                 this.saveSaveFiles();
                 this.functions.restart();
@@ -68,11 +85,11 @@ class EJS_GameManager {
         }
     }
     mountFileSystems() {
-        return new Promise(async resolve => {
+        return new Promise((resolve, reject) => {
             this.mkdir("/data");
             this.mkdir("/data/saves");
             this.FS.mount(this.FS.filesystems.IDBFS, { autoPersist: true }, "/data/saves");
-            this.FS.syncfs(true, resolve);
+            this.FS.syncfs(true, error => error ? reject(error) : resolve());
         });
     }
     writeConfigFile() {
@@ -456,7 +473,9 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     saveSaveFiles() {
         this.functions.saveSaveFiles();
         this.EJS.callEvent("saveSaveFiles", this.getSaveFile(false));
-        //this.FS.syncfs(false, () => {});
+        if (this.isDosBoxPure()) {
+            this.syncSaveFileSystem().catch(error => console.error("Failed to persist DOSBox Pure saves:", error));
+        }
     }
     supportsStates() {
         return !!this.functions.supportsStates();
@@ -473,6 +492,24 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
         }
         const exists = this.FS.analyzePath(this.getSaveFilePath()).exists;
         return (exists ? this.FS.readFile(this.getSaveFilePath()) : null);
+    }
+    isDosBoxPure() {
+        return ["dos", "dosbox_pure"].includes(this.EJS.getCore());
+    }
+    syncSaveFileSystem() {
+        if (this.saveSyncPromise) {
+            this.saveSyncPending = true;
+            return this.saveSyncPromise;
+        }
+        this.saveSyncPromise = (async () => {
+            do {
+                this.saveSyncPending = false;
+                await new Promise((resolve, reject) => {
+                    this.FS.syncfs(false, error => error ? reject(error) : resolve());
+                });
+            } while (this.saveSyncPending);
+        })().finally(() => { this.saveSyncPromise = null; });
+        return this.saveSyncPromise;
     }
     loadSaveFiles() {
         this.clearEJSResetTimer();
