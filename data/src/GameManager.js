@@ -221,7 +221,13 @@ IF EXIST AUTORUN.BAT CALL AUTORUN.BAT
     }
     restart() {
         this.clearEJSResetTimer();
-        this.functions.restart();
+        // A reset can reinitialize the audio driver, which creates a new AudioContext
+        this.EJS.captureAudioContext = true;
+        try {
+            this.functions.restart();
+        } finally {
+            this.EJS.captureAudioContext = false;
+        }
     }
     getState() {
         return this.Module.EmulatorJSGetState();
