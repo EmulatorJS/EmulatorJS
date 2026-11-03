@@ -768,7 +768,9 @@ class EJS_Cache {
         // remove orphaned blobs in blobStorage - here as a failsafe in case of previous incomplete deletions
         const blobKeys = await this.blobStorage.getKeys();
         const referencedBlobKeys = new Set();
+        const removedKeys = new Set(itemsToRemove.map(item => item.key));
         for (const item of allItems) {
+            if (removedKeys.has(item.key)) continue;
             referencedBlobKeys.add(item.key);
             const blobEntry = await this.blobStorage.get(item.key);
             for (const blobKey of this.getBlobManifestKeys(item.key, blobEntry)) {
