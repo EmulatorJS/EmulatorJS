@@ -332,7 +332,7 @@ class EJS_Frontend {
     }
     setElements(element) {
         const game = this.ejs.createElement("div");
-        const elem = document.querySelector(element);
+        const elem = (typeof element === "string") ? document.querySelector(element) : element;
         elem.innerHTML = "";
         elem.appendChild(game);
         this.game = game;
@@ -2987,6 +2987,7 @@ class EJS_Frontend {
         this.virtualGamepad.style.display = "none";
     }
     handleResize() {
+        if (this.ejs.destroyed) return;
         if (this.virtualGamepad) {
             if (this.virtualGamepad.style.display === "none") {
                 this.virtualGamepad.style.opacity = 0;

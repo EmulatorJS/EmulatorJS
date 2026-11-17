@@ -2,6 +2,7 @@ node_modules/
 yarn.lock
 roms/
 data/emulator.min.*
+data/webcomponent.min.*
 data/cores/*
 !data/cores/README.md
 !data/cores/core-README.md
