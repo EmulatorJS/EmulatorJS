@@ -43,6 +43,9 @@ const EJS_pathToData = 'https://cdn.emulatorjs.org/<version>/data/';
 // Replace <version> with: stable, latest, nightly, etc.
 ```
 
+### Web Component
+Alternatively to `window.EJS_*` + `loader.js`, you can use the `<emulator-js>` custom element: load `data/webcomponent.min.js` as a module and add an `<emulator-js>` element to the page — see the [Web Component Docs](docs/WEB_COMPONENT.md).
+
 ### Development
 To run the project locally for development:
 
