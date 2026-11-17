@@ -30,9 +30,11 @@
         "@emulatorjs/cores": "latest"
     },
     "devDependencies": {
+        "@rollup/plugin-node-resolve": "^16.0.3",
         "@rollup/plugin-terser": "^1.0.0",
         "eslint": "^10.0.2",
         "jsdoc": "^4.0.5",
+        "lit": "^3.3.3",
         "nipplejs": "^0.10.2",
         "node-fetch": "^3.3.2",
         "rollup": "^4.59.0",

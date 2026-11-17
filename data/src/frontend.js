@@ -2987,6 +2987,7 @@ class EJS_Frontend {
         this.virtualGamepad.style.display = "none";
     }
     handleResize() {
+        if (this.ejs.destroyed) return;
         if (this.virtualGamepad) {
             if (this.virtualGamepad.style.display === "none") {
                 this.virtualGamepad.style.opacity = 0;

@@ -56,6 +56,8 @@ class EmulatorJS {
             const data = { cb: callback, elem: element, listener: listeners[i] };
             rv.push(data);
         }
+        if (!Array.isArray(this.listeners)) this.listeners = [];
+        this.listeners.push(...rv);
         return rv;
     }
     removeEventListener(data) {
@@ -239,7 +241,7 @@ class EmulatorJS {
         this.setup.shaders();
         
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
-        this.config.settingsLanguage = window.EJS_settingsLanguage || false;
+        this.config.settingsLanguage = this.config.settingsLanguage || window.EJS_settingsLanguage || false;
 
         this.isFastForward = false;
         this.isSlowMotion = false;
@@ -468,6 +470,34 @@ class EmulatorJS {
         this.functions[event].forEach(e => e(data));
         return this.functions[event].length;
     }
+    destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+        this.callEvent("exit");
+        if (this.saveSaveInterval) {
+            clearInterval(this.saveSaveInterval);
+            this.saveSaveInterval = null;
+        }
+        if (this.resetTimeout) {
+            clearTimeout(this.resetTimeout);
+            this.resetTimeout = null;
+        }
+        this.stopAllAutofire();
+        if (this.gamepad) {
+            this.gamepad.terminate();
+            this.gamepad.listeners = {};
+        }
+        if (Array.isArray(this.listeners)) this.removeEventListener(this.listeners);
+        if (this.netplay) {
+            try { this.netplay.leaveRoom(); } catch(e) {}
+        }
+        if (this.coreScript) {
+            if (this.coreScriptUrl) URL.revokeObjectURL(this.coreScriptUrl);
+            this.coreScript.remove();
+            this.coreScript = null;
+            this.coreScriptUrl = null;
+        }
+    }
     checkCoreCompatibility(version) {
         if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
             this.startGameError("Outdated EmulatorJS version");
@@ -646,11 +676,13 @@ class EmulatorJS {
         });
     }
     initGameCore(js, wasm, thread) {
-        let script = this.createElement("script");
-        script.src = URL.createObjectURL(new Blob([js], { type: "application/javascript" }));
+        const script = this.createElement("script");
+        this.coreScriptUrl = URL.createObjectURL(new Blob([js], { type: "application/javascript" }));
+        script.src = this.coreScriptUrl;
         script.addEventListener("load", () => {
             this.initModule(wasm, thread);
         });
+        this.coreScript = script;
         document.body.appendChild(script);
     }
     getBaseFileName(force) {
@@ -1382,6 +1414,7 @@ class EmulatorJS {
         }
     }
     initControlVars() {
+        this.listeners = [];
         this.defaultControllers = {
             0: {
                 0: {

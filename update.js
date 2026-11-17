@@ -1,6 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 import fetch from 'node-fetch';
+import { rollup } from 'rollup';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
 
 const args = process.argv.slice(2);
 const versionArg = args.find(arg => arg.startsWith('--ejs_v='));
@@ -42,7 +44,25 @@ const updateDependencies = async () => {
     } catch(error) {
         console.error("Error updating nipplejs:", error.message);
     }
-    console.log("Updated socket.io and nipplejs.");
+
+    // lit ships as ESM source, not a single file: bundle it with rollup.
+    try {
+        const bundle = await rollup({
+            input: path.resolve('node_modules', 'lit', 'index.js'),
+            plugins: [nodeResolve()],
+            onwarn(warning, warn) {
+                if (warning.code === 'CIRCULAR_DEPENDENCY') return;
+                warn(warning);
+            }
+        });
+        await bundle.write({
+            file: path.resolve('data', 'src', 'vendor', 'lit.js'),
+            format: 'es'
+        });
+    } catch(error) {
+        console.error("Error updating lit:", error.message);
+    }
+    console.log("Updated socket.io, nipplejs and lit.");
 };
 
 const updateVersion = async (newVersion) => {
