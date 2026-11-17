@@ -332,7 +332,7 @@ class EJS_Frontend {
     }
     setElements(element) {
         const game = this.ejs.createElement("div");
-        const elem = document.querySelector(element);
+        const elem = (typeof element === "string") ? document.querySelector(element) : element;
         elem.innerHTML = "";
         elem.appendChild(game);
         this.game = game;
