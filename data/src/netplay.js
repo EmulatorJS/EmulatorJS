@@ -85,12 +85,12 @@ export class Netplay {
         this._hostCanvasOrigSize = null;
 
         // Server configuration
-        this.url = this.emu.config.netplayUrl || window.EJS_netplayUrl || null;
+        this.url = this.emu.config.netplayUrl || null;
         if (this.url) {
             while (this.url.endsWith("/")) this.url = this.url.slice(0, -1);
         }
 
-        this.iceServers = this.emu.config.netplayICEServers || window.EJS_netplayICEServers || [];
+        this.iceServers = this.emu.config.netplayICEServers || [];
 
         if (this.iceServers.length === 0) {
             console.warn("[NETPLAY] No ICE servers configured. Connections will only work on LAN.");
@@ -452,14 +452,15 @@ export class Netplay {
     ensureRemoteAudioElement(peerId) {
         this.remoteAudioElements = this.remoteAudioElements || {};
         const id = "ejs-remote-audio-" + peerId;
-        let el = this.remoteAudioElements[peerId] || document.getElementById(id);
+        const parent = this.emu.frontend.elements.parent;
+        let el = this.remoteAudioElements[peerId] || (parent && parent.querySelector("#" + CSS.escape(id)));
         if (!el) {
             el = document.createElement("audio");
             el.id = id;
             el.autoplay = true;
             el.playsInline = true;
             el.style.display = "none";
-            document.body.appendChild(el);
+            (parent || document.body).appendChild(el);
             this.remoteAudioElements[peerId] = el;
         }
         el.muted = false;
@@ -549,7 +550,7 @@ export class Netplay {
             // Method 3: Use createMediaElementSource if there's an audio element
             if (!connected) {
                 try {
-                    const audioElements = document.querySelectorAll("audio");
+                    const audioElements = this.emu.frontend.elements.parent.querySelectorAll("audio");
                     for (const ae of audioElements) {
                         if (ae.id && ae.id.startsWith("ejs-remote-audio-")) continue;
                         try {
@@ -650,7 +651,7 @@ export class Netplay {
                 }).catch(() => {});
             }
             try {
-                const els = document.querySelectorAll("audio[id^=\"ejs-remote-audio-\"]");
+                const els = this.emu.frontend.elements.parent.querySelectorAll("audio[id^=\"ejs-remote-audio-\"]");
                 els.forEach((a) => {
                     a.muted = false;
                     a.volume = 1.0;
@@ -1076,8 +1077,6 @@ export class Netplay {
         // Get ICE servers from config
         if (this.emu.config && this.emu.config.netplayICEServers && this.emu.config.netplayICEServers.length > 0) {
             iceServers = this.emu.config.netplayICEServers;
-        } else if (window.EJS_netplayICEServers && window.EJS_netplayICEServers.length > 0) {
-            iceServers = window.EJS_netplayICEServers;
         } else if (this.iceServers && this.iceServers.length > 0) {
             iceServers = this.iceServers;
         } else {
@@ -1498,7 +1497,8 @@ export class Netplay {
 
         // Clean up remote audio elements
         try {
-            const els = document.querySelectorAll("audio[id^=\"ejs-remote-audio-\"]");
+            const parent = this.emu.frontend.elements.parent;
+            const els = parent ? parent.querySelectorAll("audio[id^=\"ejs-remote-audio-\"]") : [];
             els.forEach((a) => {
                 try { a.pause(); a.srcObject = null; a.remove(); } catch (e) {}
             });
@@ -2004,7 +2004,7 @@ export class Netplay {
             try {
                 const name = chat.player_name || "Player";
                 const msg = chat.message || "";
-                const typing = this.chatInput && document.activeElement === this.chatInput;
+                const typing = this.chatInput && this.chatInput.getRootNode().activeElement === this.chatInput;
                 if (!typing && this.emu.frontend.displayMessage) {
                     const prefix = (to !== "all") ? "(private) " : "";
                     this.emu.frontend.displayMessage(prefix + name + ": " + msg, 4500);

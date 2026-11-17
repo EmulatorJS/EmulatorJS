@@ -33,6 +33,7 @@ class GamepadHandler {
         this.timeout = setTimeout(this.loop.bind(this), 10);
     }
     updateGamepadState() {
+        if (typeof this.shouldHandle === "function" && !this.shouldHandle()) return;
         let gamepads = Array.from(this.getGamepads());
         if (!gamepads) return;
         if (!Array.isArray(gamepads) && gamepads.length) {

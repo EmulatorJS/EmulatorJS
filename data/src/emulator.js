@@ -11,6 +11,16 @@ import * as CONSTS from "./consts.js";
 
 import "./vendor/socket.io.min.js";
 
+// Page-level state shared by every copy of this module on the page (module
+// instances are per URL, so a module variable would not be shared between
+// different data-paths): coreLoadQueue serializes core script loads (see
+// initGameCore), instanceCount drives gamepad routing (see bindListeners).
+const pageStateKey = "__EJS_PAGE_STATE__";
+if (!globalThis[pageStateKey]) {
+    globalThis[pageStateKey] = { coreLoadQueue: Promise.resolve(), instanceCount: 0 };
+}
+const pageState = globalThis[pageStateKey];
+
 class EmulatorJS {
     getCores() {
         let rv = CONSTS.cores;
@@ -56,6 +66,8 @@ class EmulatorJS {
             const data = { cb: callback, elem: element, listener: listeners[i] };
             rv.push(data);
         }
+        if (!Array.isArray(this.listeners)) this.listeners = [];
+        this.listeners.push(...rv);
         return rv;
     }
     removeEventListener(data) {
@@ -221,6 +233,7 @@ class EmulatorJS {
         return parseInt(rv.join(""));
     }
     constructor(element, config) {
+        pageState.instanceCount++;
         this.ejs_version = CONSTS.version;
         this.extensions = [];
         this.allSettings = {};
@@ -239,7 +252,7 @@ class EmulatorJS {
         this.setup.shaders();
         
         this.config.buttonOpts = this.buildButtonOptions(this.config.buttonOpts);
-        this.config.settingsLanguage = window.EJS_settingsLanguage || false;
+        this.config.settingsLanguage = this.config.settingsLanguage || false;
 
         this.isFastForward = false;
         this.isSlowMotion = false;
@@ -468,6 +481,35 @@ class EmulatorJS {
         this.functions[event].forEach(e => e(data));
         return this.functions[event].length;
     }
+    destroy() {
+        if (this.destroyed) return;
+        this.destroyed = true;
+        pageState.instanceCount = Math.max(0, pageState.instanceCount - 1);
+        this.callEvent("exit");
+        if (this.saveSaveInterval) {
+            clearInterval(this.saveSaveInterval);
+            this.saveSaveInterval = null;
+        }
+        if (this.resetTimeout) {
+            clearTimeout(this.resetTimeout);
+            this.resetTimeout = null;
+        }
+        this.stopAllAutofire();
+        if (this.gamepad) {
+            this.gamepad.terminate();
+            this.gamepad.listeners = {};
+        }
+        if (Array.isArray(this.listeners)) this.removeEventListener(this.listeners);
+        if (this.netplay) {
+            try { this.netplay.leaveRoom(); } catch(e) {}
+        }
+        if (this.coreScript) {
+            if (this.coreScriptUrl) URL.revokeObjectURL(this.coreScriptUrl);
+            this.coreScript.remove();
+            this.coreScript = null;
+            this.coreScriptUrl = null;
+        }
+    }
     checkCoreCompatibility(version) {
         if (this.versionAsInt(version.minimumEJSVersion) > this.versionAsInt(this.ejs_version)) {
             this.startGameError("Outdated EmulatorJS version");
@@ -485,7 +527,7 @@ class EmulatorJS {
         this.frontend.setLoadingText("Download Game Core");
         if (!this.config.threads && this.requiresThreads(this.getCore())) {
             this.startGameError(["Error for site owner", "Check console"]);
-            console.warn("This core requires threads, but EJS_threads is not set!");
+            console.warn("This core requires threads, but the threads option is not set!");
             return;
         }
         if (!this.supportsWebgl2 && this.requiresWebGL2(this.getCore())) {
@@ -549,7 +591,7 @@ class EmulatorJS {
                         this.defaultCoreOpts.settings = Object.assign({}, this.defaultCoreOpts.settings, this.config.coreOpts);
                     }
                     this.enableMouseLock = core.options.supportsMouse;
-                    const customRetroarchOpts = this.config.retroarchOpts || (typeof window !== "undefined" && window.EJS_retroarchOpts) || [];
+                    const customRetroarchOpts = this.config.retroarchOpts || [];
                     let extraOpts = [];
                     if (Array.isArray(customRetroarchOpts)) {
                         extraOpts = customRetroarchOpts;
@@ -646,12 +688,28 @@ class EmulatorJS {
         });
     }
     initGameCore(js, wasm, thread) {
-        let script = this.createElement("script");
-        script.src = URL.createObjectURL(new Blob([js], { type: "application/javascript" }));
-        script.addEventListener("load", () => {
-            this.initModule(wasm, thread);
+        const script = this.createElement("script");
+        this.coreScriptUrl = URL.createObjectURL(new Blob([js], { type: "application/javascript" }));
+        script.src = this.coreScriptUrl;
+        this.coreScript = script;
+        // Serialize core script loading page-wide: classic scripts appended to
+        // the body execute async, so without a queue core B could overwrite
+        // window.EJS_Runtime before core A's load handler captured it. The
+        // next script is only appended after this one's load event fired, so
+        // the capture below always sees this core's runtime.
+        pageState.coreLoadQueue = pageState.coreLoadQueue.then(() => new Promise((resolve) => {
+            script.addEventListener("load", () => {
+                this.runtime = window.EJS_Runtime;
+                resolve();
+            }, { once: true });
+            script.addEventListener("error", () => resolve(), { once: true });
+            document.body.appendChild(script);
+        })).then(() => {
+            if (!this.destroyed) this.initModule(wasm, thread);
+        }).catch((e) => {
+            console.warn(e);
+            this.startGameError("Failed to load game core");
         });
-        document.body.appendChild(script);
     }
     getBaseFileName(force) {
         //Only once game and core is loaded
@@ -997,12 +1055,12 @@ class EmulatorJS {
         })();
     }
     initModule(wasmData, threadData) {
-        if (typeof window.EJS_Runtime !== "function") {
-            console.warn("EJS_Runtime is not defined!");
+        if (typeof this.runtime !== "function") {
+            console.warn("The game core did not provide EJS_Runtime!");
             this.startGameError("Error loading EmulatorJS runtime");
-            throw new Error("EJS_Runtime is not defined!");
+            throw new Error("The game core did not provide EJS_Runtime");
         }
-        window.EJS_Runtime({
+        this.runtime({
             noInitialRun: true,
             onRuntimeInitialized: null,
             arguments: [],
@@ -1128,6 +1186,14 @@ class EmulatorJS {
         this.frontend.bindListeners();
 
         this.gamepad = new GamepadHandler(); //https://github.com/ethanaobrien/Gamepad
+        // With several instances on one page, only the focused one receives
+        // gamepad input (focus inside a shadow root is seen via getRootNode()).
+        this.gamepad.shouldHandle = () => {
+            if (pageState.instanceCount <= 1) return true;
+            const parent = this.frontend && this.frontend.elements && this.frontend.elements.parent;
+            if (!parent) return false;
+            return parent.getRootNode().activeElement === parent;
+        };
         this.gamepad.on("connected", (e) => {
             if (!this.frontend.gamepadLabels) return;
             const gamepadSelection = this.getGamepadSelectionValue(e.gamepadIndex);
@@ -1382,6 +1448,7 @@ class EmulatorJS {
         }
     }
     initControlVars() {
+        this.listeners = [];
         this.defaultControllers = {
             0: {
                 0: {
@@ -1830,7 +1897,7 @@ class EmulatorJS {
         } else if (this.config.gameUrl instanceof File) {
             identifier += "-" + this.config.gameUrl.name;
         } else if (typeof this.config.gameId !== "number") {
-            console.warn("gameId (EJS_gameID) is not set. This may result in settings persisting across games.");
+            console.warn("gameId is not set. This may result in settings persisting across games.");
         }
         return "ejs-" + identifier + "-settings";
     }

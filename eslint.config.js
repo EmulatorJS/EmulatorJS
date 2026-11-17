@@ -2,7 +2,10 @@ export default [
     {
         files: ["**/*.js"],
         languageOptions: {
-            ecmaVersion: 2020,
+            // 2025: top-level await (2022) and the import-attributes options
+            // argument `import(url, { with: { type: "css" } })` in
+            // data/src/webcomponent.js.
+            ecmaVersion: 2025,
             sourceType: "module",
             globals: {
                 console: "readonly",
