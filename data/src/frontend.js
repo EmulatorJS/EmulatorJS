@@ -242,12 +242,11 @@ class EJS_Frontend {
 
     }
     adBlocked(url, del) {
+        const ad = this.elements.parent ? this.elements.parent.querySelector('div[class="ejs_ad_iframe"]') : null;
         if (del) {
-            document.querySelector('div[class="ejs_ad_iframe"]').remove();
+            if (ad) ad.remove();
         } else {
-            try {
-                document.querySelector('div[class="ejs_ad_iframe"]').remove();
-            } catch(e) {}
+            if (ad) ad.remove();
             this.ejs.config.adUrl = url;
             this.setupAds(this.ejs.config.adUrl, this.ejs.config.adSize[0], this.ejs.config.adSize[1]);
         }
@@ -260,7 +259,8 @@ class EJS_Frontend {
         this.setVirtualGamepad();
         this.ejs.addEventListener(this.elements.parent, "keydown keyup", this.ejs.keyChange.bind(this.ejs));
         this.ejs.addEventListener(this.elements.parent, "mousedown touchstart", (e) => {
-            if (document.activeElement !== this.elements.parent && this.ejs.config.noAutoFocus !== true) this.elements.parent.focus();
+            // getRootNode().activeElement pierces shadow DOM (document.activeElement is the host there)
+            if (this.elements.parent.getRootNode().activeElement !== this.elements.parent && this.ejs.config.noAutoFocus !== true) this.elements.parent.focus();
         })
         this.ejs.addEventListener(window, "resize", this.handleResize.bind(this));
         this.ejs.addEventListener(window, "blur", () => this.ejs.stopAllAutofire());
@@ -1281,8 +1281,12 @@ class EJS_Frontend {
         });
 
         this.ejs.addEventListener(document, "webkitfullscreenchange mozfullscreenchange fullscreenchange", (e) => {
-            if (e.target !== this.elements.parent) return;
-            if (document.fullscreenElement === null) {
+            // Inside a shadow root the event target is retargeted to the host
+            const root = this.elements.parent.getRootNode();
+            const host = (root instanceof ShadowRoot) ? root.host : null;
+            if (e.target !== this.elements.parent && e.target !== host) return;
+            const fullscreenElement = ("fullscreenElement" in root) ? root.fullscreenElement : document.fullscreenElement;
+            if (fullscreenElement === null) {
                 exit.style.display = "none";
                 enter.style.display = "";
             } else {
@@ -1420,7 +1424,7 @@ class EJS_Frontend {
 
             const body = this.createPopup("Cache Manager", {
                 "Cleanup Now": async () => {
-                    const cleanupBtn = document.querySelector('.ejs_popup_button');
+                    const cleanupBtn = this.elements.parent.querySelector('.ejs_popup_button');
                     if (cleanupBtn) cleanupBtn.textContent = 'Cleaning...';
                     await this.ejs.storageCache.cleanup();
                     tbody.innerHTML = "";
@@ -4026,7 +4030,7 @@ class EJS_Frontend {
                         if (!this.ejs.config.cheatPath) {
                             if (this.ejs.debug)
                                 console.error(
-                                    "Cheat file load error: EJS_cheatPath is not configured.",
+                                    "Cheat file load error: cheatPath is not configured.",
                                 );
                             importDiv.style.display = "none";
                             return;

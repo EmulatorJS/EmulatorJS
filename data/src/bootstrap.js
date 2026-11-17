@@ -11,10 +11,10 @@ export function resolveDataPath(callerScriptUrl, explicitPath) {
     return dataPath;
 }
 
-function resolvePath(dataPath, path) {
+function resolvePath(dataPath, path, filePaths) {
     let resolved;
-    if ("undefined" != typeof EJS_paths && typeof EJS_paths[path] === "string") {
-        resolved = EJS_paths[path];
+    if (filePaths && typeof filePaths[path] === "string") {
+        resolved = filePaths[path];
     } else if (path.endsWith("emulator.min.js") || path.endsWith("css")) {
         resolved = dataPath + path;
     } else {
@@ -23,31 +23,31 @@ function resolvePath(dataPath, path) {
     return new URL(resolved, document.baseURI).href;
 }
 
-async function loadScript(dataPath, file, debug) {
+async function loadScript(dataPath, file, debug, filePaths) {
     try {
-        const script = resolvePath(dataPath, file);
+        const script = resolvePath(dataPath, file, filePaths);
         const module = await import(script);
         return module.default;
     } catch(e) {
         if (debug) console.error(e);
-        const module = await filesMissing(dataPath, file, debug);
+        const module = await filesMissing(dataPath, file, debug, filePaths);
         return module;
     }
 }
 
-function loadStyle(dataPath, file) {
+function loadStyle(dataPath, file, filePaths) {
     return new Promise(function(resolve) {
         let css = document.createElement("link");
         css.rel = "stylesheet";
-        css.href = resolvePath(dataPath, file);
+        css.href = resolvePath(dataPath, file, filePaths);
         css.onload = resolve;
         css.onerror = () => {
-            filesMissing(dataPath, file).then(e => resolve());
+            filesMissing(dataPath, file, filePaths).then(e => resolve());
         }
         document.head.appendChild(css);
     })
 }
-async function filesMissing(dataPath, file, debug) {
+async function filesMissing(dataPath, file, debug, filePaths) {
     console.error("Failed to load " + file);
     let minifiedFailed = file.includes("min");
     const errorMessage = `Failed to load ${file} because it's likely that the minified files are missing.
@@ -59,26 +59,26 @@ To fix this you have 3 options:
     if (minifiedFailed) {
         console.log("Attempting to load non-minified files");
         if (file === "emulator.min.js") {
-            return await loadScript(dataPath, "emulator.js", debug);
+            return await loadScript(dataPath, "emulator.js", debug, filePaths);
         } else {
-            await loadStyle(dataPath, "emulator.css");
+            await loadStyle(dataPath, "emulator.css", filePaths);
         }
     }
 }
 
 let EmulatorJSClass = null;
 
-export async function loadEmulator(dataPath, { debug = false, css = "link" } = {}) {
-    EmulatorJSClass = await loadScript(dataPath, debug ? "emulator.js" : "emulator.min.js", debug);
+export async function loadEmulator(dataPath, { debug = false, css = "link", filePaths } = {}) {
+    EmulatorJSClass = await loadScript(dataPath, debug ? "emulator.js" : "emulator.min.js", debug, filePaths);
     if (css === "link") {
-        await loadStyle(dataPath, debug ? "emulator.css" : "emulator.min.css");
+        await loadStyle(dataPath, debug ? "emulator.css" : "emulator.min.css", filePaths);
     }
     return EmulatorJSClass;
 }
 
-function getLanguagePath(dataPath, language) {
-    if ("undefined" != typeof EJS_paths && typeof EJS_paths[language] === "string") {
-        return { path: EJS_paths[language], fallback: null };
+function getLanguagePath(dataPath, language, filePaths) {
+    if (filePaths && typeof filePaths[language] === "string") {
+        return { path: filePaths[language], fallback: null };
     }
 
     const base = dataPath + "localization/" + language + ".json";
@@ -115,7 +115,7 @@ async function loadLanguage(dataPath, config) {
     console.log("Language:", config.language);
 
     let langData = {};
-    const paths = getLanguagePath(dataPath, config.language);
+    const paths = getLanguagePath(dataPath, config.language, config.filePaths);
 
     try {
         const specificJson = await fetchJson(paths.path);
@@ -153,9 +153,9 @@ async function loadLanguage(dataPath, config) {
 export async function prepareLanguage(config) {
     try {
         const systemLang = Intl.DateTimeFormat().resolvedOptions().locale;
-        config.language = config.language || window.EJS_language || systemLang;
+        config.language = config.language || systemLang;
 
-        if (config.language && window.EJS_disableAutoLang !== false) {
+        if (config.language && config.disableAutoLang !== false) {
             return await loadLanguage(config.dataPath, config);
         }
     } catch (e) {
@@ -171,16 +171,7 @@ export function createEmulator(element, config, handlers) {
         throw new Error("loadEmulator() must be called before createEmulator()");
     }
     const emulator = new EmulatorJSClass(element, config);
-    const events = handlers || {
-        ready: window.EJS_ready,
-        start: window.EJS_onGameStart,
-        loadState: window.EJS_onLoadState,
-        saveState: window.EJS_onSaveState,
-        loadSave: window.EJS_onLoadSave,
-        saveSave: window.EJS_onSaveSave,
-        exit: window.EJS_onExit,
-        saveUpdate: window.EJS_onSaveUpdate
-    };
+    const events = handlers || {};
     for (const event in events) {
         if (typeof events[event] === "function") {
             emulator.on(event, events[event]);

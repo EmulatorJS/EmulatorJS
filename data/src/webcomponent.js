@@ -283,7 +283,7 @@ export class EmulatorJSElement extends LitElement {
         if (!container) return;
         const config = this.buildConfig();
         try {
-            await loadEmulator(config.dataPath, { debug: config.debug === true, css: "none" });
+            await loadEmulator(config.dataPath, { debug: config.debug === true, css: "none", filePaths: config.filePaths });
             await prepareLanguage(config);
             if (token !== this.#startToken || !this.isConnected) return;
             const handlers = Object.fromEntries(Object.entries(emulatorEvents).map(([event, handler]) => [event, (data) => this.dispatchEvent(handler(data))]));

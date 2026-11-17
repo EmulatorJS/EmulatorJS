@@ -45,8 +45,11 @@ const debug = window.EJS_DEBUG_XX === true;
         defaultOptions: window.EJS_defaultOptions,
         gamePatchUrl: window.EJS_gamePatchUrl,
         gameParentUrl: window.EJS_gameParentUrl,
-        netplayUrl: window.EJS_netplayServer,
+        netplayUrl: window.EJS_netplayServer || window.EJS_netplayUrl,
         netplayICEServers: window.EJS_netplayICEServers,
+        language: window.EJS_language,
+        disableAutoLang: window.EJS_disableAutoLang,
+        settingsLanguage: window.EJS_settingsLanguage,
         gameId: window.EJS_gameID,
         backgroundImg: window.EJS_backgroundImage,
         backgroundBlur: window.EJS_backgroundBlur,
@@ -75,7 +78,7 @@ const debug = window.EJS_DEBUG_XX === true;
         coreOpts: window.EJS_coreOpts
     };
 
-    const EmulatorJS = await bootstrap.loadEmulator(dataPath, { debug: debug, css: "link" });
+    const EmulatorJS = await bootstrap.loadEmulator(dataPath, { debug: debug, css: "link", filePaths: config.filePaths });
 
     if (!EmulatorJS) {
         console.error("EmulatorJS failed to load. Check for missing files.");
@@ -89,6 +92,16 @@ const debug = window.EJS_DEBUG_XX === true;
         console.log("Language JSON loaded:", !!config.langJson);
     }
 
-    window.EJS_emulator = bootstrap.createEmulator(window.EJS_player, config);
+    const handlers = {
+        ready: window.EJS_ready,
+        start: window.EJS_onGameStart,
+        loadState: window.EJS_onLoadState,
+        saveState: window.EJS_onSaveState,
+        loadSave: window.EJS_onLoadSave,
+        saveSave: window.EJS_onSaveSave,
+        exit: window.EJS_onExit,
+        saveUpdate: window.EJS_onSaveUpdate
+    };
+    window.EJS_emulator = bootstrap.createEmulator(window.EJS_player, config, handlers);
     window.EJS_adBlocked = (url, del) => window.EJS_emulator.frontend.adBlocked(url, del);
 })();
