@@ -51,7 +51,7 @@ class EJS_GameManager {
                 this.saveSaveFiles();
             }
             this.toggleMainLoop(0);
-            this.FS.unmount("/data/saves");
+            this.FS.syncfs(false, () => this.FS.unmount("/data/saves"));
             setTimeout(() => {
                 try {
                     this.Module.abort();
