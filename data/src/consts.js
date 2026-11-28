@@ -4,7 +4,7 @@ export const cores = {
     "atari5200": ["a5200"],
     "vb": ["beetle_vb"],
     "nds": ["melonds", "desmume", "desmume2015"],
-    "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi"],
+    "arcade": ["fbneo", "fbalpha2012_cps1", "fbalpha2012_cps2", "same_cdi", "mamearcade"],
     "nes": ["fceumm", "nestopia"],
     "gb": ["gambatte"],
     "coleco": ["gearcoleco"],
@@ -15,7 +15,7 @@ export const cores = {
     "sega32x": ["picodrive"],
     "sega": ["genesis_plus_gx", "genesis_plus_gx_wide", "picodrive"],
     "lynx": ["handy"],
-    "mame": ["mame2003_plus", "mame2003"],
+    "mame": ["mame2003_plus", "mame2003", "mamearcade"],
     "ngp": ["mednafen_ngp"],
     "pce": ["mednafen_pce"],
     "pcfx": ["mednafen_pcfx"],
@@ -38,9 +38,10 @@ export const cores = {
     "vic20": ["vice_xvic"],
     "dos": ["dosbox_pure"],
     "intv": ["freeintv"],
-    "3ds": ["azahar"]
+    "3ds": ["azahar"],
+    "vis": ["vis"]
 };
 
 export const requiresThreads = ["ppsspp", "dosbox_pure", "azahar"];
 
-export const requiresWebGL2 = ["ppsspp", "azahar"];
+export const requiresWebGL2 = ["ppsspp", "azahar", "mamearcade", "vis"];
